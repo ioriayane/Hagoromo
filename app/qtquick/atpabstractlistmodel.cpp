@@ -123,7 +123,7 @@ void AtpAbstractListModel::finishedTransration(const QString &cid, const QString
 void AtpAbstractListModel::reflectVisibility()
 {
     int prev_row = -1;
-    for (const auto &cid : qAsConst(m_originalCidList)) {
+    for (const auto &cid : std::as_const(m_originalCidList)) {
         if (checkVisibility(cid)) {
             // 表示させる
             if (m_cidList.contains(cid)) {
@@ -987,7 +987,7 @@ void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs:
         record.allow_MentionRule.clear();
         record.allow_FollowingRule.clear();
         record.allow_ListRule.clear();
-        for (const auto &rule : qAsConst(rules)) {
+        for (const auto &rule : std::as_const(rules)) {
             if (rule == "mentioned") {
                 record.allow_MentionRule.append(AppBskyFeedThreadgate::MentionRule());
             } else if (rule == "followed") {

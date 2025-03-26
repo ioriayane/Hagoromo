@@ -47,7 +47,7 @@ LabelerProvider::Private::Private(LabelerProvider *parent)
 {
     connect(&m_labels, &ConfigurableLabels::finished, this, [=](bool success) {
         qDebug().noquote() << this << "finished" << success;
-        for (auto connector : qAsConst(m_connector)) {
+        for (auto connector : std::as_const(m_connector)) {
             if (!connector) {
                 // already deleted
                 qDebug().noquote() << this << "already deleted";

@@ -8,6 +8,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/pinnedpostcache.h"
@@ -24,6 +25,7 @@ using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferencesEx;
+using AtProtocolInterface::ChatBskyConvoListConvos;
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
@@ -56,7 +58,10 @@ public:
                             std::function<void(const QString &service_endpoint)> callback);
     void getPostInteractionSettings(std::function<void()> callback);
     void putPostInteractionSettings();
+    void getAccountScope();
     void setMain(bool is);
+
+    void removeScope(AtProtocolInterface::AccountScope scope);
 
 private:
     AccountManager *q;
@@ -186,9 +191,10 @@ bool AccountManager::Private::update(AccountManagerRoles role, const QVariant &v
         m_account.handle = value.toString();
     else if (role == EmailRole)
         m_account.email = value.toString();
-    else if (role == AccessJwtRole)
+    else if (role == AccessJwtRole) {
         m_account.accessJwt = value.toString();
-    else if (role == RefreshJwtRole)
+        getAccountScope();
+    } else if (role == RefreshJwtRole)
         m_account.refreshJwt = value.toString();
 
     else if (role == DisplayNameRole)
@@ -237,6 +243,8 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.refreshJwt = refreshJwt;
     m_account.thread_gate_type = thread_gate_type;
     m_account.status = status;
+
+    getAccountScope();
 }
 
 void AccountManager::Private::updateRealtimeFeedRule(const QString &name, const QString &condition)
@@ -288,6 +296,7 @@ void AccountManager::Private::createSession()
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
+            getAccountScope();
 
             // 詳細を取得
             getProfile();
@@ -320,6 +329,7 @@ void AccountManager::Private::refreshSession(bool initial)
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
+            getAccountScope();
 
             // 詳細を取得
             getProfile();
@@ -504,9 +514,38 @@ void AccountManager::Private::putPostInteractionSettings()
     get_pref->getPreferences();
 }
 
+void AccountManager::Private::getAccountScope()
+{
+    QStringList items = m_account.accessJwt.split(".");
+    if (items.length() != 3)
+        return;
+    QByteArray json = QByteArray::fromBase64(items.at(1).toUtf8());
+    qDebug().noquote() << "Decoded accessJwt:" << json;
+    QJsonDocument doc = QJsonDocument::fromJson(json);
+    if (!doc.object().contains("scope"))
+        return;
+    QString scope = doc.object().value("scope").toString();
+    if (scope == "com.atproto.appPassPrivileged") {
+        qDebug().noquote() << "Direct Message is allowed:" << m_account.handle;
+        if (!m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+            m_account.scope.append(AtProtocolInterface::AccountScope::DirectMessage);
+        }
+    } else {
+        qDebug().noquote() << "Direct Message is not allowed:" << m_account.handle;
+        if (m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+            m_account.scope.removeAll(AtProtocolInterface::AccountScope::DirectMessage);
+        }
+    }
+}
+
 void AccountManager::Private::setMain(bool is)
 {
     m_account.is_main = is;
+}
+
+void AccountManager::Private::removeScope(AtProtocolInterface::AccountScope scope)
+{
+    m_account.scope.removeAll(scope);
 }
 
 AccountManager::AccountManager(QObject *parent) : QObject { parent }, m_allAccountsReady(false)
@@ -748,7 +787,7 @@ void AccountManager::setMainAccount(int row)
 bool AccountManager::checkAllAccountsReady()
 {
     int ready_count = 0;
-    for (const auto d : qAsConst(dList)) {
+    for (const auto d : std::as_const(dList)) {
         if (d->getAccount().status == AccountStatus::Authorized) {
             ready_count++;
         }
@@ -760,6 +799,15 @@ bool AccountManager::checkAllAccountsReady()
 int AccountManager::indexAt(const QString &uuid)
 {
     return dIndex.value(uuid, -1);
+}
+
+void AccountManager::removeScope(const QString &uuid, AtProtocolInterface::AccountScope scope)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->removeScope(scope);
 }
 
 QStringList AccountManager::getUuids() const

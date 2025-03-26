@@ -13,8 +13,6 @@ ChatBskyConvoGetMessages::ChatBskyConvoGetMessages(QObject *parent)
 void ChatBskyConvoGetMessages::getMessages(const QString &convoId, const int limit,
                                            const QString &cursor)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QUrlQuery url_query;
     if (!convoId.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("convoId"), convoId);

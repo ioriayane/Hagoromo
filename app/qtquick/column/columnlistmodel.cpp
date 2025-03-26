@@ -348,6 +348,29 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
+int ColumnListModel::indexOf(const QString &account_uuid, int component_type, int start) const
+{
+    for (int i = start; i < m_columnList.count(); i++) {
+        if (m_columnList.at(i).account_uuid == account_uuid
+            && m_columnList.at(i).component_type
+                    == static_cast<FeedComponentType>(component_type)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool ColumnListModel::contains(const QString &account_uuid, int component_type) const
+{
+    for (const auto &item : m_columnList) {
+        if (item.account_uuid == account_uuid
+            && item.component_type == static_cast<FeedComponentType>(component_type)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // 自分のposition-1が入っているアイテムのインデックスを返す
 int ColumnListModel::getPreviousRow(const int row)
 {
@@ -389,8 +412,6 @@ QList<int> ColumnListModel::getRowListInOrderOfPosition() const
 
 void ColumnListModel::save() const
 {
-    QSettings settings;
-
     QJsonArray column_array;
     for (const ColumnItem &item : m_columnList) {
         QJsonObject column_item;
@@ -565,7 +586,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
 void ColumnListModel::validateIndex()
 {
     QList<int> values;
-    for (const auto &item : qAsConst(m_columnList)) {
+    for (const auto &item : std::as_const(m_columnList)) {
         if (!values.contains(item.position)) {
             values.append(item.position);
         }

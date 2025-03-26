@@ -104,6 +104,8 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
+        x: parent.width / 2 - width / 2
+        y: sideBarItem.height / 2 - height / 2
         onAccepted: {
             repeater.updateSettings(2)
             translatorChanger.triggered(settingDialog.settings.language)
@@ -993,6 +995,7 @@ ApplicationWindow {
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
+                        item.settings.autoHideDetailMode = settingDialog.settings.autoHideDetailMode
                     }
 
                     function updateSelection() {
@@ -1058,6 +1061,29 @@ ApplicationWindow {
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
+        ChatNotificationFrame {
+            id: chatNotificationFrame
+            Layout.alignment: Qt.AlignRight
+            enabled: settingDialog.settings.enableChatNotification
+            visible: enabled
+            onRequestAddChatColumn: (uuid) => {
+                                        console.log("onRequestAddChatColumn:" + uuid)
+                                        if(columnManageModel.contains(uuid, 7)){
+                                            var index = columnManageModel.indexOf(uuid, 7, 0)
+                                            var position = columnManageModel.getPosition(index)
+                                            console.log("  already contains:" + index + ", " + position)
+                                            if(position >= 0){
+                                                scrollView.showColumn(position)
+                                            }
+                                        }else{
+                                            columnManageModel.append(uuid,
+                                                                     7, false, 300000, 500,
+                                                                     settingDialog.settings.imageLayoutType,
+                                                                     qsTr("Chat list"), "", [])
+                                            scrollView.showRightMost()
+                                        }
+                                    }
+        }
         RealtimeFeedStatus {
             id: realtimeFeedStatus
             Layout.alignment: Qt.AlignRight

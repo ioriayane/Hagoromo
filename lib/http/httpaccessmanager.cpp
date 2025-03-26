@@ -56,7 +56,7 @@ HttpAccessManager::Private::Private(HttpAccessManager *parent) : q(parent), m_si
 
 HttpAccessManager::Private::~Private()
 {
-    for (const auto &item : qAsConst(m_accessThread)) {
+    for (const auto &item : std::as_const(m_accessThread)) {
         item.second->exit();
         item.second->wait();
         delete item.second;

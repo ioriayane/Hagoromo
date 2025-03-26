@@ -1327,6 +1327,11 @@ struct ProfileViewBasic
 
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+enum class LogReadMessageMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
 enum class LogDeleteMessageMessageType : int {
     none,
     message_MessageView,
@@ -1400,7 +1405,7 @@ struct ConvoView
     DeletedMessageView lastMessage_DeletedMessageView;
     // union end : lastMessage
     bool muted = false;
-    bool opened = false;
+    QString status;
     int unreadCount = 0;
 };
 struct LogBeginConvo
@@ -1408,7 +1413,22 @@ struct LogBeginConvo
     QString rev;
     QString convoId;
 };
+struct LogAcceptConvo
+{
+    QString rev;
+    QString convoId;
+};
 struct LogLeaveConvo
+{
+    QString rev;
+    QString convoId;
+};
+struct LogMuteConvo
+{
+    QString rev;
+    QString convoId;
+};
+struct LogUnmuteConvo
 {
     QString rev;
     QString convoId;
@@ -1429,6 +1449,16 @@ struct LogDeleteMessage
     QString convoId;
     // union start : message
     LogDeleteMessageMessageType message_type = LogDeleteMessageMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+};
+struct LogReadMessage
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogReadMessageMessageType message_type = LogReadMessageMessageType::none;
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
     // union end : message
@@ -1545,19 +1575,20 @@ namespace ComAtprotoRepoApplyWrites {
 struct Create
 {
     QString collection; // nsid
-    QString rkey;
+    QString rkey; // record-key , NOTE: maxLength is redundant with record-key format. Keeping it
+                  // temporarily to ensure backwards compatibility.
     QVariant value;
 };
 struct Update
 {
     QString collection; // nsid
-    QString rkey;
+    QString rkey; // record-key
     QVariant value;
 };
 struct Delete
 {
     QString collection; // nsid
-    QString rkey;
+    QString rkey; // record-key
 };
 struct CreateResult
 {
@@ -1581,7 +1612,7 @@ namespace ComAtprotoRepoDefs {
 struct CommitMeta
 {
     QString cid; // cid
-    QString rev;
+    QString rev; // tid
 };
 }
 
@@ -1653,11 +1684,19 @@ struct Repo
 {
     QString did; // did
     QString head; // cid , Current repo commit CID
-    QString rev;
+    QString rev; // tid
     bool active = false;
     QString status; // If active=false, this optional field indicates a possible reason for why the
                     // account is not active. If active=false and no status is supplied, then the
                     // host makes no claim for why the repository is no longer being hosted.
+};
+}
+
+// com.atproto.sync.listReposByCollection
+namespace ComAtprotoSyncListReposByCollection {
+struct Repo
+{
+    QString did; // did
 };
 }
 
@@ -1671,14 +1710,20 @@ struct RepoOp
 struct Commit
 {
     int seq = 0; // The stream sequence number of this message.
-    bool tooBig =
-            false; // Indicates that this commit contained too many ops, or data size was too large.
-                   // Consumers will need to make a separate request to get missing data.
-    QString repo; // did , The repo this event comes from.
-    QString rev; // The rev of the emitted commit. Note that this information is also in the commit
-                 // object included in blocks, unless this is a tooBig event.
-    QString since; // The rev of the last emitted commit from this repo (if any).
+    QString repo; // did , The repo this event comes from. Note that all other message types name
+                  // this field 'did'.
+    QString rev; // tid , The rev of the emitted commit. Note that this information is also in the
+                 // commit object included in blocks, unless this is a tooBig event.
+    QString since; // tid , The rev of the last emitted commit from this repo (if any).
     QList<RepoOp> ops;
+    QString time; // datetime , Timestamp of when this message was originally broadcast.
+};
+struct Sync
+{
+    int seq = 0; // The stream sequence number of this message.
+    QString did; // did , The account this repo event corresponds to. Must match that in the commit
+                 // object.
+    QString rev; // The rev of the commit. This value must match that in the commit object.
     QString time; // datetime , Timestamp of when this message was originally broadcast.
 };
 struct Identity
@@ -2168,6 +2213,22 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
+};
+struct ReporterStats
+{
+    QString did; // did
+    int accountReportCount = 0; // The total number of reports made by the user on accounts.
+    int recordReportCount = 0; // The total number of reports made by the user on records.
+    int reportedAccountCount = 0; // The total number of accounts reported by the user.
+    int reportedRecordCount = 0; // The total number of records reported by the user.
+    int takendownAccountCount =
+            0; // The total number of accounts taken down as a result of the user's reports.
+    int takendownRecordCount =
+            0; // The total number of records taken down as a result of the user's reports.
+    int labeledAccountCount =
+            0; // The total number of accounts labeled as a result of the user's reports.
+    int labeledRecordCount =
+            0; // The total number of records labeled as a result of the user's reports.
 };
 }
 

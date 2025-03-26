@@ -11,6 +11,7 @@ QtObject {
     property int b30: 36 * ratio
     property int b26: 32 * ratio
     property int b24: 28 * ratio
+    property int b20: 24 * ratio
 
     // for Icon
     property int i60: 72 * ratio

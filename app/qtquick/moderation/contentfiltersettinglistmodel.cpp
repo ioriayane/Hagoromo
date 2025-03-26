@@ -40,6 +40,7 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
 
 int ContentFilterSettingListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_contentFilterLabels.count(labelerDid());
 }
 

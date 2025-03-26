@@ -31,6 +31,7 @@ public:
         UriRole,
         CreatorDisplayNameRole,
         EditableRole,
+        EnabledRole,
     };
     Q_ENUM(FeedTypeListModelRoles)
 
@@ -41,7 +42,11 @@ public:
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
-    virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const { return QString(); }
+    virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const
+    {
+        Q_UNUSED(row)
+        return QString();
+    }
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE bool getLatest();
@@ -52,8 +57,17 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
-    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false) { return true; }
-    virtual bool aggregated(const QString &cid) const { return false; }
+    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false)
+    {
+        Q_UNUSED(cid)
+        Q_UNUSED(next)
+        return true;
+    }
+    virtual bool aggregated(const QString &cid) const
+    {
+        Q_UNUSED(cid)
+        return false;
+    }
     virtual void finishedDisplayingQueuedPosts() { }
     virtual bool checkVisibility(const QString &cid);
 

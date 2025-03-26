@@ -58,7 +58,10 @@ bool BlogEntryListModel::getLatest()
 
     getLatestFromLinkat([=](bool success) {
         if (success) {
-            getLatestFromWhiteWind([=](bool success) { setRunning(false); });
+            getLatestFromWhiteWind([=](bool success) {
+                Q_UNUSED(success)
+                setRunning(false);
+            });
         } else {
             setRunning(false);
         }

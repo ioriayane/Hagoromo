@@ -180,9 +180,9 @@ void SystemTool::updateFontOfChildType(QObject *object, const QFont &font)
         QString method_name;
         const QMetaObject *meta = object->metaObject();
         for (int i = 0; i < meta->methodCount(); i++) {
-            if (meta->method(i).returnType() != QMetaType::type("QQuickItem *")) {
+            if (meta->method(i).returnMetaType() != QMetaType::fromName("QQuickItem *")) {
             } else if (meta->method(i).parameterCount() != 1) {
-            } else if (meta->method(i).parameterType(0) != QMetaType::type("int")) {
+            } else if (meta->method(i).parameterMetaType(0) != QMetaType::fromName("int")) {
             } else if (meta->method(i).name() == "itemAt") {
                 method_name = "itemAt";
                 break;

@@ -86,7 +86,7 @@ Dialog {
 
         ListView {
             id: accountList
-            Layout.preferredWidth: 450 * AdjustedValues.ratio
+            Layout.preferredWidth: 500 * AdjustedValues.ratio
             Layout.preferredHeight: 300 * AdjustedValues.ratio
             maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
@@ -143,6 +143,12 @@ Dialog {
                         color: Material.primaryColor
                         fontPointSize: AdjustedValues.f8
                         visible: model.isMain
+                    }
+                    TagLabel {
+                        source: ""
+                        text: " DM "
+                        fontPointSize: AdjustedValues.f8
+                        visible: model.allowedDirectMessage
                     }
                     TagLabel {
                         source: ""

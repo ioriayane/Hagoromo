@@ -10,8 +10,6 @@ ChatBskyConvoMuteConvo::ChatBskyConvoMuteConvo(QObject *parent) : AccessAtProtoc
 
 void ChatBskyConvoMuteConvo::muteConvo(const QString &convoId)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QJsonObject json_obj;
     if (!convoId.isEmpty()) {
         json_obj.insert(QStringLiteral("convoId"), convoId);

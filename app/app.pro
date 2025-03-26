@@ -7,9 +7,11 @@ TARGET = Hagoromo
 
 SOURCES += \
     main.cpp \
+    tools/globalsettings.cpp \
     tools/translatorchanger.cpp
 
 HEADERS += \
+    tools/globalsettings.h \
     tools/translatorchanger.h
 
 QML_FILES = \
@@ -67,6 +69,7 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ChatErrorMessage.qml \
+    qml/parts/ChatNotificationFrame.qml \
     qml/parts/CoverFrame.qml \
     qml/parts/CursorRect.qml \
     qml/parts/CursorRectHandle.qml \
@@ -137,6 +140,8 @@ IMAGE_FILES += \
     qml/images/copy.png \
     qml/images/delete.png \
     qml/images/edit.png \
+    qml/images/expand_content_less.png \
+    qml/images/expand_content_more.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
     qml/images/feed.png \

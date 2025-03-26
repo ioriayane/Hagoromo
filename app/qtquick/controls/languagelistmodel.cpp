@@ -264,7 +264,7 @@ void LanguageListModel::setSelectedLanguages(const QStringList &langs)
 QStringList LanguageListModel::selectedLanguages() const
 {
     QStringList list;
-    for (const auto &item : qAsConst(m_languageList)) {
+    for (const auto &item : std::as_const(m_languageList)) {
         if (item.checked) {
             list.append(item.iso639_1);
         }
@@ -298,7 +298,7 @@ void LanguageListModel::updateEnable()
 {
     // 3個までしか選択できないようにする(Lexiconの仕様。上限を外部から指定できるようにするのが理想かもだけど）
     int count = 0;
-    for (const auto &item : qAsConst(m_languageList)) {
+    for (const auto &item : std::as_const(m_languageList)) {
         if (item.checked) {
             count++;
         }

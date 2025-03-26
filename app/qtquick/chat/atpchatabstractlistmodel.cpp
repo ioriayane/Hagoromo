@@ -96,7 +96,8 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
 
 void AtpChatAbstractListModel::checkScopeError(const QString &code, const QString &message)
 {
-    if (code == "InvalidToken" && message == "Bad token scope") {
+    Q_UNUSED(message)
+    if (code == "InvalidToken") {
         setAutoLoading(false);
     }
 }
@@ -133,6 +134,8 @@ bool AtpChatAbstractListModel::autoLoading() const
 
 void AtpChatAbstractListModel::setAutoLoading(bool newAutoLoading)
 {
+    qDebug() << __FUNCTION__ << "new=" << newAutoLoading << ", active=" << m_timer.isActive()
+             << ", interval=" << loadingInterval();
     if (newAutoLoading) {
         // Off -> On
         if (m_timer.isActive())

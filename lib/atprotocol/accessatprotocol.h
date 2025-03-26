@@ -16,6 +16,10 @@ enum class AccountStatus : int {
     Authorized,
 };
 
+enum class AccountScope : int {
+    DirectMessage,
+};
+
 struct RealtimeFeedRule
 {
     QString name;
@@ -51,6 +55,7 @@ struct AccountData
     QStringList labeler_dids; // ラベラーのdid
 
     AccountStatus status = AccountStatus::Unknown;
+    QList<AccountScope> scope;
 
     bool isValid() const
     {
@@ -80,6 +85,8 @@ public:
     QString accessJwt() const;
     QString refreshJwt() const;
 
+    bool allowedScope(AccountScope scope) const;
+
 private:
     AccountData m_account;
 };
@@ -99,7 +106,6 @@ public:
     void appendRawHeader(const QString &name, const QString &value);
     void setContentType(const QString &newContentType);
     QString dPopNonce() const;
-
 signals:
     void finished(bool success);
 
@@ -129,6 +135,7 @@ protected:
 
 private:
     void setAdditionalRawHeader(QNetworkRequest &request);
+    void setAtprotoProxyHeader(QNetworkRequest &request);
 
     static HttpAccessManager *m_manager;
 
@@ -140,6 +147,9 @@ private:
     QString m_contentType;
     QHash<QString, QString> m_additionalRawHeaders;
     QString m_dPopNonce;
+    // PDSによるAPIのプロキシ先はアカウントごとに置き換えて使う可能性あり（将来的に）
+    QHash<QString, QString> m_atprotoProxyDids;
+    QStringList m_excludedAtprotoProxyEndpoints;
 };
 }
 

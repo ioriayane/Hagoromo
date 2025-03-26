@@ -11,8 +11,6 @@ ChatBskyConvoGetLog::ChatBskyConvoGetLog(QObject *parent) : AccessAtProtocol { p
 
 void ChatBskyConvoGetLog::getLog(const QString &cursor)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QUrlQuery url_query;
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
@@ -25,6 +23,12 @@ const QList<AtProtocolType::ChatBskyConvoDefs::LogBeginConvo> &
 ChatBskyConvoGetLog::logsLogBeginConvoList() const
 {
     return m_logsLogBeginConvoList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo> &
+ChatBskyConvoGetLog::logsLogAcceptConvoList() const
+{
+    return m_logsLogAcceptConvoList;
 }
 
 const QList<AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo> &
@@ -59,6 +63,10 @@ bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
                 AtProtocolType::ChatBskyConvoDefs::LogBeginConvo data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogBeginConvo(value.toObject(), data);
                 m_logsLogBeginConvoList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logAcceptConvo")) {
+                AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogAcceptConvo(value.toObject(), data);
+                m_logsLogAcceptConvoList.append(data);
             } else if (type == QStringLiteral("chat.bsky.convo.defs#logLeaveConvo")) {
                 AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogLeaveConvo(value.toObject(), data);

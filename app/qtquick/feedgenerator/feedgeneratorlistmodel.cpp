@@ -296,7 +296,7 @@ QJsonArray FeedGeneratorListModel::appendGeneratorToPreference(const QString &sr
             QJsonArray json_items = value.value("items").toArray();
             QJsonArray json_items_dest;
             bool exist = false;
-            for (const auto &v : qAsConst(json_items)) {
+            for (const auto &v : std::as_const(json_items)) {
                 if (v.toObject().value("value").toString() == uri) {
                     exist = true;
                 }
@@ -339,7 +339,7 @@ QJsonArray FeedGeneratorListModel::removeGeneratorToPreference(const QString &sr
             && value.value("items").isArray()) {
             QJsonArray json_items = value.value("items").toArray();
             QJsonArray json_items_dest;
-            for (const auto &v : qAsConst(json_items)) {
+            for (const auto &v : std::as_const(json_items)) {
                 if (v.toObject().value("value").toString() != uri) {
                     json_items_dest.append(v);
                 }

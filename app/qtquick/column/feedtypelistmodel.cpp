@@ -38,8 +38,13 @@ QVariant FeedTypeListModel::item(int row, FeedTypeListModelRoles role) const
         return static_cast<int>(m_feedTypeItemList.at(row).type);
     else if (role == EditableRole)
         return m_feedTypeItemList.at(row).editable;
-
-    else if (m_feedTypeItemList.at(row).type == FeedComponentType::ListFeed) {
+    else if (role == EnabledRole) {
+        if (m_feedTypeItemList.at(row).type == FeedComponentType::ChatList) {
+            return account().scope.contains(AtProtocolInterface::AccountScope::DirectMessage);
+        } else {
+            return true;
+        }
+    } else if (m_feedTypeItemList.at(row).type == FeedComponentType::ListFeed) {
         if (role == DisplayNameRole)
             return m_feedTypeItemList.at(row).list.name;
         else if (role == AvatarRole)
@@ -248,6 +253,7 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     roles[UriRole] = "uri";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
     roles[EditableRole] = "editable";
+    roles[EnabledRole] = "enabled";
 
     return roles;
 }
@@ -287,7 +293,7 @@ void FeedTypeListModel::getFeedDetails()
         if (success) {
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
-            for (const auto &uri : qAsConst(uris)) {
+            for (const auto &uri : std::as_const(uris)) {
                 for (const auto &generator : generators->feedsList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;

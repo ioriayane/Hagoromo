@@ -203,11 +203,14 @@ QHash<int, QByteArray> ListItemListModel::roleNames() const
 
 bool ListItemListModel::aggregateQueuedPosts(const QString &cid, const bool next)
 {
+    Q_UNUSED(cid)
+    Q_UNUSED(next)
     return true;
 }
 
 bool ListItemListModel::aggregated(const QString &cid) const
 {
+    Q_UNUSED(cid)
     return false;
 }
 
@@ -219,6 +222,7 @@ void ListItemListModel::finishedDisplayingQueuedPosts()
 
 bool ListItemListModel::checkVisibility(const QString &cid)
 {
+    Q_UNUSED(cid)
     return true;
 }
 

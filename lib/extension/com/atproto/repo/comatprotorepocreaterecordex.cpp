@@ -31,7 +31,7 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
     json_record.insert("space.aoisora.post.via", "Hagoromo");
     if (!m_postLanguages.isEmpty()) {
         QJsonArray json_langs;
-        for (const auto &lang : qAsConst(m_postLanguages)) {
+        for (const auto &lang : std::as_const(m_postLanguages)) {
             json_langs.append(lang);
         }
         json_record.insert("langs", json_langs);
@@ -81,7 +81,7 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
 
     } else if (!m_embedImageBlobs.isEmpty()) {
         QJsonArray json_blobs;
-        for (const auto &blob : qAsConst(m_embedImageBlobs)) {
+        for (const auto &blob : std::as_const(m_embedImageBlobs)) {
             QJsonObject json_blob;
             QJsonObject json_image;
             QJsonObject json_aspect_ratio;
@@ -131,7 +131,7 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
     if (!m_selfLabels.isEmpty()) {
         QJsonObject json_labels;
         QJsonArray json_label_vals;
-        for (const auto &label : qAsConst(m_selfLabels)) {
+        for (const auto &label : std::as_const(m_selfLabels)) {
             QJsonObject json_val;
             json_val.insert("val", label);
             json_label_vals.append(json_val);

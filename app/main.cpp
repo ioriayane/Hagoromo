@@ -1,9 +1,6 @@
-#include <QFont>
-#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QQmlApplicationEngine>
-#include <QSettings>
 #include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
@@ -55,6 +52,7 @@
 #include "qtquick/log/logfeedlistmodel.h"
 #include "qtquick/chat/chatlistmodel.h"
 #include "qtquick/chat/chatmessagelistmodel.h"
+#include "qtquick/chat/chatnotificationlistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
@@ -63,42 +61,9 @@
 #include "qtquick/realtime/realtimefeedstatuslistmodel.h"
 #include "qtquick/realtime/realtimefeedstatusgraph.h"
 
+#include "tools/globalsettings.h"
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
-#include "realtime/firehosereceiver.h"
-
-void setAppFont(QGuiApplication &app, QSettings &settings)
-{
-    QString family = settings.value("fontFamily").toString();
-    if (family.isEmpty()) {
-        family = SystemTool::defaultFontFamily();
-    }
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QFontDatabase db;
-    if (db.families().contains(family)) {
-#else
-    if (QFontDatabase::families().contains(family)) {
-#endif
-        app.setFont(QFont(family));
-        if (settings.value("fontFamily").toString() != family) {
-            settings.setValue("fontFamily", family);
-        }
-    }
-}
-
-void setRealtimeFeedEndpoint(QSettings &settings)
-{
-    RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
-    if (receiver == nullptr)
-        return;
-    if (!settings.contains("realtimeServiceEndpoint")) {
-        // キーが無い状態で起動するとなぜか翻訳のキーが消えてしまうので、ここで設定する
-        settings.setValue("realtimeServiceEndpoint", "wss://jetstream1.us-west.bsky.network");
-    }
-    QString endpoint = settings.value("realtimeServiceEndpoint").toString();
-    qDebug() << "Load realtime feed endpoint :" << endpoint;
-    receiver->setServiceEndpoint(endpoint);
-}
 
 int main(int argc, char *argv[])
 {
@@ -113,7 +78,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.47.0"));
+    app.setApplicationVersion(QStringLiteral("0.48.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -204,6 +169,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ChatListModel>("tech.relog.hagoromo.chatlistmodel", 1, 0, "ChatListModel");
     qmlRegisterType<ChatMessageListModel>("tech.relog.hagoromo.chatmessagelistmodel", 1, 0,
                                           "ChatMessageListModel");
+    qmlRegisterType<ChatNotificationListModel>("tech.relog.hagoromo.chatnotificationlistmodel", 1,
+                                               0, "ChatNotificationListModel");
 
     qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
                                       "LabelerListModel");
@@ -225,13 +192,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
-    QSettings settings;
-    setAppFont(app, settings);
-    setRealtimeFeedEndpoint(settings);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-#else
-    SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());
-#endif
+    setGlobalSettings(app);
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"

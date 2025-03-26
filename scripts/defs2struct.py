@@ -154,10 +154,6 @@ class Defs2Struct:
             }
 
         self.rawHttpHeader = {
-            'chat.bsky.': {
-                'name': 'atproto-proxy',
-                'value': 'did:web:api.bsky.chat#bsky_chat'
-            }
         }
 
         self.skip_api_class_id = [
@@ -676,122 +672,47 @@ class Defs2Struct:
                 self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
             self.output_func_text[namespace].append(function_define)
             self.output_func_text[namespace].append('{')
-            self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
-
-            # if (!json_author.isEmpty()) {
-            #     author.avatar = json_author.value("avatar").toString();
 
             properties = obj.get('properties', {})
-            for property_name in properties.keys():
-                if self.check_deprecated(properties[property_name]):
-                    continue
-                p_type = properties[property_name].get('type')
-                if p_type == 'ref':
-                    ref_path = properties[property_name].get('ref', {})
-                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
-                    if len(ref_type_name) == 0:
-                        ref_type_name = 'main'
-                    if len(ref_namespace) == 0:
-                        extend_ns = ''
-                        forward_type = self.history_type[namespace + '#' + ref_type_name]
-                    else:
-                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
-                        forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
-                    if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                        self.output_func_text[namespace].append('        if (dest.%s.isNull())' % (self.to_property_style(property_name), ))
-                        self.output_func_text[namespace].append('            dest.%s = QSharedPointer<%s%s>(new %s%s());' % (self.to_property_style(property_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, self.to_property_style(property_name), ))
-                    else:
-                        if forward_type in ['integer', 'string', 'boolean']:
-                            convert_method = ''
-                        else:
-                            convert_method = '.toObject()'
-                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s")%s, dest.%s);' % (
-                            extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, self.to_property_style(property_name),))
+            if len(properties) == 0:
+                self.output_func_text[namespace].append('    Q_UNUSED(src);')
+                self.output_func_text[namespace].append('    Q_UNUSED(dest);')
+            else:
+                self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
 
-                elif p_type == 'union':
-                    value_key: str = '$type'
-                    if properties[property_name].get('forceRerative') is not None:
-                        value_key = 'type'
-                    self.output_func_text[namespace].append('        QString %s_type = src.value("%s").toObject().value("%s").toString();' % (property_name, property_name, value_key, ))
-                    for ref_path in properties[property_name].get('refs', []):
+                for property_name in properties.keys():
+                    if self.check_deprecated(properties[property_name]):
+                        continue
+                    p_type = properties[property_name].get('type')
+                    if p_type == 'ref':
+                        ref_path = properties[property_name].get('ref', {})
                         (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                         if len(ref_type_name) == 0:
                             ref_type_name = 'main'
-
-                        if len(ref_type_name) == 0:
-                            self.output_func_text[namespace].append('        // union %s %s' % (property_name, ref_path, ))
+                        if len(ref_namespace) == 0:
+                            extend_ns = ''
+                            forward_type = self.history_type[namespace + '#' + ref_type_name]
                         else:
-                            if len(ref_namespace) == 0:
-                                extend_ns = '%s::' % (self.to_namespace_style(namespace), )
-                                union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
-                                if properties[property_name].get('forceRerative', False):
-                                    # plc.directoryの解析専用
-                                    ref_path_full = ref_type_name
-                                else:
-                                    ref_path_full = namespace + '#' + ref_type_name
-                            else:
-                                extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
-                                union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
-                                ref_path_full = ref_path
-                            union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
-
-                            if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                                self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
-                                self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
-                                self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
-                                self.output_func_text[namespace].append('            if (dest.%s.isNull())' % (union_name, ))
-                                self.output_func_text[namespace].append('                dest.%s = QSharedPointer<%s%s>(new %s%s());' % (union_name, extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                                self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
-                                self.output_func_text[namespace].append('        }')
-                            else:
-                                self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
-                                self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
-                                self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
-                                self.output_func_text[namespace].append('        }')
-
-                elif p_type == 'unknown':
-                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
-
-                elif p_type == 'integer':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
-
-                elif p_type == 'boolean':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
-
-                elif p_type == 'string':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (self.to_property_style(property_name), property_name, ))
-
-                elif p_type == 'array':
-                    items_type = properties[property_name].get('items', {}).get('type', '')
-                    (ref_namespace, ref_type_name) = self.split_ref(properties[property_name].get('items', {}).get('ref', {}))
-                    if len(ref_type_name) == 0:
-                        ref_type_name = 'main'
-                    if len(ref_namespace) == 0:
-                        extend_ns = ''
-                    else:
-                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
-                    if items_type == 'ref':
-                        func_name = '%scopy%s' % (extend_ns, self.to_struct_style(ref_type_name), )
-                        self.output_func_text[namespace].append('        for (const auto &s : src.value("%s").toArray()) {' % (property_name, ))
+                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                            forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
                         if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                            self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                            self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('        if (dest.%s.isNull())' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('            dest.%s = QSharedPointer<%s%s>(new %s%s());' % (self.to_property_style(property_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('        %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, self.to_property_style(property_name), ))
                         else:
-                            self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                            if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
-                                self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
+                            if forward_type in ['integer', 'string', 'boolean']:
+                                convert_method = ''
                             else:
-                                self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
-                        self.output_func_text[namespace].append('        }')
+                                convert_method = '.toObject()'
+                            self.output_func_text[namespace].append('        %scopy%s(src.value("%s")%s, dest.%s);' % (
+                                extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, self.to_property_style(property_name),))
 
-                    elif items_type == 'union':
-                        # self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
-                        self.output_func_text[namespace].append('        // array<union> ' + property_name)
-                        now_first = True
-                        for ref_path in properties[property_name].get('items', {}).get('refs', []):
+                    elif p_type == 'union':
+                        value_key: str = '$type'
+                        if properties[property_name].get('forceRerative') is not None:
+                            value_key = 'type'
+                        self.output_func_text[namespace].append('        QString %s_type = src.value("%s").toObject().value("%s").toString();' % (property_name, property_name, value_key, ))
+                        for ref_path in properties[property_name].get('refs', []):
                             (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                             if len(ref_type_name) == 0:
                                 ref_type_name = 'main'
@@ -802,55 +723,132 @@ class Defs2Struct:
                                 if len(ref_namespace) == 0:
                                     extend_ns = '%s::' % (self.to_namespace_style(namespace), )
                                     union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
-                                    ref_path_full = namespace + '#' + ref_type_name
+                                    if properties[property_name].get('forceRerative', False):
+                                        # plc.directoryの解析専用
+                                        ref_path_full = ref_type_name
+                                    else:
+                                        ref_path_full = namespace + '#' + ref_type_name
                                 else:
                                     extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                                     union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
                                     ref_path_full = ref_path
                                 union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
 
-                                if now_first:
-                                    # 最初の要素のみunion_typeを設定
-                                    # 本当は適切な値を定義して設定するべきだが、union配列の場合は具体的な値に意味はないのキーが存在していれば最初のtypeを設定する
-                                    # 個別のループの中で見つけたときに設定しないのは空配列とキー自体がない場合を区別したいため
-                                    self.output_func_text[namespace].append('        if (src.contains("%s")) {' % (property_name, ))
-                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
-                                    self.output_func_text[namespace].append('        }')
-                                    now_first = False
-
-                                self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                                self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
-                                self.output_func_text[namespace].append('            if (value_type == QStringLiteral("%s")) {' % (ref_path_full, ))
                                 if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                                    self.output_func_text[namespace].append('                QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                                    self.output_func_text[namespace].append('                %scopy%s(value.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                                    self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
+                                    self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
+                                    self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
+                                    self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                    self.output_func_text[namespace].append('            if (dest.%s.isNull())' % (union_name, ))
+                                    self.output_func_text[namespace].append('                dest.%s = QSharedPointer<%s%s>(new %s%s());' % (union_name, extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                                    self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
+                                    self.output_func_text[namespace].append('        }')
                                 else:
-                                    self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                                    self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                                    self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
-                                self.output_func_text[namespace].append('            }')
-                                self.output_func_text[namespace].append('        }')
+                                    self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
+                                    self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                    self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
+                                    self.output_func_text[namespace].append('        }')
 
-                    elif items_type == 'integer':
-                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (self.to_property_style(property_name), ))
-                        self.output_func_text[namespace].append('        }')
+                    elif p_type == 'unknown':
+                        self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
 
-                    elif items_type == 'boolean':
-                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toBool());' % (self.to_property_style(property_name), ))
-                        self.output_func_text[namespace].append('        }')
+                    elif p_type == 'integer':
+                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
 
-                    elif items_type == 'string':
-                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (self.to_property_style(property_name), ))
-                        self.output_func_text[namespace].append('        }')
-                elif p_type == 'blob':
-                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyBlob(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
-                    # self.output_text[namespace].append('    Blob %s;' % (property_name, ))
+                    elif p_type == 'boolean':
+                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
 
-            self.output_func_text[namespace].append('    }')
+                    elif p_type == 'string':
+                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (self.to_property_style(property_name), property_name, ))
+
+                    elif p_type == 'array':
+                        items_type = properties[property_name].get('items', {}).get('type', '')
+                        (ref_namespace, ref_type_name) = self.split_ref(properties[property_name].get('items', {}).get('ref', {}))
+                        if len(ref_type_name) == 0:
+                            ref_type_name = 'main'
+                        if len(ref_namespace) == 0:
+                            extend_ns = ''
+                        else:
+                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                        if items_type == 'ref':
+                            func_name = '%scopy%s' % (extend_ns, self.to_struct_style(ref_type_name), )
+                            self.output_func_text[namespace].append('        for (const auto &s : src.value("%s").toArray()) {' % (property_name, ))
+                            if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                                self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                                self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
+                                self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
+                            else:
+                                self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                                if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
+                                    self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
+                                else:
+                                    self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
+                                self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('        }')
+
+                        elif items_type == 'union':
+                            # self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
+                            self.output_func_text[namespace].append('        // array<union> ' + property_name)
+                            now_first = True
+                            for ref_path in properties[property_name].get('items', {}).get('refs', []):
+                                (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                                if len(ref_type_name) == 0:
+                                    ref_type_name = 'main'
+
+                                if len(ref_type_name) == 0:
+                                    self.output_func_text[namespace].append('        // union %s %s' % (property_name, ref_path, ))
+                                else:
+                                    if len(ref_namespace) == 0:
+                                        extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                                        union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
+                                        ref_path_full = namespace + '#' + ref_type_name
+                                    else:
+                                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                                        union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
+                                        ref_path_full = ref_path
+                                    union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
+
+                                    if now_first:
+                                        # 最初の要素のみunion_typeを設定
+                                        # 本当は適切な値を定義して設定するべきだが、union配列の場合は具体的な値に意味はないのキーが存在していれば最初のtypeを設定する
+                                        # 個別のループの中で見つけたときに設定しないのは空配列とキー自体がない場合を区別したいため
+                                        self.output_func_text[namespace].append('        if (src.contains("%s")) {' % (property_name, ))
+                                        self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                        self.output_func_text[namespace].append('        }')
+                                        now_first = False
+
+                                    self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                                    self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
+                                    self.output_func_text[namespace].append('            if (value_type == QStringLiteral("%s")) {' % (ref_path_full, ))
+                                    if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                                        self.output_func_text[namespace].append('                QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                                        self.output_func_text[namespace].append('                %scopy%s(value.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                                        self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
+                                    else:
+                                        self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                                        self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                                        self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
+                                    self.output_func_text[namespace].append('            }')
+                                    self.output_func_text[namespace].append('        }')
+
+                        elif items_type == 'integer':
+                            self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                            self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('        }')
+
+                        elif items_type == 'boolean':
+                            self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                            self.output_func_text[namespace].append('            dest.%s.append(value.toBool());' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('        }')
+
+                        elif items_type == 'string':
+                            self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                            self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('        }')
+                    elif p_type == 'blob':
+                        self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyBlob(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
+                        # self.output_text[namespace].append('    Blob %s;' % (property_name, ))
+                self.output_func_text[namespace].append('    }')
+
             self.output_func_text[namespace].append('}')
 
             self.append_func_history(namespace, function_define)

@@ -119,9 +119,9 @@ QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
         return QString();
     } else {
         // CIDv1
-        int cid_ver = static_cast<int>(data.at(0));
-        int cid_codec = static_cast<int>(data.at(1));
-        int hash_ver = static_cast<int>(data.at(2));
+        // int cid_ver = static_cast<int>(data.at(0));
+        // int cid_codec = static_cast<int>(data.at(1));
+        // int hash_ver = static_cast<int>(data.at(2));
         int hash_size = static_cast<int>(data.at(3));
 
         offset = hash_size + 4;

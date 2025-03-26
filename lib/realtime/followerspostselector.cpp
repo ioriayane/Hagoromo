@@ -35,7 +35,7 @@ bool FollowersPostSelector::judge(const QJsonObject &object)
                 QString rkey = extractRkey(op.value("path").toString());
                 if (!rkey.isEmpty()) {
                     QString user_did = getRepo(object);
-                    for (const auto &user : qAsConst(m_followers)) {
+                    for (const auto &user : std::as_const(m_followers)) {
                         if (user.rkey == rkey && user.did == user_did) {
                             m_followers.remove(user.did);
                             break;

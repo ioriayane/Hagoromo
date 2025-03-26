@@ -14,8 +14,7 @@ import "../parts"
 Dialog {
     id: settingDialog
     modal: true
-    x: (parent.width - width) * 0.5
-    y: (parent.height - height) * 0.5
+    title: qsTr("Settings")
 
     property alias settings: settings
 
@@ -30,6 +29,8 @@ Dialog {
 
     SettingsC {
         id: settings
+        // globalsettings.cppで正式なデフォルト値を設定すること
+
         // General
         property int theme: Material.Light
         property color accent: Material.color(Material.Pink)
@@ -42,12 +43,14 @@ Dialog {
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
         property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        property bool enableChatNotification: true
         // Layout
         property int rowCount: 1
         property int rowHeightRatio2: 50
         property int rowHeightRatio31: 35
         property int rowHeightRatio32: 70
         property int imageLayoutType: 1
+        property bool autoHideDetailMode: true
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -76,6 +79,7 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
+            enableChatNotificationCheckBox.checked = settings.enableChatNotification
             // Layout
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
@@ -83,6 +87,7 @@ Dialog {
             rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
             rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
             imageLayoutCombobox.setByValue(settings.imageLayoutType)
+            autoHideDetailModeCheckBox.checked = settings.autoHideDetailMode
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -131,678 +136,787 @@ Dialog {
     }
 
     ColumnLayout {
-        TabBar {
-            id: tabBar
-            Layout.fillWidth: true
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("General")
+        id: contentColumnLayout
+        RowLayout {
+            ColumnLayout {
+                id: tabBar
+                Layout.alignment: Qt.AlignTop
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Appearance")
+                    onClicked: contentScrollView.viewItem(appearanceGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Layout")
+                    onClicked: contentScrollView.viewItem(layoutGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Notification")
+                    onClicked: contentScrollView.viewItem(notificationGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Feed")
+                    onClicked: contentScrollView.viewItem(feedGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Scroll")
+                    onClicked: contentScrollView.viewItem(scrollGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Translate")
+                    onClicked: contentScrollView.viewItem(translateGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("Other")
+                    onClicked: contentScrollView.viewItem(otherGroupBox)
+                }
+                Button {
+                    Layout.fillWidth: true
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    font.capitalization: Font.MixedCase
+                    text: qsTr("About")
+                    onClicked: contentScrollView.viewItem(aboutGroupBox)
+                }
             }
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("Feed")
-            }
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("Layout")
-            }
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("Scroll")
-            }
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("Translate")
-            }
-            TabButton {
-                font.pointSize: AdjustedValues.f10
-                font.capitalization: Font.MixedCase
-                text: qsTr("About")
-            }
-        }
 
-        SwipeView {
-            currentIndex: tabBar.currentIndex
-            interactive: false
-            clip: true
-            implicitWidth: generalPageLayout.width + generalPageFrame.leftPadding + generalPageFrame.rightPadding
-            implicitHeight: generalPageLayout.height + generalPageFrame.topPadding + generalPageFrame.bottomPadding
+            ScrollView {
+                id: contentScrollView
+                // currentIndex: tabBar.currentIndex
+                // interactive: false
+                clip: true
+                implicitWidth: generalPageLayout.width +
+                               appearanceGroupBox.leftPadding +
+                               appearanceGroupBox.rightPadding +
+                               ScrollBar.vertical.width
+                // implicitHeight: generalPageLayout.height + appearanceGroupBox.topPadding + appearanceGroupBox.bottomPadding
+                // implicitWidth: generalPageLayout.width
+                implicitHeight: settingDialog.parent.height
+                                - settingDialog.padding * 2
+                                - settingDialog.y
+                                - settingDialog.header.height
+                                - contentColumnLayout.spacing * 2
+                                - buttonGroupLayout.implicitHeight
 
-            // General Page
-            Frame {
-                id: generalPageFrame
-                GridLayout {
-                    id: generalPageLayout
-                    columns: 2
-                    rowSpacing: AdjustedValues.s5
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Theme")
+                function viewItem(obj){
+                    var scaled_pos = obj.y / contentLayout.implicitHeight
+                    // var new_pos = 1.0 - scaled_pos
+                    if(scaled_pos > (1.0 - contentScrollView.ScrollBar.vertical.size)){
+                        scaled_pos = 1.0 - contentScrollView.ScrollBar.vertical.size
                     }
-                    RowLayout {
-                        id: themeRowlayout
-                        RadioButton {
-                            property int value: Material.Light
-                            font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
-                            text: qsTr("Light")
-                        }
-                        RadioButton {
-                            property int value: Material.Dark
-                            font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
-                            text: qsTr("Dark")
-                        }
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Accent color")
-                    }
-                    GridLayout {
-                        id: accentGridLayout
-                        columns: 9
-                        columnSpacing: 1
-                        rowSpacing: 1
-                        Repeater {
-                            model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
-                                Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
-                                Material.Teal, Material.Green, Material.LightGreen, Material.lime,
-                                Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
-                                Material.Brown, Material.BlueGrey ]
-                            Button {
-                                id: colorSelectButton
-                                Layout.preferredWidth: AdjustedValues.b30
-                                Layout.preferredHeight: AdjustedValues.b30
-                                topInset: 1
-                                leftInset: 1
-                                rightInset: 1
-                                bottomInset: 1
-                                background: Rectangle {
-                                    color: Material.color(modelData)
-                                    border.color: colorSelectButton.checked ? Material.foreground : Material.background
-                                    border.width: 2
-                                    radius: 5
+                    contentScrollView.ScrollBar.vertical.position = scaled_pos
+                }
+
+                ColumnLayout{
+                    id: contentLayout
+                    spacing: AdjustedValues.s20
+                    // Appearance Page
+                    GroupBox {
+                        id: appearanceGroupBox
+                        title: qsTr("Appearance")
+                        GridLayout {
+                            id: generalPageLayout
+                            columns: 2
+                            rowSpacing: AdjustedValues.s5
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                text: qsTr("Theme")
+                            }
+                            RowLayout {
+                                id: themeRowlayout
+                                RadioButton {
+                                    property int value: Material.Light
+                                    font.pointSize: AdjustedValues.f10
+                                    font.family: fontFamilyComboBox.currentText
+                                    text: qsTr("Light")
                                 }
-                                checkable: true
-                                property color value: Material.color(modelData)
-                                ButtonGroup.group: accentButtonGroup
+                                RadioButton {
+                                    property int value: Material.Dark
+                                    font.pointSize: AdjustedValues.f10
+                                    font.family: fontFamilyComboBox.currentText
+                                    text: qsTr("Dark")
+                                }
                             }
-                        }
-                    }
-
-                    Label {
-                        Layout.topMargin: AdjustedValues.s10
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Scaling")
-                    }
-                    Slider {
-                        id: fontSizeRatioSlider
-                        Layout.topMargin: AdjustedValues.s10
-                        Layout.preferredWidth: 500 * AdjustedValues.ratio
-                        from: 0.6
-                        to: 2.0
-                        stepSize: 0.2
-                        snapMode: Slider.SnapOnRelease
-                        Label {
-                            x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
-                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
-                            font.family: fontFamilyComboBox.currentText
-                            text: qsTr("A")
-                            font.pointSize: AdjustedValues.f10 * parent.from
-                        }
-                        Label {
-                            x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
-                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
-                            font.family: fontFamilyComboBox.currentText
-                            text: qsTr("A")
-                            font.pointSize: AdjustedValues.f10
-                        }
-                        Label {
-                            id: sliderLabel
-                            x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
-                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
-                            font.family: fontFamilyComboBox.currentText
-                            text: qsTr("A")
-                            font.pointSize: AdjustedValues.f10 * parent.to
-                        }
-                    }
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Font family")
-                    }
-                    ComboBox {
-                        id: fontFamilyComboBox
-                        Layout.fillWidth: true
-                        font.pointSize: AdjustedValues.f10
-                        font.family: currentText
-                        model: Qt.fontFamilies()
-                        delegate: ItemDelegate {
-                            width: fontFamilyComboBox.width
-                            contentItem: Text {
-                                text: modelData
-                                color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
-                                //font.family: modelData
-                                elide: Text.ElideRight
-                                verticalAlignment: Text.AlignVCenter
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                text: qsTr("Accent color")
                             }
-                            highlighted: fontFamilyComboBox.highlightedIndex === index
-                        }
-                    }
+                            GridLayout {
+                                id: accentGridLayout
+                                columns: 9
+                                columnSpacing: 1
+                                rowSpacing: 1
+                                Repeater {
+                                    model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
+                                        Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
+                                        Material.Teal, Material.Green, Material.LightGreen, Material.lime,
+                                        Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
+                                        Material.Brown, Material.BlueGrey ]
+                                    Button {
+                                        id: colorSelectButton
+                                        Layout.preferredWidth: AdjustedValues.b30
+                                        Layout.preferredHeight: AdjustedValues.b30
+                                        topInset: 1
+                                        leftInset: 1
+                                        rightInset: 1
+                                        bottomInset: 1
+                                        background: Rectangle {
+                                            color: Material.color(modelData)
+                                            border.color: colorSelectButton.checked ? Material.foreground : Material.background
+                                            border.width: 2
+                                            radius: 5
+                                        }
+                                        checkable: true
+                                        property color value: Material.color(modelData)
+                                        ButtonGroup.group: accentButtonGroup
+                                    }
+                                }
+                            }
 
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Language")
-                    }
-                    ComboBoxEx {
-                        id: languageComboBox
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        model: ListModel {
-                            ListElement { value: "en"; text: qsTr("English") }
-                            ListElement { value: "ja"; text: qsTr("Japanese") }
-                        }
-                    }
-                }
-            }
-
-            // Feed
-            Frame {
-                GridLayout {
-                    anchors.fill: parent
-                    columnSpacing: 5 * AdjustedValues.ratio
-                    columns: 2
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Display of posts")
-                    }
-                    RowLayout {
-                        id: displayOfPostsRowLayout
-                        RadioButton {
-                            property string value: "sequential"
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("Sequential")
-                        }
-                        RadioButton {
-                            property string value: "at_once"
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("At once")
-                        }
-                    }
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Handling notifications")
-                    }
-                    RowLayout {
-                        id: updateSeenNotificationRowLayout
-                        RadioButton {
-                            property bool value: true
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("Read")
-                        }
-                        RadioButton {
-                            property bool value: false
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("Do nothing")
-                        }
-                    }
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Endpoint of Realtime feed")
-                    }
-                    ComboBox {
-                        id: realtimeServiceEndpointComboBox
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        font.pointSize: AdjustedValues.f10
-                        model: systemTool.possibleRealtimeFeedServiceEndpoints()
-                    }
-
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.columnSpan: 2
-                    }
-                }
-            }
-
-            // Layout
-            Frame {
-                GridLayout {
-                    anchors.fill: parent
-                    columnSpacing: 5 * AdjustedValues.ratio
-                    columns: 2
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Row count")
-                    }
-                    ComboBox {
-                        id: rowCountComboBox
-                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        font.pointSize: AdjustedValues.f10
-                        model: [1, 2, 3]
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Row height ratio")
-                    }
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: rowHeightRatioSlider.height
-                        RowLayout {
+                            Label {
+                                Layout.topMargin: AdjustedValues.s10
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                text: qsTr("Scaling")
+                            }
                             Slider {
-                                id: rowHeightRatioSlider
-                                visible: rowCountComboBox.currentValue !== 3
-                                enabled: rowCountComboBox.currentValue === 2
-                                from: 0
-                                to: 100
-                                stepSize: 5
-                                snapMode: Slider.SnapAlways
-                                onMoved: {
-                                    if(value < 10){
-                                        value = 10
-                                    }else if(value > 90){
-                                        value = 90
-                                    }
+                                id: fontSizeRatioSlider
+                                Layout.topMargin: AdjustedValues.s10
+                                Layout.preferredWidth: 500 * AdjustedValues.ratio
+                                from: 0.6
+                                to: 2.0
+                                stepSize: 0.2
+                                snapMode: Slider.SnapOnRelease
+                                Label {
+                                    x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
+                                    y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                                    font.family: fontFamilyComboBox.currentText
+                                    text: qsTr("A")
+                                    font.pointSize: AdjustedValues.f10 * parent.from
+                                }
+                                Label {
+                                    x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
+                                    y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                                    font.family: fontFamilyComboBox.currentText
+                                    text: qsTr("A")
+                                    font.pointSize: AdjustedValues.f10
+                                }
+                                Label {
+                                    id: sliderLabel
+                                    x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
+                                    y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                                    font.family: fontFamilyComboBox.currentText
+                                    text: qsTr("A")
+                                    font.pointSize: AdjustedValues.f10 * parent.to
                                 }
                             }
+
                             Label {
-                                visible: rowHeightRatioSlider.visible
-                                font.pointSize: AdjustedValues.f8
-                                text: Math.round(rowHeightRatioSlider.value) + ":"
-                                      + Math.round(100 - rowHeightRatioSlider.value)
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                text: qsTr("Font family")
                             }
-                        }
-                        RowLayout {
-                            RangeSlider {
-                                id: rowHeightRatioRangeSlider
-                                visible: rowCountComboBox.currentValue === 3
-                                from: 0
-                                to: 100
-                                stepSize: 5
-                                snapMode: Slider.SnapAlways
-                                first.value: 35
-                                second.value: 70
-                                first.onMoved: {
-                                    if(first.value < 10){
-                                        first.value = 10
-                                    }else if(first.value > (second.value - 10)){
-                                        first.value = second.value - 10
+                            ComboBox {
+                                id: fontFamilyComboBox
+                                Layout.fillWidth: true
+                                font.pointSize: AdjustedValues.f10
+                                font.family: currentText
+                                model: Qt.fontFamilies()
+                                delegate: ItemDelegate {
+                                    width: fontFamilyComboBox.width
+                                    contentItem: Text {
+                                        text: modelData
+                                        color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
+                                        //font.family: modelData
+                                        elide: Text.ElideRight
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                }
-                                second.onMoved: {
-                                    if(second.value < (first.value + 10)){
-                                        second.value = first.value + 10
-                                    }else if(second.value > 90){
-                                        second.value = 90
-                                    }
+                                    highlighted: fontFamilyComboBox.highlightedIndex === index
                                 }
                             }
+
                             Label {
-                                visible: rowHeightRatioRangeSlider.visible
-                                font.pointSize: AdjustedValues.f8
-                                text: Math.round(rowHeightRatioRangeSlider.first.value) + ":" +
-                                      Math.round(rowHeightRatioRangeSlider.second.value - rowHeightRatioRangeSlider.first.value) + ":" +
-                                      Math.round(100 - rowHeightRatioRangeSlider.second.value)
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                text: qsTr("Language")
+                            }
+                            ComboBoxEx {
+                                id: languageComboBox
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                font.pointSize: AdjustedValues.f10
+                                font.family: fontFamilyComboBox.currentText
+                                model: ListModel {
+                                    ListElement { value: "en"; text: qsTr("English") }
+                                    ListElement { value: "ja"; text: qsTr("Japanese") }
+                                }
                             }
                         }
                     }
 
-                    Label {
-                        id: imageLayoutLabel
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Image layout")
-                    }
-                    ComboBoxEx {
-                        id: imageLayoutCombobox
+                    // Layout
+                    GroupBox {
+                        id: layoutGroupBox
+                        title: qsTr("Layout")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        model: ListModel {
-                            ListElement { value: 0; text: qsTr("Compact") }
-                            ListElement { value: 1; text: qsTr("Normal") }
-                            ListElement { value: 2; text: qsTr("When one is whole") }
-                            ListElement { value: 3; text: qsTr("All whole") }
-                        }
-                    }
-                    Item {
-                        Layout.preferredWidth: 1
-                        Layout.preferredHeight: 1
-                    }
-                    Label {
-                        Layout.topMargin: 0
-                        Layout.leftMargin: 2
-                        font.pointSize: AdjustedValues.f8
-                        text: qsTr("Default value when adding columns.")
-                    }
+                        GridLayout {
+                            anchors.fill: parent
+                            columnSpacing: 5 * AdjustedValues.ratio
+                            columns: 2
 
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.columnSpan: 2
-                    }
-                }
-            }
-
-            // Scroll
-            Frame {
-                RowLayout {
-                    anchors.fill: parent
-                    ColumnLayout {
-                        Layout.fillWidth: true
-
-                        RowLayout {
                             Label {
                                 font.pointSize: AdjustedValues.f10
-                                text: qsTr("Scroll velocity") + ":"
+                                text: qsTr("Row count")
+                            }
+                            ComboBox {
+                                id: rowCountComboBox
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                font.pointSize: AdjustedValues.f10
+                                model: [1, 2, 3]
                             }
                             Label {
                                 font.pointSize: AdjustedValues.f10
-                                text: maximumFlickVelocitySlider.value
+                                text: qsTr("Row height ratio")
                             }
-                        }
-                        Slider {
-                            id: maximumFlickVelocitySlider
-                            Layout.fillWidth: true
-                            from: 1000
-                            to: 5000
-                            stepSize: 100
-                            snapMode: Slider.SnapOnRelease
-                            Rectangle {
-                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
-                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
-                                width: 10
-                                height: 10
-                                radius: 5
-                                color: Material.foreground
-                            }
-                            Label {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 5
-                                anchors.top: parent.top
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("slow")
-                            }
-                            Label {
-                                anchors.right: parent.right
-                                anchors.rightMargin: 5
-                                anchors.top: parent.top
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("quick")
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.topMargin: AdjustedValues.s5
-                            Label {
-                                font.pointSize: AdjustedValues.f10
-                                text: qsTr("Scroll deceleration") + ":"
-                            }
-                            Label {
-                                font.pointSize: AdjustedValues.f10
-                                text: wheelDecelerationSlider.value
-                            }
-                        }
-                        Slider {
-                            id: wheelDecelerationSlider
-                            Layout.fillWidth: true
-                            from: 1000
-                            to: 15000
-                            stepSize: 1000
-                            snapMode: Slider.SnapOnRelease
-                            Rectangle {
-                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (10000 - parent.from) / (parent.to - parent.from) - width / 2
-                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
-                                width: 10
-                                height: 10
-                                radius: 5
-                                color: Material.foreground
-                            }
-                            Label {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 5
-                                anchors.top: parent.top
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("slippery")
-                            }
-                            Label {
-                                anchors.right: parent.right
-                                anchors.rightMargin: 5
-                                anchors.top: parent.top
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("sticky")
-                            }
-                        }
-                        Button {
-                            Layout.alignment: Qt.AlignRight
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("Test") + " -> "
-                            onClicked: {
-                                systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
-                                scrollExampleLoader.sourceComponent = undefined
-                                scrollExampleLoader.sourceComponent = scrollExampleComponent
-                            }
-                            Component {
-                                id: scrollExampleComponent
-                                ListView {
-                                    id: scrollExampleListView
-                                    anchors.fill: parent
-                                    clip: true
-                                    model: ListModel { }
-                                    delegate: Frame {
-                                        padding: 10
-                                        RowLayout {
-                                            spacing: 10
-                                            AvatarImage {
-                                                id: postAvatarImage
-                                                Layout.preferredWidth: AdjustedValues.i36
-                                                Layout.preferredHeight: AdjustedValues.i36
-                                                Layout.alignment: Qt.AlignTop
-                                                clip: false
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: rowHeightRatioSlider.height
+                                RowLayout {
+                                    Slider {
+                                        id: rowHeightRatioSlider
+                                        visible: rowCountComboBox.currentValue !== 3
+                                        enabled: rowCountComboBox.currentValue === 2
+                                        from: 0
+                                        to: 100
+                                        stepSize: 5
+                                        snapMode: Slider.SnapAlways
+                                        onMoved: {
+                                            if(value < 10){
+                                                value = 10
+                                            }else if(value > 90){
+                                                value = 90
                                             }
-                                            ColumnLayout {
-                                                property int basisWidth: scrollExampleListView.width -
-                                                                         postAvatarImage.width -
-                                                                         30
-                                                Author {
-                                                    id: postAuthor
-                                                    Layout.preferredWidth: parent.basisWidth
-                                                    layoutWidth: parent.basisWidth
-                                                    displayName: model.displayName
-                                                    handle: model.handle
-                                                }
-                                                Label {
-                                                    Layout.preferredWidth: parent.basisWidth
-                                                    font.pointSize: AdjustedValues.f10
-                                                    textFormat: Text.StyledText
-                                                    text: model.text
+                                        }
+                                    }
+                                    Label {
+                                        visible: rowHeightRatioSlider.visible
+                                        font.pointSize: AdjustedValues.f8
+                                        text: Math.round(rowHeightRatioSlider.value) + ":"
+                                              + Math.round(100 - rowHeightRatioSlider.value)
+                                    }
+                                }
+                                RowLayout {
+                                    RangeSlider {
+                                        id: rowHeightRatioRangeSlider
+                                        visible: rowCountComboBox.currentValue === 3
+                                        from: 0
+                                        to: 100
+                                        stepSize: 5
+                                        snapMode: Slider.SnapAlways
+                                        first.value: 35
+                                        second.value: 70
+                                        first.onMoved: {
+                                            if(first.value < 10){
+                                                first.value = 10
+                                            }else if(first.value > (second.value - 10)){
+                                                first.value = second.value - 10
+                                            }
+                                        }
+                                        second.onMoved: {
+                                            if(second.value < (first.value + 10)){
+                                                second.value = first.value + 10
+                                            }else if(second.value > 90){
+                                                second.value = 90
+                                            }
+                                        }
+                                    }
+                                    Label {
+                                        visible: rowHeightRatioRangeSlider.visible
+                                        font.pointSize: AdjustedValues.f8
+                                        text: Math.round(rowHeightRatioRangeSlider.first.value) + ":" +
+                                              Math.round(rowHeightRatioRangeSlider.second.value - rowHeightRatioRangeSlider.first.value) + ":" +
+                                              Math.round(100 - rowHeightRatioRangeSlider.second.value)
+                                    }
+                                }
+                            }
+
+                            Label {
+                                id: imageLayoutLabel
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Image layout")
+                            }
+                            ComboBoxEx {
+                                id: imageLayoutCombobox
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                model: ListModel {
+                                    ListElement { value: 0; text: qsTr("Compact") }
+                                    ListElement { value: 1; text: qsTr("Normal") }
+                                    ListElement { value: 2; text: qsTr("When one is whole") }
+                                    ListElement { value: 3; text: qsTr("All whole") }
+                                }
+                            }
+                            Item {
+                                Layout.preferredWidth: 1
+                                Layout.preferredHeight: 1
+                            }
+                            Label {
+                                Layout.topMargin: 0
+                                Layout.leftMargin: 2
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Default value when adding columns.")
+                            }
+
+                            Label {
+                                id: autoHideDetailModeLabel
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Auto hide profile")
+                            }
+                            CheckBox {
+                                id: autoHideDetailModeCheckBox
+                                font.pointSize: AdjustedValues.f10
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.columnSpan: 2
+                            }
+                        }
+                    }
+
+                    // Notification
+                    GroupBox {
+                        id: notificationGroupBox
+                        title: qsTr("Notification")
+                        Layout.fillWidth: true
+                        ColumnLayout {
+                            anchors.fill: parent
+                            CheckBox {
+                                id: enableChatNotificationCheckBox
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Enable chat notification")
+                            }
+                        }
+                    }
+
+                    // Feed
+                    GroupBox {
+                        id: feedGroupBox
+                        title: qsTr("Feed")
+                        Layout.fillWidth: true
+                        GridLayout {
+                            anchors.fill: parent
+                            columnSpacing: 5 * AdjustedValues.ratio
+                            columns: 2
+
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Display of posts")
+                            }
+                            RowLayout {
+                                id: displayOfPostsRowLayout
+                                RadioButton {
+                                    property string value: "sequential"
+                                    font.pointSize: AdjustedValues.f10
+                                    text: qsTr("Sequential")
+                                }
+                                RadioButton {
+                                    property string value: "at_once"
+                                    font.pointSize: AdjustedValues.f10
+                                    text: qsTr("At once")
+                                }
+                            }
+
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Handling notifications")
+                            }
+                            RowLayout {
+                                id: updateSeenNotificationRowLayout
+                                RadioButton {
+                                    property bool value: true
+                                    font.pointSize: AdjustedValues.f10
+                                    text: qsTr("Read")
+                                }
+                                RadioButton {
+                                    property bool value: false
+                                    font.pointSize: AdjustedValues.f10
+                                    text: qsTr("Do nothing")
+                                }
+                            }
+
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Endpoint of Realtime feed")
+                            }
+                            ComboBox {
+                                id: realtimeServiceEndpointComboBox
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                font.pointSize: AdjustedValues.f10
+                                model: systemTool.possibleRealtimeFeedServiceEndpoints()
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.columnSpan: 2
+                            }
+                        }
+                    }
+
+                    // Scroll
+                    GroupBox {
+                        id: scrollGroupBox
+                        title: qsTr("Scroll")
+                        Layout.fillWidth: true
+                        RowLayout {
+                            anchors.fill: parent
+                            ColumnLayout {
+                                id: scrollContentColumnLayout
+                                Layout.fillWidth: true
+
+                                RowLayout {
+                                    Label {
+                                        font.pointSize: AdjustedValues.f10
+                                        text: qsTr("Scroll velocity") + ":"
+                                    }
+                                    Label {
+                                        font.pointSize: AdjustedValues.f10
+                                        text: maximumFlickVelocitySlider.value
+                                    }
+                                }
+                                Slider {
+                                    id: maximumFlickVelocitySlider
+                                    Layout.fillWidth: true
+                                    from: 1000
+                                    to: 5000
+                                    stepSize: 100
+                                    snapMode: Slider.SnapOnRelease
+                                    Rectangle {
+                                        x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
+                                        y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                        width: 10
+                                        height: 10
+                                        radius: 5
+                                        color: Material.foreground
+                                    }
+                                    Label {
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 5
+                                        anchors.top: parent.top
+                                        font.pointSize: AdjustedValues.f8
+                                        text: qsTr("slow")
+                                    }
+                                    Label {
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 5
+                                        anchors.top: parent.top
+                                        font.pointSize: AdjustedValues.f8
+                                        text: qsTr("quick")
+                                    }
+                                }
+
+                                RowLayout {
+                                    Layout.topMargin: AdjustedValues.s5
+                                    Label {
+                                        font.pointSize: AdjustedValues.f10
+                                        text: qsTr("Scroll deceleration") + ":"
+                                    }
+                                    Label {
+                                        font.pointSize: AdjustedValues.f10
+                                        text: wheelDecelerationSlider.value
+                                    }
+                                }
+                                Slider {
+                                    id: wheelDecelerationSlider
+                                    Layout.fillWidth: true
+                                    from: 1000
+                                    to: 15000
+                                    stepSize: 1000
+                                    snapMode: Slider.SnapOnRelease
+                                    Rectangle {
+                                        x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (10000 - parent.from) / (parent.to - parent.from) - width / 2
+                                        y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                        width: 10
+                                        height: 10
+                                        radius: 5
+                                        color: Material.foreground
+                                    }
+                                    Label {
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 5
+                                        anchors.top: parent.top
+                                        font.pointSize: AdjustedValues.f8
+                                        text: qsTr("slippery")
+                                    }
+                                    Label {
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 5
+                                        anchors.top: parent.top
+                                        font.pointSize: AdjustedValues.f8
+                                        text: qsTr("sticky")
+                                    }
+                                }
+                                Button {
+                                    Layout.alignment: Qt.AlignRight
+                                    font.pointSize: AdjustedValues.f10
+                                    text: qsTr("Test") + " -> "
+                                    onClicked: {
+                                        systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
+                                        scrollExampleLoader.sourceComponent = undefined
+                                        scrollExampleLoader.sourceComponent = scrollExampleComponent
+                                    }
+                                    Component {
+                                        id: scrollExampleComponent
+                                        ListView {
+                                            id: scrollExampleListView
+                                            anchors.fill: parent
+                                            clip: true
+                                            model: ListModel { }
+                                            delegate: Frame {
+                                                padding: 10
+                                                RowLayout {
+                                                    spacing: 10
+                                                    AvatarImage {
+                                                        id: postAvatarImage
+                                                        Layout.preferredWidth: AdjustedValues.i36
+                                                        Layout.preferredHeight: AdjustedValues.i36
+                                                        Layout.alignment: Qt.AlignTop
+                                                        clip: false
+                                                    }
+                                                    ColumnLayout {
+                                                        property int basisWidth: scrollExampleListView.width -
+                                                                                 postAvatarImage.width -
+                                                                                 30
+                                                        Author {
+                                                            id: postAuthor
+                                                            Layout.preferredWidth: parent.basisWidth
+                                                            layoutWidth: parent.basisWidth
+                                                            displayName: model.displayName
+                                                            handle: model.handle
+                                                        }
+                                                        Label {
+                                                            Layout.preferredWidth: parent.basisWidth
+                                                            font.pointSize: AdjustedValues.f10
+                                                            textFormat: Text.StyledText
+                                                            text: model.text
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                Label {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: contentHeight * 4
+                                    Layout.leftMargin: AdjustedValues.s5
+                                    font.pointSize: AdjustedValues.f8
+                                    wrapMode: Text.Wrap
+                                    text: qsTr("*) The settings will not be applied until Hagoromo is restarted.")
+                                }
                             }
-                        }
-                        Label {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            Layout.leftMargin: AdjustedValues.s5
-                            font.pointSize: AdjustedValues.f8
-                            wrapMode: Text.Wrap
-                            text: qsTr("*) The settings will not be applied until Hagoromo is restarted.")
-                        }
-                    }
-                    ColumnLayout {
-                        Layout.preferredWidth: 300 * AdjustedValues.ratio
-                        Layout.fillHeight: true
-                        Label {
-                            font.pointSize: AdjustedValues.f10
-                            text: "Example:"
-                        }
-                        Loader {
-                            id: scrollExampleLoader
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            onLoaded: {
-                                console.log("Loaded")
-                                item.maximumFlickVelocity = maximumFlickVelocitySlider.value
-                                for(var i=0; i<50; i++){
-                                    item.model.append({"displayName": "Name " + i,
-                                                          "handle": "Handle " + i,
-                                                          "text": "Post " + i + "<br>Post " + i
-                                                      })
+                            ColumnLayout {
+                                Layout.preferredWidth: 300 * AdjustedValues.ratio
+                                Layout.fillHeight: true
+                                Label {
+                                    font.pointSize: AdjustedValues.f10
+                                    text: "Example:"
+                                }
+                                Loader {
+                                    id: scrollExampleLoader
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    onLoaded: {
+                                        console.log("Loaded")
+                                        item.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                                        for(var i=0; i<50; i++){
+                                            item.model.append({"displayName": "Name " + i,
+                                                                  "handle": "Handle " + i,
+                                                                  "text": "Post " + i + "<br>Post " + i
+                                                              })
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            }
 
-            // Translate Page
-            Frame {
-                GridLayout {
-                    anchors.fill: parent
-                    columnSpacing: 5 * AdjustedValues.ratio
-                    columns: 2
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Api Url")
-                    }
-                    TextField {
-                        id: translateApiUrlText
+                    // Translate Page
+                    GroupBox {
+                        id: translateGroupBox
+                        title: qsTr("Translate")
                         Layout.fillWidth: true
-                        font.pointSize: AdjustedValues.f10
-                        text: ""
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Api Key")
-                    }
-                    TextField {
-                        id: translateApiKeyText
-                        Layout.fillWidth: true
-                        echoMode: TextInput.Password
-                        font.pointSize: AdjustedValues.f10
-                        text: ""
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: qsTr("Target language")
-                    }
-                    ComboBoxEx {
-                        id: translateTargetLanguageCombo
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        model: ListModel {
-                            ListElement { value: "BG"; text: qsTr("Bulgarian") }
-                            ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
-                            ListElement { value: "CS"; text: qsTr("Czech") }
-                            ListElement { value: "DA"; text: qsTr("Danish") }
-                            ListElement { value: "NL"; text: qsTr("Dutch") }
-                            ListElement { value: "EN-US"; text: qsTr("English (American)") }
-                            ListElement { value: "EN-GB"; text: qsTr("English (British)") }
-                            ListElement { value: "ET"; text: qsTr("Estonian") }
-                            ListElement { value: "FI"; text: qsTr("Finnish") }
-                            ListElement { value: "FR"; text: qsTr("French") }
-                            ListElement { value: "DE"; text: qsTr("German") }
-                            ListElement { value: "EL"; text: qsTr("Greek") }
-                            ListElement { value: "HU"; text: qsTr("Hungarian") }
-                            ListElement { value: "ID"; text: qsTr("Indonesian") }
-                            ListElement { value: "IT"; text: qsTr("Italian") }
-                            ListElement { value: "JA"; text: qsTr("Japanese") }
-                            ListElement { value: "KO"; text: qsTr("Korean") }
-                            ListElement { value: "LV"; text: qsTr("Latvian") }
-                            ListElement { value: "LT"; text: qsTr("Lithuanian") }
-                            ListElement { value: "NB"; text: qsTr("Norwegian (Bokmål)") }
-                            ListElement { value: "PL"; text: qsTr("Polish") }
-                            ListElement { value: "PT-BR"; text: qsTr("Portuguese (Brazilian)") }
-                            ListElement { value: "PT-PT"; text: qsTr("Portuguese (excluding Brazilian)") }
-                            ListElement { value: "RO"; text: qsTr("Romanian") }
-                            ListElement { value: "RU"; text: qsTr("Russian") }
-                            ListElement { value: "SK"; text: qsTr("Slovak") }
-                            ListElement { value: "SL"; text: qsTr("Slovenian") }
-                            ListElement { value: "ES"; text: qsTr("Spanish") }
-                            ListElement { value: "SV"; text: qsTr("Swedish") }
-                            ListElement { value: "TR"; text: qsTr("Turkish") }
-                            ListElement { value: "UK"; text: qsTr("Ukrainian") }
+                        GridLayout {
+                            anchors.fill: parent
+                            columnSpacing: 5 * AdjustedValues.ratio
+                            columns: 2
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Api Url")
+                            }
+                            TextField {
+                                id: translateApiUrlText
+                                Layout.fillWidth: true
+                                font.pointSize: AdjustedValues.f10
+                                text: ""
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Api Key")
+                            }
+                            TextField {
+                                id: translateApiKeyText
+                                Layout.fillWidth: true
+                                echoMode: TextInput.Password
+                                font.pointSize: AdjustedValues.f10
+                                text: ""
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Target language")
+                            }
+                            ComboBoxEx {
+                                id: translateTargetLanguageCombo
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                model: ListModel {
+                                    ListElement { value: "BG"; text: qsTr("Bulgarian") }
+                                    ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
+                                    ListElement { value: "CS"; text: qsTr("Czech") }
+                                    ListElement { value: "DA"; text: qsTr("Danish") }
+                                    ListElement { value: "NL"; text: qsTr("Dutch") }
+                                    ListElement { value: "EN-US"; text: qsTr("English (American)") }
+                                    ListElement { value: "EN-GB"; text: qsTr("English (British)") }
+                                    ListElement { value: "ET"; text: qsTr("Estonian") }
+                                    ListElement { value: "FI"; text: qsTr("Finnish") }
+                                    ListElement { value: "FR"; text: qsTr("French") }
+                                    ListElement { value: "DE"; text: qsTr("German") }
+                                    ListElement { value: "EL"; text: qsTr("Greek") }
+                                    ListElement { value: "HU"; text: qsTr("Hungarian") }
+                                    ListElement { value: "ID"; text: qsTr("Indonesian") }
+                                    ListElement { value: "IT"; text: qsTr("Italian") }
+                                    ListElement { value: "JA"; text: qsTr("Japanese") }
+                                    ListElement { value: "KO"; text: qsTr("Korean") }
+                                    ListElement { value: "LV"; text: qsTr("Latvian") }
+                                    ListElement { value: "LT"; text: qsTr("Lithuanian") }
+                                    ListElement { value: "NB"; text: qsTr("Norwegian (Bokmål)") }
+                                    ListElement { value: "PL"; text: qsTr("Polish") }
+                                    ListElement { value: "PT-BR"; text: qsTr("Portuguese (Brazilian)") }
+                                    ListElement { value: "PT-PT"; text: qsTr("Portuguese (excluding Brazilian)") }
+                                    ListElement { value: "RO"; text: qsTr("Romanian") }
+                                    ListElement { value: "RU"; text: qsTr("Russian") }
+                                    ListElement { value: "SK"; text: qsTr("Slovak") }
+                                    ListElement { value: "SL"; text: qsTr("Slovenian") }
+                                    ListElement { value: "ES"; text: qsTr("Spanish") }
+                                    ListElement { value: "SV"; text: qsTr("Swedish") }
+                                    ListElement { value: "TR"; text: qsTr("Turkish") }
+                                    ListElement { value: "UK"; text: qsTr("Ukrainian") }
+                                }
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.columnSpan: 2
+                            }
                         }
                     }
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.columnSpan: 2
-                    }
-                }
-            }
 
-            // About page
-            Frame {
-                GridLayout {
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.margins: 10 * AdjustedValues.ratio
-                    columns: 2
-                    columnSpacing: 10 * AdjustedValues.ratio
-                    rowSpacing: 5 * AdjustedValues.ratio
-                    Image {
-                        Layout.preferredWidth: AdjustedValues.i50
-                        Layout.preferredHeight: AdjustedValues.i50
-                        Layout.alignment: Qt.AlignTop
-                        Layout.rowSpan: 4
-                        source: "../images/logo.png"
+                    // Other
+                    GroupBox {
+                        id: otherGroupBox
+                        title: qsTr("Other")
+                        Layout.fillWidth: true
+                        ColumnLayout {
+                            CheckBox {
+                                id: displayRealtimeFeedStatusCheckBox
+                                font.pointSize: AdjustedValues.f10
+                                bottomPadding: 1
+                                text: qsTr("Display the status of Realtime feed")
+                            }
+                            CheckBox {
+                                id: displayVersionInfoInMainAreaCheckBox
+                                font.pointSize: AdjustedValues.f10
+                                bottomPadding: 1
+                                text: qsTr("Display version info in main area")
+                            }
+                        }
                     }
-                    Label {
-                        font.pointSize: AdjustedValues.f14
-                        text: "羽衣 -Hagoromo-"
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: "Version:" + systemTool.applicationVersion
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: "build on Qt " + systemTool.qtVersion
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        text: "© 2023 Iori Ayane"
-                    }
-                }
-                ColumnLayout {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    CheckBox {
-                        id: displayRealtimeFeedStatusCheckBox
-                        font.pointSize: AdjustedValues.f8
-                        bottomPadding: 1
-                        text: qsTr("Display the status of Realtime feed")
-                    }
-                    CheckBox {
-                        id: displayVersionInfoInMainAreaCheckBox
-                        font.pointSize: AdjustedValues.f8
-                        bottomPadding: 1
-                        text: qsTr("Display version info in main area")
+
+                    // About page
+                    GroupBox {
+                        id: aboutGroupBox
+                        title: qsTr("About")
+                        Layout.fillWidth: true
+                        GridLayout {
+                            // anchors.left: parent.left
+                            // anchors.top: parent.top
+                            // anchors.margins: 10 * AdjustedValues.ratio
+                            columns: 2
+                            columnSpacing: 10 * AdjustedValues.ratio
+                            rowSpacing: 5 * AdjustedValues.ratio
+                            Image {
+                                Layout.preferredWidth: AdjustedValues.i50
+                                Layout.preferredHeight: AdjustedValues.i50
+                                Layout.alignment: Qt.AlignTop
+                                Layout.rowSpan: 4
+                                source: "../images/logo.png"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f14
+                                text: "羽衣 -Hagoromo-"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: "Version:" + systemTool.applicationVersion
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: "build on Qt " + systemTool.qtVersion
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: "© 2023 Iori Ayane"
+                            }
+                        }
                     }
                 }
             }
         }
 
         RowLayout {
+            id: buttonGroupLayout
             Button {
                 flat: true
                 font.pointSize: AdjustedValues.f10
@@ -840,12 +954,14 @@ Dialog {
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
                     systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
+                    settings.enableChatNotification = enableChatNotificationCheckBox.checked
                     // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value
                     settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
                     settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
                     settings.imageLayoutType = imageLayoutCombobox.currentValue
+                    settings.autoHideDetailMode = autoHideDetailModeCheckBox.checked
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
