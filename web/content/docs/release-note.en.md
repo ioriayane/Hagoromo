@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.48.0 - 2025/3/26
+
 - Add
   - Add a chat notification to the bottom right of the window
   - Add a display to the account dialog to indicate whether or not chat can be used
