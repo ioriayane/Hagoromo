@@ -619,7 +619,7 @@ struct Caption
 };
 struct Main
 {
-    Blob video;
+    Blob video; // The mp4 video file. May be up to 100mb, formerly limited to 50mb.
     QList<Caption> captions;
     QString alt; // Alt text description of the video, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
@@ -906,6 +906,12 @@ struct Interaction
 };
 }
 
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+typedef QString ReasonType;
+typedef QString SubjectType; // Tag describing a type of subject that might be reported.
+}
+
 // app.bsky.labeler.defs
 namespace AppBskyLabelerDefs {
 struct LabelerViewerState
@@ -937,6 +943,11 @@ struct LabelerViewDetailed
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
+    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
+    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
+                                       // reported to this service. If not defined (distinct from
+                                       // empty array), default is any record type.
 };
 }
 
@@ -1233,6 +1244,11 @@ struct Main
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
     // union end : labels
     QString createdAt; // datetime
+    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
+    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
+    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
+                                       // reported to this service. If not defined (distinct from
+                                       // empty array), default is any record type.
 };
 }
 
@@ -1327,6 +1343,16 @@ struct ProfileViewBasic
 
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+enum class LogRemoveReactionMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
+enum class LogAddReactionMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
 enum class LogReadMessageMessageType : int {
     none,
     message_MessageView,
@@ -1346,6 +1372,10 @@ enum class ConvoViewLastMessageType : int {
     none,
     lastMessage_MessageView,
     lastMessage_DeletedMessageView,
+};
+enum class ConvoViewLastReactionType : int {
+    none,
+    lastReaction_MessageAndReactionView,
 };
 enum class MessageViewEmbedType : int {
     none,
@@ -1370,6 +1400,16 @@ struct MessageInput
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     // union end : embed
 };
+struct ReactionViewSender
+{
+    QString did; // did
+};
+struct ReactionView
+{
+    QString value;
+    ReactionViewSender sender;
+    QString createdAt; // datetime
+};
 struct MessageViewSender
 {
     QString did; // did
@@ -1384,6 +1424,8 @@ struct MessageView
     MessageViewEmbedType embed_type = MessageViewEmbedType::none;
     AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     // union end : embed
+    QList<ReactionView>
+            reactions; // Reactions to this message, in ascending order of creation time.
     MessageViewSender sender;
     QString sentAt; // datetime
 };
@@ -1393,6 +1435,11 @@ struct DeletedMessageView
     QString rev;
     MessageViewSender sender;
     QString sentAt; // datetime
+};
+struct MessageAndReactionView
+{
+    MessageView message;
+    ReactionView reaction;
 };
 struct ConvoView
 {
@@ -1404,6 +1451,10 @@ struct ConvoView
     MessageView lastMessage_MessageView;
     DeletedMessageView lastMessage_DeletedMessageView;
     // union end : lastMessage
+    // union start : lastReaction
+    ConvoViewLastReactionType lastReaction_type = ConvoViewLastReactionType::none;
+    MessageAndReactionView lastReaction_MessageAndReactionView;
+    // union end : lastReaction
     bool muted = false;
     QString status;
     int unreadCount = 0;
@@ -1462,6 +1513,28 @@ struct LogReadMessage
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
     // union end : message
+};
+struct LogAddReaction
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogAddReactionMessageType message_type = LogAddReactionMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+    ReactionView reaction;
+};
+struct LogRemoveReaction
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogRemoveReactionMessageType message_type = LogRemoveReactionMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+    ReactionView reaction;
 };
 }
 
@@ -1542,6 +1615,17 @@ struct RepoBlobRef
 };
 }
 
+// com.atproto.identity.defs
+namespace ComAtprotoIdentityDefs {
+struct IdentityInfo
+{
+    QString did; // did
+    QString handle; // handle , The validated handle of the account; or 'handle.invalid' if the
+                    // handle did not bi-directionally match the DID document.
+    QVariant didDoc; // The complete DID document for the identity.
+};
+}
+
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 struct Labels
@@ -1563,11 +1647,6 @@ struct Main
     int lexicon = 0; // Indicates the 'version' of the Lexicon language. Must be '1' for the current
                      // atproto/Lexicon schema system.
 };
-}
-
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-typedef QString ReasonType;
 }
 
 // com.atproto.repo.applyWrites
@@ -1745,26 +1824,6 @@ struct Account
                          // the host that emitted this event.
     QString status; // If active=false, this optional field indicates a reason for why the account
                     // is not active.
-};
-struct Handle
-{
-    int seq = 0;
-    QString did; // did
-    QString handle; // handle
-    QString time; // datetime
-};
-struct Migrate
-{
-    int seq = 0;
-    QString did; // did
-    QString migrateTo;
-    QString time; // datetime
-};
-struct Tombstone
-{
-    int seq = 0;
-    QString did; // did
-    QString time; // datetime
 };
 struct Info
 {
@@ -2213,6 +2272,16 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
+};
+struct SubjectView
+{
+    ComAtprotoModerationDefs::SubjectType type;
+    QString subject;
+    SubjectStatusView status;
+    RepoViewDetail repo;
+    // union start : profile
+    // union end : profile
+    RecordViewDetail record;
 };
 struct ReporterStats
 {

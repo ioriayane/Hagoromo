@@ -37,6 +37,18 @@ ChatBskyConvoGetLog::logsLogLeaveConvoList() const
     return m_logsLogLeaveConvoList;
 }
 
+const QList<AtProtocolType::ChatBskyConvoDefs::LogMuteConvo> &
+ChatBskyConvoGetLog::logsLogMuteConvoList() const
+{
+    return m_logsLogMuteConvoList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogUnmuteConvo> &
+ChatBskyConvoGetLog::logsLogUnmuteConvoList() const
+{
+    return m_logsLogUnmuteConvoList;
+}
+
 const QList<AtProtocolType::ChatBskyConvoDefs::LogCreateMessage> &
 ChatBskyConvoGetLog::logsLogCreateMessageList() const
 {
@@ -47,6 +59,24 @@ const QList<AtProtocolType::ChatBskyConvoDefs::LogDeleteMessage> &
 ChatBskyConvoGetLog::logsLogDeleteMessageList() const
 {
     return m_logsLogDeleteMessageList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogReadMessage> &
+ChatBskyConvoGetLog::logsLogReadMessageList() const
+{
+    return m_logsLogReadMessageList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogAddReaction> &
+ChatBskyConvoGetLog::logsLogAddReactionList() const
+{
+    return m_logsLogAddReactionList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogRemoveReaction> &
+ChatBskyConvoGetLog::logsLogRemoveReactionList() const
+{
+    return m_logsLogRemoveReactionList;
 }
 
 bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
@@ -71,6 +101,14 @@ bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
                 AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogLeaveConvo(value.toObject(), data);
                 m_logsLogLeaveConvoList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logMuteConvo")) {
+                AtProtocolType::ChatBskyConvoDefs::LogMuteConvo data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogMuteConvo(value.toObject(), data);
+                m_logsLogMuteConvoList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logUnmuteConvo")) {
+                AtProtocolType::ChatBskyConvoDefs::LogUnmuteConvo data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogUnmuteConvo(value.toObject(), data);
+                m_logsLogUnmuteConvoList.append(data);
             } else if (type == QStringLiteral("chat.bsky.convo.defs#logCreateMessage")) {
                 AtProtocolType::ChatBskyConvoDefs::LogCreateMessage data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogCreateMessage(value.toObject(), data);
@@ -79,6 +117,18 @@ bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
                 AtProtocolType::ChatBskyConvoDefs::LogDeleteMessage data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogDeleteMessage(value.toObject(), data);
                 m_logsLogDeleteMessageList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logReadMessage")) {
+                AtProtocolType::ChatBskyConvoDefs::LogReadMessage data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogReadMessage(value.toObject(), data);
+                m_logsLogReadMessageList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logAddReaction")) {
+                AtProtocolType::ChatBskyConvoDefs::LogAddReaction data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogAddReaction(value.toObject(), data);
+                m_logsLogAddReactionList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logRemoveReaction")) {
+                AtProtocolType::ChatBskyConvoDefs::LogRemoveReaction data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogRemoveReaction(value.toObject(), data);
+                m_logsLogRemoveReactionList.append(data);
             }
         }
     }
