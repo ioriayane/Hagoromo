@@ -28,6 +28,7 @@ jobs:
           arch: x86_64
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
+        continue-on-error: true # なぜかtools_qtcreator_guiがchecksumエラーで失敗するので無視する
         with:
           aqtversion: '==3.1.*'
           version: '6.8.1'
