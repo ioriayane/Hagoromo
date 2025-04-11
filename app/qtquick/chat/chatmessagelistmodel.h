@@ -38,6 +38,7 @@ public:
         TextRole,
         TextPlainRole,
         SentAtRole,
+        ReactionEmojisRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -108,6 +109,7 @@ protected:
     void
     copyFrom(const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messages,
              const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &deletedMessages,
+             const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &removedReactions,
              bool to_top);
 
 private:

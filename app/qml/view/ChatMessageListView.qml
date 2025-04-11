@@ -281,6 +281,12 @@ Item {
                                 }
                                 Label {
                                     Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
+                                    Layout.topMargin: 0
+                                    font.pointSize: AdjustedValues.f8
+                                    text: model.reactionEmojis
+                                }
+                                Label {
+                                    Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
                                     font.pointSize: AdjustedValues.f8
                                     color: Material.color(Material.Grey)
                                     text: model.sentAt

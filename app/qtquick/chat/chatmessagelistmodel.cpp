@@ -79,6 +79,13 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return current.text;
     else if (role == SentAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
+    else if (role == ReactionEmojisRole) {
+        QString emojis;
+        for (const auto &reaction : current.reactions) {
+            emojis.append(reaction.value);
+        }
+        return emojis;
+    }
 
     else if (role == HasQuoteRecordRole)
         return (current.embed_type == MessageViewEmbedType::embed_AppBskyEmbedRecord_View
@@ -170,7 +177,8 @@ bool ChatMessageListModel::getLatest()
                                 m_cursor = messages->cursor();
                             }
                             copyFrom(messages->messagesMessageViewList(),
-                                     messages->messagesDeletedMessageViewList(), true);
+                                     messages->messagesDeletedMessageViewList(),
+                                     QList<AtProtocolType::ChatBskyConvoDefs::MessageView>(), true);
 
                             updateRead(convoId(), QString());
                             setReady(true);
@@ -213,7 +221,8 @@ bool ChatMessageListModel::getNext()
                 m_cursor = messages->cursor();
 
                 copyFrom(messages->messagesMessageViewList(),
-                         messages->messagesDeletedMessageViewList(), false);
+                         messages->messagesDeletedMessageViewList(),
+                         QList<AtProtocolType::ChatBskyConvoDefs::MessageView>(), false);
             } else {
                 emit errorOccured(messages->errorCode(), messages->errorMessage());
             }
@@ -312,6 +321,7 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[TextRole] = "text";
     roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
+    roles[ReactionEmojisRole] = "reactionEmojis";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
@@ -333,8 +343,9 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     return roles;
 }
 
-void ChatMessageListModel::copyFrom(const QList<MessageView> &messages,
-                                    const QList<DeletedMessageView> &deletedMessages, bool to_top)
+void ChatMessageListModel::copyFrom(
+        const QList<MessageView> &messages, const QList<DeletedMessageView> &deletedMessages,
+        const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &removedReactions, bool to_top)
 {
     QStringList add_ids;
     for (auto item = messages.cbegin(); item != messages.cend(); item++) {
@@ -372,6 +383,21 @@ void ChatMessageListModel::copyFrom(const QList<MessageView> &messages,
             beginRemoveRows(QModelIndex(), row, row);
             m_idList.removeAt(row);
             endRemoveRows();
+        }
+    }
+
+    for (auto item = removedReactions.crbegin(); item != removedReactions.crend(); item++) {
+        int row = m_idList.indexOf(item->id);
+        if (row >= 0) {
+            // auto &msg = m_messageHash[item->id];
+            // for (int i = 0; i < msg.reactions.length(); i++) {
+            //     if (msg.reactions.at(i).sender.did == (*item).sender.did
+            //         && msg.reactions.at(i).value == (*item).rev) {
+            //         //
+            //     }
+            // }
+            m_messageHash[item->id] = *item;
+            emit dataChanged(index(row), index(row));
         }
     }
 }
@@ -518,7 +544,8 @@ void ChatMessageListModel::setReady(bool newReady)
 void ChatMessageListModel::receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log)
 {
     qDebug().quote() << "receiveLogs" << this << account().did
-                     << log.logsLogCreateMessageList().length();
+                     << log.logsLogCreateMessageList().length()
+                     << log.logsLogAddReactionList().length();
 
     // 別カラムで同一アカウントのチャットを閉じると再スタートさせるので、そのときにチャットを開いたときの古いものをしようしないようにする
     if (!log.cursor().isEmpty())
@@ -532,6 +559,12 @@ void ChatMessageListModel::receiveLogs(const AtProtocolInterface::ChatBskyConvoG
             messages.insert(0, msg.message_MessageView);
         }
     }
+    for (const auto &reaction : log.logsLogAddReactionList()) {
+        if (reaction.message_type == LogAddReactionMessageType::message_MessageView
+            && reaction.convoId == convoId()) {
+            messages.insert(0, reaction.message_MessageView);
+        }
+    }
     QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> deleted_messages;
     for (const auto &msg : log.logsLogDeleteMessageList()) {
         if (msg.message_type == LogDeleteMessageMessageType::message_DeletedMessageView
@@ -539,8 +572,15 @@ void ChatMessageListModel::receiveLogs(const AtProtocolInterface::ChatBskyConvoG
             deleted_messages.insert(0, msg.message_DeletedMessageView);
         }
     }
+    QList<AtProtocolType::ChatBskyConvoDefs::MessageView> removedReactions;
+    for (const auto &reaction : log.logsLogRemoveReactionList()) {
+        if (reaction.message_type == LogRemoveReactionMessageType::message_MessageView
+            && reaction.convoId == convoId()) {
+            removedReactions.insert(0, reaction.message_MessageView);
+        }
+    }
 
-    copyFrom(messages, deleted_messages, true);
+    copyFrom(messages, deleted_messages, removedReactions, true);
 }
 
 void ChatMessageListModel::errorLogs(const QString &code, const QString &message)
