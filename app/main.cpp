@@ -26,6 +26,9 @@
 #include "qtquick/timeline/customfeedlistmodel.h"
 #include "qtquick/feedgenerator/feedgeneratorlistmodel.h"
 #include "qtquick/feedgenerator/actorfeedgeneratorlistmodel.h"
+#include "qtquick/controls/calendartablemodel.h"
+#include "qtquick/controls/embedimagelistmodel.h"
+#include "qtquick/controls/emojilistmodel.h"
 #include "qtquick/controls/languagelistmodel.h"
 #include "qtquick/moderation/contentfiltersettinglistmodel.h"
 #include "qtquick/moderation/mutedwordlistmodel.h"
@@ -44,7 +47,6 @@
 #include "qtquick/link/feedgeneratorlink.h"
 #include "qtquick/link/listlink.h"
 #include "qtquick/link/postlink.h"
-#include "qtquick/controls/embedimagelistmodel.h"
 #include "qtquick/log/logoperator.h"
 #include "qtquick/log/logstatisticslistmodel.h"
 #include "qtquick/log/logdailylistmodel.h"
@@ -55,7 +57,6 @@
 #include "qtquick/chat/chatnotificationlistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
-#include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/realtime/realtimefeedlistmodel.h"
 #include "qtquick/realtime/editselectorlistmodel.h"
 #include "qtquick/realtime/realtimefeedstatuslistmodel.h"
@@ -124,8 +125,6 @@ int main(int argc, char *argv[])
                                                  1, 0, "ActorFeedGeneratorListModel");
     qmlRegisterType<QuotedPostListModel>("tech.relog.hagoromo.quotedpostlistmodel", 1, 0,
                                          "QuotedPostListModel");
-    qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
-                                       "LanguageListModel");
     qmlRegisterType<ContentFilterSettingListModel>(
             "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
             "ContentFilterSettingListModel");
@@ -152,8 +151,6 @@ int main(int argc, char *argv[])
                                        "FeedGeneratorLink");
     qmlRegisterType<ListLink>("tech.relog.hagoromo.listlink", 1, 0, "ListLink");
     qmlRegisterType<PostLink>("tech.relog.hagoromo.postlink", 1, 0, "PostLink");
-    qmlRegisterType<EmbedImageListModel>("tech.relog.hagoromo.embedimagelistmodel", 1, 0,
-                                         "EmbedImageListModel");
 
     qRegisterMetaType<QList<TotalItem>>("QList<TotalItem>");
     qmlRegisterType<LogOperator>("tech.relog.hagoromo.logoperator", 1, 0, "LogOperator");
@@ -188,6 +185,12 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
                                         "CalendarTableModel");
+    qmlRegisterType<EmbedImageListModel>("tech.relog.hagoromo.controls.embedimagelistmodel", 1, 0,
+                                         "EmbedImageListModel");
+    qmlRegisterType<EmojiListModel>("tech.relog.hagoromo.controls.emojilistmodel", 1, 0,
+                                    "EmojiListModel");
+    qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.controls.languagelistmodel", 1, 0,
+                                       "LanguageListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

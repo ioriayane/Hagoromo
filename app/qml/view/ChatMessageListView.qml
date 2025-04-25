@@ -178,8 +178,13 @@ Item {
                                 anchors.left: undefined
                             }
                             AnchorChanges {
-                                target: moreButton
+                                target: emojiButton
                                 anchors.right: messageBubble.left
+                                anchors.left: undefined
+                            }
+                            AnchorChanges {
+                                target: moreButton
+                                anchors.right: emojiButton.left
                                 anchors.left: undefined
                             }
                         }
@@ -263,7 +268,7 @@ Item {
                                         onRequestAddMutedWord: (text) => chatMessageListView.requestAddMutedWord(text)
                                     }
                                     MoreButton {
-                                        id: moreButton
+                                        id: emojiButton
                                         anchors.left: parent.right
                                         anchors.leftMargin: 2
                                         anchors.rightMargin: 2
@@ -271,7 +276,20 @@ Item {
                                         width: AdjustedValues.b24
                                         height: AdjustedValues.b24
                                         hoverEnabled: true
-                                        opacity: (hovered || model.running) ? 1.0 : 0.0
+                                        opacity: (hovered || model.running || moreButton.hovered) ? 1.0 : 0.0
+                                        iconSource: "../images/smile.png"
+                                        onClicked: emojiPicker.open()
+                                    }
+                                    MoreButton {
+                                        id: moreButton
+                                        anchors.left: emojiButton.right
+                                        anchors.leftMargin: 2
+                                        anchors.rightMargin: 2
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: AdjustedValues.b24
+                                        height: AdjustedValues.b24
+                                        hoverEnabled: true
+                                        opacity: (hovered || model.running || emojiButton.hovered) ? 1.0 : 0.0
                                         onClicked: morePopup.open()
                                         BusyIndicator {
                                             anchors.fill: parent
@@ -417,5 +435,8 @@ Item {
         id: errorMessageOnChatMessageList
         anchors.fill: parent
         visible: false
+    }
+    EmojiPicker {
+        id: emojiPicker
     }
 }
