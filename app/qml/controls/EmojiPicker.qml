@@ -6,7 +6,7 @@ import tech.relog.hagoromo.controls.emojilistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 Dialog {
-    id: root
+    id: emojiPicker
     width: 450
     height: 500
 
@@ -101,9 +101,9 @@ Dialog {
                             bottomInset: 0
                             flat: true
                             onClicked: {
-                                root.emojiSelected(modelData)
+                                emojiPicker.emojiSelected(modelData)
+                                emojiPicker.accept()
                                 emojiListModel.setFrequentlyUsed(modelData)
-                                root.accept()
                             }
                             Label {
                                 anchors.centerIn: parent

@@ -146,7 +146,9 @@ SOURCES += \
     $$PWD/tools/pinnedpostcache.cpp \
     $$PWD/realtime/listpostsselector.cpp \
     $$PWD/tools/labelprovider.cpp \
-    $$PWD/tools/tid.cpp
+    $$PWD/tools/tid.cpp \
+    atprotocol/chat/bsky/convo/chatbskyconvoaddreaction.cpp \
+    atprotocol/chat/bsky/convo/chatbskyconvoremovereaction.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -274,7 +276,9 @@ HEADERS += \
     $$PWD/common.h \
     $$PWD/realtime/listpostsselector.h \
     $$PWD/tools/labelprovider.h \
-    $$PWD/tools/tid.h
+    $$PWD/tools/tid.h \
+    atprotocol/chat/bsky/convo/chatbskyconvoaddreaction.h \
+    atprotocol/chat/bsky/convo/chatbskyconvoremovereaction.h
 
 RESOURCES += \
     $$PWD/lib.qrc

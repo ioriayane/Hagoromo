@@ -7,14 +7,18 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvoaddreaction.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvoremovereaction.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
+using AtProtocolInterface::ChatBskyConvoAddReaction;
 using AtProtocolInterface::ChatBskyConvoDeleteMessageForSelf;
 using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetConvoForMembers;
 using AtProtocolInterface::ChatBskyConvoGetLog;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
 using AtProtocolInterface::ChatBskyConvoListConvos;
+using AtProtocolInterface::ChatBskyConvoRemoveReaction;
 using AtProtocolInterface::ChatBskyConvoSendMessage;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
@@ -85,6 +89,14 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
             emojis.append(reaction.value);
         }
         return emojis;
+    } else if (role == CanReactionRole) {
+        int reaction_count = 0;
+        for (const auto &reaction : current.reactions) {
+            if (reaction.sender.did == account().did) {
+                reaction_count++;
+            }
+        }
+        return (reaction_count < 5);
     }
 
     else if (role == HasQuoteRecordRole)
@@ -308,6 +320,54 @@ void ChatMessageListModel::deleteMessage(int row)
     convo->deleteMessageForSelf(convoId(), current.id);
 }
 
+void ChatMessageListModel::addReaction(int row, const QString &emoji)
+{
+    if (row < 0 || row >= m_idList.count())
+        return;
+    const auto &current = m_messageHash[m_idList.at(row)];
+    bool running = item(row, RunningRole).toBool();
+    if (running)
+        return;
+    update(row, RunningRole, true);
+
+    ChatBskyConvoAddReaction *convo = new ChatBskyConvoAddReaction(this);
+    connect(convo, &ChatBskyConvoAddReaction::finished, this, [=](bool success) {
+        if (success) {
+        } else {
+            emit errorOccured(convo->errorCode(), convo->errorMessage());
+        }
+        update(row, RunningRole, false);
+        convo->deleteLater();
+    });
+    convo->setAccount(account());
+    convo->setService(account().service_endpoint);
+    convo->addReaction(convoId(), current.id, emoji);
+}
+
+void ChatMessageListModel::removeReaction(int row, const QString &emoji)
+{
+    if (row < 0 || row >= m_idList.count())
+        return;
+    const auto &current = m_messageHash[m_idList.at(row)];
+    bool running = item(row, RunningRole).toBool();
+    if (running)
+        return;
+    update(row, RunningRole, true);
+
+    ChatBskyConvoRemoveReaction *convo = new ChatBskyConvoRemoveReaction(this);
+    connect(convo, &ChatBskyConvoRemoveReaction::finished, this, [=](bool success) {
+        if (success) {
+        } else {
+            emit errorOccured(convo->errorCode(), convo->errorMessage());
+        }
+        update(row, RunningRole, false);
+        convo->deleteLater();
+    });
+    convo->setAccount(account());
+    convo->setService(account().service_endpoint);
+    convo->removeReaction(convoId(), current.id, emoji);
+}
+
 QHash<int, QByteArray> ChatMessageListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -322,6 +382,7 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
     roles[ReactionEmojisRole] = "reactionEmojis";
+    roles[CanReactionRole] = "canReaction";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";

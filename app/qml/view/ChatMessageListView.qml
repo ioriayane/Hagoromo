@@ -278,7 +278,11 @@ Item {
                                         hoverEnabled: true
                                         opacity: (hovered || model.running || moreButton.hovered) ? 1.0 : 0.0
                                         iconSource: "../images/smile.png"
-                                        onClicked: emojiPicker.open()
+                                        enabled: model.canReaction
+                                        onClicked: {
+                                            emojiPicker.messageIndex = model.index
+                                            emojiPicker.open()
+                                        }
                                     }
                                     MoreButton {
                                         id: moreButton
@@ -438,5 +442,9 @@ Item {
     }
     EmojiPicker {
         id: emojiPicker
+        property int messageIndex: -1
+        onEmojiSelected: (emoji) => {
+                             rootListView.model.addReaction(messageIndex, emoji)
+                         }
     }
 }

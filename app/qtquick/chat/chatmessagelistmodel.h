@@ -39,6 +39,7 @@ public:
         TextPlainRole,
         SentAtRole,
         ReactionEmojisRole,
+        CanReactionRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -72,6 +73,8 @@ public:
     Q_INVOKABLE void send(const QString &message, const QString &embed_uri,
                           const QString &embed_cid);
     Q_INVOKABLE void deleteMessage(int row);
+    Q_INVOKABLE void addReaction(int row, const QString &emoji);
+    Q_INVOKABLE void removeReaction(int row, const QString &emoji);
 
     QString convoId() const;
     void setConvoId(const QString &newConvoId);
