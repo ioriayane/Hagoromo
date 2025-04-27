@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Support DM reactions
+
 ### v0.48.0 - 2025/3/26
 
 - Add
