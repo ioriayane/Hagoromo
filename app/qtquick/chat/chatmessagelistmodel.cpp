@@ -89,6 +89,14 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
             emojis.append(reaction.value);
         }
         return emojis;
+    } else if (role == MyReactionEmojisRole) {
+        QStringList emojis;
+        for (const auto &reaction : current.reactions) {
+            if (reaction.sender.did == account().did) {
+                emojis.append(reaction.value);
+            }
+        }
+        return emojis;
     } else if (role == CanReactionRole) {
         int reaction_count = 0;
         for (const auto &reaction : current.reactions) {
@@ -382,6 +390,7 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
     roles[ReactionEmojisRole] = "reactionEmojis";
+    roles[MyReactionEmojisRole] = "myReactionEmojis";
     roles[CanReactionRole] = "canReaction";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";

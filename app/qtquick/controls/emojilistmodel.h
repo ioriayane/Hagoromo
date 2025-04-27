@@ -21,12 +21,17 @@ class EmojiListModel : public QAbstractListModel
 
     Q_PROPERTY(
             int columnCount READ columnCount WRITE setColumnCount NOTIFY columnCountChanged FINAL)
+    Q_PROPERTY(QStringList selectedEmojis READ selectedEmojis WRITE setSelectedEmojis NOTIFY
+                       selectedEmojisChanged FINAL)
+
 public:
     explicit EmojiListModel(QObject *parent = nullptr);
 
     enum EmojiListModelRoles {
         GroupNameRole = Qt::UserRole + 1,
         EmojisRole,
+        EmojisSelectedRole,
+        EmojisEnabledRole,
     };
     Q_ENUM(EmojiListModelRoles)
 
@@ -35,6 +40,7 @@ public:
     QVariant item(int row, int column, EmojiListModel::EmojiListModelRoles role) const;
     QHash<int, QByteArray> roleNames() const;
 
+    Q_INVOKABLE void loadFrequentlyUsed();
     Q_INVOKABLE QString getGroupName(int index) const;
     Q_INVOKABLE int getGroupTopRow(int group_index) const;
     Q_INVOKABLE int getGroupIndex(const QString &group_name) const;
@@ -42,19 +48,22 @@ public:
 
     int columnCount() const;
     void setColumnCount(int newColumnCount);
+    QStringList selectedEmojis() const;
+    void setSelectedEmojis(const QStringList &newSelectedEmojis);
 
 signals:
     void columnCountChanged();
+    void selectedEmojisChanged();
 
 private:
     void load();
-    void loadFrequentlyUsed();
     void saveFrequentlyUsed() const;
 
     QList<EmojiRowData> m_emojiRowDataList;
     QStringList m_groupList;
     int m_columnCount;
     QHash<QString, int> m_emojiRowDataIndex; // QHash<emoji, row>
+    QStringList m_selectedEmojis;
 };
 
 #endif // EMOJILISTMODEL_H

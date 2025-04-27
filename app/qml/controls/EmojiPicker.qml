@@ -10,9 +10,18 @@ Dialog {
     width: 450
     height: 500
 
-    signal emojiSelected(string emoji)
+    signal emojiSelected(string emoji, bool selected)
 
     property string searchText: ""
+    property var selectedEmojis: []
+
+    function openPicker(selected_emojis) {
+        console.log("openPicker:" + selected_emojis)
+        emojiPicker.selectedEmojis = selected_emojis
+        emojiListModel.loadFrequentlyUsed()
+        pickerListView.positionViewAtBeginning()
+        emojiPicker.open()
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -87,12 +96,16 @@ Dialog {
                 model: EmojiListModel{
                     id: emojiListModel
                     columnCount: 9
+                    selectedEmojis: emojiPicker.selectedEmojis
                 }
                 delegate: RowLayout {
+                    id: pickerRowLayout
                     property var parentModel: model.emojis
+                    property var parentEmojisSelected: model.emojisSelected
+                    property var parentEmojisEnabled: model.emojisEnabled
                     spacing: 0
                     Repeater {
-                        model: parent.parentModel
+                        model: pickerRowLayout.parentModel
                         Button {
                             Layout.preferredWidth: pickerScrollView.cellWidth
                             topPadding: 0
@@ -100,10 +113,15 @@ Dialog {
                             topInset: 0
                             bottomInset: 0
                             flat: true
+                            highlighted: pickerRowLayout.parentEmojisSelected[model.index]
+                            enabled: pickerRowLayout.parentEmojisEnabled[model.index]
                             onClicked: {
-                                emojiPicker.emojiSelected(modelData)
+                                emojiPicker.emojiSelected(modelData, highlighted)
                                 emojiPicker.accept()
-                                emojiListModel.setFrequentlyUsed(modelData)
+                                if(!highlighted){
+                                    // 選択済み（つまり消すとき）は更新しない
+                                    emojiListModel.setFrequentlyUsed(modelData)
+                                }
                             }
                             Label {
                                 anchors.centerIn: parent

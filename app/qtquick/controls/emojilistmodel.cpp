@@ -37,6 +37,25 @@ QVariant EmojiListModel::item(int row, int column, EmojiListModelRoles role) con
         }
         return emojis;
     }
+    case EmojisSelectedRole: {
+        QList<QVariant> selected;
+        for (const auto &emoji_data : m_emojiRowDataList.at(row).emojis) {
+            selected.append(m_selectedEmojis.contains(emoji_data.emoji));
+            // selected.append(m_selectedEmojis.contains(emoji_data.emoji) ? "true" : "false");
+        }
+        return selected;
+    }
+    case EmojisEnabledRole: {
+        QList<QVariant> enabled;
+        for (const auto &emoji_data : m_emojiRowDataList.at(row).emojis) {
+            if (m_selectedEmojis.count() < 5) {
+                enabled.append(true);
+            } else {
+                enabled.append(m_selectedEmojis.contains(emoji_data.emoji));
+            }
+        }
+        return enabled;
+    }
     }
 
     return QVariant();
@@ -48,6 +67,8 @@ QHash<int, QByteArray> EmojiListModel::roleNames() const
 
     roles[GroupNameRole] = "groupName";
     roles[EmojisRole] = "emojis";
+    roles[EmojisSelectedRole] = "emojisSelected";
+    roles[EmojisEnabledRole] = "emojisEnabled";
 
     return roles;
 }
@@ -96,9 +117,6 @@ void EmojiListModel::setFrequentlyUsed(const QString &emoji)
     if (row < 0 || m_emojiRowDataList.isEmpty())
         return;
 
-    while (m_emojiRowDataList.first().emojis.count() >= columnCount()) {
-        m_emojiRowDataList.first().emojis.pop_back();
-    }
     for (int i = 0; i < m_emojiRowDataList.first().emojis.length(); i++) {
         if (m_emojiRowDataList.first().emojis.at(i).emoji == emoji) {
             m_emojiRowDataList.first().emojis.remove(i);
@@ -110,6 +128,9 @@ void EmojiListModel::setFrequentlyUsed(const QString &emoji)
             m_emojiRowDataList.first().emojis.push_front(emoji_data);
             break;
         }
+    }
+    while (m_emojiRowDataList.first().emojis.count() > columnCount()) {
+        m_emojiRowDataList.first().emojis.pop_back();
     }
     emit dataChanged(index(0), index(0));
 
@@ -191,6 +212,7 @@ void EmojiListModel::loadFrequentlyUsed()
 {
     if (m_emojiRowDataList.isEmpty())
         return;
+    m_emojiRowDataList.first().emojis.clear();
 
     QSettings settings;
     QString emojis = QString::fromUtf8(
@@ -237,4 +259,20 @@ void EmojiListModel::setColumnCount(int newColumnCount)
     emit columnCountChanged();
 
     load();
+}
+
+QStringList EmojiListModel::selectedEmojis() const
+{
+    return m_selectedEmojis;
+}
+
+void EmojiListModel::setSelectedEmojis(const QStringList &newSelectedEmojis)
+{
+    if (m_selectedEmojis == newSelectedEmojis)
+        return;
+    m_selectedEmojis = newSelectedEmojis;
+    emit selectedEmojisChanged();
+
+    emit dataChanged(index(0), index(rowCount() - 1),
+                     QList<int>() << EmojisSelectedRole << EmojisEnabledRole);
 }

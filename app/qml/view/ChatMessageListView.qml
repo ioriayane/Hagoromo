@@ -278,10 +278,9 @@ Item {
                                         hoverEnabled: true
                                         opacity: (hovered || model.running || moreButton.hovered) ? 1.0 : 0.0
                                         iconSource: "../images/smile.png"
-                                        enabled: model.canReaction
                                         onClicked: {
                                             emojiPicker.messageIndex = model.index
-                                            emojiPicker.open()
+                                            emojiPicker.openPicker(model.myReactionEmojis)
                                         }
                                     }
                                     MoreButton {
@@ -305,6 +304,7 @@ Item {
                                     Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
                                     Layout.topMargin: 0
                                     font.pointSize: AdjustedValues.f8
+                                    visible: model.reactionEmojis.length > 0
                                     text: model.reactionEmojis
                                 }
                                 Label {
@@ -443,8 +443,13 @@ Item {
     EmojiPicker {
         id: emojiPicker
         property int messageIndex: -1
-        onEmojiSelected: (emoji) => {
-                             rootListView.model.addReaction(messageIndex, emoji)
+        onEmojiSelected: (emoji, selected) => {
+                             console.log("emojiSelected:" + emoji + ", selected:" + selected)
+                             if(selected){
+                                 rootListView.model.removeReaction(messageIndex, emoji)
+                             }else{
+                                 rootListView.model.addReaction(messageIndex, emoji)
+                             }
                          }
     }
 }

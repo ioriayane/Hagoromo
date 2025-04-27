@@ -39,6 +39,7 @@ public:
         TextPlainRole,
         SentAtRole,
         ReactionEmojisRole,
+        MyReactionEmojisRole,
         CanReactionRole,
 
         HasQuoteRecordRole,
