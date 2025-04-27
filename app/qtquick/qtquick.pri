@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/column/feedtypelistmodel.cpp \
     $$PWD/controls/calendartablemodel.cpp \
     $$PWD/controls/embedimagelistmodel.cpp \
+    $$PWD/controls/emojilistmodel.cpp \
     $$PWD/controls/languagelistmodel.cpp \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.cpp \
     $$PWD/feedgenerator/feedgeneratorlistmodel.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     $$PWD/column/feedtypelistmodel.h \
     $$PWD/controls/calendartablemodel.h \
     $$PWD/controls/embedimagelistmodel.h \
+    $$PWD/controls/emojilistmodel.h \
     $$PWD/controls/languagelistmodel.h \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.h \
     $$PWD/feedgenerator/feedgeneratorlistmodel.h \

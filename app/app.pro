@@ -24,6 +24,7 @@ QML_FILES = \
     qml/controls/ClickableFrame.qml \
     qml/controls/ComboBoxEx.qml \
     qml/controls/DragAndDropArea.qml \
+    qml/controls/EmojiPicker.qml \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
@@ -170,6 +171,7 @@ IMAGE_FILES += \
     qml/images/search.png \
     qml/images/send.png \
     qml/images/settings.png \
+    qml/images/smile.png \
     qml/images/starterpack.png \
     qml/images/tag.png \
     qml/images/terminal.png \
@@ -180,7 +182,9 @@ IMAGE_FILES += \
     qml/images/visibility_on.png
 
 
-resources.files = $$QML_FILES $$IMAGE_FILES
+resources.files = $$QML_FILES \
+    $$IMAGE_FILES \
+    qtquick/controls/emoji.json
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 

@@ -6,10 +6,10 @@ import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
-import tech.relog.hagoromo.languagelistmodel 1.0
+import tech.relog.hagoromo.controls.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.feedgeneratorlink 1.0
-import tech.relog.hagoromo.embedimagelistmodel 1.0
+import tech.relog.hagoromo.controls.embedimagelistmodel 1.0
 import tech.relog.hagoromo.listlink 1.0
 import tech.relog.hagoromo.postlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
