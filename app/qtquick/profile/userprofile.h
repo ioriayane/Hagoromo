@@ -67,6 +67,10 @@ class UserProfile : public QObject
     Q_PROPERTY(bool associatedChatAllow READ associatedChatAllow WRITE setAssociatedChatAllow NOTIFY
                        associatedChatAllowChanged FINAL)
 
+    Q_PROPERTY(QString verificationState READ verificationState WRITE setVerificationState NOTIFY
+                       verificationStateChanged FINAL)
+    Q_PROPERTY(QStringList verifierList READ verifierList WRITE setVerifierList NOTIFY
+                       verifierListChanged FINAL)
 public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
@@ -137,6 +141,11 @@ public:
     bool associatedChatAllow() const;
     void setAssociatedChatAllow(bool newAssociatedChatAllow);
 
+    QString verificationState() const;
+    void setVerificationState(const QString &newVerificationState);
+    QStringList verifierList() const;
+    void setVerifierList(const QStringList &newVerifierList);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -173,6 +182,9 @@ signals:
     void handleHistoryChanged();
     void associatedChatAllowChanged();
 
+    void verificationStateChanged();
+    void verifierListChanged();
+
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
     void finishedConnector(const QString &labeler_did);
@@ -186,6 +198,7 @@ private:
             std::function<void(const QString &, const QString &, const QList<HistoryItem> &)>
                     callback);
     void getRawProfile();
+    void getVerifier(const AtProtocolType::AppBskyActorDefs::VerificationState &verification);
 
     QString labelsTitle(const QString &label, const bool for_image,
                         const QString &labeler_did = QString()) const;
@@ -229,6 +242,8 @@ private:
     bool m_associatedChatAllow;
     QStringList m_labels;
     QStringList m_labelIcons;
+    QString m_verificationState;
+    QStringList m_verifierList;
 };
 
 #endif // USERPROFILE_H

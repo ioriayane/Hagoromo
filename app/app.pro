@@ -99,6 +99,7 @@ QML_FILES = \
     qml/parts/TagLabel.qml \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
+    qml/parts/VerificationInfoPopup.qml \
     qml/parts/VideoFrame.qml \
     qml/view/AnyProfileListView.qml \
     qml/view/BlogEntryListView.qml \
@@ -177,6 +178,8 @@ IMAGE_FILES += \
     qml/images/terminal.png \
     qml/images/thread.png \
     qml/images/translate.png \
+    qml/images/verified.png \
+    qml/images/verifier.png \
     qml/images/video.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png

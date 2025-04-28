@@ -47,6 +47,7 @@ public:
         AvatarRole,
         AuthorLabelsRole,
         AuthorLabelIconsRole,
+        AuthorVerificationStateRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,

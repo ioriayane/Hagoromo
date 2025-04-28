@@ -83,12 +83,12 @@ void setDefaultSettings(QSettings &settings)
 void setGlobalSettings(QGuiApplication &app)
 {
     QSettings settings;
-    qDebug() << "1" << settings.allKeys();
+    // qDebug() << "1" << settings.allKeys();
     setAppFont(app, settings);
-    qDebug() << "2" << settings.allKeys();
+    // qDebug() << "2" << settings.allKeys();
     setRealtimeFeedEndpoint(settings);
-    qDebug() << "3" << settings.allKeys();
+    // qDebug() << "3" << settings.allKeys();
     setDefaultSettings(settings);
-    qDebug() << "4" << settings.allKeys();
+    // qDebug() << "4" << settings.allKeys();
     SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());
 }

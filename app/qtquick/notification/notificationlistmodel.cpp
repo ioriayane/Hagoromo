@@ -153,7 +153,15 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.handle;
     else if (role == AvatarRole)
         return current.author.avatar;
-    else if (role == MutedRole)
+    else if (role == AuthorVerificationStateRole) {
+        if (current.author.verification.trustedVerifierStatus == QStringLiteral("valid")) {
+            return QStringLiteral("verifier");
+        } else if (current.author.verification.verifiedStatus == QStringLiteral("valid")) {
+            return QStringLiteral("verified");
+        } else {
+            return QStringLiteral("none");
+        }
+    } else if (role == MutedRole)
         return current.author.viewer.muted;
     else if (role == RecordTextRole)
         return AtProtocolType::LexiconsTypeUnknown::copyRecordText(current.record);
@@ -919,6 +927,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[AuthorVerificationStateRole] = "authorVerificationState";
     roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";

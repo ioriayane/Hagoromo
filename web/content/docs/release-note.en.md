@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support DM reactions
+  - Support display of the verification badge
 
 ### v0.48.0 - 2025/3/26
 
