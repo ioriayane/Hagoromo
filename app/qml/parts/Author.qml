@@ -26,7 +26,6 @@ RowLayout {
     }
     Label {
         id: handleText
-        // Layout.alignment: Qt.AlignTop
         Layout.alignment: Qt.AlignBottom
         elide: Text.ElideRight
         opacity: 0.8
@@ -34,7 +33,6 @@ RowLayout {
         text: headerLayout.handle
     }
     Image {
-        // Layout.fillWidth: true
         Layout.preferredWidth: handleText.height
         Layout.preferredHeight: handleText.height
         fillMode: Image.PreserveAspectFit
@@ -53,7 +51,6 @@ RowLayout {
     }
     Label {
         id: indexAtText
-        // Layout.alignment: Qt.AlignTop
         Layout.alignment: Qt.AlignBottom
         Layout.minimumWidth: contentWidth
         opacity: 0.8

@@ -307,8 +307,11 @@ ColumnLayout {
                         layer.effect: ColorOverlayC {
                             color: Material.color(Material.Blue)
                         }
-                        HandleHistoryPopup {
+                        VerificationInfoPopup {
                             model: userProfile.verifierList
+                            verificationState: userProfile.verificationState
+                            displayName: userProfile.displayName
+                            layoutMaximumWidth: profileView.width
                         }
                     }
                 }

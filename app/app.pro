@@ -99,6 +99,7 @@ QML_FILES = \
     qml/parts/TagLabel.qml \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
+    qml/parts/VerificationInfoPopup.qml \
     qml/parts/VideoFrame.qml \
     qml/view/AnyProfileListView.qml \
     qml/view/BlogEntryListView.qml \
