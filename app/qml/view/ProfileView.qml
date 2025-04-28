@@ -282,17 +282,34 @@ ColumnLayout {
                     elide: Text.ElideRight
                     text: userProfile.displayName
                 }
-                Label {
+                RowLayout {
                     Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
-                    elide: Text.ElideRight
-                    font.pointSize: AdjustedValues.f8
-                    color: Material.color(Material.Grey)
-                    text: "@" + userProfile.handle
-                    visible: userProfile.handle.length > 0
+                    Label {
+                        id: handleLabel
+                        elide: Text.ElideRight
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                        text: "@" + userProfile.handle
+                        visible: userProfile.handle.length > 0
 
-                    HandleHistoryPopup {
-                        id: handleHistoryPopup
-                        model: userProfile.handleHistory
+                        HandleHistoryPopup {
+                            id: handleHistoryPopup
+                            model: userProfile.handleHistory
+                        }
+                    }
+                    Image {
+                        Layout.preferredWidth: handleLabel.height
+                        Layout.preferredHeight: handleLabel.height
+                        visible: (userProfile.verificationState !== "none")
+                        source: userProfile.verificationState === "verifier" ?
+                                    "../images/verifier.png" : "../images/verified.png"
+                        layer.enabled: true
+                        layer.effect: ColorOverlayC {
+                            color: Material.color(Material.Blue)
+                        }
+                        HandleHistoryPopup {
+                            model: userProfile.verifierList
+                        }
                     }
                 }
                 RowLayout {

@@ -1,6 +1,7 @@
 #include "userprofile.h"
 #include "tools/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/directory/plc/directoryplc.h"
@@ -11,6 +12,7 @@
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::DirectoryPlc;
 using AtProtocolInterface::DirectoryPlcLogAudit;
@@ -28,7 +30,8 @@ UserProfile::UserProfile(QObject *parent)
       m_muted(false),
       m_blockedBy(false),
       m_blocking(false),
-      m_userFilterMatched(false)
+      m_userFilterMatched(false),
+      m_verificationState("none")
 {
     QPointer<UserProfile> alive = this;
     connect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
@@ -121,6 +124,14 @@ void UserProfile::getProfile(const QString &did)
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
                 setPinnedPost(detail.pinnedPost.uri);
 
+                if (detail.verification.trustedVerifierStatus == "valid") {
+                    setVerificationState("verifier");
+                } else if (detail.verification.verifiedStatus == "valid") {
+                    setVerificationState("verified");
+                } else {
+                    setVerificationState("none");
+                }
+
                 if (detail.associated.chat.allowIncoming == "none") {
                     setAssociatedChatAllow(false);
                 } else if (detail.associated.chat.allowIncoming == "following") {
@@ -134,6 +145,7 @@ void UserProfile::getProfile(const QString &did)
 
                 // 追加情報読み込み
                 getRawProfile();
+                getVerifier(detail.verification);
             } else {
                 emit errorOccured(profile->errorCode(), profile->errorMessage());
                 setRunning(false);
@@ -572,6 +584,40 @@ void UserProfile::getRawProfile()
                       });
 }
 
+void UserProfile::getVerifier(
+        const AtProtocolType::AppBskyActorDefs::VerificationState &verification)
+{
+    QStringList target_dids;
+    QHash<QString, QString> target_created_at;
+    for (const auto &verifier : verification.verifications) {
+        if (verifier.isValid) {
+            target_dids.append(verifier.issuer);
+            target_created_at[verifier.issuer] = verifier.createdAt;
+        }
+    }
+    if (target_dids.isEmpty())
+        return;
+
+    AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
+    connect(profiles, &AppBskyActorGetProfiles::finished, this, [=](bool success) {
+        if (success) {
+            QStringList verifier_list;
+            for (const auto &profile : profiles->profilesList()) {
+                verifier_list.append(profile.displayName);
+                verifier_list.append(profile.handle);
+                verifier_list.append(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        target_created_at[profile.did], true));
+            }
+            setVerifierList(verifier_list);
+        } else {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+        }
+        profiles->deleteLater();
+    });
+    profiles->setAccount(AccountManager::getInstance()->getAccount(m_account.uuid));
+    profiles->getProfiles(target_dids);
+}
+
 QString UserProfile::labelsTitle(const QString &label, const bool for_image,
                                  const QString &labeler_did) const
 {
@@ -688,4 +734,30 @@ void UserProfile::setAssociatedChatAllow(bool newAssociatedChatAllow)
         return;
     m_associatedChatAllow = newAssociatedChatAllow;
     emit associatedChatAllowChanged();
+}
+
+QString UserProfile::verificationState() const
+{
+    return m_verificationState;
+}
+
+void UserProfile::setVerificationState(const QString &newVerificationState)
+{
+    if (m_verificationState == newVerificationState)
+        return;
+    m_verificationState = newVerificationState;
+    emit verificationStateChanged();
+}
+
+QStringList UserProfile::verifierList() const
+{
+    return m_verifierList;
+}
+
+void UserProfile::setVerifierList(const QStringList &newVerifierList)
+{
+    if (m_verifierList == newVerifierList)
+        return;
+    m_verifierList = newVerifierList;
+    emit verifierListChanged();
 }

@@ -14,6 +14,7 @@ EmojiListModel::EmojiListModel(QObject *parent) : QAbstractListModel { parent },
 
 int EmojiListModel::rowCount(const QModelIndex &row) const
 {
+    Q_UNUSED(row)
     return m_emojiRowDataList.count();
 }
 
@@ -24,6 +25,8 @@ QVariant EmojiListModel::data(const QModelIndex &index, int role) const
 
 QVariant EmojiListModel::item(int row, int column, EmojiListModelRoles role) const
 {
+    Q_UNUSED(column)
+
     if (row < 0 || row >= rowCount())
         return QVariant();
 
