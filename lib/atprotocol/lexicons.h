@@ -301,6 +301,21 @@ struct ViewerState
     QString followedBy; // at-uri
     KnownFollowers knownFollowers;
 };
+struct VerificationView
+{
+    QString issuer; // did , The user who issued this verification.
+    QString uri; // at-uri , The AT-URI of the verification record.
+    bool isValid = false; // True if the verification passes validation, otherwise false.
+    QString createdAt; // datetime , Timestamp when the verification was created.
+};
+struct VerificationState
+{
+    QList<VerificationView>
+            verifications; // All verifications issued by trusted verifiers on behalf of this user.
+                           // Verifications by untrusted verifiers are not included.
+    QString verifiedStatus; // The user's status as a verified account.
+    QString trustedVerifierStatus; // The user's status as a trusted verifier.
+};
 struct ProfileViewBasic
 {
     QString did; // did
@@ -311,6 +326,7 @@ struct ProfileViewBasic
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     QString createdAt; // datetime
+    VerificationState verification;
 };
 struct ProfileView
 {
@@ -324,6 +340,7 @@ struct ProfileView
     QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    VerificationState verification;
 };
 struct ProfileViewDetailed
 {
@@ -343,6 +360,7 @@ struct ProfileViewDetailed
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     ComAtprotoRepoStrongRef::Main pinnedPost;
+    VerificationState verification;
 };
 struct AdultContentPref
 {
@@ -494,6 +512,11 @@ struct PostInteractionSettingsPref
                                                                     // embed.
     // union end : postgateEmbeddingRules
 };
+struct VerificationPrefs
+{
+    bool hideBadges =
+            false; // Hide the blue check badges for verified accounts and trusted verifiers.
+};
 struct Preferences
 {
     // union start : preferences
@@ -510,6 +533,7 @@ struct Preferences
     QList<AppBskyActorDefs::BskyAppStatePref> bskyAppStatePref;
     QList<AppBskyActorDefs::LabelersPref> labelersPref;
     QList<AppBskyActorDefs::PostInteractionSettingsPref> postInteractionSettingsPref;
+    QList<AppBskyActorDefs::VerificationPrefs> verificationPrefs;
     // union end : preferences
 };
 }
@@ -619,7 +643,7 @@ struct Caption
 };
 struct Main
 {
-    Blob video;
+    Blob video; // The mp4 video file. May be up to 100mb, formerly limited to 50mb.
     QList<Caption> captions;
     QString alt; // Alt text description of the video, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
@@ -906,6 +930,12 @@ struct Interaction
 };
 }
 
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+typedef QString ReasonType;
+typedef QString SubjectType; // Tag describing a type of subject that might be reported.
+}
+
 // app.bsky.labeler.defs
 namespace AppBskyLabelerDefs {
 struct LabelerViewerState
@@ -937,6 +967,11 @@ struct LabelerViewDetailed
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
+    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
+    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
+                                       // reported to this service. If not defined (distinct from
+                                       // empty array), default is any record type.
 };
 }
 
@@ -1219,6 +1254,23 @@ struct Main
 };
 }
 
+// app.bsky.graph.verification
+namespace AppBskyGraphVerification {
+struct Main
+{
+    QString subject; // did , DID of the subject the verification applies to.
+    QString handle; // handle , Handle of the subject the verification applies to at the moment of
+                    // verifying, which might not be the same at the time of viewing. The
+                    // verification is only valid if the current handle matches the one at the time
+                    // of verifying.
+    QString displayName; // Display name of the subject the verification applies to at the moment of
+                         // verifying, which might not be the same at the time of viewing. The
+                         // verification is only valid if the current displayName matches the one at
+                         // the time of verifying.
+    QString createdAt; // datetime , Date of when the verification was created.
+};
+}
+
 // app.bsky.labeler.service
 namespace AppBskyLabelerService {
 enum class MainLabelsType : int {
@@ -1233,6 +1285,18 @@ struct Main
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
     // union end : labels
     QString createdAt; // datetime
+    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
+    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
+    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
+                                       // reported to this service. If not defined (distinct from
+                                       // empty array), default is any record type.
+};
+}
+
+// app.bsky.notification.defs
+namespace AppBskyNotificationDefs {
+struct RecordDeleted
+{
 };
 }
 
@@ -1244,7 +1308,7 @@ struct Notification
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
     QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', 'quote',
-                    // and 'starterpack-joined'.
+                    // 'starterpack-joined', 'verified', and 'unverified'.
     QString reasonSubject; // at-uri
     QVariant record;
     bool isRead = false;
@@ -1273,6 +1337,28 @@ struct TrendingTopic
     QString displayName;
     QString description;
     QString link;
+};
+struct SkeletonTrend
+{
+    QString topic;
+    QString displayName;
+    QString link;
+    QString startedAt; // datetime
+    int postCount = 0;
+    QString status;
+    QString category;
+    QList<QString> dids;
+};
+struct TrendView
+{
+    QString topic;
+    QString displayName;
+    QString link;
+    QString startedAt; // datetime
+    int postCount = 0;
+    QString status;
+    QString category;
+    QList<AppBskyActorDefs::ProfileViewBasic> actors;
 };
 }
 
@@ -1321,12 +1407,23 @@ struct ProfileViewBasic
     AppBskyActorDefs::ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     bool chatDisabled =
-            false; // Set to true when the actor cannot actively participate in converations
+            false; // Set to true when the actor cannot actively participate in conversations
+    AppBskyActorDefs::VerificationState verification;
 };
 }
 
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+enum class LogRemoveReactionMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
+enum class LogAddReactionMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
 enum class LogReadMessageMessageType : int {
     none,
     message_MessageView,
@@ -1346,6 +1443,10 @@ enum class ConvoViewLastMessageType : int {
     none,
     lastMessage_MessageView,
     lastMessage_DeletedMessageView,
+};
+enum class ConvoViewLastReactionType : int {
+    none,
+    lastReaction_MessageAndReactionView,
 };
 enum class MessageViewEmbedType : int {
     none,
@@ -1370,6 +1471,16 @@ struct MessageInput
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     // union end : embed
 };
+struct ReactionViewSender
+{
+    QString did; // did
+};
+struct ReactionView
+{
+    QString value;
+    ReactionViewSender sender;
+    QString createdAt; // datetime
+};
 struct MessageViewSender
 {
     QString did; // did
@@ -1384,6 +1495,8 @@ struct MessageView
     MessageViewEmbedType embed_type = MessageViewEmbedType::none;
     AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     // union end : embed
+    QList<ReactionView>
+            reactions; // Reactions to this message, in ascending order of creation time.
     MessageViewSender sender;
     QString sentAt; // datetime
 };
@@ -1393,6 +1506,11 @@ struct DeletedMessageView
     QString rev;
     MessageViewSender sender;
     QString sentAt; // datetime
+};
+struct MessageAndReactionView
+{
+    MessageView message;
+    ReactionView reaction;
 };
 struct ConvoView
 {
@@ -1404,6 +1522,10 @@ struct ConvoView
     MessageView lastMessage_MessageView;
     DeletedMessageView lastMessage_DeletedMessageView;
     // union end : lastMessage
+    // union start : lastReaction
+    ConvoViewLastReactionType lastReaction_type = ConvoViewLastReactionType::none;
+    MessageAndReactionView lastReaction_MessageAndReactionView;
+    // union end : lastReaction
     bool muted = false;
     QString status;
     int unreadCount = 0;
@@ -1462,6 +1584,28 @@ struct LogReadMessage
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
     // union end : message
+};
+struct LogAddReaction
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogAddReactionMessageType message_type = LogAddReactionMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+    ReactionView reaction;
+};
+struct LogRemoveReaction
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogRemoveReactionMessageType message_type = LogRemoveReactionMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+    ReactionView reaction;
 };
 }
 
@@ -1542,6 +1686,17 @@ struct RepoBlobRef
 };
 }
 
+// com.atproto.identity.defs
+namespace ComAtprotoIdentityDefs {
+struct IdentityInfo
+{
+    QString did; // did
+    QString handle; // handle , The validated handle of the account; or 'handle.invalid' if the
+                    // handle did not bi-directionally match the DID document.
+    QVariant didDoc; // The complete DID document for the identity.
+};
+}
+
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 struct Labels
@@ -1563,11 +1718,6 @@ struct Main
     int lexicon = 0; // Indicates the 'version' of the Lexicon language. Must be '1' for the current
                      // atproto/Lexicon schema system.
 };
-}
-
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-typedef QString ReasonType;
 }
 
 // com.atproto.repo.applyWrites
@@ -1678,6 +1828,23 @@ struct AppPassword
 };
 }
 
+// com.atproto.sync.defs
+namespace ComAtprotoSyncDefs {
+typedef QString HostStatus;
+}
+
+// com.atproto.sync.listHosts
+namespace ComAtprotoSyncListHosts {
+struct Host
+{
+    QString hostname; // hostname of server; not a URL (no scheme)
+    int seq = 0; // Recent repo stream event sequence number. May be delayed from actual stream
+                 // processing (eg, persisted cursor not in-memory cursor).
+    int accountCount = 0;
+    ComAtprotoSyncDefs::HostStatus status;
+};
+}
+
 // com.atproto.sync.listRepos
 namespace ComAtprotoSyncListRepos {
 struct Repo
@@ -1746,26 +1913,6 @@ struct Account
     QString status; // If active=false, this optional field indicates a reason for why the account
                     // is not active.
 };
-struct Handle
-{
-    int seq = 0;
-    QString did; // did
-    QString handle; // handle
-    QString time; // datetime
-};
-struct Migrate
-{
-    int seq = 0;
-    QString did; // did
-    QString migrateTo;
-    QString time; // datetime
-};
-struct Tombstone
-{
-    int seq = 0;
-    QString did; // did
-    QString time; // datetime
-};
 struct Info
 {
     QString name;
@@ -1786,6 +1933,51 @@ struct TemplateView
     QString lastUpdatedBy; // did , DID of the user who last updated the template.
     QString createdAt; // datetime
     QString updatedAt; // datetime
+};
+}
+
+// tools.ozone.hosting.getAccountHistory
+namespace ToolsOzoneHostingGetAccountHistory {
+enum class EventDetailsType : int {
+    none,
+    details_AccountCreated,
+    details_EmailUpdated,
+    details_EmailConfirmed,
+    details_PasswordUpdated,
+    details_HandleUpdated,
+};
+struct AccountCreated
+{
+    QString email;
+    QString handle; // handle
+};
+struct EmailUpdated
+{
+    QString email;
+};
+struct EmailConfirmed
+{
+    QString email;
+};
+struct PasswordUpdated
+{
+};
+struct HandleUpdated
+{
+    QString handle; // handle
+};
+struct Event
+{
+    // union start : details
+    EventDetailsType details_type = EventDetailsType::none;
+    AccountCreated details_AccountCreated;
+    EmailUpdated details_EmailUpdated;
+    EmailConfirmed details_EmailConfirmed;
+    PasswordUpdated details_PasswordUpdated;
+    HandleUpdated details_HandleUpdated;
+    // union end : details
+    QString createdBy;
+    QString createdAt; // datetime
 };
 }
 
@@ -2214,6 +2406,16 @@ struct RecordViewDetail
     ModerationDetail moderation;
     RepoView repo;
 };
+struct SubjectView
+{
+    ComAtprotoModerationDefs::SubjectType type;
+    QString subject;
+    SubjectStatusView status;
+    RepoViewDetail repo;
+    // union start : profile
+    // union end : profile
+    RecordViewDetail record;
+};
 struct ReporterStats
 {
     QString did; // did
@@ -2307,6 +2509,82 @@ struct Member
     QString updatedAt; // datetime
     QString lastUpdatedBy;
     QString role;
+};
+}
+
+// tools.ozone.verification.defs
+namespace ToolsOzoneVerificationDefs {
+enum class VerificationViewSubjectRepoType : int {
+    none,
+    subjectRepo_ToolsOzoneModerationDefs_RepoViewDetail,
+    subjectRepo_ToolsOzoneModerationDefs_RepoViewNotFound,
+};
+enum class VerificationViewIssuerRepoType : int {
+    none,
+    issuerRepo_ToolsOzoneModerationDefs_RepoViewDetail,
+    issuerRepo_ToolsOzoneModerationDefs_RepoViewNotFound,
+};
+struct VerificationView
+{
+    QString issuer; // did , The user who issued this verification.
+    QString uri; // at-uri , The AT-URI of the verification record.
+    QString subject; // did , The subject of the verification.
+    QString handle; // handle , Handle of the subject the verification applies to at the moment of
+                    // verifying, which might not be the same at the time of viewing. The
+                    // verification is only valid if the current handle matches the one at the time
+                    // of verifying.
+    QString displayName; // Display name of the subject the verification applies to at the moment of
+                         // verifying, which might not be the same at the time of viewing. The
+                         // verification is only valid if the current displayName matches the one at
+                         // the time of verifying.
+    QString createdAt; // datetime , Timestamp when the verification was created.
+    QString revokeReason; // Describes the reason for revocation, also indicating that the
+                          // verification is no longer valid.
+    QString revokedAt; // datetime , Timestamp when the verification was revoked.
+    QString revokedBy; // did , The user who revoked this verification.
+    // union start : subjectProfile
+    // union end : subjectProfile
+    // union start : issuerProfile
+    // union end : issuerProfile
+    // union start : subjectRepo
+    VerificationViewSubjectRepoType subjectRepo_type = VerificationViewSubjectRepoType::none;
+    ToolsOzoneModerationDefs::RepoViewDetail subjectRepo_ToolsOzoneModerationDefs_RepoViewDetail;
+    ToolsOzoneModerationDefs::RepoViewNotFound
+            subjectRepo_ToolsOzoneModerationDefs_RepoViewNotFound;
+    // union end : subjectRepo
+    // union start : issuerRepo
+    VerificationViewIssuerRepoType issuerRepo_type = VerificationViewIssuerRepoType::none;
+    ToolsOzoneModerationDefs::RepoViewDetail issuerRepo_ToolsOzoneModerationDefs_RepoViewDetail;
+    ToolsOzoneModerationDefs::RepoViewNotFound issuerRepo_ToolsOzoneModerationDefs_RepoViewNotFound;
+    // union end : issuerRepo
+};
+}
+
+// tools.ozone.verification.grantVerifications
+namespace ToolsOzoneVerificationGrantVerifications {
+struct VerificationInput
+{
+    QString subject; // did , The did of the subject being verified
+    QString handle; // handle , Handle of the subject the verification applies to at the moment of
+                    // verifying.
+    QString displayName; // Display name of the subject the verification applies to at the moment of
+                         // verifying.
+    QString createdAt; // Timestamp for verification record. Defaults to current time when not
+                       // specified.
+};
+struct GrantError
+{
+    QString error; // Error message describing the reason for failure.
+    QString subject; // did , The did of the subject being verified
+};
+}
+
+// tools.ozone.verification.revokeVerifications
+namespace ToolsOzoneVerificationRevokeVerifications {
+struct RevokeError
+{
+    QString uri; // at-uri , The AT-URI of the verification record that failed to revoke.
+    QString error; // Description of the error that occurred during revocation.
 };
 }
 

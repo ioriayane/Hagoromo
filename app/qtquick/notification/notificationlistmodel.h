@@ -40,6 +40,7 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        AuthorVerificationStateRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,

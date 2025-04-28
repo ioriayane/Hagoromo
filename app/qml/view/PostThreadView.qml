@@ -132,6 +132,7 @@ ColumnLayout {
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
                 postAuthor.indexedAt: isBasisPost ? "" : model.indexedAt
+                postAuthor.verificationState: model.authorVerificationState
                 authorLabels.model: isBasisPost ? model.authorLabels : []
                 authorLabels.iconSources: isBasisPost ? model.authorLabelIcons : []
                 recordText.text: {

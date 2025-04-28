@@ -38,6 +38,9 @@ public:
         TextRole,
         TextPlainRole,
         SentAtRole,
+        ReactionEmojisRole,
+        MyReactionEmojisRole,
+        CanReactionRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -71,6 +74,8 @@ public:
     Q_INVOKABLE void send(const QString &message, const QString &embed_uri,
                           const QString &embed_cid);
     Q_INVOKABLE void deleteMessage(int row);
+    Q_INVOKABLE void addReaction(int row, const QString &emoji);
+    Q_INVOKABLE void removeReaction(int row, const QString &emoji);
 
     QString convoId() const;
     void setConvoId(const QString &newConvoId);
@@ -108,6 +113,7 @@ protected:
     void
     copyFrom(const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messages,
              const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &deletedMessages,
+             const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &removedReactions,
              bool to_top);
 
 private:

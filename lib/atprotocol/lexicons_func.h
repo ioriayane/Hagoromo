@@ -21,6 +21,8 @@ void copyProfileAssociatedChat(const QJsonObject &src,
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
 void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest);
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
+void copyVerificationView(const QJsonObject &src, AppBskyActorDefs::VerificationView &dest);
+void copyVerificationState(const QJsonObject &src, AppBskyActorDefs::VerificationState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
@@ -44,6 +46,7 @@ void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefIt
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
 void copyPostInteractionSettingsPref(const QJsonObject &src,
                                      AppBskyActorDefs::PostInteractionSettingsPref &dest);
+void copyVerificationPrefs(const QJsonObject &src, AppBskyActorDefs::VerificationPrefs &dest);
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
 }
 // app.bsky.graph.defs
@@ -217,9 +220,22 @@ namespace AppBskyGraphStarterpack {
 void copyFeedItem(const QJsonObject &src, AppBskyGraphStarterpack::FeedItem &dest);
 void copyMain(const QJsonObject &src, AppBskyGraphStarterpack::Main &dest);
 }
+// app.bsky.graph.verification
+namespace AppBskyGraphVerification {
+void copyMain(const QJsonObject &src, AppBskyGraphVerification::Main &dest);
+}
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
+void copySubjectType(const QJsonValue &src, ComAtprotoModerationDefs::SubjectType &dest);
+}
 // app.bsky.labeler.service
 namespace AppBskyLabelerService {
 void copyMain(const QJsonObject &src, AppBskyLabelerService::Main &dest);
+}
+// app.bsky.notification.defs
+namespace AppBskyNotificationDefs {
+void copyRecordDeleted(const QJsonObject &src, AppBskyNotificationDefs::RecordDeleted &dest);
 }
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
@@ -234,6 +250,8 @@ void copySkeletonSearchActor(const QJsonObject &src,
 void copySkeletonSearchStarterPack(const QJsonObject &src,
                                    AppBskyUnspeccedDefs::SkeletonSearchStarterPack &dest);
 void copyTrendingTopic(const QJsonObject &src, AppBskyUnspeccedDefs::TrendingTopic &dest);
+void copySkeletonTrend(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonTrend &dest);
+void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest);
 }
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
@@ -255,9 +273,13 @@ void copyProfileViewBasic(const QJsonObject &src, ChatBskyActorDefs::ProfileView
 namespace ChatBskyConvoDefs {
 void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest);
 void copyMessageInput(const QJsonObject &src, ChatBskyConvoDefs::MessageInput &dest);
+void copyReactionViewSender(const QJsonObject &src, ChatBskyConvoDefs::ReactionViewSender &dest);
+void copyReactionView(const QJsonObject &src, ChatBskyConvoDefs::ReactionView &dest);
 void copyMessageViewSender(const QJsonObject &src, ChatBskyConvoDefs::MessageViewSender &dest);
 void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &dest);
 void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
+void copyMessageAndReactionView(const QJsonObject &src,
+                                ChatBskyConvoDefs::MessageAndReactionView &dest);
 void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest);
 void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest);
 void copyLogAcceptConvo(const QJsonObject &src, ChatBskyConvoDefs::LogAcceptConvo &dest);
@@ -267,6 +289,8 @@ void copyLogUnmuteConvo(const QJsonObject &src, ChatBskyConvoDefs::LogUnmuteConv
 void copyLogCreateMessage(const QJsonObject &src, ChatBskyConvoDefs::LogCreateMessage &dest);
 void copyLogDeleteMessage(const QJsonObject &src, ChatBskyConvoDefs::LogDeleteMessage &dest);
 void copyLogReadMessage(const QJsonObject &src, ChatBskyConvoDefs::LogReadMessage &dest);
+void copyLogAddReaction(const QJsonObject &src, ChatBskyConvoDefs::LogAddReaction &dest);
+void copyLogRemoveReaction(const QJsonObject &src, ChatBskyConvoDefs::LogRemoveReaction &dest);
 }
 // chat.bsky.convo.sendMessageBatch
 namespace ChatBskyConvoSendMessageBatch {
@@ -289,6 +313,10 @@ namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
 void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
 }
+// com.atproto.identity.defs
+namespace ComAtprotoIdentityDefs {
+void copyIdentityInfo(const QJsonObject &src, ComAtprotoIdentityDefs::IdentityInfo &dest);
+}
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest);
@@ -297,10 +325,6 @@ void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest
 // com.atproto.lexicon.schema
 namespace ComAtprotoLexiconSchema {
 void copyMain(const QJsonObject &src, ComAtprotoLexiconSchema::Main &dest);
-}
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
 }
 // com.atproto.repo.applyWrites
 namespace ComAtprotoRepoApplyWrites {
@@ -341,6 +365,14 @@ void copyContact(const QJsonObject &src, ComAtprotoServerDescribeServer::Contact
 namespace ComAtprotoServerListAppPasswords {
 void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::AppPassword &dest);
 }
+// com.atproto.sync.defs
+namespace ComAtprotoSyncDefs {
+void copyHostStatus(const QJsonValue &src, ComAtprotoSyncDefs::HostStatus &dest);
+}
+// com.atproto.sync.listHosts
+namespace ComAtprotoSyncListHosts {
+void copyHost(const QJsonObject &src, ComAtprotoSyncListHosts::Host &dest);
+}
 // com.atproto.sync.listRepos
 namespace ComAtprotoSyncListRepos {
 void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest);
@@ -356,14 +388,25 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
 void copySync(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Sync &dest);
 void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest);
 void copyAccount(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Account &dest);
-void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
-void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
-void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest);
 }
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {
 void copyTemplateView(const QJsonObject &src, ToolsOzoneCommunicationDefs::TemplateView &dest);
+}
+// tools.ozone.hosting.getAccountHistory
+namespace ToolsOzoneHostingGetAccountHistory {
+void copyAccountCreated(const QJsonObject &src,
+                        ToolsOzoneHostingGetAccountHistory::AccountCreated &dest);
+void copyEmailUpdated(const QJsonObject &src,
+                      ToolsOzoneHostingGetAccountHistory::EmailUpdated &dest);
+void copyEmailConfirmed(const QJsonObject &src,
+                        ToolsOzoneHostingGetAccountHistory::EmailConfirmed &dest);
+void copyPasswordUpdated(const QJsonObject &src,
+                         ToolsOzoneHostingGetAccountHistory::PasswordUpdated &dest);
+void copyHandleUpdated(const QJsonObject &src,
+                       ToolsOzoneHostingGetAccountHistory::HandleUpdated &dest);
+void copyEvent(const QJsonObject &src, ToolsOzoneHostingGetAccountHistory::Event &dest);
 }
 // tools.ozone.moderation.defs
 namespace ToolsOzoneModerationDefs {
@@ -415,6 +458,7 @@ void copyModEventViewDetail(const QJsonObject &src,
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
+void copySubjectView(const QJsonObject &src, ToolsOzoneModerationDefs::SubjectView &dest);
 void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::ReporterStats &dest);
 }
 // tools.ozone.server.getConfig
@@ -443,6 +487,23 @@ void copyRelatedAccount(const QJsonObject &src,
 // tools.ozone.team.defs
 namespace ToolsOzoneTeamDefs {
 void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest);
+}
+// tools.ozone.verification.defs
+namespace ToolsOzoneVerificationDefs {
+void copyVerificationView(const QJsonObject &src,
+                          ToolsOzoneVerificationDefs::VerificationView &dest);
+}
+// tools.ozone.verification.grantVerifications
+namespace ToolsOzoneVerificationGrantVerifications {
+void copyVerificationInput(const QJsonObject &src,
+                           ToolsOzoneVerificationGrantVerifications::VerificationInput &dest);
+void copyGrantError(const QJsonObject &src,
+                    ToolsOzoneVerificationGrantVerifications::GrantError &dest);
+}
+// tools.ozone.verification.revokeVerifications
+namespace ToolsOzoneVerificationRevokeVerifications {
+void copyRevokeError(const QJsonObject &src,
+                     ToolsOzoneVerificationRevokeVerifications::RevokeError &dest);
 }
 // blue.linkat.defs
 namespace BlueLinkatDefs {

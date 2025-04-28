@@ -154,7 +154,15 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getLabels(current.post.author.labels, true);
     else if (role == AuthorLabelIconsRole)
         return getLabelIcons(current.post.author.labels, true);
-    else if (role == MutedRole)
+    else if (role == AuthorVerificationStateRole) {
+        if (current.post.author.verification.trustedVerifierStatus == QStringLiteral("valid")) {
+            return QStringLiteral("verifier");
+        } else if (current.post.author.verification.verifiedStatus == QStringLiteral("valid")) {
+            return QStringLiteral("verified");
+        } else {
+            return QStringLiteral("none");
+        }
+    } else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
         return LexiconsTypeUnknown::copyRecordText(current.post.record);
@@ -839,6 +847,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[AuthorLabelsRole] = "authorLabels";
     roles[AuthorLabelIconsRole] = "authorLabelIcons";
+    roles[AuthorVerificationStateRole] = "authorVerificationState";
     roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";

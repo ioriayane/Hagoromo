@@ -143,6 +143,7 @@ ScrollView {
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: timelineView.logMode ? model.indexedAtLong : model.indexedAt
+            postAuthor.verificationState: model.authorVerificationState
             recordText.text: {
                 var text = model.recordText
                 if(model.recordTextTranslation.length > 0){
