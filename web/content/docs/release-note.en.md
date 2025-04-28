@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.49.0 - 2025/4/29
+
 - Add
   - Support DM reactions
   - Support display of the verification badge
