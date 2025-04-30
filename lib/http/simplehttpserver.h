@@ -1,7 +1,7 @@
 #ifndef SIMPLEHTTPSERVER_H
 #define SIMPLEHTTPSERVER_H
 
-#include <QtHttpServer>
+#include <QHttpServer>
 #include <QTimer>
 
 class SimpleHttpServer : public QAbstractHttpServer
