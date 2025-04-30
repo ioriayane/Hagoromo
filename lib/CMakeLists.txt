@@ -15,7 +15,17 @@ set(OPENSSL_ROOT_DIR "../openssl")
 endif()
 set(ZLIB_ROOT "../zlib")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core LinguistTools)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS
+    Core
+    Core5Compat
+    Gui
+    HttpServer
+    Network
+    LinguistTools
+    Sql
+    Xml
+    WebSockets
+)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
     Core
     Core5Compat
@@ -318,11 +328,14 @@ target_link_libraries(HagoromoLib PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt6::Core5Compat
     Qt6::Gui
-    Qt6::Network
     Qt6::HttpServer
+    Qt6::Network
     Qt6::Sql
     Qt6::Xml
     Qt6::WebSockets
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    ZLIB::ZLIB
 )
 
 target_compile_definitions(HagoromoLib PRIVATE

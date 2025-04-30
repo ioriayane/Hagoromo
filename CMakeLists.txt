@@ -10,6 +10,4 @@ if(DEFINED ENV{QTDIR})
 endif()
 
 add_subdirectory(lib)
-# add_subdirectory(AppTest)
-# add_subdirectory(StaticLibTest)
-# add_subdirectory(SampleTest)
+add_subdirectory(app)
