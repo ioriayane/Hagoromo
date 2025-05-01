@@ -367,5 +367,8 @@ if (ZLIB_FOUND)
                 "$<TARGET_FILE_DIR:HagoromoLib>"
             COMMENT "Copying zlib.dll to output directory"
         )
+        install(FILES "${ZLIB_DLL_PATH}"
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        )
     endif()
 endif()
