@@ -28,7 +28,6 @@ jobs:
           arch: x86_64
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
-        continue-on-error: true # なぜかtools_qtcreator_guiがchecksumエラーで失敗するので無視する
         with:
           aqtversion: '==3.1.*'
           version: '6.8.1'
@@ -36,7 +35,7 @@ jobs:
           target: 'desktop'
           arch: 'win64_msvc2022_64'
           modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
-          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja tools_qtcreator_gui,qt.tools.qtcreator_gui'
+          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -55,7 +54,7 @@ jobs:
           echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
           $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
           $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
-          scripts\build.bat $env:QT_ROOT_DIR\bin
+          scripts\build.bat $env:QT_ROOT_DIR
           echo "::endgroup::"
 
           # echo "Make for Windows"

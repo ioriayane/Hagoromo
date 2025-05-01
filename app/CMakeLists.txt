@@ -299,8 +299,10 @@ target_link_libraries(Hagoromo PRIVATE
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(Hagoromo PRIVATE
         QT_NO_DEBUG_OUTPUT
-        HAGOROMO_RELEASE_BUILD
     )
+    if(HAGOROMO_RELEASE_BUILD)
+        target_compile_definitions(Hagoromo PRIVATE HAGOROMO_RELEASE_BUILD)
+    endif()
 endif()
 
 qt_add_translations(Hagoromo
