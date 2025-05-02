@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(AtprotocolTest LANGUAGES CXX)
+project(ToolsTest LANGUAGES CXX)
 
 enable_testing()
 
@@ -22,13 +22,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
 )
 
-add_executable(AtprotocolTest
-    tst_atprotocol_test.cpp
-    atprotocol_test.qrc
+add_executable(ToolsTest
+    tst_tools_test.cpp
+    tools_test.qrc
 )
-add_test(NAME atprotocol_test COMMAND AtprotocolTest)
+add_test(NAME tools_test COMMAND ToolsTest)
 
-target_link_libraries(AtprotocolTest PRIVATE
+target_link_libraries(ToolsTest PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::HttpServer
@@ -40,6 +40,6 @@ target_link_libraries(AtprotocolTest PRIVATE
     Qt6::Xml
 )
 
-target_compile_definitions(AtprotocolTest PRIVATE
+target_compile_definitions(ToolsTest PRIVATE
     HAGOROMO_UNIT_TEST
 )

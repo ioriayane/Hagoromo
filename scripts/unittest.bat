@@ -61,12 +61,12 @@ cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
     -DCMAKE_BUILD_TYPE:STRING=Debug
 if NOT ERRORLEVEL 0 goto QUIT
-    @REM -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
 
 cmake --build . --target tests\all
 
 REM --- run -------
-ctest --test-dir tests\atprotocol_test -C Debug
+ctest --test-dir tests -C Debug -j 2
+
 if not ERRORLEVEL 0 goto TEST_FAIL
 
 cd %CWD%
