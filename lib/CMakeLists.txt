@@ -15,18 +15,7 @@ set(OPENSSL_ROOT_DIR "../openssl")
 endif()
 set(ZLIB_ROOT "../zlib")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS
-    Core
-    Core5Compat
-    Gui
-    HttpServer
-    Network
-    LinguistTools
-    Sql
-    Xml
-    WebSockets
-)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Core
     Core5Compat
     Gui
