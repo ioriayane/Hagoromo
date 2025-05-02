@@ -35,6 +35,7 @@ target_link_libraries(ChatTest PRIVATE
     Qt6::Test
     TestsCommon
     HagoromoLib
+    HagoromoGuiLib
     # libのd pointerにしたら消せる
     Qt6::Sql
     Qt6::Xml

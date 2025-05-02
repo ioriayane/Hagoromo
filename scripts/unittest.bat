@@ -37,8 +37,7 @@ if ERRORLEVEL 1 call %VS_SETUP_BAT%
 set PATH=%QTDIR%\lib;%PATH%
 set PATH=%QTDIR%\bin;%PATH%
 set PATH=%OPENSSL_FOLDER%\bin;%PATH%
-set PATH=..\zlib\bin;%PATH%
-
+set PATH=%CWD%\zlib\bin;%PATH%
 
 REM --- make folder -------
 if EXIST %BUILD_FOLDER% rmdir /s /q %BUILD_FOLDER%

@@ -166,9 +166,6 @@ set_target_properties(Hagoromo PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_include_directories(Hagoromo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/qtquick
-)
 target_link_libraries(Hagoromo PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt6::Core5Compat
