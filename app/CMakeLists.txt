@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 
 project(Hagoromo VERSION 0.1 LANGUAGES CXX)
 
+add_subdirectory(qtquick)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(WIN32)
@@ -34,125 +39,6 @@ qt_standard_project_setup(
 
 qt_add_executable(Hagoromo
     main.cpp
-    qtquick/account/accountlistmodel.cpp
-    qtquick/account/accountlistmodel.h
-    qtquick/account/createsession.cpp
-    qtquick/account/createsession.h
-    qtquick/atpabstractlistmodel.cpp
-    qtquick/atpabstractlistmodel.h
-    qtquick/blog/blogentrylistmodel.cpp
-    qtquick/blog/blogentrylistmodel.h
-    qtquick/chat/atpchatabstractlistmodel.cpp
-    qtquick/chat/atpchatabstractlistmodel.h
-    qtquick/chat/chatlistmodel.cpp
-    qtquick/chat/chatlistmodel.h
-    qtquick/chat/chatmessagelistmodel.cpp
-    qtquick/chat/chatmessagelistmodel.h
-    qtquick/chat/chatnotificationlistmodel.cpp
-    qtquick/chat/chatnotificationlistmodel.h
-    qtquick/column/columnlistmodel.cpp
-    qtquick/column/columnlistmodel.h
-    qtquick/column/feedtypelistmodel.cpp
-    qtquick/column/feedtypelistmodel.h
-    qtquick/controls/calendartablemodel.cpp
-    qtquick/controls/calendartablemodel.h
-    qtquick/controls/embedimagelistmodel.cpp
-    qtquick/controls/embedimagelistmodel.h
-    qtquick/controls/emojilistmodel.cpp
-    qtquick/controls/emojilistmodel.h
-    qtquick/controls/languagelistmodel.cpp
-    qtquick/controls/languagelistmodel.h
-    qtquick/feedgenerator/actorfeedgeneratorlistmodel.cpp
-    qtquick/feedgenerator/actorfeedgeneratorlistmodel.h
-    qtquick/feedgenerator/feedgeneratorlistmodel.cpp
-    qtquick/feedgenerator/feedgeneratorlistmodel.h
-    qtquick/link/externallink.cpp
-    qtquick/link/externallink.h
-    qtquick/link/feedgeneratorlink.cpp
-    qtquick/link/feedgeneratorlink.h
-    qtquick/link/listlink.cpp
-    qtquick/link/listlink.h
-    qtquick/link/postlink.cpp
-    qtquick/link/postlink.h
-    qtquick/list/listblockslistmodel.cpp
-    qtquick/list/listblockslistmodel.h
-    qtquick/list/listfeedlistmodel.cpp
-    qtquick/list/listfeedlistmodel.h
-    qtquick/list/listitemlistmodel.cpp
-    qtquick/list/listitemlistmodel.h
-    qtquick/list/listmuteslistmodel.cpp
-    qtquick/list/listmuteslistmodel.h
-    qtquick/list/listslistmodel.cpp
-    qtquick/list/listslistmodel.h
-    qtquick/log/logdailylistmodel.cpp
-    qtquick/log/logdailylistmodel.h
-    qtquick/log/logfeedlistmodel.cpp
-    qtquick/log/logfeedlistmodel.h
-    qtquick/log/logmonthlylistmodel.cpp
-    qtquick/log/logmonthlylistmodel.h
-    qtquick/log/logoperator.cpp
-    qtquick/log/logoperator.h
-    qtquick/log/logstatisticslistmodel.cpp
-    qtquick/log/logstatisticslistmodel.h
-    qtquick/moderation/contentfiltersettinglistmodel.cpp
-    qtquick/moderation/contentfiltersettinglistmodel.h
-    qtquick/moderation/labelerlistmodel.cpp
-    qtquick/moderation/labelerlistmodel.h
-    qtquick/moderation/mutedwordlistmodel.cpp
-    qtquick/moderation/mutedwordlistmodel.h
-    qtquick/moderation/reporter.cpp
-    qtquick/moderation/reporter.h
-    qtquick/notification/notificationlistmodel.cpp
-    qtquick/notification/notificationlistmodel.h
-    qtquick/operation/recordoperator.cpp
-    qtquick/operation/recordoperator.h
-    qtquick/operation/translator.cpp
-    qtquick/operation/translator.h
-    qtquick/profile/anyprofilelistmodel.cpp
-    qtquick/profile/anyprofilelistmodel.h
-    qtquick/profile/blockslistmodel.cpp
-    qtquick/profile/blockslistmodel.h
-    qtquick/profile/followerslistmodel.cpp
-    qtquick/profile/followerslistmodel.h
-    qtquick/profile/followslistmodel.cpp
-    qtquick/profile/followslistmodel.h
-    qtquick/profile/knownfollowerslistmodel.cpp
-    qtquick/profile/knownfollowerslistmodel.h
-    qtquick/profile/muteslistmodel.cpp
-    qtquick/profile/muteslistmodel.h
-    qtquick/profile/searchprofilelistmodel.cpp
-    qtquick/profile/searchprofilelistmodel.h
-    qtquick/profile/userprofile.cpp
-    qtquick/profile/userprofile.h
-    qtquick/realtime/editselectorlistmodel.cpp
-    qtquick/realtime/editselectorlistmodel.h
-    qtquick/realtime/realtimefeedlistmodel.cpp
-    qtquick/realtime/realtimefeedlistmodel.h
-    qtquick/realtime/realtimefeedstatusgraph.cpp
-    qtquick/realtime/realtimefeedstatusgraph.h
-    qtquick/realtime/realtimefeedstatuslistmodel.cpp
-    qtquick/realtime/realtimefeedstatuslistmodel.h
-    qtquick/systemtool.cpp
-    qtquick/systemtool.h
-    qtquick/thumbnailprovider.h
-    qtquick/timeline/actorlikelistmodel.cpp
-    qtquick/timeline/actorlikelistmodel.h
-    qtquick/timeline/anyfeedlistmodel.cpp
-    qtquick/timeline/anyfeedlistmodel.h
-    qtquick/timeline/authorfeedlistmodel.cpp
-    qtquick/timeline/authorfeedlistmodel.h
-    qtquick/timeline/customfeedlistmodel.cpp
-    qtquick/timeline/customfeedlistmodel.h
-    qtquick/timeline/postthreadlistmodel.cpp
-    qtquick/timeline/postthreadlistmodel.h
-    qtquick/timeline/quotedpostlistmodel.cpp
-    qtquick/timeline/quotedpostlistmodel.h
-    qtquick/timeline/searchpostlistmodel.cpp
-    qtquick/timeline/searchpostlistmodel.h
-    qtquick/timeline/timelinelistmodel.cpp
-    qtquick/timeline/timelinelistmodel.h
-    qtquick/timeline/userpost.cpp
-    qtquick/timeline/userpost.h
     tools/globalsettings.cpp
     tools/globalsettings.h
     tools/translatorchanger.cpp
@@ -291,6 +177,7 @@ target_link_libraries(Hagoromo PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
     HagoromoLib
+    HagoromoGuiLib
     # libのd pointerにしたら消せる
     Qt6::Sql
     Qt6::Xml
