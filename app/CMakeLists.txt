@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Hagoromo VERSION 0.1 LANGUAGES CXX)
+project(Hagoromo VERSION 0.1 LANGUAGES CXX C)
 
 add_subdirectory(qtquick)
 
@@ -44,6 +44,8 @@ qt_add_executable(Hagoromo
     tools/translatorchanger.cpp
     tools/translatorchanger.h
     ${RESOUCE_FILES}
+    # for openSSL
+    $<$<BOOL:WIN32>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
 
 

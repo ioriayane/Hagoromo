@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(HagoromoLib LANGUAGES CXX)
+project(HagoromoLib LANGUAGES CXX C)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(WIN32)
 set(OPENSSL_ROOT_DIR "${CMAKE_PREFIX_PATH}/../../Tools/OpenSSLv3/Win_x64")
 else()
-set(OPENSSL_ROOT_DIR "../openssl")
+set(OPENSSL_ROOT_DIR "${CMAKE_SOURCE_DIR}/openssl")
 endif()
 set(ZLIB_ROOT "../zlib")
 
@@ -304,9 +304,6 @@ add_library(HagoromoLib STATIC
     tools/qstringex.h
     tools/tid.cpp
     tools/tid.h
-    # for openSSL
-    # applink.c
-    # ${OPENSSL_APPLINK_SOURCE}
     # resources
     lib.qrc
 )
