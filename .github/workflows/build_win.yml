@@ -74,4 +74,4 @@ jobs:
         if: ${{ inputs.unit_test == true }}
         env:
           TZ: "Asia/Tokyo"
-        run: scripts\unittest.bat $env:QT_ROOT_DIR\bin
+        run: scripts\unittest.bat $env:QT_ROOT_DIR
