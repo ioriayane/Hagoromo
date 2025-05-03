@@ -5,7 +5,7 @@ project(HagoromoGuiLib LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -159,3 +159,9 @@ target_link_libraries(HagoromoGuiLib PRIVATE
     Qt6::Sql
     Qt6::Xml
 )
+
+if(HAGOROMO_UNIT_TEST_BUILD)
+    target_compile_definitions(HagoromoGuiLib PUBLIC
+        HAGOROMO_UNIT_TEST
+    )
+endif()

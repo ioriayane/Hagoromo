@@ -5,7 +5,7 @@ project(HagoromoLib LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(WIN32)
@@ -304,6 +304,9 @@ add_library(HagoromoLib STATIC
     tools/qstringex.h
     tools/tid.cpp
     tools/tid.h
+    # for openSSL
+    # applink.c
+    # ${OPENSSL_APPLINK_SOURCE}
     # resources
     lib.qrc
 )

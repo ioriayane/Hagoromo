@@ -58,8 +58,9 @@ cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
     -DCMAKE_INSTALL_LIBDIR:PATH='.' ^
     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
+    -DHAGOROMO_UNIT_TEST_BUILD=ON ^
     -DCMAKE_BUILD_TYPE:STRING=Debug
-if NOT ERRORLEVEL 0 goto QUIT
+if not ERRORLEVEL 0 goto TEST_FAIL
 
 cmake --build . --target tests\all
 
