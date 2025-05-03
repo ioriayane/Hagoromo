@@ -60,14 +60,14 @@ cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
     -DHAGOROMO_UNIT_TEST_BUILD=ON ^
     -DCMAKE_BUILD_TYPE:STRING=Debug
-if not ERRORLEVEL 0 goto TEST_FAIL
+if ERRORLEVEL 1 goto QUIT
 
 cmake --build . --target tests\all
+if ERRORLEVEL 1 goto QUIT
 
 REM --- run -------
-ctest --test-dir tests -C Debug -j 2
-
-if not ERRORLEVEL 0 goto TEST_FAIL
+ctest --test-dir tests -C Debug -j 4
+if ERRORLEVEL 1 goto QUIT
 
 cd %CWD%
 

@@ -55,13 +55,13 @@ cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
     -DHAGOROMO_RELEASE_BUILD=ON ^
     -DCMAKE_BUILD_TYPE:STRING=Release
-if NOT ERRORLEVEL 0 goto QUIT
+if ERRORLEVEL 1 goto QUIT
 
 cmake --build . --target update_translations
-if NOT ERRORLEVEL 0 goto QUIT
+if ERRORLEVEL 1 goto QUIT
 
 cmake --build . --target install
-if NOT ERRORLEVEL 0 goto QUIT
+if ERRORLEVEL 1 goto QUIT
 
 cd %CWD%
 
