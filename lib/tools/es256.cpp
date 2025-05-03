@@ -150,6 +150,10 @@ void Es256::loadKey()
             m_pKey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
             fclose(fp);
         }
+        if (m_pKey == nullptr) {
+            // When the file exists but is corrupted, such as when it is empty.
+            createPrivateKey(path);
+        }
     }
 }
 
