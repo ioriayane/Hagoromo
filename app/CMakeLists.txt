@@ -22,6 +22,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     Core
     Core5Compat
     Gui
+    HttpServer
     LinguistTools
     Network
     Quick
@@ -45,12 +46,12 @@ qt_add_executable(Hagoromo
     tools/translatorchanger.h
     ${RESOUCE_FILES}
     # for openSSL
-    $<$<BOOL:WIN32>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
+    $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
 
 
 qt_add_qml_module(Hagoromo
-    URI Hagoromo
+    URI tech.relog.hagoromo
     VERSION 1.0
     QML_FILES
         qml/data/ColumnSettings.qml

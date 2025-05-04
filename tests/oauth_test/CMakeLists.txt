@@ -32,7 +32,7 @@ add_executable(OauthTest
     tst_oauth_test.cpp
     oauth_test.qrc
     # for openSSL
-    $<$<BOOL:WIN32>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
+    $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
 add_test(NAME oauth_test COMMAND OauthTest)
 

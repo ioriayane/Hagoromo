@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/Hagoromo">
+    <qresource prefix="/tech/relog/hagoromo">
         <file>qml/images/account.png</file>
         <file>qml/images/account_icon.png</file>
         <file>qml/images/account_off.png</file>

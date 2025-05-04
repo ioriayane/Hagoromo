@@ -150,7 +150,7 @@ void EmojiListModel::load()
         endRemoveRows();
     }
 
-    QFile file(":/Hagoromo/qtquick/controls/emoji.json");
+    QFile file(":/tech/relog/hagoromo/qtquick/controls/emoji.json");
     if (!file.open(QFile::ReadOnly))
         return;
     QByteArray ba = file.readAll();
