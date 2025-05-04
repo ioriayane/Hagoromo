@@ -36,7 +36,6 @@ build_zlib(){
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
         cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        PATH=$PATH:$QTDIR/../../Tools/CMake/CMake.app/Contents/bin/
         cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64"
     fi
     cmake --build . --config RELEASE --target install
@@ -58,10 +57,18 @@ build_hagoromo(){
     make_dir $deploy_dir
     cd $work_dir
 
-    cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH="$QTDIR" \
-        -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
-        -DHAGOROMO_RELEASE_BUILD=ON \
-        -DCMAKE_BUILD_TYPE:STRING=Release
+    if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH="$QTDIR" \
+            -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
+            -DHAGOROMO_RELEASE_BUILD=ON \
+            -DCMAKE_BUILD_TYPE:STRING=Release
+    elif [ "${PLATFORM_TYPE}" == "mac" ]; then
+        cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH="$QTDIR" \
+            -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
+            -DHAGOROMO_RELEASE_BUILD=ON \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64"
+    fi
     cmake --build . --target update_translations
     cmake --build . --target install
 
@@ -145,6 +152,11 @@ if [ -z "${QTDIR}" ] || [ -z "${PLATFORM_TYPE}" ]; then
 fi
 
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
+
+if [ "${PLATFORM_TYPE}" == "mac" ]; then
+    PATH=$PATH:$QTDIR/../../Tools/CMake/CMake.app/Contents/bin/
+    PATH=$PATH:$QTDIR/../../Tools/Ninja/
+fi
 
 build_openssl
 build_zlib
