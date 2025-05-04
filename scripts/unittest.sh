@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 make_dir(){
     if [ -e $1 ]; then
@@ -16,11 +16,11 @@ build_hagoromo(){
     make_dir $work_dir
     cd $work_dir
 
-    ${QT_BIN_FOLDER}/qmake ../Hagoromo.pro CONFIG+=debug
-    make -j4
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
+    cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH="$QTDIR" \
+        -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
+        -DHAGOROMO_UNIT_TEST_BUILD=ON \
+        -DCMAKE_BUILD_TYPE:STRING=Debug
+    cmake --build . --target tests/all
 
     popd
 }
@@ -37,12 +37,12 @@ cd $SCRIPT_FOLDER/..
 ROOT_FOLDER=$(pwd)
 
 PLATFORM_TYPE=$1
-QT_BIN_FOLDER=$2
+QTDIR=$2
 
-if [ -z "${QT_BIN_FOLDER}" ] || [ -z "${PLATFORM_TYPE}" ]; then
-    echo "usage $(basename $0) PLATFORM_TYPE QT_BIN_FOLDER"
+if [ -z "${QTDIR}" ] || [ -z "${PLATFORM_TYPE}" ]; then
+    echo "usage $(basename $0) PLATFORM_TYPE QTDIR"
     echo " PLATFORM_TYPE   linux or mac"
-    echo " QT_BIN_FOLDER   ex: ~/Qt/5.15.2/gcc_64/bin/"
+    echo " QTDIR           ex: ~/Qt/5.15.2/gcc_64/"
     exit 1
 fi
 
@@ -54,18 +54,10 @@ if [ "${PLATFORM_TYPE}" == "mac" ]; then
     mkdir -p build-hagoromo/tests/Frameworks
     cp zlib/lib/libz.1.* build-hagoromo/tests/Frameworks
 else
-LD_LIBRARY_PATH=$ROOT_FOLDER/openssl/lib
+LD_LIBRARY_PATH=$ROOT_FOLDER/openssl/lib64:$ROOT_FOLDER/zlib/lib
 export LD_LIBRARY_PATH
 fi
 
-work_dir="./build-hagoromo/tests"
-do_test ${work_dir}/atprotocol_test/atprotocol_test
-do_test ${work_dir}/chat_test/chat_test
-do_test ${work_dir}/hagoromo_test/hagoromo_test
-do_test ${work_dir}/hagoromo_test2/hagoromo_test2
-do_test ${work_dir}/http_test/http_test
-do_test ${work_dir}/log_test/log_test
-do_test ${work_dir}/oauth_test/oauth_test
-do_test ${work_dir}/realtime_test/realtime_test
-do_test ${work_dir}/search_test/search_test
-do_test ${work_dir}/tools_test/tools_test
+work_dir="./build-hagoromo"
+cd $work_dir
+ctest --test-dir tests -C Debug -j 4
