@@ -13,7 +13,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Core
     Core5Compat
     Gui
-    LinguistTools
     Network
     Quick
     QuickControls2

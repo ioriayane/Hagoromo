@@ -20,15 +20,13 @@ set(RESOUCE_FILES
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
-    Core5Compat
-    Gui
-    HttpServer
     LinguistTools
-    Network
     Quick
     QuickControls2
 )
-
+qt_policy(
+    SET QTP0004 NEW
+)
 qt_standard_project_setup(REQUIRES 6.8)
 qt_standard_project_setup(
     I18N_TRANSLATED_LANGUAGES ja
@@ -45,10 +43,10 @@ qt_add_executable(Hagoromo
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
 
-
 qt_add_qml_module(Hagoromo
     URI tech.relog.hagoromo
     VERSION 1.0
+    RESOURCE_PREFIX /
     QML_FILES
         qml/data/ColumnSettings.qml
         qml/data/AdjustedValues.qml
@@ -166,10 +164,7 @@ set_target_properties(Hagoromo PROPERTIES
 )
 
 target_link_libraries(Hagoromo PRIVATE
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt6::Core5Compat
-    Qt6::Gui
-    Qt6::Network
+    Qt6::Core
     Qt6::Quick
     Qt6::QuickControls2
     HagoromoLib
