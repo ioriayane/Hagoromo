@@ -2,7 +2,6 @@
 #define LOGACCESS_H
 
 #include <QObject>
-#include <QSqlQuery>
 
 struct TotalItem
 {
@@ -60,29 +59,9 @@ signals:
     void finishedUpdateRecords();
 
 private:
-    QString dbPath(QString did) const;
-    void dbInit();
-    void dbRelease() const;
-    bool dbOpen(const QString &did) const;
-    void dbClose() const;
-    bool dbCreateTable() const;
-    void dbDropTable() const;
-    bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                        const QJsonObject &json) const;
-    bool dbDeleteRecord(const QString &cid) const;
-    bool dbSelect(QSqlQuery &query, const QString &sql,
-                  const QStringList &bind_values = QStringList()) const;
-    QStringList dbGetSavedCids() const;
-    QList<TotalItem> dbMakeDailyTotals(int &max) const;
-    QList<TotalItem> dbMakeMonthlyTotals(int &max) const;
-    QList<TotalItem> dbMakeStatistics() const;
-    QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
-                            const int limit, QStringList &view_posts) const;
-    void dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const;
-    int dbGetVersion() const;
-    void dbSetVersion(const int version) const;
-
-    QString m_dbConnectionName;
+    class Private;
+    Private *d;
+    Q_DISABLE_COPY(LogAccess)
 };
 
 #endif // LOGACCESS_H

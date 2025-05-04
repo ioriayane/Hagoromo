@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(Hagoromo VERSION 0.1 LANGUAGES CXX C)
 
@@ -27,8 +27,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     Quick
     QuickControls2
-    # libのlogaccess.hをd pointerにしたら消せる
-    Sql
     # libのopengraphprotocol.hをd pointerにしたら消せる
     Xml
 )
@@ -179,7 +177,6 @@ target_link_libraries(Hagoromo PRIVATE
     HagoromoLib
     HagoromoGuiLib
     # libのd pointerにしたら消せる
-    Qt6::Sql
     Qt6::Xml
 )
 

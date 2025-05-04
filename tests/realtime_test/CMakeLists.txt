@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(RealtimeTest LANGUAGES CXX)
 
@@ -16,8 +16,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Gui
     HttpServer
     Test
-    # libのlogaccess.hをd pointerにしたら消せる
-    Sql
     # libのopengraphprotocol.hをd pointerにしたら消せる
     Xml
 )
@@ -38,7 +36,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     HagoromoLib
     HagoromoGuiLib
     # libのd pointerにしたら消せる
-    Qt6::Sql
     Qt6::Xml
 )
 

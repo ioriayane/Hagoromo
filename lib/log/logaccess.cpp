@@ -31,14 +31,65 @@
             .arg(QChar(0x3000))                                                                    \
             .arg(QChar(0xfeff))
 
-LogAccess::LogAccess(QObject *parent) : QObject { parent } { }
+class LogAccess::Private
+{
+public:
+    Private(LogAccess *parent);
+    ~Private();
 
-LogAccess::~LogAccess() { }
+    QString dbPath(QString did) const;
+    void dbInit();
+    void dbRelease() const;
+    bool dbOpen(const QString &did) const;
+    void dbClose() const;
+    bool dbCreateTable() const;
+    void dbDropTable() const;
+    bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
+                        const QJsonObject &json) const;
+    bool dbDeleteRecord(const QString &cid) const;
+    bool dbSelect(QSqlQuery &query, const QString &sql,
+                  const QStringList &bind_values = QStringList()) const;
+    QStringList dbGetSavedCids() const;
+    QList<TotalItem> dbMakeDailyTotals(int &max) const;
+    QList<TotalItem> dbMakeMonthlyTotals(int &max) const;
+    QList<TotalItem> dbMakeStatistics() const;
+    QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
+                            const int limit, QStringList &view_posts) const;
+    void dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const;
+    int dbGetVersion() const;
+    void dbSetVersion(const int version) const;
+
+private:
+    LogAccess *q;
+
+    QString m_dbConnectionName;
+};
+
+LogAccess::Private::Private(LogAccess *parent)
+{
+    qDebug().noquote() << LOG_DATETIME << "LogAccess::Private(" << this << ") Private()";
+}
+
+LogAccess::Private::~Private()
+{
+    qDebug().noquote() << LOG_DATETIME << "LogAccess::Private(" << this << ") ~Private()";
+}
+
+LogAccess::LogAccess(QObject *parent) : QObject { parent }, d(new Private(this))
+{
+    qDebug().noquote() << LOG_DATETIME << this << "LogAccess()";
+    connect(this, &QObject::destroyed, [this]() { delete d; });
+}
+
+LogAccess::~LogAccess()
+{
+    qDebug().noquote() << LOG_DATETIME << this << "~HttpAccess()";
+}
 
 void LogAccess::removeDbFile(const QString &did)
 {
     qDebug().noquote() << LOG_DATETIME << "Remove database file" << did;
-    QString path = dbPath(did);
+    QString path = d->dbPath(did);
     if (QFile::exists(path)) {
         QFile::remove(path);
     }
@@ -52,17 +103,17 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
         return;
     }
     bool ret = false;
-    dbInit();
-    if (dbOpen(did)) {
-        if (dbCreateTable()) {
-            int version = dbGetVersion();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        if (d->dbCreateTable()) {
+            int version = d->dbGetVersion();
             qDebug().noquote() << LOG_DATETIME << "Check database version:" << version;
             if (version < DB_VERSION) {
                 qDebug().noquote() << LOG_DATETIME << "Database version is out of date";
                 qDebug().noquote()
                         << LOG_DATETIME << "Update version from " << version << "to " << DB_VERSION;
-                dbDropTable();
-                ret = dbCreateTable();
+                d->dbDropTable();
+                ret = d->dbCreateTable();
             } else {
                 ret = true;
             }
@@ -76,7 +127,7 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                 qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
                 emit progressMessage("Updating local database ...");
                 int i = 0;
-                const QStringList saved_cids = dbGetSavedCids();
+                const QStringList saved_cids = d->dbGetSavedCids();
                 for (const auto &cid : decoder.cids()) {
                     if (i++ % 100 == 0) {
                         emit progressMessage(
@@ -84,8 +135,8 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                                         .arg(static_cast<int>(100 * i / decoder.cids().length())));
                     }
                     if (!saved_cids.contains(cid)) {
-                        if (!dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
-                                            decoder.json(cid))) {
+                        if (!d->dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
+                                               decoder.json(cid))) {
                             emit finishedUpdateDb(false);
                             break;
                         }
@@ -98,7 +149,7 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                 emit progressMessage("Checking deleted data ...");
                 for (const auto &cid : saved_cids) {
                     if (!decoder.cids().contains(cid)) {
-                        if (!dbDeleteRecord(cid)) {
+                        if (!d->dbDeleteRecord(cid)) {
                             emit finishedUpdateDb(false);
                             break;
                         }
@@ -106,9 +157,9 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                 }
             }
         }
-        dbClose();
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedUpdateDb(ret);
 }
 
@@ -121,12 +172,12 @@ void LogAccess::dailyTotals(const QString &did)
         emit finishedTotals(list, max);
         return;
     }
-    dbInit();
-    if (dbOpen(did)) {
-        list = dbMakeDailyTotals(max);
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        list = d->dbMakeDailyTotals(max);
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedTotals(list, max);
 }
 
@@ -139,12 +190,12 @@ void LogAccess::monthlyTotals(const QString &did)
         emit finishedTotals(list, max);
         return;
     }
-    dbInit();
-    if (dbOpen(did)) {
-        list = dbMakeMonthlyTotals(max);
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        list = d->dbMakeMonthlyTotals(max);
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedTotals(list, max);
 }
 
@@ -156,12 +207,12 @@ void LogAccess::statistics(const QString &did)
         emit finishedTotals(list, 0);
         return;
     }
-    dbInit();
-    if (dbOpen(did)) {
-        list = dbMakeStatistics();
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        list = d->dbMakeStatistics();
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedTotals(list, 0);
 }
 
@@ -176,12 +227,12 @@ void LogAccess::selectRecords(const QString &did, const int kind, const QString 
         emit finishedSelection(records, view_posts);
         return;
     }
-    dbInit();
-    if (dbOpen(did)) {
-        records = dbSelectRecords(kind, condition, cursor, limit, view_posts);
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        records = d->dbSelectRecords(kind, condition, cursor, limit, view_posts);
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedSelection(records, view_posts);
 }
 
@@ -193,40 +244,40 @@ void LogAccess::updateRecords(const QString &did, const QList<RecordPostItem> &r
         emit finishedUpdateRecords();
         return;
     }
-    dbInit();
-    if (dbOpen(did)) {
-        dbUpdateRecords(record_post_items);
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        d->dbUpdateRecords(record_post_items);
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     emit finishedUpdateRecords();
 }
 
 void LogAccess::setVersion(const QString &did, const int version)
 {
     qDebug().noquote() << LOG_DATETIME << "setVersion" << version;
-    dbInit();
-    if (dbOpen(did)) {
-        dbSetVersion(version);
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        d->dbSetVersion(version);
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
 }
 
 int LogAccess::getVersion(const QString &did)
 {
     int version = -1;
     qDebug().noquote() << LOG_DATETIME << "getVersion";
-    dbInit();
-    if (dbOpen(did)) {
-        version = dbGetVersion();
-        dbClose();
+    d->dbInit();
+    if (d->dbOpen(did)) {
+        version = d->dbGetVersion();
+        d->dbClose();
     }
-    dbRelease();
+    d->dbRelease();
     return version;
 }
 
-QString LogAccess::dbPath(QString did) const
+QString LogAccess::Private::dbPath(QString did) const
 {
     did.replace(":", "_");
     QString path =
@@ -253,7 +304,7 @@ QString LogAccess::dbPath(QString did) const
     return path;
 }
 
-void LogAccess::dbInit()
+void LogAccess::Private::dbInit()
 {
     m_dbConnectionName = QString("tech.relog.hagoromo.%1")
                                  .arg(QString::number((uintptr_t)(QThread::currentThreadId())));
@@ -261,13 +312,13 @@ void LogAccess::dbInit()
     QSqlDatabase::addDatabase("QSQLITE", m_dbConnectionName);
 }
 
-void LogAccess::dbRelease() const
+void LogAccess::Private::dbRelease() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbRelease()";
     QSqlDatabase::removeDatabase(m_dbConnectionName);
 }
 
-bool LogAccess::dbOpen(const QString &did) const
+bool LogAccess::Private::dbOpen(const QString &did) const
 {
     qDebug().noquote() << LOG_DATETIME << "dbOpen()";
     if (did.isEmpty())
@@ -284,14 +335,14 @@ bool LogAccess::dbOpen(const QString &did) const
     return true;
 }
 
-void LogAccess::dbClose() const
+void LogAccess::Private::dbClose() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbClose()";
     QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
     db.close();
 }
 
-bool LogAccess::dbCreateTable() const
+bool LogAccess::Private::dbCreateTable() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbCreateTable()";
     bool ret = true;
@@ -345,7 +396,7 @@ bool LogAccess::dbCreateTable() const
     return ret;
 }
 
-void LogAccess::dbDropTable() const
+void LogAccess::Private::dbDropTable() const
 {
     QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
     for (const auto &name : db.tables()) {
@@ -361,8 +412,8 @@ void LogAccess::dbDropTable() const
     }
 }
 
-bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                               const QJsonObject &json) const
+bool LogAccess::Private::dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
+                                        const QJsonObject &json) const
 {
     bool ret = true;
     QString parent_uri = json.value("list").toString();
@@ -409,7 +460,7 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
     return ret;
 }
 
-bool LogAccess::dbDeleteRecord(const QString &cid) const
+bool LogAccess::Private::dbDeleteRecord(const QString &cid) const
 {
     bool ret = true;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
@@ -427,7 +478,8 @@ bool LogAccess::dbDeleteRecord(const QString &cid) const
     return ret;
 }
 
-bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql, const QStringList &bind_values) const
+bool LogAccess::Private::dbSelect(QSqlQuery &query, const QString &sql,
+                                  const QStringList &bind_values) const
 {
     bool ret = false;
     if (query.prepare(sql)) {
@@ -446,7 +498,7 @@ bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql, const QStringList
     return ret;
 }
 
-QStringList LogAccess::dbGetSavedCids() const
+QStringList LogAccess::Private::dbGetSavedCids() const
 {
     QStringList cids;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
@@ -458,7 +510,7 @@ QStringList LogAccess::dbGetSavedCids() const
     return cids;
 }
 
-QList<TotalItem> LogAccess::dbMakeDailyTotals(int &max) const
+QList<TotalItem> LogAccess::Private::dbMakeDailyTotals(int &max) const
 {
     max = 0;
     QList<TotalItem> list;
@@ -479,7 +531,7 @@ QList<TotalItem> LogAccess::dbMakeDailyTotals(int &max) const
     return list;
 }
 
-QList<TotalItem> LogAccess::dbMakeMonthlyTotals(int &max) const
+QList<TotalItem> LogAccess::Private::dbMakeMonthlyTotals(int &max) const
 {
     max = 0;
     QList<TotalItem> list;
@@ -500,7 +552,7 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals(int &max) const
     return list;
 }
 
-QList<TotalItem> LogAccess::dbMakeStatistics() const
+QList<TotalItem> LogAccess::Private::dbMakeStatistics() const
 {
     QStringList types;
     types << "app.bsky.feed.post"
@@ -625,8 +677,9 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
     return list;
 }
 
-QString LogAccess::dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
-                                   const int limit, QStringList &view_posts) const
+QString LogAccess::Private::dbSelectRecords(const int kind, const QString &condition,
+                                            const QString &cursor, const int limit,
+                                            QStringList &view_posts) const
 {
     QStringList bind_values;
     QString sql("SELECT uri, cid, record, createdAt, view FROM record"
@@ -686,7 +739,7 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
     return QString("{\"records\": []}");
 }
 
-void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const
+void LogAccess::Private::dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const
 {
     QString sql;
     for (const auto &item : record_post_items) {
@@ -706,7 +759,7 @@ void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items) 
     }
 }
 
-int LogAccess::dbGetVersion() const
+int LogAccess::Private::dbGetVersion() const
 {
     int version = -1;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
@@ -719,7 +772,7 @@ int LogAccess::dbGetVersion() const
     return version;
 }
 
-void LogAccess::dbSetVersion(const int version) const
+void LogAccess::Private::dbSetVersion(const int version) const
 {
     int old = dbGetVersion();
     QString sql;
