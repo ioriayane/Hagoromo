@@ -28,13 +28,13 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 find_package(OpenSSL REQUIRED)
 
+get_filename_component(folder_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 add_executable(${PROJECT_NAME}
-    tst_oauth_test.cpp
-    oauth_test.qrc
+    tst_${folder_name}.cpp
+    ${folder_name}.qrc
     # for openSSL
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core

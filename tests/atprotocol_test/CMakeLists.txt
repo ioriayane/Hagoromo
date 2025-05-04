@@ -22,11 +22,12 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
 )
 
+get_filename_component(folder_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 add_executable(${PROJECT_NAME}
-    tst_atprotocol_test.cpp
-    atprotocol_test.qrc
+    tst_${folder_name}.cpp
+    ${folder_name}.qrc
 )
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core
