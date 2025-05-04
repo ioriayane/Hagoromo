@@ -22,13 +22,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
 )
 
-add_executable(RealtimeTest
+add_executable(${PROJECT_NAME}
     tst_realtime_test.cpp
     realtime_test.qrc
 )
-add_test(NAME realtime_test COMMAND RealtimeTest)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(RealtimeTest PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::HttpServer
@@ -41,6 +41,4 @@ target_link_libraries(RealtimeTest PRIVATE
     Qt6::Xml
 )
 
-target_compile_definitions(RealtimeTest PRIVATE
-    HAGOROMO_UNIT_TEST
-)
+include(../tests.cmake)

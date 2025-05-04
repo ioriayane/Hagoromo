@@ -28,15 +28,15 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 find_package(OpenSSL REQUIRED)
 
-add_executable(OauthTest
+add_executable(${PROJECT_NAME}
     tst_oauth_test.cpp
     oauth_test.qrc
     # for openSSL
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
-add_test(NAME oauth_test COMMAND OauthTest)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(OauthTest PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::HttpServer
@@ -50,10 +50,8 @@ target_link_libraries(OauthTest PRIVATE
     Qt6::Xml
 )
 
-target_include_directories(HagoromoLib PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${OPENSSL_INCLUDE_DIR}
 )
 
-target_compile_definitions(OauthTest PRIVATE
-    HAGOROMO_UNIT_TEST
-)
+include(../tests.cmake)

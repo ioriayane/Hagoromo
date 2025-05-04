@@ -22,13 +22,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
 )
 
-add_executable(LogTest
+add_executable(${PROJECT_NAME}
     tst_log_test.cpp
     log_test.qrc
 )
-add_test(NAME log_test COMMAND LogTest)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(LogTest PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::HttpServer
@@ -41,6 +41,4 @@ target_link_libraries(LogTest PRIVATE
     Qt6::Xml
 )
 
-target_compile_definitions(LogTest PRIVATE
-    HAGOROMO_UNIT_TEST
-)
+include(../tests.cmake)

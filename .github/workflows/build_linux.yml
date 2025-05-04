@@ -71,3 +71,9 @@ jobs:
         env:
           TZ: "Asia/Tokyo"
         run: scripts/unittest.sh linux ${QT_ROOT_DIR}
+      - name: Upload a unit test result
+        if: ${{ inputs.unit_test == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit_test_result_for_linux
+          path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"

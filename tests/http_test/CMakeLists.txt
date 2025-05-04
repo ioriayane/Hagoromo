@@ -22,13 +22,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
 )
 
-add_executable(HttpTest
+add_executable(${PROJECT_NAME}
     tst_http_test.cpp
     http_test.qrc
 )
-add_test(NAME http_test COMMAND HttpTest)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-target_link_libraries(HttpTest PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::HttpServer
@@ -40,6 +40,4 @@ target_link_libraries(HttpTest PRIVATE
     Qt6::Xml
 )
 
-target_compile_definitions(HttpTest PRIVATE
-    HAGOROMO_UNIT_TEST
-)
+include(../tests.cmake)
