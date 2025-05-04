@@ -16,8 +16,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Gui
     HttpServer
     Test
-    # libのopengraphprotocol.hをd pointerにしたら消せる
-    Xml
 )
 
 get_filename_component(folder_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -33,8 +31,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Test
     TestsCommon
     HagoromoLib
-    # libのd pointerにしたら消せる
-    Qt6::Xml
 )
 
 include(../tests.cmake)

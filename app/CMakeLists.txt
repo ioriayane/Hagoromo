@@ -27,8 +27,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     Quick
     QuickControls2
-    # libのopengraphprotocol.hをd pointerにしたら消せる
-    Xml
 )
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -176,8 +174,6 @@ target_link_libraries(Hagoromo PRIVATE
     Qt6::QuickControls2
     HagoromoLib
     HagoromoGuiLib
-    # libのd pointerにしたら消せる
-    Qt6::Xml
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

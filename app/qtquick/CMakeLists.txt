@@ -17,8 +17,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     Quick
     QuickControls2
-    # libのopengraphprotocol.hをd pointerにしたら消せる
-    Xml
 )
 
 add_library(HagoromoGuiLib STATIC
@@ -153,8 +151,6 @@ target_link_libraries(HagoromoGuiLib PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
     HagoromoLib
-    # libのd pointerにしたら消せる
-    Qt6::Xml
 )
 
 if(HAGOROMO_UNIT_TEST_BUILD)

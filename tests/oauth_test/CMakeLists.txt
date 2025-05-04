@@ -21,8 +21,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     Gui
     HttpServer
     Test
-    # libのopengraphprotocol.hをd pointerにしたら消せる
-    Xml
 )
 find_package(OpenSSL REQUIRED)
 
@@ -43,8 +41,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     HagoromoLib
     OpenSSL::SSL
     OpenSSL::Crypto
-    # libのd pointerにしたら消せる
-    Qt6::Xml
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

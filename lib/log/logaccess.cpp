@@ -65,7 +65,7 @@ private:
     QString m_dbConnectionName;
 };
 
-LogAccess::Private::Private(LogAccess *parent)
+LogAccess::Private::Private(LogAccess *parent) : q(parent)
 {
     qDebug().noquote() << LOG_DATETIME << "LogAccess::Private(" << this << ") Private()";
 }
