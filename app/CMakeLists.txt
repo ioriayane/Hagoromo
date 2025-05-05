@@ -17,6 +17,11 @@ set(RESOUCE_FILES
     app.qrc
     ../lib/lib.qrc
 )
+set(MACOSX_BUNDLE_ICON_FILE app.icns)
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/app.icns")
+set_source_files_properties(${app_icon_macos} PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources")
+
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
@@ -39,6 +44,7 @@ qt_add_executable(Hagoromo
     tools/translatorchanger.cpp
     tools/translatorchanger.h
     ${RESOUCE_FILES}
+    ${app_icon_macos}
     # for openSSL
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
