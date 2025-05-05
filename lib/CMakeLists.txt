@@ -334,6 +334,7 @@ target_compile_definitions(HagoromoLib PRIVATE
 
 qt_add_translations(HagoromoLib QM_OUTPUT_DIRECTORY translations)
 
+set(HAGOROMO_ADDITIONAL_LIBRARIES)
 if (ZLIB_FOUND)
     target_include_directories(HagoromoLib PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(HagoromoLib PRIVATE ${ZLIB_LIBRARIES})
@@ -345,19 +346,32 @@ if (ZLIB_FOUND)
         else()
             set(ZLIB_DLL_PATH "${ZLIB_ROOT_ABS}/bin/zlib.dll")
         endif()
+    elseif(APPLE)
+        set(ZLIB_DLL_PATH "${ZLIB_ROOT_ABS}/lib/libz.1.dylib")
     else()
         # set(ZLIB_DLL_PATH "${ZLIB_ROOT_ABS}/lib/libz.so")
     endif()
     if (EXISTS "${ZLIB_DLL_PATH}")
         message(STATUS  "ZLIB_FOUND=${ZLIB_FOUND} ZLIB_DLL_PATH=${ZLIB_DLL_PATH}")
-        add_custom_command(TARGET HagoromoLib POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${ZLIB_DLL_PATH}"
-                "$<TARGET_FILE_DIR:HagoromoLib>"
-            COMMENT "Copying zlib.dll to output directory"
-        )
-        install(FILES "${ZLIB_DLL_PATH}"
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
+        if(WIN32)
+            install(FILES "${ZLIB_DLL_PATH}"
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+        endif()
+        list(APPEND HAGOROMO_ADDITIONAL_LIBRARIES ${ZLIB_DLL_PATH})
     endif()
 endif()
+
+if(OPENSSL_FOUND)
+    if (EXISTS "${OPENSSL_CRYPTO_LIBRARY}")
+        message(STATUS "OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}")
+        list(APPEND HAGOROMO_ADDITIONAL_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
+    endif()
+    if (EXISTS "${OPENSSL_SSL_LIBRARY}")
+        message(STATUS "OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+        list(APPEND HAGOROMO_ADDITIONAL_LIBRARIES ${OPENSSL_SSL_LIBRARY})
+    endif()
+endif()
+# 実行時に必要になるライブラリファイルを保存しておく
+set_target_properties(HagoromoLib PROPERTIES HAGOROMO_ADDITIONAL_LIBRARIES "${HAGOROMO_ADDITIONAL_LIBRARIES}")
+

@@ -189,3 +189,25 @@ install(TARGETS Hagoromo
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+get_target_property(HAGOROMO_ADDITIONAL_LIBRARIES HagoromoLib HAGOROMO_ADDITIONAL_LIBRARIES)
+if(WIN32)
+    set(post_copy_destination_dir "$<TARGET_FILE_DIR:Hagoromo>")
+elseif(APPLE)
+    set(post_copy_destination_dir "$<TARGET_FILE_DIR:Hagoromo>/../Frameworks/")
+else()
+    set(post_copy_destination_dir "$<TARGET_FILE_DIR:Hagoromo>")
+endif()
+foreach(library_path IN LISTS HAGOROMO_ADDITIONAL_LIBRARIES)
+    message(STATUS "  path=${library_path}")
+    add_custom_command(TARGET Hagoromo POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${post_copy_destination_dir}"
+    )
+    add_custom_command(TARGET Hagoromo POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${library_path}"
+            "${post_copy_destination_dir}"
+            COMMENT "POST BUILD: copy ${library_path}"
+    )
+endforeach()
