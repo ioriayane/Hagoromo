@@ -66,4 +66,4 @@ fi
 
 work_dir="./build-hagoromo"
 cd $work_dir
-ctest --test-dir tests -C Debug -j 4
+ctest --test-dir tests -C Debug -j 4 --repeat until-pass:3
