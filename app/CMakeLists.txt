@@ -10,18 +10,20 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(WIN32)
-    set(RESOUCE_FILES app.rc)
-endif()
 set(RESOUCE_FILES
     app.qrc
     ../lib/lib.qrc
 )
-set(MACOSX_BUNDLE_ICON_FILE app.icns)
-set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/app.icns")
-set_source_files_properties(${app_icon_macos} PROPERTIES
-    MACOSX_PACKAGE_LOCATION "Resources")
-
+if(WIN32)
+    list(APPEND RESOUCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/app.rc)
+elseif(APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE app.icns)
+    set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/app.icns")
+    set_source_files_properties(${app_icon_macos} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    list(APPEND RESOUCE_FILES ${app_icon_macos})
+endif()
+message("App  RESOUCE_FILES=${RESOUCE_FILES}")
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
@@ -44,7 +46,6 @@ qt_add_executable(Hagoromo
     tools/translatorchanger.cpp
     tools/translatorchanger.h
     ${RESOUCE_FILES}
-    ${app_icon_macos}
     # for openSSL
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
