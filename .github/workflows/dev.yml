@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/build_linux.yml
     secrets: inherit
     with:
-      upload: false
+      upload: true
       VERSION_NO: "0.0.1"
       unit_test: true
 
@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
     with:
-      upload: false
+      upload: true
       VERSION_NO: "0.0.1"
       unit_test: true
 
@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/build_mac.yml
     secrets: inherit
     with:
-      upload: false
+      upload: true
       VERSION_NO: "0.0.1"
       unit_test: true
 

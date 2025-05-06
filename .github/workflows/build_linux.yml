@@ -66,6 +66,7 @@ jobs:
         with:
           name: archive_for_linux
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+          retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         env:
@@ -77,3 +78,4 @@ jobs:
         with:
           name: unit_test_result_for_linux
           path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"
+          retention-days: 5
