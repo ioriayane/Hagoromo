@@ -69,8 +69,6 @@ REM --- deploy -------
 %QTDIR%\bin\windeployqt --qmldir app\qml ^
                         --openssl-root %OPENSSL_FOLDER% ^
                         --no-translations ^
-                        --no-virtualkeyboard ^
-                        --no-quick3dutils ^
                         --no-quickcontrols2fluentwinui3styleimpl ^
                         --no-quickcontrols2fusion ^
                         --no-quickcontrols2fusionstyleimpl ^
