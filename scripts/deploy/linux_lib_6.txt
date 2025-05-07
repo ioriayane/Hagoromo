@@ -6,6 +6,8 @@ libQt6DBus.so.6
 libQt6DBus.so.6.8.1
 libQt6Gui.so.6
 libQt6Gui.so.6.8.1
+libQt6HttpServer.so.6
+libQt6HttpServer.so.6.8.1
 libQt6LabsPlatform.so.6
 libQt6LabsPlatform.so.6.8.1
 libQt6Network.so.6

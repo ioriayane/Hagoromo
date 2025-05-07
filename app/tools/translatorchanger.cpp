@@ -16,28 +16,28 @@ void TranslatorChanger::initialize(QCoreApplication *app, QQmlApplicationEngine 
     m_engine = engine;
 
     const QStringList langs = QStringList() << "ja";
-    QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
+    QString dir(":/i18n");
 
     for (const auto &lang : langs) {
         QTranslator *t;
         t = new QTranslator(this);
-        if (t->load(QString("app_%1").arg(lang), dir)) {
+        if (t->load(QString("Hagoromo_%1").arg(lang), dir)) {
             m_translatorApp[lang] = t;
         } else {
             t->deleteLater();
         }
         t = new QTranslator(this);
-        if (t->load(QString("lib_%1").arg(lang), dir)) {
+        if (t->load(QString("HagoromoLib_%1").arg(lang), dir)) {
             m_translatorLib[lang] = t;
         } else {
             t->deleteLater();
         }
-        t = new QTranslator(this);
-        if (t->load(QString("qt_%1").arg(lang), dir)) {
-            m_translatorSys[lang] = t;
-        } else {
-            t->deleteLater();
-        }
+        // t = new QTranslator(this);
+        // if (t->load(QString("qt_%1").arg(lang), dir)) {
+        //     m_translatorSys[lang] = t;
+        // } else {
+        //     t->deleteLater();
+        // }
     }
     qDebug() << "Loaded languages" << m_translatorApp.keys() << m_translatorLib.keys()
              << m_translatorSys.keys();

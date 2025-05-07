@@ -71,7 +71,7 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # setup dependent modules
-$ sudo apt-get install zlib1g-dev
+$ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
@@ -211,7 +211,7 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # setup dependent modules
-$ sudo apt-get install zlib1g-dev
+$ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h

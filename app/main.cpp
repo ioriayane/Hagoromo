@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.controls.languagelistmodel", 1, 0,
                                        "LanguageListModel");
 
-    qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
+    qmlRegisterSingletonType(QUrl("qrc:/tech/relog/hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
     setGlobalSettings(app);
@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
 
     engine.addImageProvider(QStringLiteral("thumbnail"), new ThumbnailProvider);
 
-    const QUrl url("qrc:/Hagoromo/qml/main.qml");
+    const QUrl url("qrc:/tech/relog/hagoromo/qml/main.qml");
     QObject::connect(
             &engine, &QQmlApplicationEngine::objectCreated, &app,
             [url](QObject *obj, const QUrl &objUrl) {

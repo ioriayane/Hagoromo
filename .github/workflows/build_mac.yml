@@ -31,6 +31,7 @@ jobs:
           target: 'desktop'
           arch: 'clang_64'
           modules: 'qt5compat qthttpserver qtimageformats qtscxml qtshadertools qtwebsockets'
+          tools: 'tools_ninja'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -46,7 +47,7 @@ jobs:
           echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
           echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_MAC }}\"" >> ./lib/tools/encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
-          ./scripts/build.sh mac ${QT_ROOT_DIR}/bin
+          ./scripts/build.sh mac ${QT_ROOT_DIR}
           echo "::endgroup::"
 
           # echo "Make for Mac"
@@ -64,8 +65,16 @@ jobs:
         with:
           name: archive_for_mac
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+          retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh mac ${QT_ROOT_DIR}/bin
+        run: scripts/unittest.sh mac ${QT_ROOT_DIR}
+      - name: Upload a unit test result
+        if: ${{ inputs.unit_test == true && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit_test_result_for_mac
+          path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"
+          retention-days: 5

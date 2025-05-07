@@ -7,28 +7,46 @@ concurrency:
     group: unit_test
     cancel-in-progress: true
 jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    outputs:
+      VERSION_NO: ${{ steps.get_version.outputs.VERSION_NO }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version number
+        id: get_version
+        run: |
+          version_no=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
+          echo "VERSION_NO=${version_no}" >> "$GITHUB_OUTPUT"
+
   linux:
+    needs: prepare
     uses: ./.github/workflows/build_linux.yml
     secrets: inherit
     with:
-      upload: false
-      VERSION_NO: "0.0.1"
+      upload: true
+      VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: true
 
   windows:
+    needs: prepare
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
     with:
-      upload: false
-      VERSION_NO: "0.0.1"
+      upload: true
+      VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: true
 
   mac:
+    needs: prepare
     uses: ./.github/workflows/build_mac.yml
     secrets: inherit
     with:
-      upload: false
-      VERSION_NO: "0.0.1"
+      upload: true
+      VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: true
 
   result:

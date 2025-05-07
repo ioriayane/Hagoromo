@@ -367,9 +367,9 @@ void Authorization::startRedirectServer()
                     }
                 }
                 if (result) {
-                    SimpleHttpServer::readFile(":/tools/oauth/oauth_success.html", data);
+                    SimpleHttpServer::readFile(":/tech/relog/hagoromo/tools/oauth/oauth_success.html", data);
                 } else {
-                    SimpleHttpServer::readFile(":/tools/oauth/oauth_fail.html", data);
+                    SimpleHttpServer::readFile(":/tech/relog/hagoromo/tools/oauth/oauth_fail.html", data);
                 }
                 data.replace("%HANDLE%", m_handle.toLocal8Bit());
                 qDebug().noquote() << "Result html:" << data;

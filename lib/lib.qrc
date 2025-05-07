@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/tech/relog/hagoromo">
         <file>tools/oauth/oauth_fail.html</file>
         <file>tools/oauth/oauth_success.html</file>
     </qresource>
