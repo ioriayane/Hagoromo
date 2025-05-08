@@ -43,7 +43,7 @@ QTDIR=$2
 if [ -z "${QTDIR}" ] || [ -z "${PLATFORM_TYPE}" ]; then
     echo "usage $(basename $0) PLATFORM_TYPE QTDIR"
     echo " PLATFORM_TYPE   linux or mac"
-    echo " QTDIR           ex: ~/Qt/5.15.2/gcc_64/"
+    echo " QTDIR           ex: ~/Qt/6.8.1/gcc_64/"
     exit 1
 fi
 
