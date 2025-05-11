@@ -23,6 +23,7 @@ void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyVerificationView(const QJsonObject &src, AppBskyActorDefs::VerificationView &dest);
 void copyVerificationState(const QJsonObject &src, AppBskyActorDefs::VerificationState &dest);
+void copyStatusView(const QJsonObject &src, AppBskyActorDefs::StatusView &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
@@ -72,6 +73,13 @@ void copyLabelValueDefinitionStrings(const QJsonObject &src,
 void copyLabelValueDefinition(const QJsonObject &src,
                               ComAtprotoLabelDefs::LabelValueDefinition &dest);
 }
+// app.bsky.embed.external
+namespace AppBskyEmbedExternal {
+void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest);
+void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
+void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
+}
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
@@ -93,16 +101,13 @@ void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
 namespace AppBskyActorProfile {
 void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest);
 }
+// app.bsky.actor.status
+namespace AppBskyActorStatus {
+void copyMain(const QJsonObject &src, AppBskyActorStatus::Main &dest);
+}
 // app.bsky.embed.defs
 namespace AppBskyEmbedDefs {
 void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest);
-}
-// app.bsky.embed.external
-namespace AppBskyEmbedExternal {
-void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
-void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
-void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest);
-void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
