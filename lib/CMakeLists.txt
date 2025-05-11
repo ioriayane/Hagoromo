@@ -374,4 +374,3 @@ if(OPENSSL_FOUND)
 endif()
 # 実行時に必要になるライブラリファイルを保存しておく
 set_target_properties(HagoromoLib PROPERTIES HAGOROMO_ADDITIONAL_LIBRARIES "${HAGOROMO_ADDITIONAL_LIBRARIES}")
-

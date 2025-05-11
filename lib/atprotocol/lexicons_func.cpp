@@ -74,6 +74,22 @@ void copyVerificationState(const QJsonObject &src, AppBskyActorDefs::Verificatio
         dest.trustedVerifierStatus = src.value("trustedVerifierStatus").toString();
     }
 }
+void copyStatusView(const QJsonObject &src, AppBskyActorDefs::StatusView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.status = src.value("status").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
+        QString embed_type = src.value("embed").toObject().value("$type").toString();
+        if (embed_type == QStringLiteral("app.bsky.embed.external#view")) {
+            dest.embed_type =
+                    AppBskyActorDefs::StatusViewEmbedType::embed_AppBskyEmbedExternal_View;
+            AppBskyEmbedExternal::copyView(src.value("embed").toObject(),
+                                           dest.embed_AppBskyEmbedExternal_View);
+        }
+        dest.expiresAt = src.value("expiresAt").toString();
+        dest.isActive = src.value("isActive").toBool();
+    }
+}
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest)
 {
     if (!src.isEmpty()) {
@@ -90,6 +106,7 @@ void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewB
         }
         dest.createdAt = src.value("createdAt").toString();
         copyVerificationState(src.value("verification").toObject(), dest.verification);
+        copyStatusView(src.value("status").toObject(), dest.status);
     }
 }
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest)
@@ -110,6 +127,7 @@ void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest
             dest.labels.append(child);
         }
         copyVerificationState(src.value("verification").toObject(), dest.verification);
+        copyStatusView(src.value("status").toObject(), dest.status);
     }
 }
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest)
@@ -137,6 +155,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         }
         ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
         copyVerificationState(src.value("verification").toObject(), dest.verification);
+        copyStatusView(src.value("status").toObject(), dest.status);
     }
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
@@ -630,6 +649,39 @@ void copyLabelValueDefinition(const QJsonObject &src,
     }
 }
 }
+// app.bsky.embed.external
+namespace AppBskyEmbedExternal {
+void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.title = src.value("title").toString();
+        dest.description = src.value("description").toString();
+        dest.thumb = src.value("thumb").toString();
+    }
+}
+void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest)
+{
+    if (!src.isEmpty()) {
+        copyViewExternal(src.value("external").toObject(), dest.external);
+    }
+}
+void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.title = src.value("title").toString();
+        dest.description = src.value("description").toString();
+        LexiconsTypeUnknown::copyBlob(src.value("thumb").toObject(), dest.thumb);
+    }
+}
+void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest)
+{
+    if (!src.isEmpty()) {
+        copyExternal(src.value("external").toObject(), dest.external);
+    }
+}
+}
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
@@ -764,6 +816,23 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
     }
 }
 }
+// app.bsky.actor.status
+namespace AppBskyActorStatus {
+void copyMain(const QJsonObject &src, AppBskyActorStatus::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.status = src.value("status").toString();
+        QString embed_type = src.value("embed").toObject().value("$type").toString();
+        if (embed_type == QStringLiteral("app.bsky.embed.external")) {
+            dest.embed_type = AppBskyActorStatus::MainEmbedType::embed_AppBskyEmbedExternal_Main;
+            AppBskyEmbedExternal::copyMain(src.value("embed").toObject(),
+                                           dest.embed_AppBskyEmbedExternal_Main);
+        }
+        dest.durationMinutes = src.value("durationMinutes").toInt();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
 // app.bsky.embed.defs
 namespace AppBskyEmbedDefs {
 void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest)
@@ -771,39 +840,6 @@ void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest
     if (!src.isEmpty()) {
         dest.width = src.value("width").toInt();
         dest.height = src.value("height").toInt();
-    }
-}
-}
-// app.bsky.embed.external
-namespace AppBskyEmbedExternal {
-void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.title = src.value("title").toString();
-        dest.description = src.value("description").toString();
-        LexiconsTypeUnknown::copyBlob(src.value("thumb").toObject(), dest.thumb);
-    }
-}
-void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest)
-{
-    if (!src.isEmpty()) {
-        copyExternal(src.value("external").toObject(), dest.external);
-    }
-}
-void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.title = src.value("title").toString();
-        dest.description = src.value("description").toString();
-        dest.thumb = src.value("thumb").toString();
-    }
-}
-void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest)
-{
-    if (!src.isEmpty()) {
-        copyViewExternal(src.value("external").toObject(), dest.external);
     }
 }
 }
