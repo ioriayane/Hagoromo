@@ -209,7 +209,7 @@ ColumnLayout {
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
                 serviceEndpointLayout.visible = true
                 registrationDateLayout.visible = true
-                knownFollowersInfo.visible = true
+                knownFollowersInfo.visible = (profileView.userDid !== profileView.accountDid) // true
             }else{
                 bannerImage.Layout.preferredHeight = 0
                 descriptionLabel.Layout.preferredHeight = 0
@@ -254,12 +254,12 @@ ColumnLayout {
                 IconButton {
                     Layout.preferredHeight: AdjustedValues.b24
                     Layout.alignment: Qt.AlignRight
-                    iconSource: knownFollowersInfo.visible ?
+                    iconSource: serviceEndpointLayout.visible ?
                                     "../images/expand_content_less.png" :
                                     "../images/expand_content_more.png"
                     iconText: ""
                     visible: !profileView.autoHideDetailMode
-                    onClicked: userProfileColumnLayout.viewChange(!knownFollowersInfo.visible, true)
+                    onClicked: userProfileColumnLayout.viewChange(!serviceEndpointLayout.visible, true)
                 }
             }
         }
