@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Fix
+  - Fix behavior of manually closing detailed information when viewing a column account profile
+
 ### v0.49.0 - 2025/4/29
 
 - Add
