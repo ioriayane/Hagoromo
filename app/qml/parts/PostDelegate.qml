@@ -33,6 +33,9 @@ ClickableFrame {
     property alias postAuthor: postAuthor
     property alias authorLabels: authorLabels
     property alias recordText: recordText
+    property alias skyblurPostText: skyblurPostText
+    property alias getSkyblurPostTextButton: getSkyblurPostTextButton
+    property alias getSkyblurPostTextButtonBusy: getSkyblurPostTextButtonBusy
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
@@ -229,6 +232,27 @@ ClickableFrame {
                                 onRequestAddMutedWord: (text) => postFrame.requestAddMutedWord(text)
                                 onRequestCopyTagToClipboard: (text) => postFrame.requestCopyTagToClipboard(text)
                             }
+                        }
+                    }
+
+                    Label {
+                        id: skyblurPostText
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                    }
+                    Button {
+                        id: getSkyblurPostTextButton
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredHeight: AdjustedValues.b36
+                        Layout.topMargin: 5
+                        visible: false
+                        enabled: !getSkyblurPostTextButtonBusy.visible
+                        text: qsTr("Get unblurred text")
+                        BusyIndicator {
+                            id: getSkyblurPostTextButtonBusy
+                            anchors.fill: parent
+                            visible: false
                         }
                     }
 

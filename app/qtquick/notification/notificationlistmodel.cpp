@@ -259,6 +259,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return !current.cid.isEmpty() && (current.cid == m_runningLikeCid);
     } else if (role == RunningOtherPrcessingRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningOtherProcessingCid);
+    } else if (role == RunningSkyblurPostTextRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningSkyblurPostTextCid);
 
     } else if (role == AggregatedAvatarsRole || role == AggregatedDisplayNamesRole
                || role == AggregatedDidsRole || role == AggregatedHandlesRole
@@ -294,6 +296,12 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return getContentFilterMatched(current.labels, true);
     } else if (role == ContentMediaFilterMessageRole) {
         return getContentFilterMessage(current.labels, true);
+
+    } else if (role == HasSkyblurLinkRole) {
+        return hasSkyblurLink(AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                              AtProtocolType::AppBskyFeedPost::Main>(current.record));
+    } else if (role == SkyblurPostTextRole) {
+        return QString();
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -951,6 +959,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
+    roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
 
     roles[AggregatedAvatarsRole] = "aggregatedAvatars";
     roles[AggregatedDisplayNamesRole] = "aggregatedDisplayNames";
@@ -1016,6 +1025,9 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[ContentFilterMessageRole] = "contentFilterMessage";
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
+
+    roles[HasSkyblurLinkRole] = "hasSkyblurLink";
+    roles[SkyblurPostTextRole] = "skyblurPostText";
 
     return roles;
 }
@@ -1565,6 +1577,16 @@ bool NotificationListModel::runningOtherPrcessing(int row) const
 void NotificationListModel::setRunningOtherPrcessing(int row, bool running)
 {
     update(row, RunningOtherPrcessingRole, running);
+}
+
+bool NotificationListModel::runningSkyblurPostText(int row) const
+{
+    return item(row, RunningSkyblurPostTextRole).toBool();
+}
+
+void NotificationListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    update(row, RunningSkyblurPostTextRole, running);
 }
 
 template<typename T>

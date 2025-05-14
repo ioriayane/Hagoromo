@@ -1254,6 +1254,13 @@ QString AtpAbstractListModel::contentFilterMessage(const QString &label, const b
     return LabelerProvider::getInstance()->message(account(), label, for_image, labeler_did);
 }
 
+bool AtpAbstractListModel::hasSkyblurLink(const AtProtocolType::AppBskyFeedPost::Main &record) const
+{
+    return record.uk_skyblur_post_visibility == QStringLiteral("public")
+            && record.uk_skyblur_post_uri.startsWith("at://")
+            && record.uk_skyblur_post_uri.split("/").contains("uk.skyblur.post");
+}
+
 QString AtpAbstractListModel::cursor() const
 {
     return m_cursor;

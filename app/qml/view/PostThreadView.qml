@@ -142,6 +142,10 @@ ColumnLayout {
                     }
                     return text
                 }
+                skyblurPostText.text: model.skyblurPostText
+                getSkyblurPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)
+                getSkyblurPostTextButtonBusy.visible: model.runningSkyblurPostText
+
                 contentFilterFrame.visible: model.contentFilterMatched
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched

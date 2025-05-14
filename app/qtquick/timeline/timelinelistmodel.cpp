@@ -222,6 +222,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
     else if (role == RunningOtherPrcessingRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningOtherProcessingCid);
+    else if (role == RunningSkyblurPostTextRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningSkyblurPostTextCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
              || role == QuoteRecordCidRole || role == QuoteRecordUriRole
@@ -375,6 +377,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         }
     }
 
+    else if (role == HasSkyblurLinkRole) {
+        return hasSkyblurLink(AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                              AtProtocolType::AppBskyFeedPost::Main>(current.post.record));
+    } else if (role == SkyblurPostTextRole) {
+        // return "hoge hoge";
+        return QString();
+    }
+
     return QVariant();
 }
 
@@ -469,6 +479,14 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningOtherProcessingCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == RunningSkyblurPostTextRole) {
+        if (value.toBool()) {
+            m_runningSkyblurPostTextCid = current.post.cid;
+        } else {
+            m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+
     } else if (m_toThreadGateRoles.contains(role)) {
         updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
         emit dataChanged(index(row), index(row), QVector<int>() << role);
@@ -877,6 +895,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningdeletePostRole] = "runningdeletePost";
     roles[RunningPostPinningRole] = "runningPostPinning";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
+    roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
@@ -955,6 +974,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ThreadConnectedRole] = "threadConnected";
     roles[ThreadConnectorTopRole] = "threadConnectorTop";
     roles[ThreadConnectorBottomRole] = "threadConnectorBottom";
+
+    roles[HasSkyblurLinkRole] = "hasSkyblurLink";
+    roles[SkyblurPostTextRole] = "skyblurPostText";
 
     return roles;
 }
@@ -1276,6 +1298,16 @@ bool TimelineListModel::runningOtherPrcessing(int row) const
 void TimelineListModel::setRunningOtherPrcessing(int row, bool running)
 {
     update(row, RunningOtherPrcessingRole, running);
+}
+
+bool TimelineListModel::runningSkyblurPostText(int row) const
+{
+    return item(row, RunningSkyblurPostTextRole).toBool();
+}
+
+void TimelineListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    update(row, RunningSkyblurPostTextRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

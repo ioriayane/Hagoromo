@@ -118,6 +118,9 @@ ScrollView {
                 }
                 return text
             }
+            skyblurPostText.text: model.skyblurPostText
+            getSkyblurPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)
+            getSkyblurPostTextButtonBusy.visible: model.runningSkyblurPostText
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
             postImagePreview.layoutType: notificationListView.imageLayoutType

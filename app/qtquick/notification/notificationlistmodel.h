@@ -61,9 +61,11 @@ public:
         ThreadMutedRole,
         RepostedUriRole,
         LikedUriRole,
+
         RunningRepostRole,
         RunningLikeRole,
         RunningOtherPrcessingRole,
+        RunningSkyblurPostTextRole,
 
         AggregatedAvatarsRole,
         AggregatedDisplayNamesRole,
@@ -129,6 +131,9 @@ public:
         ContentFilterMessageRole,
         ContentMediaFilterMatchedRole,
         ContentMediaFilterMessageRole,
+
+        HasSkyblurLinkRole,
+        SkyblurPostTextRole,
     };
     Q_ENUM(NotificationListModelRoles)
 
@@ -260,6 +265,8 @@ private:
     void setRunningLike(int row, bool running);
     bool runningOtherPrcessing(int row) const;
     void setRunningOtherPrcessing(int row, bool running);
+    bool runningSkyblurPostText(int row) const;
+    void setRunningSkyblurPostText(int row, bool running);
 
     bool m_visibleLike;
     bool m_visibleRepost;
@@ -271,6 +278,7 @@ private:
     QString m_runningRepostCid;
     QString m_runningLikeCid;
     QString m_runningOtherProcessingCid;
+    QString m_runningSkyblurPostTextCid;
     bool m_aggregateReactions;
 };
 

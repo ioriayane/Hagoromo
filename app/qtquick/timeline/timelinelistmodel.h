@@ -78,6 +78,7 @@ public:
         RunningdeletePostRole,
         RunningPostPinningRole,
         RunningOtherPrcessingRole,
+        RunningSkyblurPostTextRole,
 
         HasQuoteRecordRole,
         QuoteRecordIsMineRole,
@@ -156,6 +157,9 @@ public:
         ThreadConnectedRole,
         ThreadConnectorTopRole,
         ThreadConnectorBottomRole,
+
+        HasSkyblurLinkRole,
+        SkyblurPostTextRole,
     };
     Q_ENUM(TimelineListModelRoles)
 
@@ -239,6 +243,8 @@ private:
     void setRunningPostPinning(int row, bool running);
     bool runningOtherPrcessing(int row) const;
     void setRunningOtherPrcessing(int row, bool running);
+    bool runningSkyblurPostText(int row) const;
+    void setRunningSkyblurPostText(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -264,6 +270,7 @@ private:
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
     QString m_runningOtherProcessingCid;
+    QString m_runningSkyblurPostTextCid;
 };
 
 #endif // TIMELINELISTMODEL_H
