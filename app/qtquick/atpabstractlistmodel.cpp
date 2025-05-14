@@ -4,6 +4,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "operation/skybluroperator.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 #include "tools/labelprovider.h"
@@ -35,6 +36,9 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
         connect(translator, &Translator::finished, this,
                 &AtpAbstractListModel::finishedTransration);
     }
+    auto skyblur = SkyblurOperator::getInstance();
+    connect(skyblur, &SkyblurOperator::finished, this,
+            &AtpAbstractListModel::finishedRestoreBluredText);
 }
 
 AtpAbstractListModel::~AtpAbstractListModel()
@@ -46,6 +50,9 @@ AtpAbstractListModel::~AtpAbstractListModel()
         disconnect(translator, &Translator::finished, this,
                    &AtpAbstractListModel::finishedTransration);
     }
+    auto skyblur = SkyblurOperator::getInstance();
+    disconnect(skyblur, &SkyblurOperator::finished, this,
+               &AtpAbstractListModel::finishedRestoreBluredText);
 }
 
 void AtpAbstractListModel::clear()
@@ -110,9 +117,30 @@ void AtpAbstractListModel::translate(const QString &cid)
     }
 }
 
+void AtpAbstractListModel::restoreBluredText(const QString &cid)
+{
+    int row = indexOf(cid);
+    if (row == -1)
+        return;
+
+    auto skyblur = SkyblurOperator::getInstance();
+    skyblur->setAccount(account().uuid);
+    skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
+}
+
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
 {
     qDebug().noquote() << "finishedTransration" << this << cid << text;
+    int row = indexOf(cid);
+    if (row == -1)
+        return;
+
+    emit dataChanged(index(row), index(row));
+}
+
+void AtpAbstractListModel::finishedRestoreBluredText(const QString &cid, const QString text)
+{
+    qDebug().noquote() << "finishedRestoreBluredText" << this << cid << text;
     int row = indexOf(cid);
     if (row == -1)
         return;
@@ -1259,6 +1287,18 @@ bool AtpAbstractListModel::hasSkyblurLink(const AtProtocolType::AppBskyFeedPost:
     return record.uk_skyblur_post_visibility == QStringLiteral("public")
             && record.uk_skyblur_post_uri.startsWith("at://")
             && record.uk_skyblur_post_uri.split("/").contains("uk.skyblur.post");
+}
+
+bool AtpAbstractListModel::runningSkyblurPostText(int row) const
+{
+    Q_UNUSED(row)
+    return false;
+}
+
+void AtpAbstractListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(running)
 }
 
 QString AtpAbstractListModel::cursor() const

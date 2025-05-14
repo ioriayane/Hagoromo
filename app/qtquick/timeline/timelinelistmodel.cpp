@@ -4,6 +4,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphunmutethread.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "operation/recordoperator.h"
+#include "operation/skybluroperator.h"
 #include "tools/pinnedpostcache.h"
 
 #include <QDebug>
@@ -381,8 +382,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return hasSkyblurLink(AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                               AtProtocolType::AppBskyFeedPost::Main>(current.post.record));
     } else if (role == SkyblurPostTextRole) {
-        // return "hoge hoge";
-        return QString();
+        return SkyblurOperator::getInstance()->getUnbluredText(current.post.cid);
     }
 
     return QVariant();
@@ -513,6 +513,16 @@ QString TimelineListModel::getRecordText(const QString &cid)
 QString TimelineListModel::getItemOfficialUrl(int row) const
 {
     return atUriToOfficialUrl(item(row, UriRole).toString(), QStringLiteral("post"));
+}
+
+QString TimelineListModel::getSkyblurPostUri(const QString &cid) const
+{
+    if (!m_cidList.contains(cid))
+        return QString();
+    if (!m_viewPostHash.contains(cid))
+        return QString();
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(m_viewPostHash[cid].post.record)
+            .uk_skyblur_post_uri;
 }
 
 QList<int> TimelineListModel::indexsOf(const QString &cid) const

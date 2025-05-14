@@ -7,6 +7,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphunmutethread.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationupdateseen.h"
 #include "operation/recordoperator.h"
+#include "operation/skybluroperator.h"
 
 #include <QTimer>
 
@@ -301,7 +302,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return hasSkyblurLink(AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                               AtProtocolType::AppBskyFeedPost::Main>(current.record));
     } else if (role == SkyblurPostTextRole) {
-        return QString();
+        return SkyblurOperator::getInstance()->getUnbluredText(current.cid);
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -597,6 +598,16 @@ QString NotificationListModel::getRecordText(const QString &cid)
 QString NotificationListModel::getItemOfficialUrl(int row) const
 {
     return atUriToOfficialUrl(item(row, UriRole).toString(), QStringLiteral("post"));
+}
+
+QString NotificationListModel::getSkyblurPostUri(const QString &cid) const
+{
+    if (!m_notificationHash.contains(cid))
+        return QString();
+
+    return AtProtocolType::LexiconsTypeUnknown::fromQVariant<AtProtocolType::AppBskyFeedPost::Main>(
+                   m_notificationHash.value(cid).record)
+            .uk_skyblur_post_uri;
 }
 
 bool NotificationListModel::getLatest()

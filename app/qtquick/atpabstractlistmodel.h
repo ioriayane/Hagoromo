@@ -139,9 +139,15 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
     virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const = 0;
+    virtual QString getSkyblurPostUri(const QString &cid) const
+    {
+        Q_UNUSED(cid)
+        return QString();
+    }
 
     QString getTranslation(const QString &cid) const;
     Q_INVOKABLE void translate(const QString &cid);
+    Q_INVOKABLE void restoreBluredText(const QString &cid);
     Q_INVOKABLE void reflectVisibility();
 
     bool running() const;
@@ -186,6 +192,7 @@ public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
+    void finishedRestoreBluredText(const QString &cid, const QString text);
 
 protected:
     void displayQueuedPosts();
@@ -260,6 +267,8 @@ protected:
                                  const QString &labeler_did = QString()) const;
 
     bool hasSkyblurLink(const AtProtocolType::AppBskyFeedPost::Main &record) const;
+    virtual bool runningSkyblurPostText(int row) const;
+    virtual void setRunningSkyblurPostText(int row, bool running);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
