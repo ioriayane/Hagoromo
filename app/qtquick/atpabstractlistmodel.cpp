@@ -130,6 +130,9 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
     int row = indexOf(cid);
     if (row == -1)
         return;
+    if (runningSkyblurPostText(row))
+        return;
+    setRunningSkyblurPostText(row, true);
 
     auto skyblur = SkyblurOperator::getInstance();
     skyblur->setAccount(m_account.uuid);
@@ -146,14 +149,20 @@ void AtpAbstractListModel::finishedTransration(const QString &cid, const QString
     emit dataChanged(index(row), index(row));
 }
 
-void AtpAbstractListModel::finishedRestoreBluredText(const QString &cid, const QString text)
+void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString &cid,
+                                                     const QString text)
 {
-    qDebug().noquote() << "finishedRestoreBluredText" << this << cid << text;
-    int row = indexOf(cid);
-    if (row == -1)
-        return;
+    qDebug().noquote() << "finishedRestoreBluredText" << this << success << cid << text;
 
-    emit dataChanged(index(row), index(row));
+    int row = indexOf(cid);
+    setRunningSkyblurPostText(row, false);
+    if (!success) {
+        emit errorOccured("", text);
+    } else {
+        if (row == -1)
+            return;
+        emit dataChanged(index(row), index(row));
+    }
 }
 
 void AtpAbstractListModel::reflectVisibility()

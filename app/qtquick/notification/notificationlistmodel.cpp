@@ -551,21 +551,28 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
         } else {
             m_runningRepostCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QList<int>() << role);
     } else if (role == RunningLikeRole) {
         if (value.toBool()) {
             m_runningLikeCid = current.cid;
         } else {
             m_runningLikeCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QList<int>() << role);
     } else if (role == RunningOtherPrcessingRole) {
         if (value.toBool()) {
             m_runningOtherProcessingCid = current.cid;
         } else {
             m_runningOtherProcessingCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QList<int>() << role);
+    } else if (role == RunningSkyblurPostTextRole) {
+        if (value.toBool()) {
+            m_runningSkyblurPostTextCid = current.cid;
+        } else {
+            m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QList<int>() << role);
     }
 
     return;

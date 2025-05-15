@@ -193,7 +193,7 @@ public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
-    void finishedRestoreBluredText(const QString &cid, const QString text);
+    void finishedRestoreBluredText(bool success, const QString &cid, const QString text);
 
 protected:
     void displayQueuedPosts();

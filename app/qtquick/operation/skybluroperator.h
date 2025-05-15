@@ -19,7 +19,7 @@ public:
     void setAccount(const QString &uuid);
 
 signals:
-    void finished(const QString &cid, const QString text);
+    void finished(bool success, const QString &cid, const QString text);
 
 private:
     AtProtocolInterface::AccountData account() const;

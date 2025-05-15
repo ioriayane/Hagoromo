@@ -19,7 +19,7 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
 {
     const auto uri_items = at_uri.split("/");
     if (uri_items.count() != 5) {
-        emit finished(cid, "Error : " + tr("The AT URI is invalid."));
+        emit finished(false, cid, "Error : " + tr("The AT URI is invalid."));
         return;
     }
     const auto did = uri_items.at(2);
@@ -30,7 +30,7 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
             const auto text =
                     "Error : " + tr("The PDS for the target account could not be obtained.");
             m_unbluredText[cid] = text;
-            emit finished(cid, text);
+            emit finished(false, cid, text);
         } else {
             ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
             connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
@@ -43,7 +43,7 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
                     text = record->errorMessage();
                 }
                 m_unbluredText[cid] = text;
-                emit finished(cid, text);
+                emit finished(success, cid, text);
                 record->deleteLater();
             });
             auto a = account();
