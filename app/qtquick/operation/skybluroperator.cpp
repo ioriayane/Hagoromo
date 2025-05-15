@@ -19,7 +19,7 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
 {
     const auto uri_items = at_uri.split("/");
     if (uri_items.count() != 5) {
-        emit finished(cid, tr("The AT URI is invalid."));
+        emit finished(cid, "Error : " + tr("The AT URI is invalid."));
         return;
     }
     const auto did = uri_items.at(2);
@@ -27,7 +27,8 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
 
     getServiceEndpoint(did, [=](const QString &target_endpoint) {
         if (target_endpoint.isEmpty()) {
-            const auto text = tr("The PDS for the target account could not be obtained.");
+            const auto text =
+                    "Error : " + tr("The PDS for the target account could not be obtained.");
             m_unbluredText[cid] = text;
             emit finished(cid, text);
         } else {
@@ -45,8 +46,9 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
                 emit finished(cid, text);
                 record->deleteLater();
             });
-            record->setAccount(account());
-            record->setService(target_endpoint);
+            auto a = account();
+            a.service_endpoint = target_endpoint;
+            record->setAccount(a);
             record->skyBlurPost(did, rkey);
         }
     });
@@ -81,7 +83,9 @@ void SkyblurOperator::getServiceEndpoint(const QString &did,
         }
         repo->deleteLater();
     });
-    repo->setAccount(account());
+    auto a = account();
+    a.service_endpoint = QStringLiteral("https://bsky.social");
+    repo->setAccount(a);
     repo->describeRepo(did);
 }
 
