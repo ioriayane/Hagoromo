@@ -287,14 +287,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="649"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="656"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="685"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="692"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="652"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="659"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="688"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="695"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -412,22 +412,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ColumnListModel</name>
     <message>
-        <location filename="qtquick/column/columnlistmodel.cpp" line="527"/>
+        <location filename="qtquick/column/columnlistmodel.cpp" line="529"/>
         <source>Following</source>
         <translation>タイムライン</translation>
     </message>
     <message>
-        <location filename="qtquick/column/columnlistmodel.cpp" line="530"/>
+        <location filename="qtquick/column/columnlistmodel.cpp" line="532"/>
         <source>Notification</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="qtquick/column/columnlistmodel.cpp" line="533"/>
+        <location filename="qtquick/column/columnlistmodel.cpp" line="535"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="qtquick/column/columnlistmodel.cpp" line="536"/>
+        <location filename="qtquick/column/columnlistmodel.cpp" line="538"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
@@ -2135,12 +2135,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="165"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="166"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="405"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="413"/>
         <source>signed up with your starter pack</source>
         <translation>あなたのスターターパックで登録しました</translation>
     </message>
@@ -2148,7 +2148,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="289"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="292"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2272,7 +2272,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="qml/parts/PostDelegate.qml" line="105"/>
+        <location filename="qml/parts/PostDelegate.qml" line="106"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2348,12 +2348,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="157"/>
+        <location filename="qml/view/PostThreadView.qml" line="163"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="208"/>
+        <location filename="qml/view/PostThreadView.qml" line="214"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -3664,6 +3664,27 @@ Why should this message be reviewed?</source>
     </message>
 </context>
 <context>
+    <name>SkyblurContent</name>
+    <message>
+        <location filename="qml/parts/SkyblurContent.qml" line="29"/>
+        <source>Get unblurred text</source>
+        <translation>伏せてないテキストを取得</translation>
+    </message>
+</context>
+<context>
+    <name>SkyblurOperator</name>
+    <message>
+        <location filename="qtquick/operation/skybluroperator.cpp" line="22"/>
+        <source>The AT URI is invalid.</source>
+        <translation>不正なAT URIです。</translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/skybluroperator.cpp" line="30"/>
+        <source>The PDS for the target account could not be obtained.</source>
+        <translation>対象アカウントのPDSが取得できませんでした。</translation>
+    </message>
+</context>
+<context>
     <name>SuggestionProfileListView</name>
     <message>
         <location filename="qml/view/SuggestionProfileListView.qml" line="58"/>
@@ -3709,7 +3730,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="309"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="312"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -3717,7 +3738,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="162"/>
+        <location filename="qml/view/TimelineView.qml" line="168"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -3798,12 +3819,12 @@ Why should this message be reviewed?</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1082"/>
+        <location filename="qml/main.qml" line="1083"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1135"/>
+        <location filename="qml/main.qml" line="1136"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
