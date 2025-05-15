@@ -45,7 +45,7 @@ void SkyblurOperator::restoreBluredText(const QString &cid, const QString &at_ur
                 emit finished(cid, text);
                 record->deleteLater();
             });
-            // record->setAccount(account());
+            record->setAccount(account());
             record->setService(target_endpoint);
             record->skyBlurPost(did, rkey);
         }

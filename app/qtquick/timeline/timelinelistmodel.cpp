@@ -17,7 +17,7 @@ using AtProtocolInterface::AppBskyGraphUnmuteThread;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
-    : AtpAbstractListModel { parent, true },
+    : AtpAbstractListModel { parent, true, true },
       m_visibleReplyToUnfollowedUsers(true),
       m_visibleRepostOfOwn(true),
       m_visibleRepostOfFollowingUsers(true),

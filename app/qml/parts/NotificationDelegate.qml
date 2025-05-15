@@ -41,9 +41,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias aggregatedAvatarImages: aggregatedAvatarImages
     property alias postAuthor: postAuthor
-    property alias skyblurPostText: skyblurPostText
-    property alias getSkyblurPostTextButton: getSkyblurPostTextButton
-    property alias getSkyblurPostTextButtonBusy: getSkyblurPostTextButtonBusy
+    property alias skyblurContent: skyblurContent
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
@@ -294,25 +292,11 @@ ClickableFrame {
                         }
                     }
 
-                    Label {
-                        id: skyblurPostText
+                    SkyblurContent {
+                        id: skyblurContent
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: false
-                    }
-                    Button {
-                        id: getSkyblurPostTextButton
-                        Layout.alignment: Qt.AlignRight
-                        Layout.preferredHeight: AdjustedValues.b36
-                        Layout.topMargin: 5
-                        visible: false
-                        enabled: !getSkyblurPostTextButtonBusy.visible
-                        text: qsTr("Get unblurred text")
-                        BusyIndicator {
-                            id: getSkyblurPostTextButtonBusy
-                            anchors.fill: parent
-                            visible: false
-                        }
                     }
 
                     CoverFrame {

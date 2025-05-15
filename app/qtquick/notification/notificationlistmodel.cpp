@@ -20,7 +20,7 @@ using AtProtocolInterface::AppBskyNotificationUpdateSeen;
 using namespace AtProtocolType::AppBskyFeedDefs;
 
 NotificationListModel::NotificationListModel(QObject *parent)
-    : AtpAbstractListModel { parent, true },
+    : AtpAbstractListModel { parent, true, true },
       m_hasUnread(false),
       m_visibleLike(true),
       m_visibleRepost(true),

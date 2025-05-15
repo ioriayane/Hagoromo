@@ -20,10 +20,11 @@ using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
-AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
+AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator, bool use_skyblur)
     : QAbstractListModel { parent },
       m_contentFilterRefreshCounter(0),
       m_useTranslator(use_translator),
+      m_useSkyblur(use_skyblur),
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
@@ -36,9 +37,11 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
         connect(translator, &Translator::finished, this,
                 &AtpAbstractListModel::finishedTransration);
     }
-    auto skyblur = SkyblurOperator::getInstance();
-    connect(skyblur, &SkyblurOperator::finished, this,
-            &AtpAbstractListModel::finishedRestoreBluredText);
+    if (m_useTranslator) {
+        auto skyblur = SkyblurOperator::getInstance();
+        connect(skyblur, &SkyblurOperator::finished, this,
+                &AtpAbstractListModel::finishedRestoreBluredText);
+    }
 }
 
 AtpAbstractListModel::~AtpAbstractListModel()
@@ -50,9 +53,11 @@ AtpAbstractListModel::~AtpAbstractListModel()
         disconnect(translator, &Translator::finished, this,
                    &AtpAbstractListModel::finishedTransration);
     }
-    auto skyblur = SkyblurOperator::getInstance();
-    disconnect(skyblur, &SkyblurOperator::finished, this,
-               &AtpAbstractListModel::finishedRestoreBluredText);
+    if (m_useTranslator) {
+        auto skyblur = SkyblurOperator::getInstance();
+        disconnect(skyblur, &SkyblurOperator::finished, this,
+                   &AtpAbstractListModel::finishedRestoreBluredText);
+    }
 }
 
 void AtpAbstractListModel::clear()
@@ -119,12 +124,15 @@ void AtpAbstractListModel::translate(const QString &cid)
 
 void AtpAbstractListModel::restoreBluredText(const QString &cid)
 {
+    if (!m_useTranslator)
+        return;
+
     int row = indexOf(cid);
     if (row == -1)
         return;
 
     auto skyblur = SkyblurOperator::getInstance();
-    skyblur->setAccount(account().uuid);
+    skyblur->setAccount(m_account.uuid);
     skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
 }
 

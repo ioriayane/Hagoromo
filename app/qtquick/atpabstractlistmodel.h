@@ -61,7 +61,8 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(QString refreshJwt READ refreshJwt CONSTANT)
 
 public:
-    explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false);
+    explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false,
+                                  bool use_skyblur = false);
     ~AtpAbstractListModel();
 
     enum QuoteRecordRoles {
@@ -291,6 +292,7 @@ private:
     AtProtocolInterface::AccountData m_account;
     int m_contentFilterRefreshCounter;
     bool m_useTranslator;
+    bool m_useSkyblur;
 
     bool m_running;
     int m_loadingInterval;
