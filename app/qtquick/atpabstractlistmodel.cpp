@@ -116,8 +116,8 @@ void AtpAbstractListModel::translate(const QString &cid)
     QString record_text = getRecordText(cid);
     if (record_text.isEmpty())
         return;
-    int row = indexOf(cid);
-    if (row == -1)
+    const auto rows = indexsOf(cid);
+    if (rows.isEmpty())
         return;
 
     Translator *translator = Translator::getInstance();
@@ -134,7 +134,9 @@ void AtpAbstractListModel::translate(const QString &cid)
         QDesktopServices::openUrl(url);
     } else {
         translator->translate(cid, record_text);
-        emit dataChanged(index(row), index(row));
+        for (const auto row : rows) {
+            emit dataChanged(index(row), index(row));
+        }
     }
 }
 
@@ -160,11 +162,10 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
 {
     qDebug().noquote() << "finishedTransration" << this << cid << text;
-    int row = indexOf(cid);
-    if (row == -1)
-        return;
-
-    emit dataChanged(index(row), index(row));
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        emit dataChanged(index(row), index(row));
+    }
 }
 
 void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString &cid,
