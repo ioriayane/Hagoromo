@@ -86,6 +86,22 @@ void AtpAbstractListModel::setAccount(const QString &uuid)
     m_account.uuid = uuid;
 }
 
+QString AtpAbstractListModel::getSkyblurPostUri(const QString &cid) const
+{
+    Q_UNUSED(cid)
+    return QString();
+}
+
+QList<int> AtpAbstractListModel::indexsOf(const QString &cid) const
+{
+    int i = -1;
+    QList<int> rows;
+    while ((i = m_cidList.indexOf(cid, i + 1)) >= 0) {
+        rows.append(i);
+    }
+    return rows;
+}
+
 QString AtpAbstractListModel::getTranslation(const QString &cid) const
 {
     Translator *translator = Translator::getInstance();
@@ -127,12 +143,14 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
     if (!m_useTranslator)
         return;
 
-    int row = indexOf(cid);
-    if (row == -1)
-        return;
-    if (runningSkyblurPostText(row))
-        return;
-    setRunningSkyblurPostText(row, true);
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        if (runningSkyblurPostText(row))
+            return;
+    }
+    for (const auto row : rows) {
+        setRunningSkyblurPostText(row, true);
+    }
 
     auto skyblur = SkyblurOperator::getInstance();
     skyblur->setAccount(m_account.uuid);
@@ -154,14 +172,16 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
 {
     qDebug().noquote() << "finishedRestoreBluredText" << this << success << cid << text;
 
-    int row = indexOf(cid);
-    setRunningSkyblurPostText(row, false);
     if (!success) {
         emit errorOccured("", text);
-    } else {
-        if (row == -1)
-            return;
-        emit dataChanged(index(row), index(row));
+    }
+
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        setRunningSkyblurPostText(row, false);
+        if (row >= 0 && success) {
+            emit dataChanged(index(row), index(row));
+        }
     }
 }
 

@@ -177,8 +177,6 @@ public:
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const;
     virtual QString getSkyblurPostUri(const QString &cid) const;
 
-    QList<int> indexsOf(const QString &cid) const;
-
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
     Q_INVOKABLE bool deletePost(int row);

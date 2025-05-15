@@ -140,11 +140,9 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
     virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const = 0;
-    virtual QString getSkyblurPostUri(const QString &cid) const
-    {
-        Q_UNUSED(cid)
-        return QString();
-    }
+    virtual QString getSkyblurPostUri(const QString &cid) const;
+
+    QList<int> indexsOf(const QString &cid) const;
 
     QString getTranslation(const QString &cid) const;
     Q_INVOKABLE void translate(const QString &cid);

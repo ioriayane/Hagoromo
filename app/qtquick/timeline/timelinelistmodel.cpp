@@ -525,16 +525,6 @@ QString TimelineListModel::getSkyblurPostUri(const QString &cid) const
             .uk_skyblur_post_uri;
 }
 
-QList<int> TimelineListModel::indexsOf(const QString &cid) const
-{
-    int i = -1;
-    QList<int> rows;
-    while ((i = m_cidList.indexOf(cid, i + 1)) >= 0) {
-        rows.append(i);
-    }
-    return rows;
-}
-
 bool TimelineListModel::getLatest()
 {
     if (running())
