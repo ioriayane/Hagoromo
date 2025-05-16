@@ -1693,6 +1693,8 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
         dest.createdAt = src.value("createdAt").toString();
         dest.via = src.value("via").toString();
         dest.space_aoisora_post_via = src.value("space.aoisora.post.via").toString();
+        dest.uk_skyblur_post_uri = src.value("uk.skyblur.post.uri").toString();
+        dest.uk_skyblur_post_visibility = src.value("uk.skyblur.post.visibility").toString();
     }
 }
 }
@@ -3859,6 +3861,20 @@ void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
         dest.scope = src.value("scope").toString();
         dest.sub = src.value("sub").toString();
         dest.expires_in = src.value("expires_in").toInt();
+    }
+}
+}
+// uk.skyblur.post
+namespace UkSkyblurPost {
+void copyMain(const QJsonObject &src, UkSkyblurPost::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.text = src.value("text").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.additional = src.value("additional").toString();
+        LexiconsTypeUnknown::copyBlob(src.value("encryptBody").toObject(), dest.encryptBody);
+        dest.visibility = src.value("visibility").toString();
     }
 }
 }

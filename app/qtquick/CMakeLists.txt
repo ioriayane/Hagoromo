@@ -91,6 +91,8 @@ add_library(HagoromoGuiLib STATIC
     notification/notificationlistmodel.h
     operation/recordoperator.cpp
     operation/recordoperator.h
+    operation/skybluroperator.cpp
+    operation/skybluroperator.h
     operation/translator.cpp
     operation/translator.h
     profile/anyprofilelistmodel.cpp

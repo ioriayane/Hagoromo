@@ -68,6 +68,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         BlueLinkatBoard::Main record;
         BlueLinkatBoard::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("uk.skyblur.post")) {
+        UkSkyblurPost::Main record;
+        UkSkyblurPost::copyMain(src, record);
+        dest.setValue(record);
     } else if (context.contains("https://www.w3.org/ns/did/v1")) {
         DirectoryPlcDefs::DidDoc doc;
         DirectoryPlcDefs::copyDidDoc(src, doc);

@@ -33,6 +33,7 @@ ClickableFrame {
     property alias postAuthor: postAuthor
     property alias authorLabels: authorLabels
     property alias recordText: recordText
+    property alias skyblurContent: skyblurContent
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
@@ -230,6 +231,13 @@ ClickableFrame {
                                 onRequestCopyTagToClipboard: (text) => postFrame.requestCopyTagToClipboard(text)
                             }
                         }
+                    }
+
+                    SkyblurContent {
+                        id: skyblurContent
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
                     }
 
                     CoverFrame {

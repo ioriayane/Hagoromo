@@ -124,6 +124,7 @@ class Defs2Struct:
                          'AppBskyFeedPostgate::Main',
                          'ComWhtwndBlogEntry::Main',
                          'BlueLinkatBoard::Main',
+                         'UkSkyblurPost::Main',
                          'DirectoryPlcDefs::DidDoc',
                         )
         self.inheritance = {

@@ -1,0 +1,57 @@
+{
+    "id": "uk.skyblur.post",
+    "defs": {
+        "main": {
+            "key": "tid",
+            "type": "record",
+            "record": {
+                "type": "object",
+                "required": [
+                    "text",
+                    "createdAt",
+                    "uri",
+                    "visibility"
+                ],
+                "properties": {
+                    "uri": {
+                        "type": "string",
+                        "format": "at-uri"
+                    },
+                    "text": {
+                        "type": "string",
+                        "maxLength": 3000,
+                        "description": "The post main contents. Blurred text must be enclosed in brackets [].",
+                        "maxGraphemes": 300
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "datetime",
+                        "description": "Created date assigned by client"
+                    },
+                    "additional": {
+                        "type": "string",
+                        "maxLength": 100000,
+                        "description": "The post additional contents.",
+                        "maxGraphemes": 10000
+                    },
+                    "encryptBody": {
+                        "type": "blob",
+                        "description": "Encrypted post body. It shoud be decrypted by the client with AES-256."
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "enum": [
+                            "public",
+                            "password"
+                        ],
+                        "maxLength": 100,
+                        "description": "For 'password', the text only contains blurred text, and additional is always empty. The unblurred text and additional are included in the encryptBody.",
+                        "maxGraphemes": 10
+                    }
+                }
+            },
+            "description": "Record containing a Skyblur post."
+        }
+    },
+    "lexicon": 1
+}

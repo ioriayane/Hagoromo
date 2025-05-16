@@ -4,6 +4,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "operation/skybluroperator.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 #include "tools/labelprovider.h"
@@ -19,10 +20,11 @@ using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
-AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
+AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator, bool use_skyblur)
     : QAbstractListModel { parent },
       m_contentFilterRefreshCounter(0),
       m_useTranslator(use_translator),
+      m_useSkyblur(use_skyblur),
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
@@ -35,6 +37,11 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
         connect(translator, &Translator::finished, this,
                 &AtpAbstractListModel::finishedTransration);
     }
+    if (m_useTranslator) {
+        auto skyblur = SkyblurOperator::getInstance();
+        connect(skyblur, &SkyblurOperator::finished, this,
+                &AtpAbstractListModel::finishedRestoreBluredText);
+    }
 }
 
 AtpAbstractListModel::~AtpAbstractListModel()
@@ -45,6 +52,11 @@ AtpAbstractListModel::~AtpAbstractListModel()
         Translator *translator = Translator::getInstance();
         disconnect(translator, &Translator::finished, this,
                    &AtpAbstractListModel::finishedTransration);
+    }
+    if (m_useTranslator) {
+        auto skyblur = SkyblurOperator::getInstance();
+        disconnect(skyblur, &SkyblurOperator::finished, this,
+                   &AtpAbstractListModel::finishedRestoreBluredText);
     }
 }
 
@@ -74,6 +86,22 @@ void AtpAbstractListModel::setAccount(const QString &uuid)
     m_account.uuid = uuid;
 }
 
+QString AtpAbstractListModel::getSkyblurPostUri(const QString &cid) const
+{
+    Q_UNUSED(cid)
+    return QString();
+}
+
+QList<int> AtpAbstractListModel::indexsOf(const QString &cid) const
+{
+    int i = -1;
+    QList<int> rows;
+    while ((i = m_cidList.indexOf(cid, i + 1)) >= 0) {
+        rows.append(i);
+    }
+    return rows;
+}
+
 QString AtpAbstractListModel::getTranslation(const QString &cid) const
 {
     Translator *translator = Translator::getInstance();
@@ -88,8 +116,8 @@ void AtpAbstractListModel::translate(const QString &cid)
     QString record_text = getRecordText(cid);
     if (record_text.isEmpty())
         return;
-    int row = indexOf(cid);
-    if (row == -1)
+    const auto rows = indexsOf(cid);
+    if (rows.isEmpty())
         return;
 
     Translator *translator = Translator::getInstance();
@@ -106,18 +134,56 @@ void AtpAbstractListModel::translate(const QString &cid)
         QDesktopServices::openUrl(url);
     } else {
         translator->translate(cid, record_text);
-        emit dataChanged(index(row), index(row));
+        for (const auto row : rows) {
+            emit dataChanged(index(row), index(row));
+        }
     }
+}
+
+void AtpAbstractListModel::restoreBluredText(const QString &cid)
+{
+    if (!m_useTranslator)
+        return;
+
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        if (runningSkyblurPostText(row))
+            return;
+    }
+    for (const auto row : rows) {
+        setRunningSkyblurPostText(row, true);
+    }
+
+    auto skyblur = SkyblurOperator::getInstance();
+    skyblur->setAccount(m_account.uuid);
+    skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
 }
 
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
 {
     qDebug().noquote() << "finishedTransration" << this << cid << text;
-    int row = indexOf(cid);
-    if (row == -1)
-        return;
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        emit dataChanged(index(row), index(row));
+    }
+}
 
-    emit dataChanged(index(row), index(row));
+void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString &cid,
+                                                     const QString text)
+{
+    qDebug().noquote() << "finishedRestoreBluredText" << this << success << cid << text;
+
+    if (!success) {
+        emit errorOccured("", text);
+    }
+
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        setRunningSkyblurPostText(row, false);
+        if (row >= 0 && success) {
+            emit dataChanged(index(row), index(row));
+        }
+    }
 }
 
 void AtpAbstractListModel::reflectVisibility()
@@ -1252,6 +1318,25 @@ QString AtpAbstractListModel::contentFilterMessage(const QString &label, const b
                                                    const QString &labeler_did) const
 {
     return LabelerProvider::getInstance()->message(account(), label, for_image, labeler_did);
+}
+
+bool AtpAbstractListModel::hasSkyblurLink(const AtProtocolType::AppBskyFeedPost::Main &record) const
+{
+    return record.uk_skyblur_post_visibility == QStringLiteral("public")
+            && record.uk_skyblur_post_uri.startsWith("at://")
+            && record.uk_skyblur_post_uri.split("/").contains("uk.skyblur.post");
+}
+
+bool AtpAbstractListModel::runningSkyblurPostText(int row) const
+{
+    Q_UNUSED(row)
+    return false;
+}
+
+void AtpAbstractListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(running)
 }
 
 QString AtpAbstractListModel::cursor() const

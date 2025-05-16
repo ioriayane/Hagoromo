@@ -551,6 +551,10 @@ void copyPushedAuthorizationResponse(const QJsonObject &src,
                                      OauthDefs::PushedAuthorizationResponse &dest);
 void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest);
 }
+// uk.skyblur.post
+namespace UkSkyblurPost {
+void copyMain(const QJsonObject &src, UkSkyblurPost::Main &dest);
+}
 // wellKnown.defs
 namespace WellKnownDefs {
 void copyResourceMetadata(const QJsonObject &src, WellKnownDefs::ResourceMetadata &dest);

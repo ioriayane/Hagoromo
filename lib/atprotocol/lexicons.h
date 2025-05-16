@@ -1208,6 +1208,8 @@ struct Main
                        // created.
     QString via; // client name(Unofficial field) old
     QString space_aoisora_post_via; // client name(Unofficial field)
+    QString uk_skyblur_post_uri; // at-uri , Skyblur at:uri(Unofficial field)
+    QString uk_skyblur_post_visibility; // Skyblur visibility(Unofficial field)
 };
 }
 
@@ -2787,6 +2789,21 @@ struct TokenResponse
 };
 }
 
+// uk.skyblur.post
+namespace UkSkyblurPost {
+struct Main
+{
+    QString uri; // at-uri
+    QString text; // The post main contents. Blurred text must be enclosed in brackets [].
+    QString createdAt; // datetime , Created date assigned by client
+    QString additional; // The post additional contents.
+    Blob encryptBody; // Encrypted post body. It shoud be decrypted by the client with AES-256.
+    QString visibility; // For 'password', the text only contains blurred text, and additional is
+                        // always empty. The unblurred text and additional are included in the
+                        // encryptBody.
+};
+}
+
 // wellKnown.defs
 namespace WellKnownDefs {
 struct ResourceMetadata
@@ -2829,6 +2846,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry::Main)
 Q_DECLARE_METATYPE(AtProtocolType::BlueLinkatBoard::Main)
+Q_DECLARE_METATYPE(AtProtocolType::UkSkyblurPost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::DirectoryPlcDefs::DidDoc)
 
 #endif // LEXICONS_H
