@@ -65,5 +65,6 @@
         <file>qml/images/visibility_off.png</file>
         <file>qml/images/visibility_on.png</file>
         <file>qtquick/controls/emoji.json</file>
+        <file>qml/images/live.png</file>
     </qresource>
 </RCC>

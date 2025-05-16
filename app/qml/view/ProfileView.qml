@@ -275,6 +275,10 @@ ColumnLayout {
                 Layout.rowSpan: 2
                 source: userProfile.avatar
 
+                LiveIconCover {
+                    anchors.fill: parent
+                    visible: userProfile.liveIsActive
+                }
                 ExternalLinkCardPopup {
                     enabled: userProfile.liveIsActive
                     layoutMaximumWidth: profileView.width
