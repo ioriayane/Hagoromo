@@ -11,9 +11,16 @@ ColumnLayout {
     property alias getPostTextButton: getPostTextButton
     property alias getPostTextButtonBusy: getPostTextButtonBusy
 
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 1
+        color: Material.frameColor
+        visible: postText.visible
+    }
     Label {
         id: postText
         Layout.fillWidth: true
+        Layout.topMargin: 5
         visible: text.length > 0
         textFormat: Text.StyledText
         wrapMode: Text.WrapAnywhere
