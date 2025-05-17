@@ -1,0 +1,331 @@
+[
+    {
+        "record": {
+            "text": "link\nhttps://leme.style/",
+            "$type": "app.bsky.feed.post",
+            "embed": {
+                "$type": "app.bsky.embed.external",
+                "external": {
+                    "uri": "https://leme.style/",
+                    "title": "",
+                    "description": ""
+                }
+            },
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 24,
+                        "byteStart": 5
+                    },
+                    "features": [
+                        {
+                            "uri": "https://leme.style/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T15:52:04.434Z"
+        },
+        "expect": "link<br/><a href=\"https://leme.style/\">https://leme.style/</a>"
+    },
+    {
+        "record": {
+            "text": "リンクありの引用",
+            "$type": "app.bsky.feed.post",
+            "embed": {
+                "$type": "app.bsky.embed.record",
+                "record": {
+                    "cid": "bafyreif2ux6qo4b2ez266iewichrjvqgeeehui5c7lo3gcglrzdi54pjja",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3jwrx7cdzg22m"
+                }
+            },
+            "createdAt": "2023-05-28T11:31:32.478Z"
+        },
+        "expect": "リンクありの引用"
+    },
+    {
+        "record": {
+            "text": "リンクテスト\nhttps://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 38,
+                        "byteStart": 19
+                    },
+                    "features": [
+                        {
+                            "uri": "https://leme.style/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 70,
+                        "byteStart": 47
+                    },
+                    "features": [
+                        {
+                            "uri": "https://blueskyweb.xyz/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+    },
+    {
+        "record": {
+            "text": "リンクテスト\nhttps://leme.style/\nもうひとつ\nhttps://blueskyweb.xyz/",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 38,
+                        "byteStart": 19
+                    },
+                    "features": [
+                        {
+                            "uri": "https://leme.style/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 78,
+                        "byteStart": 55
+                    },
+                    "features": [
+                        {
+                            "uri": "https://blueskyweb.xyz/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T10:42:40.419Z"
+        },
+        "expect": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>もうひとつ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a>"
+    },
+    {
+        "record": {
+            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "uri": "https://leme.style/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 51,
+                        "byteStart": 28
+                    },
+                    "features": [
+                        {
+                            "uri": "https://blueskyweb.xyz/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+    },
+    {
+        "record": {
+            "text": "@ioriayane.relog.tech @ioriayane.bsky.social @ioriayane.relog.tech てすてす",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 44,
+                        "byteStart": 22
+                    },
+                    "features": [
+                        {
+                            "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                            "$type": "app.bsky.richtext.facet#mention"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 66,
+                        "byteStart": 45
+                    },
+                    "features": [
+                        {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "$type": "app.bsky.richtext.facet#mention"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 21,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "$type": "app.bsky.richtext.facet#mention"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-26T16:48:05.353Z"
+        },
+        "expect": "<a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> <a href=\"did:plc:l4fsx4ujos7uw7n4ijq2ulgs\">@ioriayane.bsky.social</a> <a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> てすてす"
+    },
+    {
+        "record": {
+            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "uri": "https://leme.style/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "uri": "https://LEME.STYLE/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "record": {
+            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "tag": "test_tag1",
+                            "$type": "app.bsky.richtext.facet#tag"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 1
+                    },
+                    "features": [
+                        {
+                            "uri": "https://LEME.STYLE/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"search://test_tag1\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "record": {
+            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "tag": "test_tag2",
+                            "$type": "app.bsky.richtext.facet#tag"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 18,
+                        "byteStart": 1
+                    },
+                    "features": [
+                        {
+                            "uri": "https://LEME.STYLE/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"search://test_tag2\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "record": {
+            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 19,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "tag": "test_tag3",
+                            "$type": "app.bsky.richtext.facet#tag"
+                        }
+                    ]
+                },
+                {
+                    "index": {
+                        "byteEnd": 20,
+                        "byteStart": 1
+                    },
+                    "features": [
+                        {
+                            "uri": "https://LEME.STYLE/",
+                            "$type": "app.bsky.richtext.facet#link"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"search://test_tag3\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    }
+]

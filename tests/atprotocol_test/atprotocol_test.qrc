@@ -85,5 +85,6 @@
         <file>data/preferences/app.bsky.actor.putPreferences.nobody.1.json</file>
         <file>data/preferences/app.bsky.actor.putPreferences.nobody.2.json</file>
         <file>data/preferences/app.bsky.actor.putPreferences.choice.1.json</file>
+        <file>data/facets/records.json</file>
     </qresource>
 </RCC>
