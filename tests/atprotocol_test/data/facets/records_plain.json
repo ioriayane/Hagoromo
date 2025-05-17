@@ -1,0 +1,34 @@
+[
+    {
+        "record": {
+            "text": "line1\nline2\nline3",
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2023-05-28T15:52:04.434Z"
+        },
+        "expect": "line1<br/>line2<br/>line3"
+    },
+    {
+        "record": {
+            "text": "line1 line1\nline2  line2\nline3   line3",
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2023-05-28T15:52:04.434Z"
+        },
+        "expect": "line1 line1<br/>line2  line2<br/>line3   line3"
+    },
+    {
+        "record": {
+            "text": " line1 line1\n  line2  line2\nline3   line3",
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2023-05-28T15:52:04.434Z"
+        },
+        "expect": "&nbsp;line1 line1<br/>&nbsp;&nbsp;line2  line2<br/>line3   line3"
+    },
+    {
+        "record": {
+            "text": " line1 line1\n  line2  line2  \nline3   line3\n   ",
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2023-05-28T15:52:04.434Z"
+        },
+        "expect": "&nbsp;line1 line1<br/>&nbsp;&nbsp;line2  line2  <br/>line3   line3<br/>&nbsp;&nbsp;&nbsp;"
+    }
+]

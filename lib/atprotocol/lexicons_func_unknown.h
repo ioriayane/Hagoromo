@@ -75,6 +75,7 @@ void makeFacets(QObject *parent, AtProtocolInterface::AccountData account, const
 void insertFacetsJson(QJsonObject &parent,
                       const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets);
 QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets);
+QString replaceCrToBr(const QString &text, bool first_part);
 
 QString extractRkey(const QString &uri);
 
