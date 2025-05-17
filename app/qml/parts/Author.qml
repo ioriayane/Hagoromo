@@ -18,7 +18,7 @@ RowLayout {
 
     Label {
         id: displayNameText
-        Layout.maximumWidth: layoutWidth / 2
+        Layout.maximumWidth: headerLayout.layoutWidth / 2
         Layout.alignment: Qt.AlignTop
         font.pointSize: AdjustedValues.f10
         elide: Text.ElideRight
@@ -26,6 +26,9 @@ RowLayout {
     }
     Label {
         id: handleText
+        Layout.maximumWidth: headerLayout.layoutWidth - displayNameText.width -
+                             indexAtText.width - headerLayout.spacing * 4 -
+                             handleText.height
         Layout.alignment: Qt.AlignBottom
         elide: Text.ElideRight
         opacity: 0.8
