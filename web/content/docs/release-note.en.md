@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add a feature to retrieve blured text posted on Skyblur
+  - Add live streaming information display function
 - Fix
   - Fix behavior of manually closing detailed information when viewing a column account profile
   - Fix behavior when multiple posts to be translated exist in the same column

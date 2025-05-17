@@ -48,6 +48,7 @@ public:
         AuthorLabelsRole,
         AuthorLabelIconsRole,
         AuthorVerificationStateRole,
+        AuthorLiveIsActiveRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,

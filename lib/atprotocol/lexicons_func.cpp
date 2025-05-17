@@ -1949,6 +1949,18 @@ void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest
     }
 }
 }
+// app.bsky.unspecced.getConfig
+namespace AppBskyUnspeccedGetConfig {
+void copyLiveNowConfig(const QJsonObject &src, AppBskyUnspeccedGetConfig::LiveNowConfig &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        for (const auto &value : src.value("domains").toArray()) {
+            dest.domains.append(value.toString());
+        }
+    }
+}
+}
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest)

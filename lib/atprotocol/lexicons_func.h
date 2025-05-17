@@ -258,6 +258,10 @@ void copyTrendingTopic(const QJsonObject &src, AppBskyUnspeccedDefs::TrendingTop
 void copySkeletonTrend(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonTrend &dest);
 void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest);
 }
+// app.bsky.unspecced.getConfig
+namespace AppBskyUnspeccedGetConfig {
+void copyLiveNowConfig(const QJsonObject &src, AppBskyUnspeccedGetConfig::LiveNowConfig &dest);
+}
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);

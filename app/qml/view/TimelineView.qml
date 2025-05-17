@@ -140,6 +140,7 @@ ScrollView {
 
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
+            authorLiveIsActiveCover.visible: model.authorLiveIsActive
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: timelineView.logMode ? model.indexedAtLong : model.indexedAt

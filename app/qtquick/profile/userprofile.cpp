@@ -31,7 +31,8 @@ UserProfile::UserProfile(QObject *parent)
       m_blockedBy(false),
       m_blocking(false),
       m_userFilterMatched(false),
-      m_verificationState("none")
+      m_verificationState("none"),
+      m_liveIsActive(false)
 {
     QPointer<UserProfile> alive = this;
     connect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
@@ -142,6 +143,16 @@ void UserProfile::getProfile(const QString &did)
                     // 未設定はフォロー中と同等（2024/5/26）
                     setAssociatedChatAllow(detail.viewer.followedBy.contains(detail.did));
                 }
+
+                setLiveIsActive(detail.status.status == QStringLiteral("app.bsky.actor.status#live")
+                                && detail.status.isActive);
+                setLiveLinkUri(detail.status.embed_AppBskyEmbedExternal_View.external.uri);
+                setLiveLinkTitle(detail.status.embed_AppBskyEmbedExternal_View.external.title);
+                setLiveLinkDescription(
+                        detail.status.embed_AppBskyEmbedExternal_View.external.description);
+                setLiveLinkThumb(detail.status.embed_AppBskyEmbedExternal_View.external.thumb);
+                setLiveExpiresAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        detail.status.expiresAt, true));
 
                 // 追加情報読み込み
                 getRawProfile();
@@ -760,4 +771,82 @@ void UserProfile::setVerifierList(const QStringList &newVerifierList)
         return;
     m_verifierList = newVerifierList;
     emit verifierListChanged();
+}
+
+bool UserProfile::liveIsActive() const
+{
+    return m_liveIsActive;
+}
+
+void UserProfile::setLiveIsActive(bool newLiveIsActive)
+{
+    if (m_liveIsActive == newLiveIsActive)
+        return;
+    m_liveIsActive = newLiveIsActive;
+    emit liveIsActiveChanged();
+}
+
+QString UserProfile::liveLinkUri() const
+{
+    return m_liveLinkUri;
+}
+
+void UserProfile::setLiveLinkUri(const QString &newLiveLinkUri)
+{
+    if (m_liveLinkUri == newLiveLinkUri)
+        return;
+    m_liveLinkUri = newLiveLinkUri;
+    emit liveLinkUriChanged();
+}
+
+QString UserProfile::liveLinkTitle() const
+{
+    return m_liveLinkTitle;
+}
+
+void UserProfile::setLiveLinkTitle(const QString &newLiveLinkTitle)
+{
+    if (m_liveLinkTitle == newLiveLinkTitle)
+        return;
+    m_liveLinkTitle = newLiveLinkTitle;
+    emit liveLinkTitleChanged();
+}
+
+QString UserProfile::liveLinkDescription() const
+{
+    return m_liveLinkDescription;
+}
+
+void UserProfile::setLiveLinkDescription(const QString &newLiveLinkDescription)
+{
+    if (m_liveLinkDescription == newLiveLinkDescription)
+        return;
+    m_liveLinkDescription = newLiveLinkDescription;
+    emit liveLinkDescriptionChanged();
+}
+
+QString UserProfile::liveLinkThumb() const
+{
+    return m_liveLinkThumb;
+}
+
+void UserProfile::setLiveLinkThumb(const QString &newLiveLinkThumb)
+{
+    if (m_liveLinkThumb == newLiveLinkThumb)
+        return;
+    m_liveLinkThumb = newLiveLinkThumb;
+    emit liveLinkThumbChanged();
+}
+
+QString UserProfile::liveExpiresAt() const
+{
+    return m_liveExpiresAt;
+}
+
+void UserProfile::setLiveExpiresAt(const QString &newLiveExpiresAt)
+{
+    if (m_liveExpiresAt == newLiveExpiresAt)
+        return;
+    m_liveExpiresAt = newLiveExpiresAt;
+    emit liveExpiresAtChanged();
 }

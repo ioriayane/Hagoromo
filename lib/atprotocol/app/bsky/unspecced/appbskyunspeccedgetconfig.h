@@ -13,11 +13,13 @@ public:
     void getConfig();
 
     const bool &checkEmailConfirmed() const;
+    const QList<AtProtocolType::AppBskyUnspeccedGetConfig::LiveNowConfig> &liveNowList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     bool m_checkEmailConfirmed;
+    QList<AtProtocolType::AppBskyUnspeccedGetConfig::LiveNowConfig> m_liveNowList;
 };
 
 }
