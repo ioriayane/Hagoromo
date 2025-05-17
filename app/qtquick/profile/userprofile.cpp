@@ -145,8 +145,7 @@ void UserProfile::getProfile(const QString &did)
                 }
 
                 setLiveIsActive(detail.status.status == QStringLiteral("app.bsky.actor.status#live")
-                                // && detail.status.isActive
-                );
+                                && detail.status.isActive);
                 setLiveLinkUri(detail.status.embed_AppBskyEmbedExternal_View.external.uri);
                 setLiveLinkTitle(detail.status.embed_AppBskyEmbedExternal_View.external.title);
                 setLiveLinkDescription(
