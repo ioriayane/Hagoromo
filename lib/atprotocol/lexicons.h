@@ -1405,6 +1405,15 @@ struct TrendView
 };
 }
 
+// app.bsky.unspecced.getConfig
+namespace AppBskyUnspeccedGetConfig {
+struct LiveNowConfig
+{
+    QString did; // did
+    QList<QString> domains;
+};
+}
+
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 struct Suggestion

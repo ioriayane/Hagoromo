@@ -274,6 +274,21 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignTop
                 Layout.rowSpan: 2
                 source: userProfile.avatar
+
+                LiveIconCover {
+                    anchors.fill: parent
+                    visible: userProfile.liveIsActive
+                }
+                ExternalLinkCardPopup {
+                    enabled: userProfile.liveIsActive
+                    layoutMaximumWidth: profileView.width
+                    linkUri: userProfile.liveLinkUri
+                    linkTitle: userProfile.liveLinkTitle
+                    linkDescription: userProfile.liveLinkDescription
+                    linkThumb: userProfile.liveLinkThumb
+                    linkExpiresAt: userProfile.liveExpiresAt
+                    onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+                }
             }
             ColumnLayout {
                 Label {

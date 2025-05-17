@@ -30,6 +30,7 @@ ClickableFrame {
     property alias replyReactionAuthor: replyReactionAuthor
     property alias pinnedIndicatorLabel: pinnedIndicatorLabel
     property alias postAvatarImage: postAvatarImage
+    property alias authorLiveIsActiveCover: authorLiveIsActiveCover
     property alias postAuthor: postAuthor
     property alias authorLabels: authorLabels
     property alias recordText: recordText
@@ -147,6 +148,11 @@ ClickableFrame {
                 Layout.preferredHeight: AdjustedValues.i36
                 Layout.alignment: Qt.AlignTop
                 clip: false
+                LiveIconCover {
+                    id: authorLiveIsActiveCover
+                    anchors.fill: parent
+                    visible: false
+                }
                 Rectangle {
                     id: threadConnectorTop
                     x: (parent.width - width) / 2
