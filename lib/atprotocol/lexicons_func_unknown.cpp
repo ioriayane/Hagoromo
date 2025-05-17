@@ -515,8 +515,8 @@ QString replaceCrToBr(const QString &text, bool first_part)
             }
         }
         for (const auto i : indexs) {
-            line.replace(i, 1, QChar(0xa0));
-            // line.replace(i, 1, "&nbsp;");
+            // line.replace(i, 1, QChar(0xa0));
+            line.replace(i, 1, "&nbsp;");
         }
     }
     return lines.join("<br/>");

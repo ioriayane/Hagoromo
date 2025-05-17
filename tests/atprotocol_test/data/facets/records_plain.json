@@ -21,7 +21,7 @@
             "$type": "app.bsky.feed.post",
             "createdAt": "2023-05-28T15:52:04.434Z"
         },
-        "expect": " line1 line1<br/>  line2  line2<br/>line3   line3"
+        "expect": "&nbsp;line1 line1<br/>&nbsp;&nbsp;line2  line2<br/>line3   line3"
     },
     {
         "record": {
@@ -29,6 +29,6 @@
             "$type": "app.bsky.feed.post",
             "createdAt": "2023-05-28T15:52:04.434Z"
         },
-        "expect": " line1 line1<br/>  line2  line2  <br/>line3   line3<br/>   "
+        "expect": "&nbsp;line1 line1<br/>&nbsp;&nbsp;line2  line2  <br/>line3   line3<br/>&nbsp;&nbsp;&nbsp;"
     }
 ]
