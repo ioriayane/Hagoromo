@@ -428,8 +428,9 @@ void insertFacetsJson(QJsonObject &parent, const QList<AppBskyRichtextFacet::Mai
 
 QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets)
 {
+    bool first_part = true;
     if (text_facets.isEmpty()) {
-        return QString(text).toHtmlEscaped().replace("\n", "<br/>");
+        return replaceCrToBr(text, first_part);
     } else {
         QByteArray text_ba = text.toUtf8();
         QString text;
@@ -462,17 +463,15 @@ QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Mai
                     // 3 : [a(b)c]
                 } else {
                     // 4 : [a(b]c)
-                    text += QString(text_ba.mid(pos_prev_end, pos_end - pos_prev_end))
-                                    .toHtmlEscaped()
-                                    .replace("\n", "<br/>");
+                    text += replaceCrToBr(text_ba.mid(pos_prev_end, pos_end - pos_prev_end),
+                                          first_part);
                     pos_prev_end = pos_end;
                 }
             } else {
                 // 0 : [a]b(c)
                 if (pos_start > pos_prev_end) {
-                    text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
-                                    .toHtmlEscaped()
-                                    .replace("\n", "<br/>");
+                    text += replaceCrToBr(text_ba.mid(pos_prev_end, pos_start - pos_prev_end),
+                                          first_part);
                 }
                 QString display_url =
                         QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
@@ -486,19 +485,41 @@ QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Mai
                     text += QString("<a href=\"search://%1\">%2</a>")
                                     .arg(part.features_Tag.first().tag, display_url);
                 } else {
-                    text += QString(text_ba.mid(pos_start, pos_end - pos_start))
-                                    .toHtmlEscaped()
-                                    .replace("\n", "<br/>");
+                    text += replaceCrToBr(text_ba.mid(pos_start, pos_end - pos_start), first_part);
                 }
                 pos_prev_end = pos_end;
             }
+            first_part = false;
         }
         if (pos_prev_end < (text_ba.length() - 1)) {
-            text += QString(text_ba.mid(pos_prev_end)).toHtmlEscaped().replace("\n", "<br/>");
+            text += replaceCrToBr(text_ba.mid(pos_prev_end), first_part);
         }
 
         return text;
     }
+}
+
+QString replaceCrToBr(const QString &text, bool first_part)
+{
+    QString escaped = text.toHtmlEscaped();
+    QStringList lines = escaped.split("\n");
+    QList<int> indexs;
+    for (int c = (first_part ? 0 : 1); c < lines.length(); c++) {
+        auto &line = lines[c];
+        indexs.clear();
+        for (int i = 0; i < line.length(); i++) {
+            if (line.at(i) == QChar(' ')) {
+                indexs.push_front(i);
+            } else {
+                break;
+            }
+        }
+        for (const auto i : indexs) {
+            line.replace(i, 1, QChar(0xa0));
+            // line.replace(i, 1, "&nbsp;");
+        }
+    }
+    return lines.join("<br/>");
 }
 
 QString convertVideoThumb(const QString &url)

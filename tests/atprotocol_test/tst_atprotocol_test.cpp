@@ -92,6 +92,7 @@ private slots:
 
     void test_convertVideoThumb();
     void test_facets();
+    void test_postText();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -2624,6 +2625,19 @@ void atprotocol_test::test_convertVideoThumb()
 void atprotocol_test::test_facets()
 {
     QJsonDocument json_testassets = UnitTestCommon::loadJson(":/data/facets/records.json");
+    for (const auto json_testasset : json_testassets.array()) {
+        QVariant record;
+        LexiconsTypeUnknown::copyUnknown(json_testasset.toObject().value("record").toObject(),
+                                         record);
+        QString actual = LexiconsTypeUnknown::copyRecordText(record);
+        QString expect = json_testasset.toObject().value("expect").toString();
+        QVERIFY2(actual == expect, QString("\n%1\n%2\n").arg(actual).arg(expect).toLocal8Bit());
+    }
+}
+
+void atprotocol_test::test_postText()
+{
+    QJsonDocument json_testassets = UnitTestCommon::loadJson(":/data/facets/records_plain.json");
     for (const auto json_testasset : json_testassets.array()) {
         QVariant record;
         LexiconsTypeUnknown::copyUnknown(json_testasset.toObject().value("record").toObject(),

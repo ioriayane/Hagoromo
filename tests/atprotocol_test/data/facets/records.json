@@ -1,7 +1,7 @@
 [
     {
         "record": {
-            "text": "link\nhttps://leme.style/",
+            "text": "link\n  https://leme.style/  ",
             "$type": "app.bsky.feed.post",
             "embed": {
                 "$type": "app.bsky.embed.external",
@@ -14,8 +14,8 @@
             "facets": [
                 {
                     "index": {
-                        "byteEnd": 24,
-                        "byteStart": 5
+                        "byteEnd": 26,
+                        "byteStart": 7
                     },
                     "features": [
                         {
@@ -27,7 +27,7 @@
             ],
             "createdAt": "2023-05-28T15:52:04.434Z"
         },
-        "expect": "link<br/><a href=\"https://leme.style/\">https://leme.style/</a>"
+        "expect": "link<br/>  <a href=\"https://leme.style/\">https://leme.style/</a>  "
     },
     {
         "record": {
@@ -46,13 +46,13 @@
     },
     {
         "record": {
-            "text": "リンクテスト\nhttps://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "text": " リンクテスト\n  https://leme.style/\n2つめ\n   https://blueskyweb.xyz/   \n終わり",
             "$type": "app.bsky.feed.post",
             "facets": [
                 {
                     "index": {
-                        "byteEnd": 38,
-                        "byteStart": 19
+                        "byteEnd": 41,
+                        "byteStart": 22
                     },
                     "features": [
                         {
@@ -63,8 +63,8 @@
                 },
                 {
                     "index": {
-                        "byteEnd": 70,
-                        "byteStart": 47
+                        "byteEnd": 76,
+                        "byteStart": 53
                     },
                     "features": [
                         {
@@ -76,7 +76,7 @@
             ],
             "createdAt": "2023-05-28T11:30:01.978Z"
         },
-        "expect": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+        "expect": " リンクテスト<br/>  <a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/>   <a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a>   <br/>終わり"
     },
     {
         "record": {
@@ -114,13 +114,13 @@
     },
     {
         "record": {
-            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "text": "   https://leme.style/\n   2つめ\nhttps://blueskyweb.xyz/   \n終わり",
             "$type": "app.bsky.feed.post",
             "facets": [
                 {
                     "index": {
-                        "byteEnd": 19,
-                        "byteStart": 0
+                        "byteEnd": 22,
+                        "byteStart": 3
                     },
                     "features": [
                         {
@@ -131,8 +131,8 @@
                 },
                 {
                     "index": {
-                        "byteEnd": 51,
-                        "byteStart": 28
+                        "byteEnd": 57,
+                        "byteStart": 34
                     },
                     "features": [
                         {
@@ -144,7 +144,7 @@
             ],
             "createdAt": "2023-05-28T11:30:01.978Z"
         },
-        "expect": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+        "expect": "   <a href=\"https://leme.style/\">https://leme.style/</a><br/>   2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a>   <br/>終わり"
     },
     {
         "record": {
@@ -194,7 +194,7 @@
     },
     {
         "record": {
-            "text": "https://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+            "text": "https://leme.style/   \n2つめ\nhttps://blueskyweb.xyz/\n終わり",
             "$type": "app.bsky.feed.post",
             "facets": [
                 {
@@ -224,7 +224,7 @@
             ],
             "createdAt": "2023-05-28T11:30:01.978Z"
         },
-        "expect": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+        "expect": "<a href=\"https://leme.style/\">https://leme.style/</a>   <br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
     },
     {
         "record": {
