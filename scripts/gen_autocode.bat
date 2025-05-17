@@ -1,2 +1,2 @@
 python3 .\scripts\defs2struct.py
-pre-commit.exe run -a
+python3 -m pre_commit run -a
