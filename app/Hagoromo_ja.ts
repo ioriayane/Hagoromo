@@ -287,14 +287,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="685"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="692"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="715"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="722"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="688"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="695"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="718"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="725"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -829,6 +829,14 @@ Please recreate AppPassword in the official application.</source>
         <location filename="qml/dialogs/EditProfileDialog.qml" line="227"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
+    </message>
+</context>
+<context>
+    <name>ExternalLinkCardPopup</name>
+    <message>
+        <location filename="qml/parts/ExternalLinkCardPopup.qml" line="35"/>
+        <source>until %1</source>
+        <translation>%1 まで</translation>
     </message>
 </context>
 <context>
@@ -2272,7 +2280,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="qml/parts/PostDelegate.qml" line="106"/>
+        <location filename="qml/parts/PostDelegate.qml" line="107"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2348,12 +2356,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="163"/>
+        <location filename="qml/view/PostThreadView.qml" line="164"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="214"/>
+        <location filename="qml/view/PostThreadView.qml" line="215"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -2419,97 +2427,97 @@ Please recreate AppPassword in the official application.</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="328"/>
+        <location filename="qml/view/ProfileView.qml" line="343"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="339"/>
+        <location filename="qml/view/ProfileView.qml" line="354"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="350"/>
+        <location filename="qml/view/ProfileView.qml" line="365"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="388"/>
+        <location filename="qml/view/ProfileView.qml" line="403"/>
         <source>Regisitration date:</source>
         <translation>登録日 :</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="454"/>
+        <location filename="qml/view/ProfileView.qml" line="469"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="460"/>
+        <location filename="qml/view/ProfileView.qml" line="475"/>
         <source>Send message</source>
         <translation>メッセージを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="467"/>
+        <location filename="qml/view/ProfileView.qml" line="482"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="473"/>
+        <location filename="qml/view/ProfileView.qml" line="488"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="479"/>
+        <location filename="qml/view/ProfileView.qml" line="494"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="486"/>
+        <location filename="qml/view/ProfileView.qml" line="501"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="492"/>
+        <location filename="qml/view/ProfileView.qml" line="507"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="499"/>
+        <location filename="qml/view/ProfileView.qml" line="514"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="506"/>
+        <location filename="qml/view/ProfileView.qml" line="521"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="506"/>
+        <location filename="qml/view/ProfileView.qml" line="521"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="518"/>
+        <location filename="qml/view/ProfileView.qml" line="533"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="518"/>
+        <location filename="qml/view/ProfileView.qml" line="533"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="530"/>
+        <location filename="qml/view/ProfileView.qml" line="545"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="562"/>
+        <location filename="qml/view/ProfileView.qml" line="577"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="573"/>
+        <location filename="qml/view/ProfileView.qml" line="588"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
@@ -2518,7 +2526,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="586"/>
+        <location filename="qml/view/ProfileView.qml" line="601"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -3666,7 +3674,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>SkyblurContent</name>
     <message>
-        <location filename="qml/parts/SkyblurContent.qml" line="29"/>
+        <location filename="qml/parts/SkyblurContent.qml" line="36"/>
         <source>Get unblurred text</source>
         <translation>伏せてないテキストを取得</translation>
     </message>
@@ -3679,7 +3687,7 @@ Why should this message be reviewed?</source>
         <translation>不正なAT URIです。</translation>
     </message>
     <message>
-        <location filename="qtquick/operation/skybluroperator.cpp" line="30"/>
+        <location filename="qtquick/operation/skybluroperator.cpp" line="31"/>
         <source>The PDS for the target account could not be obtained.</source>
         <translation>対象アカウントのPDSが取得できませんでした。</translation>
     </message>
@@ -3730,7 +3738,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="312"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="314"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -3738,7 +3746,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="168"/>
+        <location filename="qml/view/TimelineView.qml" line="169"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
