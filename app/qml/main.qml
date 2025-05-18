@@ -829,6 +829,7 @@ ApplicationWindow {
                 model: ColumnListModel {
                     //カラムの情報管理
                     id: columnManageModel
+                    onPositionChanged: repeater.updateSettings(1)
                 }
 
                 function updateSetting() {

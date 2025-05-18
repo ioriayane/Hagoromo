@@ -7,6 +7,8 @@
 #include <QSettings>
 #include <QUuid>
 
+#include <tools/accountmanager.h>
+
 ColumnListModel::ColumnListModel(QObject *parent)
     : QAbstractListModel { parent }, m_selectedPosition(-1)
 {
@@ -461,7 +463,7 @@ void ColumnListModel::load()
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("column.json"));
 
     if (doc.isArray() && !doc.array().isEmpty()) {
-        beginInsertRows(QModelIndex(), 0, doc.array().count() - 1);
+        bool skipped = false;
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 QJsonObject obj = doc.array().at(i).toObject();
@@ -539,12 +541,21 @@ void ColumnListModel::load()
                         break;
                     }
                 }
-                m_columnList.append(item);
+
+                if (AccountManager::getInstance()->indexAt(item.account_uuid) >= 0) {
+                    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                    m_columnList.append(item);
+                    endInsertRows();
+                } else {
+                    skipped = true;
+                }
             }
         }
         m_selectedPosition = 0;
-        validateIndex();
-        endInsertRows();
+        bool valid_index = validateIndex();
+        if (skipped || !valid_index) {
+            save();
+        }
     }
 }
 
@@ -583,7 +594,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     return roles;
 }
 
-void ColumnListModel::validateIndex()
+bool ColumnListModel::validateIndex()
 {
     QList<int> values;
     for (const auto &item : std::as_const(m_columnList)) {
@@ -613,5 +624,8 @@ void ColumnListModel::validateIndex()
         for (int i = 0; i < m_columnList.length(); i++) {
             m_columnList[i].position = i;
         }
+        emit dataChanged(index(0), index(m_columnList.count() - 1));
+        emit positionChanged();
     }
+    return valid;
 }

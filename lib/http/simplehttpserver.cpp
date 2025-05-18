@@ -1,5 +1,8 @@
 #include "simplehttpserver.h"
 
+#include <QFileInfo>
+#include <QTcpServer>
+
 SimpleHttpServer::SimpleHttpServer(QObject *parent) : QAbstractHttpServer { parent }
 {
     connect(&m_timeout, &QTimer::timeout, this, [=]() { emit timeout(); });

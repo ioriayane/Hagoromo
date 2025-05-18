@@ -1,15 +1,49 @@
 #include "opengraphprotocol.h"
 
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
 #include <QUrl>
 #include <QTextCodec>
+#include <QRegularExpression>
 
 // https://ogp.me/
 
-OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
+class OpenGraphProtocol::Private
+{
+public:
+    Private(OpenGraphProtocol *parent);
+    ~Private();
+
+    QString uri() const;
+    void setUri(const QString &newUri);
+    QString title() const;
+    void setTitle(const QString &newTitle);
+    QString description() const;
+    void setDescription(const QString &newDescription);
+    QString thumb() const;
+    void setThumb(const QString &newThumb);
+
+    bool parse(const QByteArray &data, const QString &src_uri);
+    QString extractCharset(const QString &data) const;
+    void rebuildHtml(const QString &text, QDomDocument &doc) const;
+    bool rebuildTag(QString text, QDomElement &element) const;
+
+private:
+    OpenGraphProtocol *q;
+
+    QRegularExpression m_rxMeta;
+    QHash<QString, QString> m_listOfRedirectAllowed; // QHash<元URL, 先URL>
+
+    QString m_uri;
+    QString m_title;
+    QString m_description;
+    QString m_thumb;
+};
+
+OpenGraphProtocol::Private::Private(OpenGraphProtocol *parent) : q(parent)
 {
     m_rxMeta = QRegularExpression(
             QString("(?:%1)|(?:%2)")
@@ -24,12 +58,25 @@ OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
     m_listOfRedirectAllowed["a.co"] = "www.amazon.com";
 }
 
+OpenGraphProtocol::Private::~Private() { }
+
+OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }, d(new Private(this))
+{
+    qDebug().noquote() << this << "OpenGraphProtocol()";
+    connect(this, &QObject::destroyed, [this]() { delete d; });
+}
+
+OpenGraphProtocol::~OpenGraphProtocol()
+{
+    qDebug().noquote() << this << "~OpenGraphProtocol()";
+}
+
 void OpenGraphProtocol::getData(const QString &url)
 {
-    m_uri.clear();
-    m_title.clear();
-    m_description.clear();
-    m_thumb.clear();
+    d->setUri(QString());
+    d->setTitle(QString());
+    d->setDescription(QString());
+    d->setThumb(QString());
 
     QNetworkRequest request((QUrl(url)));
     request.setRawHeader(QByteArray("accept"), QByteArray("*/*"));
@@ -50,7 +97,7 @@ void OpenGraphProtocol::getData(const QString &url)
         if (!ret) {
             qCritical().noquote().nospace() << QString::fromUtf8(reply->readAll());
         } else {
-            ret = parse(reply->readAll(), reply->url().toString());
+            ret = d->parse(reply->readAll(), reply->url().toString());
         }
         emit finished(ret);
         reply->deleteLater();
@@ -156,45 +203,85 @@ QString OpenGraphProtocol::decodeHtml(const QString &encoded)
 
 QString OpenGraphProtocol::uri() const
 {
-    return m_uri;
+    return d->uri();
 }
 
 void OpenGraphProtocol::setUri(const QString &newUri)
 {
-    m_uri = newUri;
+    d->setUri(newUri);
 }
 
 QString OpenGraphProtocol::title() const
 {
-    return m_title;
+    return d->title();
 }
 
 void OpenGraphProtocol::setTitle(const QString &newTitle)
 {
-    m_title = newTitle;
+    d->setTitle(newTitle);
 }
 
 QString OpenGraphProtocol::description() const
 {
-    return m_description;
+    return d->description();
 }
 
 void OpenGraphProtocol::setDescription(const QString &newDescription)
 {
-    m_description = newDescription;
+    d->setDescription(newDescription);
 }
 
 QString OpenGraphProtocol::thumb() const
 {
-    return m_thumb;
+    return d->thumb();
 }
 
 void OpenGraphProtocol::setThumb(const QString &newThumb)
 {
+    d->setThumb(newThumb);
+}
+
+QString OpenGraphProtocol::Private::uri() const
+{
+    return m_uri;
+}
+
+void OpenGraphProtocol::Private::setUri(const QString &newUri)
+{
+    m_uri = newUri;
+}
+
+QString OpenGraphProtocol::Private::title() const
+{
+    return m_title;
+}
+
+void OpenGraphProtocol::Private::setTitle(const QString &newTitle)
+{
+    m_title = newTitle;
+}
+
+QString OpenGraphProtocol::Private::description() const
+{
+    return m_description;
+}
+
+void OpenGraphProtocol::Private::setDescription(const QString &newDescription)
+{
+    m_description = newDescription;
+}
+
+QString OpenGraphProtocol::Private::thumb() const
+{
+    return m_thumb;
+}
+
+void OpenGraphProtocol::Private::setThumb(const QString &newThumb)
+{
     m_thumb = newThumb;
 }
 
-bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
+bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &src_uri)
 {
     bool ret = false;
 #if 0
@@ -283,7 +370,7 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     return ret;
 }
 
-QString OpenGraphProtocol::extractCharset(const QString &data) const
+QString OpenGraphProtocol::Private::extractCharset(const QString &data) const
 {
     QString charset = "utf-8";
 
@@ -330,7 +417,7 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
     return charset;
 }
 
-void OpenGraphProtocol::rebuildHtml(const QString &text, QDomDocument &doc) const
+void OpenGraphProtocol::Private::rebuildHtml(const QString &text, QDomDocument &doc) const
 {
     QRegularExpressionMatch match = m_rxMeta.match(text);
     if (match.capturedTexts().isEmpty())
@@ -354,7 +441,7 @@ void OpenGraphProtocol::rebuildHtml(const QString &text, QDomDocument &doc) cons
     return;
 }
 
-bool OpenGraphProtocol::rebuildTag(QString text, QDomElement &element) const
+bool OpenGraphProtocol::Private::rebuildTag(QString text, QDomElement &element) const
 {
     QChar c;
     int state = 0;

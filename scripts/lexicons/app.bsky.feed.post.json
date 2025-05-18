@@ -5,11 +5,24 @@
                 "properties": {
                     "via": {
                         "type": "string",
-                        "format": "client name(Unofficial field) old"
+                        "description": "client name(Unofficial field) old"
                     },
                     "space.aoisora.post.via": {
                         "type": "string",
-                        "format": "client name(Unofficial field)"
+                        "description": "client name(Unofficial field)"
+                    },
+                    "uk.skyblur.post.uri": {
+                        "type": "string",
+                        "format": "at-uri",
+                        "description": "Skyblur at:uri(Unofficial field)"
+                    },
+                    "uk.skyblur.post.visibility": {
+                        "type": "string",
+                        "description": "Skyblur visibility(Unofficial field)",
+                        "enum": [
+                            "public",
+                            "password"
+                        ]
                     }
                 }
             }

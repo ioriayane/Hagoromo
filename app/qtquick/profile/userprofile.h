@@ -71,6 +71,20 @@ class UserProfile : public QObject
                        verificationStateChanged FINAL)
     Q_PROPERTY(QStringList verifierList READ verifierList WRITE setVerifierList NOTIFY
                        verifierListChanged FINAL)
+
+    Q_PROPERTY(bool liveIsActive READ liveIsActive WRITE setLiveIsActive NOTIFY liveIsActiveChanged
+                       FINAL)
+    Q_PROPERTY(QString liveLinkUri READ liveLinkUri WRITE setLiveLinkUri NOTIFY liveLinkUriChanged
+                       FINAL)
+    Q_PROPERTY(QString liveLinkTitle READ liveLinkTitle WRITE setLiveLinkTitle NOTIFY
+                       liveLinkTitleChanged FINAL)
+    Q_PROPERTY(QString liveLinkDescription READ liveLinkDescription WRITE setLiveLinkDescription
+                       NOTIFY liveLinkDescriptionChanged FINAL)
+    Q_PROPERTY(QString liveLinkThumb READ liveLinkThumb WRITE setLiveLinkThumb NOTIFY
+                       liveLinkThumbChanged FINAL)
+    Q_PROPERTY(QString liveExpiresAt READ liveExpiresAt WRITE setLiveExpiresAt NOTIFY
+                       liveExpiresAtChanged FINAL)
+
 public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
@@ -146,6 +160,19 @@ public:
     QStringList verifierList() const;
     void setVerifierList(const QStringList &newVerifierList);
 
+    bool liveIsActive() const;
+    void setLiveIsActive(bool newLiveIsActive);
+    QString liveLinkUri() const;
+    void setLiveLinkUri(const QString &newLiveLinkUri);
+    QString liveLinkTitle() const;
+    void setLiveLinkTitle(const QString &newLiveLinkTitle);
+    QString liveLinkDescription() const;
+    void setLiveLinkDescription(const QString &newLiveLinkDescription);
+    QString liveLinkThumb() const;
+    void setLiveLinkThumb(const QString &newLiveLinkThumb);
+    QString liveExpiresAt() const;
+    void setLiveExpiresAt(const QString &newLiveExpiresAt);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -184,6 +211,13 @@ signals:
 
     void verificationStateChanged();
     void verifierListChanged();
+
+    void liveIsActiveChanged();
+    void liveLinkUriChanged();
+    void liveLinkTitleChanged();
+    void liveLinkDescriptionChanged();
+    void liveLinkThumbChanged();
+    void liveExpiresAtChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
@@ -244,6 +278,12 @@ private:
     QStringList m_labelIcons;
     QString m_verificationState;
     QStringList m_verifierList;
+    bool m_liveIsActive;
+    QString m_liveLinkUri;
+    QString m_liveLinkTitle;
+    QString m_liveLinkDescription;
+    QString m_liveLinkThumb;
+    QString m_liveExpiresAt;
 };
 
 #endif // USERPROFILE_H

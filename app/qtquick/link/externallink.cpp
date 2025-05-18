@@ -1,6 +1,9 @@
 #include "externallink.h"
 #include "tools/opengraphprotocol.h"
 
+#include <QDebug>
+#include <QUrl>
+
 ExternalLink::ExternalLink(QObject *parent)
     : QObject { parent }, m_thumbLocal(nullptr), m_running(false), m_valid(false)
 {

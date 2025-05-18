@@ -30,9 +30,11 @@ ClickableFrame {
     property alias replyReactionAuthor: replyReactionAuthor
     property alias pinnedIndicatorLabel: pinnedIndicatorLabel
     property alias postAvatarImage: postAvatarImage
+    property alias authorLiveIsActiveCover: authorLiveIsActiveCover
     property alias postAuthor: postAuthor
     property alias authorLabels: authorLabels
     property alias recordText: recordText
+    property alias skyblurContent: skyblurContent
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
@@ -146,6 +148,11 @@ ClickableFrame {
                 Layout.preferredHeight: AdjustedValues.i36
                 Layout.alignment: Qt.AlignTop
                 clip: false
+                LiveIconCover {
+                    id: authorLiveIsActiveCover
+                    anchors.fill: parent
+                    visible: false
+                }
                 Rectangle {
                     id: threadConnectorTop
                     x: (parent.width - width) / 2
@@ -230,6 +237,13 @@ ClickableFrame {
                                 onRequestCopyTagToClipboard: (text) => postFrame.requestCopyTagToClipboard(text)
                             }
                         }
+                    }
+
+                    SkyblurContent {
+                        id: skyblurContent
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
                     }
 
                     CoverFrame {

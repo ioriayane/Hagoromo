@@ -180,6 +180,32 @@ struct Relationship
 };
 }
 
+// app.bsky.embed.external
+namespace AppBskyEmbedExternal {
+struct ViewExternal
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    QString thumb; // uri
+};
+struct View
+{
+    ViewExternal external;
+};
+struct External
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    Blob thumb;
+};
+struct Main
+{
+    External external;
+};
+}
+
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 struct Main
@@ -273,6 +299,10 @@ enum class PostInteractionSettingsPrefPostgateEmbeddingRulesType : int {
     none,
     postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule,
 };
+enum class StatusViewEmbedType : int {
+    none,
+    embed_AppBskyEmbedExternal_View,
+};
 struct ProfileAssociatedChat
 {
     QString allowIncoming;
@@ -316,6 +346,20 @@ struct VerificationState
     QString verifiedStatus; // The user's status as a verified account.
     QString trustedVerifierStatus; // The user's status as a trusted verifier.
 };
+struct StatusView
+{
+    QString status; // The status for the account.
+    QVariant record;
+    // union start : embed
+    StatusViewEmbedType embed_type = StatusViewEmbedType::none;
+    AppBskyEmbedExternal::View
+            embed_AppBskyEmbedExternal_View; // An optional embed associated with the status.
+    // union end : embed
+    QString expiresAt; // datetime , The date when this status will expire. The application might
+                       // choose to no longer return the status after expiration.
+    bool isActive = false; // True if the status is not expired, false if it is expired. Only
+                           // present if expiration was set.
+};
 struct ProfileViewBasic
 {
     QString did; // did
@@ -327,6 +371,7 @@ struct ProfileViewBasic
     QList<ComAtprotoLabelDefs::Label> labels;
     QString createdAt; // datetime
     VerificationState verification;
+    StatusView status;
 };
 struct ProfileView
 {
@@ -341,6 +386,7 @@ struct ProfileView
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     VerificationState verification;
+    StatusView status;
 };
 struct ProfileViewDetailed
 {
@@ -361,6 +407,7 @@ struct ProfileViewDetailed
     QList<ComAtprotoLabelDefs::Label> labels;
     ComAtprotoRepoStrongRef::Main pinnedPost;
     VerificationState verification;
+    StatusView status;
 };
 struct AdultContentPref
 {
@@ -562,38 +609,32 @@ struct Main
 };
 }
 
+// app.bsky.actor.status
+namespace AppBskyActorStatus {
+enum class MainEmbedType : int {
+    none,
+    embed_AppBskyEmbedExternal_Main,
+};
+struct Main
+{
+    QString status; // The status for the account.
+    // union start : embed
+    MainEmbedType embed_type = MainEmbedType::none;
+    AppBskyEmbedExternal::Main
+            embed_AppBskyEmbedExternal_Main; // An optional embed associated with the status.
+    // union end : embed
+    int durationMinutes = 0; // The duration of the status in minutes. Applications can choose to
+                             // impose minimum and maximum limits.
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.embed.defs
 namespace AppBskyEmbedDefs {
 struct AspectRatio
 {
     int width = 0;
     int height = 0;
-};
-}
-
-// app.bsky.embed.external
-namespace AppBskyEmbedExternal {
-struct External
-{
-    QString uri; // uri
-    QString title;
-    QString description;
-    Blob thumb;
-};
-struct Main
-{
-    External external;
-};
-struct ViewExternal
-{
-    QString uri; // uri
-    QString title;
-    QString description;
-    QString thumb; // uri
-};
-struct View
-{
-    ViewExternal external;
 };
 }
 
@@ -1167,6 +1208,8 @@ struct Main
                        // created.
     QString via; // client name(Unofficial field) old
     QString space_aoisora_post_via; // client name(Unofficial field)
+    QString uk_skyblur_post_uri; // at-uri , Skyblur at:uri(Unofficial field)
+    QString uk_skyblur_post_visibility; // Skyblur visibility(Unofficial field)
 };
 }
 
@@ -1359,6 +1402,15 @@ struct TrendView
     QString status;
     QString category;
     QList<AppBskyActorDefs::ProfileViewBasic> actors;
+};
+}
+
+// app.bsky.unspecced.getConfig
+namespace AppBskyUnspeccedGetConfig {
+struct LiveNowConfig
+{
+    QString did; // did
+    QList<QString> domains;
 };
 }
 
@@ -2746,6 +2798,21 @@ struct TokenResponse
 };
 }
 
+// uk.skyblur.post
+namespace UkSkyblurPost {
+struct Main
+{
+    QString uri; // at-uri
+    QString text; // The post main contents. Blurred text must be enclosed in brackets [].
+    QString createdAt; // datetime , Created date assigned by client
+    QString additional; // The post additional contents.
+    Blob encryptBody; // Encrypted post body. It shoud be decrypted by the client with AES-256.
+    QString visibility; // For 'password', the text only contains blurred text, and additional is
+                        // always empty. The unblurred text and additional are included in the
+                        // encryptBody.
+};
+}
+
 // wellKnown.defs
 namespace WellKnownDefs {
 struct ResourceMetadata
@@ -2788,6 +2855,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry::Main)
 Q_DECLARE_METATYPE(AtProtocolType::BlueLinkatBoard::Main)
+Q_DECLARE_METATYPE(AtProtocolType::UkSkyblurPost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::DirectoryPlcDefs::DidDoc)
 
 #endif // LEXICONS_H

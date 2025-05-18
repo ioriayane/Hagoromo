@@ -1,78 +1,75 @@
 @echo off
 
 set CWD=%CD%
-set QT_BIN_FOLDER=%1
+set QTDIR=%1
 
-if '%QT_BIN_FOLDER%'=='' goto HELP
+if '%QTDIR%'=='' goto HELP
 goto MAIN
 
 REM --- help -----------------------------
 :HELP
-echo build.bat QT_BIN_FOLDER
+echo build.bat QTDIR
 echo ex:
-echo   build.bat path\to\Qt\5.15.2\msvc2019_64\bin
+echo   build.bat path\to\Qt\6.8.1\msvc2019_64
 
 goto QUIT
 
 REM --- main -----------------------------
 :MAIN
 
-set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
 IF not defined  VS_SETUP_BAT set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF not defined  VS_REDIST_FOLDER set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
+set SRC_FOLDER=..
 set BUILD_FOLDER=build-hagoromo
+set DEPLOY_FOLDER=deploy-hagoromo
+set OPENSSL_FOLDER=%QTDIR%/../../Tools/OpenSSLv3/Win_x64
 
 echo VS_SETUP_BAT=%VS_SETUP_BAT%
+echo VS_REDIST_FOLDER=%VS_REDIST_FOLDER%
+
+REM --- build deps -------
+cmd.exe /c %CWD%/scripts/build_zlib.bat
 
 REM --- check path -------
-qmake -v
-if ERRORLEVEL 1 set path=%QT_BIN_FOLDER%;%PATH%
-jom /version
-if ERRORLEVEL 1 set path=%JOM_BIN_FOLDER%;%PATH%
 nmake /? /c
 if ERRORLEVEL 1 call %VS_SETUP_BAT%
 
+set PATH=%QTDIR%\lib;%PATH%
+set PATH=%QTDIR%\bin;%PATH%
+set PATH=%OPENSSL_FOLDER%\bin;%PATH%
+set PATH=%CWD%\zlib\bin;%PATH%
+
 REM --- make folder -------
 if EXIST %BUILD_FOLDER% rmdir /s /q %BUILD_FOLDER%
-if ERRORLEVEL 1 goto QUIT
+if NOT ERRORLEVEL 0 goto QUIT
 mkdir %BUILD_FOLDER%
-if ERRORLEVEL 1 goto QUIT
+if NOT ERRORLEVEL 0 goto QUIT
+
+if EXIST %DEPLOY_FOLDER% rmdir /s /q %DEPLOY_FOLDER%
+if NOT ERRORLEVEL 0 goto QUIT
+mkdir %DEPLOY_FOLDER%
+if NOT ERRORLEVEL 0 goto QUIT
+
 
 REM --- build -------
 cd %BUILD_FOLDER%
 
-qmake ..\Hagoromo.pro CONFIG+=debug
-if ERRORLEVEL 1 goto TEST_FAIL
+cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
+    -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
+    -DCMAKE_INSTALL_LIBDIR:PATH='.' ^
+    -DCMAKE_INSTALL_BINDIR:PATH='.' ^
+    -DHAGOROMO_UNIT_TEST_BUILD=ON ^
+    -DCMAKE_BUILD_TYPE:STRING=Debug
+if ERRORLEVEL 1 goto QUIT
 
-jom
-if ERRORLEVEL 1 nmake
-
-cd %CWD%
-
-
-REM --- deploy -------
-REM windeployqt --qmldir app\qml %BUILD_FOLDER%\atprotocol_test\debug\atprotocol_test.exe
+cmake --build . --target tests\all
+if ERRORLEVEL 1 goto QUIT
 
 REM --- run -------
-%BUILD_FOLDER%\tests\atprotocol_test\debug\atprotocol_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\chat_test\debug\chat_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\hagoromo_test\debug\hagoromo_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\hagoromo_test2\debug\hagoromo_test2.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\http_test\debug\http_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\log_test\debug\log_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\oauth_test\debug\oauth_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\realtime_test\debug\realtime_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\search_test\debug\search_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
-%BUILD_FOLDER%\tests\tools_test\debug\tools_test.exe
-if not ERRORLEVEL 0 goto TEST_FAIL
+ctest --test-dir tests -C Debug -j 4
+if ERRORLEVEL 1 goto QUIT
+
+cd %CWD%
 
 goto QUIT
 :TEST_FAIL

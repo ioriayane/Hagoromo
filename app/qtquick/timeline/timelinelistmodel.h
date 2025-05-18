@@ -48,6 +48,7 @@ public:
         AuthorLabelsRole,
         AuthorLabelIconsRole,
         AuthorVerificationStateRole,
+        AuthorLiveIsActiveRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
@@ -78,6 +79,7 @@ public:
         RunningdeletePostRole,
         RunningPostPinningRole,
         RunningOtherPrcessingRole,
+        RunningSkyblurPostTextRole,
 
         HasQuoteRecordRole,
         QuoteRecordIsMineRole,
@@ -156,6 +158,9 @@ public:
         ThreadConnectedRole,
         ThreadConnectorTopRole,
         ThreadConnectorBottomRole,
+
+        HasSkyblurLinkRole,
+        SkyblurPostTextRole,
     };
     Q_ENUM(TimelineListModelRoles)
 
@@ -171,7 +176,7 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const;
-    QList<int> indexsOf(const QString &cid) const;
+    virtual QString getSkyblurPostUri(const QString &cid) const;
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
@@ -239,6 +244,8 @@ private:
     void setRunningPostPinning(int row, bool running);
     bool runningOtherPrcessing(int row) const;
     void setRunningOtherPrcessing(int row, bool running);
+    virtual bool runningSkyblurPostText(int row) const;
+    virtual void setRunningSkyblurPostText(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -264,6 +271,7 @@ private:
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
     QString m_runningOtherProcessingCid;
+    QString m_runningSkyblurPostTextCid;
 };
 
 #endif // TIMELINELISTMODEL_H

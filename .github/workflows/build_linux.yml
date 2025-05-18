@@ -48,7 +48,7 @@ jobs:
           echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
           echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_LINUX }}\"" >> ./lib/tools/encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
-          scripts/build.sh linux ${QT_ROOT_DIR}/bin
+          scripts/build.sh linux ${QT_ROOT_DIR}
           echo "::endgroup::"
 
           # echo "Make for Ubuntu"
@@ -66,8 +66,16 @@ jobs:
         with:
           name: archive_for_linux
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+          retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
+        run: scripts/unittest.sh linux ${QT_ROOT_DIR}
+      - name: Upload a unit test result
+        if: ${{ inputs.unit_test == true && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit_test_result_for_linux
+          path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"
+          retention-days: 5

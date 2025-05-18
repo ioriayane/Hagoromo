@@ -38,7 +38,7 @@
 
 ### 共通
 
-ビルドするプラットフォームのQt 5.15.2をインストールしてください。
+ビルドするプラットフォームのQt 6.8.1をインストールしてください。
 
 Official site : [Qt](https://www.qt.io/)
 
@@ -56,7 +56,7 @@ REM checkout repo
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\bin
+>.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
@@ -71,12 +71,12 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # setup dependent modules
-$ sudo apt-get install zlib1g-dev
+$ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
@@ -94,7 +94,7 @@ $ git submodule update -i
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
@@ -127,15 +127,15 @@ pre-commit installed at .git/hooks/pre-commit
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\bin
+> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
 ```
 
 ---
@@ -196,7 +196,7 @@ REM checkout repo
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\bin
+>.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
@@ -211,12 +211,12 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # setup dependent modules
-$ sudo apt-get install zlib1g-dev
+$ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
@@ -234,7 +234,7 @@ $ git submodule update -i
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
@@ -266,13 +266,13 @@ Please confirm that you can clear it by running it in one of the environments.
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\bin
+> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/bin
+$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
 ```

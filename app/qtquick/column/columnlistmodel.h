@@ -152,9 +152,12 @@ public:
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
 
+signals:
+    void positionChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
-    void validateIndex();
+    bool validateIndex();
 
     QList<ColumnItem> m_columnList;
     int m_selectedPosition;
