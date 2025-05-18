@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.50.0 - 2025/5/18
+
 - Add
   - Add a feature to retrieve blured text posted on Skyblur
   - Add live streaming information display function
