@@ -21,13 +21,14 @@ import "../parts"
 Dialog {
     id: postDialog
     modal: true
-    x: (parent.width - width) * 0.5
-    y: (parent.height - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
+    // x: (parent.width - width) * 0.5
+    // y: (parent.height - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
     closePolicy: Popup.NoAutoClose
     topPadding: 20
     bottomPadding: 20
     rightPadding: 0
-    property real basisHeight: parent.height * 0.9 - postDialog.topPadding - postDialog.bottomPadding
+    property int dialog_no: -1
+    property real basisHeight: 100 //parent.height * 0.9 - postDialog.topPadding - postDialog.bottomPadding
 
     property int parentWidth: parent.width
     property alias accountModel: accountCombo.model

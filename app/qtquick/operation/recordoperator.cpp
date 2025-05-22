@@ -37,6 +37,11 @@ AtProtocolInterface::AccountData RecordOperator::account() const
     return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
+QString RecordOperator::accountUuid() const
+{
+    return m_account.uuid;
+}
+
 void RecordOperator::setAccount(const QString &uuid)
 {
     m_account.uuid = uuid;
