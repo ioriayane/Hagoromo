@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
@@ -21,14 +22,12 @@ import "../parts"
 Dialog {
     id: postDialog
     modal: true
-    // x: (parent.width - width) * 0.5
-    // y: (parent.height - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
     closePolicy: Popup.NoAutoClose
     topPadding: 20
     bottomPadding: 20
     rightPadding: 0
     property int dialog_no: -1
-    property real basisHeight: 100 //parent.height * 0.9 - postDialog.topPadding - postDialog.bottomPadding
+    property real basisHeight: 100
 
     property int parentWidth: parent.width
     property alias accountModel: accountCombo.model
@@ -178,7 +177,7 @@ Dialog {
                     id: replyFrame
                     Layout.preferredWidth: postText.width
                     Layout.maximumHeight: 200 * AdjustedValues.ratio
-                    visible: postType === "reply"
+                    visible: postDialog.postType === "reply"
                     clip: true
                     ColumnLayout {
                         anchors.fill: parent
@@ -187,20 +186,20 @@ Dialog {
                                 id: replyAvatarImage
                                 Layout.preferredWidth: AdjustedValues.i16
                                 Layout.preferredHeight: AdjustedValues.i16
-                                source: replyAvatar
+                                source: postDialog.replyAvatar
                             }
                             Author {
                                 layoutWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
-                                displayName: replyDisplayName
-                                handle: replyHandle
-                                indexedAt: replyIndexedAt
+                                displayName: postDialog.replyDisplayName
+                                handle: postDialog.replyHandle
+                                indexedAt: postDialog.replyIndexedAt
                             }
                         }
                         Label {
                             Layout.preferredWidth: postText.width - replyFrame.padding * 2
                             wrapMode: Text.WrapAnywhere
                             font.pointSize: AdjustedValues.f8
-                            text: replyText
+                            text: postDialog.replyText
                         }
                     }
                 }
@@ -215,15 +214,19 @@ Dialog {
                         textRole: "handle"
                         valueRole: "did"
                         delegate: ItemDelegate {
+                            id: accountItemDelegate
+                            required property int index
+                            required property string avatar
+                            required property string handle
                             width: parent.width
                             height: implicitHeight * AdjustedValues.ratio
                             font.pointSize: AdjustedValues.f10
-                            onClicked: accountCombo.currentIndex = model.index
+                            onClicked: accountCombo.currentIndex = accountItemDelegate.index
                             AccountLayout {
                                 anchors.fill: parent
                                 anchors.margins: 10
-                                source: model.avatar
-                                handle: model.handle
+                                source: accountItemDelegate.avatar
+                                handle: accountItemDelegate.handle
                             }
                         }
                         contentItem: AccountLayout {
@@ -374,7 +377,7 @@ Dialog {
                             id: addingExternalLinkUrlText
                             selectByMouse: true
                             font.pointSize: AdjustedValues.f10
-                            placeholderText: (quoteValid === false) ?
+                            placeholderText: (postDialog.quoteValid === false) ?
                                                  qsTr("Link card URL, Custom feed URL, List URL, Post URL") :
                                                  qsTr("Link card URL")
                         }
@@ -485,15 +488,20 @@ Dialog {
                                 property int adjustPostLength: count > 4 ? 5 + (Math.ceil(count / 4) + "").length : 0
                             }
                             delegate: ImageWithIndicator {
+                                id: additionalImages
+                                required property int index
+                                required property string uri
+                                required property string alt
+                                required property string number
                                 Layout.preferredWidth: 102 * AdjustedValues.ratio
                                 Layout.preferredHeight: 102 * AdjustedValues.ratio
                                 fillMode: Image.PreserveAspectCrop
-                                source: model.uri
+                                source: additionalImages.uri
                                 TagLabel {
                                     anchors.left: parent.left
                                     anchors.bottom: parent.bottom
                                     anchors.margins: 3
-                                    visible: model.alt.length > 0
+                                    visible: additionalImages.alt.length > 0
                                     source: ""
                                     fontPointSize: AdjustedValues.f8
                                     text: "Alt"
@@ -502,17 +510,17 @@ Dialog {
                                     anchors.right: parent.right
                                     anchors.bottom: parent.bottom
                                     anchors.margins: 3
-                                    visible: model.number.length > 0
+                                    visible: additionalImages.number.length > 0
                                     source: ""
                                     fontPointSize: AdjustedValues.f8
-                                    text: model.number
+                                    text: additionalImages.number
                                 }
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
-                                        altEditDialog.editingIndex = model.index
-                                        altEditDialog.embedImage = model.uri
-                                        altEditDialog.embedAlt = model.alt
+                                        altEditDialog.editingIndex = additionalImages.index
+                                        altEditDialog.embedImage = additionalImages.uri
+                                        altEditDialog.embedAlt = additionalImages.alt
                                         altEditDialog.open()
                                     }
                                 }
@@ -524,7 +532,7 @@ Dialog {
                                     anchors.right: parent.right
                                     anchors.margins: 5
                                     iconSource: "../images/delete.png"
-                                    onClicked: embedImageListModel.remove(model.index)
+                                    onClicked: embedImageListModel.remove(additionalImages.index)
                                 }
                             }
                         }
@@ -535,7 +543,7 @@ Dialog {
                     id: quoteFrame
                     Layout.preferredWidth: postText.width
                     Layout.maximumHeight: 200 * AdjustedValues.ratio
-                    visible: quoteValid
+                    visible: postDialog.quoteValid
                     clip: true
                     ColumnLayout {
                         Layout.preferredWidth: postText.width
@@ -544,20 +552,20 @@ Dialog {
                                 id: quoteAvatarImage
                                 Layout.preferredWidth: AdjustedValues.i16
                                 Layout.preferredHeight: AdjustedValues.i16
-                                source: quoteAvatar
+                                source: postDialog.quoteAvatar
                             }
                             Author {
                                 layoutWidth: postText.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
-                                displayName: quoteDisplayName
-                                handle: quoteHandle
-                                indexedAt: quoteIndexedAt
+                                displayName: postDialog.quoteDisplayName
+                                handle: postDialog.quoteHandle
+                                indexedAt: postDialog.quoteIndexedAt
                             }
                         }
                         Label {
                             Layout.preferredWidth: postText.width - quoteFrame.padding * 2
                             wrapMode: Text.WrapAnywhere
                             font.pointSize: AdjustedValues.f8
-                            text: quoteText
+                            text: postDialog.quoteText
                         }
                     }
                 }
