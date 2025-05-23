@@ -21,15 +21,18 @@ import "../parts"
 
 Dialog {
     id: postDialog
+    x: (parentWidth - width) * 0.5
+    y: (parentHeight - scrollView.implicitHeight - topPadding - bottomPadding) * 0.5
     modal: true
     closePolicy: Popup.NoAutoClose
     topPadding: 20
     bottomPadding: 20
     rightPadding: 0
     property int dialog_no: -1
-    property real basisHeight: 100
+    property real basisHeight: parentHeight * 0.9 - topPadding - bottomPadding
+    property int parentWidth: 800
+    property int parentHeight: 600
 
-    property int parentWidth: parent.width
     property alias accountModel: accountCombo.model
 
     property string defaultAccountUuid: ""
@@ -150,7 +153,7 @@ Dialog {
     PostLink {
         id: postLink
         onValidChanged: {
-            if(valid){
+            if(postLink.valid){
                 quoteCid = postLink.cid
                 quoteUri = postLink.uri
                 quoteAvatar = postLink.avatar
@@ -165,8 +168,8 @@ Dialog {
     ScrollView {
         id: scrollView
         implicitWidth: mainLayout.width + postDialog.leftPadding
-        implicitHeight: (mainLayout.height > basisHeight) ? basisHeight : mainLayout.height
-        ScrollBar.vertical.policy: (mainLayout.height > basisHeight) ? ScrollBar.AlwaysOn :ScrollBar.AlwaysOff
+        implicitHeight: (mainLayout.height > postDialog.basisHeight) ? postDialog.basisHeight : mainLayout.height
+        ScrollBar.vertical.policy: (mainLayout.height > postDialog.basisHeight) ? ScrollBar.AlwaysOn :ScrollBar.AlwaysOff
         clip: true
         Item {
             implicitWidth: mainLayout.width

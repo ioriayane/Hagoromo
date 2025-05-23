@@ -127,6 +127,8 @@ ApplicationWindow {
         id: postDialogComponent
         PostDialog {
             id: postDialog
+            parentWidth: appWindow.width
+            parentHeight: appWindow.height
             accountModel: accountListModel
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
@@ -152,11 +154,6 @@ ApplicationWindow {
 
             sourceComponent: postDialogComponent
             onLoaded: {
-                // appWindow
-                item.x = (appWindow.width - item.width) * 0.5
-                item.y = (appWindow.height - /*item.scrollView.implicitHeight -*/ item.topPadding - item.bottomPadding) * 0.5
-                item.basisHeight = appWindow.height * 0.9 - item.topPadding - item.bottomPadding
-
                 item.dialog_no = dialog_no
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
