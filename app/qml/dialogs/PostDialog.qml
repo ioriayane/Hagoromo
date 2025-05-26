@@ -21,12 +21,12 @@ import "../parts"
 
 Item {
     id: postDialogItem
-    anchors.fill: parent
 
     property int dialog_no: -1
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
+    property int viewIndex: 0
 
     property alias accountModel: accountCombo.model
 
@@ -61,10 +61,39 @@ Item {
     function open(){
         postDialog.open()
     }
+    function close() {
+        visible = false
+        closed()
+    }
 
     function openWithFiles(urls){
         if(embedImageListModel.append(urls)){
             postDialog.open()
+        }
+    }
+
+    Frame {
+        id: progressFrame
+        x: postDialogItem.parentWidth - width - 10
+        y: (height + 5) * postDialogItem.viewIndex + 5
+        contentWidth: progressRectangle.width
+        contentHeight: progressRectangle.height
+        visible: createRecord.running && createRecord.progressMessage.length > 0
+        Rectangle {
+            id: progressRectangle
+            width: 300 * AdjustedValues.ratio
+            height: progressLabel.height
+            radius: height / 2
+            color: Material.color(Material.Indigo)
+            Label {
+                id: progressLabel
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                font.pointSize: AdjustedValues.f8
+                text: createRecord.progressMessage
+                color: Material.theme === Material.Dark ? Material.foreground : "white"
+            }
         }
     }
 
@@ -88,7 +117,7 @@ Item {
             }
             postText.forceActiveFocus()
         }
-        onClosed: postDialogItem.closed()
+        // onClosed: postDialogItem.closed()
 
         Shortcut {  // Post
             enabled: postDialog.visible && postButton.enabled && postText.focus
@@ -110,13 +139,14 @@ Item {
             id: createRecord
             onFinished: (success) => {
                 if(success){
-                    postText.clear()
-                    postDialog.close()
+                    // postText.clear()
+                    postDialogItem.closed()
                 }
             }
             onErrorOccured: (code, message) => {
                 var row = accountCombo.currentIndex;
                 postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                postDialog.visible = true
             }
         }
         LanguageListModel {
@@ -554,26 +584,6 @@ Item {
                         }
                     }
 
-                    Label {
-                        Layout.preferredWidth: postText.width
-                        Layout.leftMargin: 10
-                        Layout.topMargin: 2
-                        Layout.bottomMargin: 2
-                        font.pointSize: AdjustedValues.f8
-                        text: createRecord.progressMessage
-                        visible: createRecord.running && createRecord.progressMessage.length > 0
-                        color: Material.theme === Material.Dark ? Material.foreground : "white"
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.leftMargin: -10
-                            anchors.topMargin: -2
-                            anchors.bottomMargin: -2
-                            z: -1
-                            radius: height / 2
-                            color: Material.color(Material.Indigo)
-                        }
-                    }
-
                     RowLayout {
                         spacing: 0
                         Button {
@@ -581,7 +591,7 @@ Item {
                             flat: true
                             font.pointSize: AdjustedValues.f10
                             text: qsTr("Cancel")
-                            onClicked: postDialog.close()
+                            onClicked: postDialogItem.close()
                         }
                         Item {
                             Layout.fillWidth: true
@@ -688,6 +698,7 @@ Item {
                                 }else{
                                     createRecord.post()
                                 }
+                                postDialog.close()
                             }
                             BusyIndicator {
                                 anchors.fill: parent

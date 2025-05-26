@@ -139,6 +139,7 @@ ApplicationWindow {
         property int dialog_no: 0
         model: ListModel {}
         Loader {
+            required property int index
             required property int dialog_no
             required property string post_type
             required property string account_uuid
@@ -155,6 +156,7 @@ ApplicationWindow {
             sourceComponent: postDialogComponent
             onLoaded: {
                 item.dialog_no = dialog_no
+                item.viewIndex = index
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
                 if(item.postType === "reply"){
@@ -205,7 +207,12 @@ ApplicationWindow {
                     console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
                     console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
                     postDialogRepeater.model.remove(i)
+                    break
                 }
+            }
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                loader_item.item.viewIndex = i
             }
         }
     }
