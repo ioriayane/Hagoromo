@@ -1,9 +1,9 @@
 pragma ComponentBehavior: Bound
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Controls.Material 2.15
-import Qt.labs.platform 1.1 as P
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Controls.Material
+import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -76,20 +76,28 @@ Item {
         id: progressFrame
         x: postDialogItem.parentWidth - width - 10
         y: (height + 5) * postDialogItem.viewIndex + 5
-        contentWidth: progressRectangle.width
-        contentHeight: progressRectangle.height
+        contentWidth: progressLayout.width
+        contentHeight: progressLayout.height
         visible: createRecord.running && createRecord.progressMessage.length > 0
-        Rectangle {
-            id: progressRectangle
+        ColumnLayout {
+            id: progressLayout
             width: 300 * AdjustedValues.ratio
-            height: progressLabel.height
-            radius: height / 2
-            color: Material.color(Material.Indigo)
+            Label {
+                Layout.fillWidth: true
+                Layout.maximumWidth: parent.width
+                font.pointSize: AdjustedValues.f10
+                elide: Text.ElideRight
+                text: postText.text.split("\n")[0]
+                clip: true
+            }
+            ProgressBar {
+                Layout.fillWidth: true
+                indeterminate: true
+            }
             Label {
                 id: progressLabel
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                Layout.fillWidth: true
+                Layout.maximumWidth: parent.width
                 font.pointSize: AdjustedValues.f8
                 text: createRecord.progressMessage
                 color: Material.theme === Material.Dark ? Material.foreground : "white"
