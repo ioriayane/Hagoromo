@@ -51,7 +51,7 @@ ApplicationWindow {
                                   addColumnDialog.visible ||
                                   searchDialog.visible ||
                                   settingDialog.visible ||
-                                  postDialogRepeater.count > 0
+                                  postDialogRepeater.working
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
@@ -132,12 +132,15 @@ ApplicationWindow {
             accountModel: accountListModel
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
+            onClosedDialog: postDialogRepeater.working = false
         }
     }
     Repeater {
         id: postDialogRepeater
         property int dialog_no: 0
+        property bool working: false
         model: ListModel {}
+        onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
         Loader {
             required property int index
             required property int dialog_no
@@ -185,6 +188,7 @@ ApplicationWindow {
         function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
                       avatar, display_name, handle, indexed_at, text) {
             console.time("post_dialog_open");
+            working = true
             postDialogRepeater.model.append({
                                                 "dialog_no": postDialogRepeater.dialog_no++,
                                                 "post_type": post_type,

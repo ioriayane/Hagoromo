@@ -57,12 +57,14 @@ Item {
 
     signal errorOccured(string account_uuid, string code, string message)
     signal closed()
+    signal closedDialog()
 
     function open(){
         postDialog.open()
     }
     function close() {
         visible = false
+        closedDialog()
         closed()
     }
 
@@ -125,7 +127,7 @@ Item {
             }
             postText.forceActiveFocus()
         }
-        // onClosed: postDialogItem.closed()
+        onClosed: postDialogItem.closedDialog()
 
         Shortcut {  // Post
             enabled: postDialog.visible && postButton.enabled && postText.focus
@@ -137,7 +139,7 @@ Item {
             // 入れたいので別でイベント処理をする。onClosedで閉じるをキャンセルできなさそうなので。
             enabled: postDialog.visible && ! postButton.enabled
             sequence: "Esc"
-            onActivated: postDialog.close()
+            onActivated: postDialogItem.close()
         }
 
         SystemTool {
