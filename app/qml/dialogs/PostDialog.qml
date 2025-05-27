@@ -27,6 +27,7 @@ Item {
     property int parentWidth: 800
     property int parentHeight: 600
     property int viewIndex: 0
+    property int bottomLine: 600
 
     property alias accountModel: accountCombo.model
 
@@ -76,8 +77,8 @@ Item {
 
     Frame {
         id: progressFrame
-        x: postDialogItem.parentWidth - width - 10
-        y: (height + 5) * postDialogItem.viewIndex + 5
+        x: postDialogItem.parentWidth - width - 5
+        y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
         contentWidth: progressLayout.width
         contentHeight: progressLayout.height
         visible: createRecord.running && createRecord.progressMessage.length > 0

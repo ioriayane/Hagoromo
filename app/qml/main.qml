@@ -129,6 +129,7 @@ ApplicationWindow {
             id: postDialog
             parentWidth: appWindow.width
             parentHeight: appWindow.height
+            bottomLine: notificationLayout.y
             accountModel: accountListModel
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
@@ -1161,6 +1162,7 @@ ApplicationWindow {
     }
 
     ColumnLayout {
+        id: notificationLayout
         anchors.right: rootLayout.right
         anchors.bottom: rootLayout.bottom
         anchors.rightMargin: 5
