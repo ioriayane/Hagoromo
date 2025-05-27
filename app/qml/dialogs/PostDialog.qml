@@ -154,9 +154,9 @@ Item {
                 }
             }
             onErrorOccured: (code, message) => {
+                postDialog.open()
                 var row = accountCombo.currentIndex;
                 postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
-                postDialog.visible = true
             }
         }
         LanguageListModel {
@@ -674,6 +674,8 @@ Item {
                             font.pointSize: AdjustedValues.f10
                             text: qsTr("Post")
                             onClicked: {
+                                postDialog.close()
+
                                 var row = accountCombo.currentIndex;
                                 createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
                                 createRecord.clear()
@@ -708,7 +710,6 @@ Item {
                                 }else{
                                     createRecord.post()
                                 }
-                                postDialog.close()
                             }
                             BusyIndicator {
                                 anchors.fill: parent
