@@ -568,7 +568,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[ComponentTypeRole] = "componentType";
     roles[AutoLoadingRole] = "autoLoading";
     roles[LoadingIntervalRole] = "loadingInterval";
-    roles[WidthRole] = "width";
+    roles[WidthRole] = "column_width";
     roles[ImageLayoutTypeRole] = "imageLayoutType";
     roles[NameRole] = "name";
     roles[ValueRole] = "value";

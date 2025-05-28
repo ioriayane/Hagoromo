@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Upadte
+  - Change to background processing of posts
+
 ### v0.50.0 - 2025/5/18
 
 - Add
