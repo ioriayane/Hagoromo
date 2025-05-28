@@ -72,6 +72,8 @@ Item {
     function openWithFiles(urls){
         if(embedImageListModel.append(urls)){
             postDialog.open()
+        }else{
+            close()
         }
     }
 

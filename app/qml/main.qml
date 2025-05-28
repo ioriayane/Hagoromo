@@ -94,7 +94,7 @@ ApplicationWindow {
         enabled: !appWindow.visibleDialogs
         postDialogShortcut.onActivated: postDialogRepeater.open(
                                             "", "", "", "", "", "",
-                                            "", "", "", "", ""
+                                            "", "", "", "", "", []
                                             )
         searchDialogShortcut.onActivated: searchDialog.open()
         addColumnDialogShortcut.onActivated: addColumnDialog.open()
@@ -156,6 +156,7 @@ ApplicationWindow {
             required property string handle
             required property string indexed_at
             required property string text
+            required property string image_urls
 
             sourceComponent: postDialogComponent
             onLoaded: {
@@ -182,12 +183,16 @@ ApplicationWindow {
                     item.quoteIndexedAt = indexed_at
                     item.quoteText = text
                 }
-                item.open()
+                if(image_urls.length === 0){
+                    item.open()
+                }else{
+                    item.openWithFiles(image_urls.split("\n"))
+                }
                 console.timeEnd("post_dialog_open");
             }
         }
         function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
-                      avatar, display_name, handle, indexed_at, text) {
+                      avatar, display_name, handle, indexed_at, text, image_urls) {
             console.time("post_dialog_open");
             working = true
             postDialogRepeater.model.append({
@@ -202,7 +207,8 @@ ApplicationWindow {
                                                 "display_name": display_name,
                                                 "handle": handle,
                                                 "indexed_at": indexed_at,
-                                                "text": text
+                                                "text": text,
+                                                "image_urls": image_urls.join("\n")
                                             })
         }
         function remove(no){
@@ -486,7 +492,7 @@ ApplicationWindow {
                         console.log("Update postgate")
                         selectThreadGateDialog.updateSequence = "postgate"
                         recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
-                                                                     selectThreadGateDialog.selectedQuoteEnabled)
+                                                          selectThreadGateDialog.selectedQuoteEnabled)
                     }else{
                         globalProgressFrame.text = ""
                         selectThreadGateDialog.postUri = ""
@@ -519,13 +525,13 @@ ApplicationWindow {
                         display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
             postDialogRepeater.open(
                 "reply", account_uuid, cid, uri, reply_root_cid, reply_root_uri,
-                avatar, display_name, handle, indexed_at, text
+                avatar, display_name, handle, indexed_at, text, []
                 )
         }
         onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
             postDialogRepeater.open(
                 "quote", account_uuid, cid, uri, "", "",
-                avatar, display_name, handle, indexed_at, text
+                avatar, display_name, handle, indexed_at, text, []
                 )
         }
         // ダイアログより前に出せない
@@ -663,19 +669,19 @@ ApplicationWindow {
                             display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
                 postDialogRepeater.open(
                     "reply", account_uuid, cid, uri, reply_root_cid, reply_root_uri,
-                    avatar, display_name, handle, indexed_at, text
+                    avatar, display_name, handle, indexed_at, text, []
                     )
             }
             onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
                 postDialogRepeater.open(
                     "quote", account_uuid, cid, uri, "", "",
-                    avatar, display_name, handle, indexed_at, text
+                    avatar, display_name, handle, indexed_at, text, []
                     )
             }
             onRequestMention: (account_uuid, handle) => {
                 postDialogRepeater.open(
                     "normal", account_uuid, "", "", "", "",
-                    "", "", handle, "", ""
+                    "", "", handle, "", "", []
                     )
             }
             onRequestMessage: (account_uuid, did, current_column_key) => {
@@ -824,7 +830,7 @@ ApplicationWindow {
                 ready: accountListModel.allAccountsReady
                 post.onClicked: postDialogRepeater.open(
                                     "", "", "", "", "", "",
-                                    "", "", "", "", ""
+                                    "", "", "", "", "", []
                                     )
                 search.onClicked: searchDialog.open()
                 addColumn.onClicked: addColumnDialog.open()
@@ -1233,7 +1239,10 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: 5
         enabled: accountListModel.count > 0 && !appWindow.visibleDialogs
-        onDropped: (urls) => postDialog.openWithFiles(urls)
+        onDropped: (urls) => postDialogRepeater.open(
+                       "", "", "", "", "", "",
+                       "", "", "", "", "", urls
+                       )
     }
 
 
