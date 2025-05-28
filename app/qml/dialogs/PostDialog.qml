@@ -265,6 +265,7 @@ Item {
                             onCurrentIndexChanged: {
                                 var row = accountCombo.currentIndex
                                 if(row >= 0){
+                                    var uuid = postDialogItem.accountModel.item(row, AccountListModel.UuidRole)
                                     accountAvatarLayout.source =
                                     postDialogItem.accountModel.item(row, AccountListModel.AvatarRole)
                                     postLanguagesButton.setLanguageText(
@@ -278,7 +279,9 @@ Item {
                                     selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                                     selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
                                     // 入力中にアカウントを切り替えるかもなので選んだ時に設定する
-                                    mentionSuggestionView.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                    mentionSuggestionView.setAccount(uuid)
+                                    // エラーで再表示したときに同じアカウントが選ばれるように保存しておく
+                                    postDialogItem.defaultAccountUuid = uuid
                                 }
                             }
                         }
