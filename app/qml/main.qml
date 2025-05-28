@@ -112,6 +112,13 @@ ApplicationWindow {
         }
     }
 
+    VersionInfomation {
+        anchors.right: rootLayout.right
+        anchors.bottom: rootLayout.bottom
+        anchors.rightMargin: 5
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        visible: ((scrollView.contentWidth + sideBarItem.width) < x) && settingDialog.settings.displayVersionInfoInMainArea
+    }
 
     SettingDialog {
         id: settingDialog
@@ -804,14 +811,6 @@ ApplicationWindow {
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         }
-    }
-
-    VersionInfomation {
-        anchors.right: rootLayout.right
-        anchors.bottom: rootLayout.bottom
-        anchors.rightMargin: 5
-        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
-        visible: ((scrollView.contentWidth + sideBarItem.width) < x) && settingDialog.settings.displayVersionInfoInMainArea
     }
 
     RowLayout {

@@ -84,6 +84,12 @@ Item {
         contentWidth: progressLayout.width
         contentHeight: progressLayout.height
         visible: createRecord.running && createRecord.progressMessage.length > 0
+        background: Rectangle {
+            radius: 3
+            border.width: 1
+            border.color: Material.frameColor
+            color: Material.backgroundColor
+        }
         ColumnLayout {
             id: progressLayout
             width: 300 * AdjustedValues.ratio
