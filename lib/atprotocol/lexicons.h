@@ -910,6 +910,8 @@ struct ReplyRef
 struct ReasonRepost
 {
     AppBskyActorDefs::ProfileViewBasic by;
+    QString uri; // at-uri
+    QString cid; // cid
     QString indexedAt; // datetime
 };
 struct ReasonPin
@@ -926,6 +928,7 @@ struct FeedViewPost
     // union end : reason
     QString feedContext; // Context provided by feed generator that may be passed back alongside
                          // interactions.
+    QString reqId; // Unique identifier per request that may be passed back alongside interactions.
 };
 struct ThreadViewPost
 {
@@ -968,6 +971,7 @@ struct Interaction
     QString event;
     QString feedContext; // Context on a feed item that was originally supplied by the feed
                          // generator on getFeedSkeleton.
+    QString reqId; // Unique identifier per request that may be passed back alongside interactions.
 };
 }
 
@@ -1149,6 +1153,7 @@ struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
+    ComAtprotoRepoStrongRef::Main via;
 };
 }
 
@@ -1219,6 +1224,7 @@ struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
+    ComAtprotoRepoStrongRef::Main via;
 };
 }
 
@@ -1350,8 +1356,8 @@ struct Notification
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
-    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', 'quote',
-                    // 'starterpack-joined', 'verified', and 'unverified'.
+    QString reason; // The reason why this notification was delivered - e.g. your post was liked, or
+                    // you received a new follower.
     QString reasonSubject; // at-uri
     QVariant record;
     bool isRead = false;
@@ -1411,6 +1417,75 @@ struct LiveNowConfig
 {
     QString did; // did
     QList<QString> domains;
+};
+}
+
+// app.bsky.unspecced.getPostThreadHiddenV2
+namespace AppBskyUnspeccedGetPostThreadHiddenV2 {
+enum class ThreadHiddenItemValueType : int {
+    none,
+    value_ThreadHiddenItemPost,
+};
+struct ThreadHiddenItemPost
+{
+    AppBskyFeedDefs::PostView post;
+    bool hiddenByThreadgate = false; // The threadgate created by the author indicates this post as
+                                     // a reply to be hidden for everyone consuming the thread.
+    bool mutedByViewer = false; // This is by an account muted by the viewer requesting it.
+};
+struct ThreadHiddenItem
+{
+    QString uri; // at-uri
+    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
+                   // Items above have negative depths, items below have positive depths.
+    // union start : value
+    ThreadHiddenItemValueType value_type = ThreadHiddenItemValueType::none;
+    ThreadHiddenItemPost value_ThreadHiddenItemPost;
+    // union end : value
+};
+}
+
+// app.bsky.unspecced.getPostThreadV2
+namespace AppBskyUnspeccedGetPostThreadV2 {
+enum class ThreadItemValueType : int {
+    none,
+    value_ThreadItemPost,
+    value_ThreadItemNoUnauthenticated,
+    value_ThreadItemNotFound,
+    value_ThreadItemBlocked,
+};
+struct ThreadItemPost
+{
+    AppBskyFeedDefs::PostView post;
+    bool moreParents = false; // This post has more parents that were not present in the response.
+                              // This is just a boolean, without the number of parents.
+    int moreReplies = 0; // This post has more replies that were not present in the response. This
+                         // is a numeric value, which is best-effort and might not be accurate.
+    bool opThread = false; // This post is part of a contiguous thread by the OP from the thread
+                           // root. Many different OP threads can happen in the same thread.
+};
+struct ThreadItemNoUnauthenticated
+{
+};
+struct ThreadItemNotFound
+{
+};
+struct ThreadItemBlocked
+{
+    AppBskyFeedDefs::BlockedAuthor author;
+};
+struct ThreadItem
+{
+    QString uri; // at-uri
+    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
+                   // Items above have negative depths, items below have positive depths.
+    // union start : value
+    ThreadItemValueType value_type = ThreadItemValueType::none;
+    ThreadItemPost value_ThreadItemPost;
+    ThreadItemNoUnauthenticated value_ThreadItemNoUnauthenticated;
+    ThreadItemNotFound value_ThreadItemNotFound;
+    ThreadItemBlocked value_ThreadItemBlocked;
+    // union end : value
 };
 }
 
@@ -2073,6 +2148,7 @@ enum class SubjectStatusViewSubjectType : int {
     none,
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
+    subject_ChatBskyConvoDefs_MessageRef,
 };
 enum class SubjectStatusViewHostingType : int {
     none,
@@ -2299,6 +2375,7 @@ struct SubjectStatusView
     SubjectStatusViewSubjectType subject_type = SubjectStatusViewSubjectType::none;
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
     // union end : subject
     // union start : hosting
     SubjectStatusViewHostingType hosting_type = SubjectStatusViewHostingType::none;
@@ -2621,8 +2698,8 @@ struct VerificationInput
                     // verifying.
     QString displayName; // Display name of the subject the verification applies to at the moment of
                          // verifying.
-    QString createdAt; // Timestamp for verification record. Defaults to current time when not
-                       // specified.
+    QString createdAt; // datetime , Timestamp for verification record. Defaults to current time
+                       // when not specified.
 };
 struct GrantError
 {

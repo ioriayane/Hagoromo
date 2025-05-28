@@ -262,6 +262,25 @@ void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest
 namespace AppBskyUnspeccedGetConfig {
 void copyLiveNowConfig(const QJsonObject &src, AppBskyUnspeccedGetConfig::LiveNowConfig &dest);
 }
+// app.bsky.unspecced.getPostThreadHiddenV2
+namespace AppBskyUnspeccedGetPostThreadHiddenV2 {
+void copyThreadHiddenItemPost(const QJsonObject &src,
+                              AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItemPost &dest);
+void copyThreadHiddenItem(const QJsonObject &src,
+                          AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItem &dest);
+}
+// app.bsky.unspecced.getPostThreadV2
+namespace AppBskyUnspeccedGetPostThreadV2 {
+void copyThreadItemPost(const QJsonObject &src,
+                        AppBskyUnspeccedGetPostThreadV2::ThreadItemPost &dest);
+void copyThreadItemNoUnauthenticated(
+        const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItemNoUnauthenticated &dest);
+void copyThreadItemNotFound(const QJsonObject &src,
+                            AppBskyUnspeccedGetPostThreadV2::ThreadItemNotFound &dest);
+void copyThreadItemBlocked(const QJsonObject &src,
+                           AppBskyUnspeccedGetPostThreadV2::ThreadItemBlocked &dest);
+void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItem &dest);
+}
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);
