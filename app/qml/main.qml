@@ -112,14 +112,6 @@ ApplicationWindow {
         }
     }
 
-    VersionInfomation {
-        anchors.right: rootLayout.right
-        anchors.bottom: rootLayout.bottom
-        anchors.rightMargin: 5
-        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
-        visible: ((scrollView.contentWidth + sideBarItem.width) < x) && settingDialog.settings.displayVersionInfoInMainArea
-    }
-
     SettingDialog {
         id: settingDialog
         x: parent.width / 2 - width / 2
@@ -127,111 +119,6 @@ ApplicationWindow {
         onAccepted: {
             repeater.updateSettings(2)
             translatorChanger.triggered(settingDialog.settings.language)
-        }
-    }
-
-    Component {
-        id: postDialogComponent
-        PostDialog {
-            id: postDialog
-            parentWidth: appWindow.width
-            parentHeight: appWindow.height
-            bottomLine: notificationLayout.y
-            accountModel: accountListModel
-            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
-            onClosed: postDialogRepeater.remove(dialog_no)
-            onClosedDialog: postDialogRepeater.working = false
-        }
-    }
-    Repeater {
-        id: postDialogRepeater
-        property int dialog_no: 0
-        property bool working: false
-        model: ListModel {}
-        onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
-        Loader {
-            required property int index
-            required property int dialog_no
-            required property string post_type
-            required property string account_uuid
-            required property string cid
-            required property string uri
-            required property string reply_root_cid
-            required property string reply_root_uri
-            required property string avatar
-            required property string display_name
-            required property string handle
-            required property string indexed_at
-            required property string text
-            required property string image_urls
-
-            sourceComponent: postDialogComponent
-            onLoaded: {
-                item.dialog_no = dialog_no
-                item.viewIndex = index
-                item.postType = post_type
-                item.defaultAccountUuid = account_uuid
-                if(item.postType === "reply"){
-                    item.replyCid = cid
-                    item.replyUri = uri
-                    item.replyRootCid = reply_root_cid
-                    item.replyRootUri = reply_root_uri
-                    item.replyAvatar = avatar
-                    item.replyDisplayName = display_name
-                    item.replyHandle = handle
-                    item.replyIndexedAt = indexed_at
-                    item.replyText = text
-                }else if(item.postType === "quote"){
-                    item.quoteCid = cid
-                    item.quoteUri = uri
-                    item.quoteAvatar = avatar
-                    item.quoteDisplayName = display_name
-                    item.quoteHandle = handle
-                    item.quoteIndexedAt = indexed_at
-                    item.quoteText = text
-                }
-                if(image_urls.length === 0){
-                    item.open()
-                }else{
-                    item.openWithFiles(image_urls.split("\n"))
-                }
-                console.timeEnd("post_dialog_open");
-            }
-        }
-        function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
-                      avatar, display_name, handle, indexed_at, text, image_urls) {
-            console.time("post_dialog_open");
-            working = true
-            postDialogRepeater.model.append({
-                                                "dialog_no": postDialogRepeater.dialog_no++,
-                                                "post_type": post_type,
-                                                "account_uuid": account_uuid,
-                                                "cid": cid,
-                                                "uri": uri,
-                                                "reply_root_cid": reply_root_cid,
-                                                "reply_root_uri": reply_root_uri,
-                                                "avatar": avatar,
-                                                "display_name": display_name,
-                                                "handle": handle,
-                                                "indexed_at": indexed_at,
-                                                "text": text,
-                                                "image_urls": image_urls.join("\n")
-                                            })
-        }
-        function remove(no){
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                if(no === loader_item.item.dialog_no){
-                    console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
-                    console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
-                    postDialogRepeater.model.remove(i)
-                    break
-                }
-            }
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                loader_item.item.viewIndex = i
-            }
         }
     }
 
@@ -813,6 +700,14 @@ ApplicationWindow {
         }
     }
 
+    VersionInfomation {
+        anchors.right: rootLayout.right
+        anchors.bottom: rootLayout.bottom
+        anchors.rightMargin: 5
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        visible: ((scrollView.contentWidth + sideBarItem.width) < x) && settingDialog.settings.displayVersionInfoInMainArea
+    }
+
     RowLayout {
         id: rootLayout
         anchors.fill: parent
@@ -1224,6 +1119,111 @@ ApplicationWindow {
                     font.pointSize: AdjustedValues.f10
                     text: globalProgressFrame.text
                 }
+            }
+        }
+    }
+
+    Component {
+        id: postDialogComponent
+        PostDialog {
+            id: postDialog
+            parentWidth: appWindow.width
+            parentHeight: appWindow.height
+            bottomLine: notificationLayout.y
+            accountModel: accountListModel
+            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+            onClosed: postDialogRepeater.remove(dialog_no)
+            onClosedDialog: postDialogRepeater.working = false
+        }
+    }
+    Repeater {
+        id: postDialogRepeater
+        property int dialog_no: 0
+        property bool working: false
+        model: ListModel {}
+        onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
+        Loader {
+            required property int index
+            required property int dialog_no
+            required property string post_type
+            required property string account_uuid
+            required property string cid
+            required property string uri
+            required property string reply_root_cid
+            required property string reply_root_uri
+            required property string avatar
+            required property string display_name
+            required property string handle
+            required property string indexed_at
+            required property string text
+            required property string image_urls
+
+            sourceComponent: postDialogComponent
+            onLoaded: {
+                item.dialog_no = dialog_no
+                item.viewIndex = index
+                item.postType = post_type
+                item.defaultAccountUuid = account_uuid
+                if(item.postType === "reply"){
+                    item.replyCid = cid
+                    item.replyUri = uri
+                    item.replyRootCid = reply_root_cid
+                    item.replyRootUri = reply_root_uri
+                    item.replyAvatar = avatar
+                    item.replyDisplayName = display_name
+                    item.replyHandle = handle
+                    item.replyIndexedAt = indexed_at
+                    item.replyText = text
+                }else if(item.postType === "quote"){
+                    item.quoteCid = cid
+                    item.quoteUri = uri
+                    item.quoteAvatar = avatar
+                    item.quoteDisplayName = display_name
+                    item.quoteHandle = handle
+                    item.quoteIndexedAt = indexed_at
+                    item.quoteText = text
+                }
+                if(image_urls.length === 0){
+                    item.open()
+                }else{
+                    item.openWithFiles(image_urls.split("\n"))
+                }
+                console.timeEnd("post_dialog_open");
+            }
+        }
+        function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
+                      avatar, display_name, handle, indexed_at, text, image_urls) {
+            console.time("post_dialog_open");
+            working = true
+            postDialogRepeater.model.append({
+                                                "dialog_no": postDialogRepeater.dialog_no++,
+                                                "post_type": post_type,
+                                                "account_uuid": account_uuid,
+                                                "cid": cid,
+                                                "uri": uri,
+                                                "reply_root_cid": reply_root_cid,
+                                                "reply_root_uri": reply_root_uri,
+                                                "avatar": avatar,
+                                                "display_name": display_name,
+                                                "handle": handle,
+                                                "indexed_at": indexed_at,
+                                                "text": text,
+                                                "image_urls": image_urls.join("\n")
+                                            })
+        }
+        function remove(no){
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                if(no === loader_item.item.dialog_no){
+                    console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
+                    console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
+                    postDialogRepeater.model.remove(i)
+                    break
+                }
+            }
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                loader_item.item.viewIndex = i
             }
         }
     }
