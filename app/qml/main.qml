@@ -971,7 +971,7 @@ ApplicationWindow {
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
                         }else{
-                            console.log("setLayout(2.2) :" + index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index).item.settings.columnName)
+                            console.log("setLayout(2.2) :" + index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index))//.item.settings.columnName)
                             loader.anchors.left = repeater.itemAt(left_index).right
                             loader.anchors.leftMargin = 3
                         }
