@@ -334,6 +334,11 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (m_toThreadGateRoles.contains(role)) {
         return getThreadGateItem(current.post, m_toThreadGateRoles[role]);
 
+    } else if (role == ReasonRepostedCidRole) {
+        return current.reason_ReasonRepost.cid;
+    } else if (role == ReasonRepostedUriRole) {
+        return current.reason_ReasonRepost.uri;
+
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
     else if (role == LabelIconsRole)
@@ -622,6 +627,8 @@ bool TimelineListModel::repost(int row, bool do_count_up)
 
     const QString target_cid = item(row, CidRole).toString();
     const QString target_uri = item(row, UriRole).toString();
+    const QString via_cid = item(row, ReasonRepostedCidRole).toString();
+    const QString via_uri = item(row, ReasonRepostedUriRole).toString();
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -655,7 +662,7 @@ bool TimelineListModel::repost(int row, bool do_count_up)
             });
     ope->setAccount(account().uuid);
     if (!current)
-        ope->repost(target_cid, target_uri);
+        ope->repost(target_cid, target_uri, via_cid, via_uri);
     else
         ope->deleteRepost(item(row, RepostedUriRole).toString());
 
@@ -675,6 +682,8 @@ bool TimelineListModel::like(int row, bool do_count_up)
 
     const QString target_cid = item(row, CidRole).toString();
     const QString target_uri = item(row, UriRole).toString();
+    const QString via_cid = item(row, ReasonRepostedCidRole).toString();
+    const QString via_uri = item(row, ReasonRepostedUriRole).toString();
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -709,7 +718,7 @@ bool TimelineListModel::like(int row, bool do_count_up)
             });
     ope->setAccount(account().uuid);
     if (!current)
-        ope->like(target_cid, target_uri);
+        ope->like(target_cid, target_uri, via_cid, via_uri);
     else
         ope->deleteLike(item(row, LikedUriRole).toString());
 
@@ -965,6 +974,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ThreadGateUriRole] = "threadGateUri";
     roles[ThreadGateTypeRole] = "threadGateType";
     roles[ThreadGateRulesRole] = "threadGateRules";
+
+    roles[ReasonRepostedCidRole] = "reasonRepostedCid";
+    roles[ReasonRepostedUriRole] = "reasonRepostedUri";
 
     roles[LabelsRole] = "labels";
     roles[LabelIconsRole] = "labelIcons";

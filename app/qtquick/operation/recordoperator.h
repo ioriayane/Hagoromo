@@ -50,8 +50,10 @@ public:
 
     Q_INVOKABLE void post();
     Q_INVOKABLE void postWithImages();
-    Q_INVOKABLE void repost(const QString &cid, const QString &uri);
-    Q_INVOKABLE void like(const QString &cid, const QString &uri);
+    Q_INVOKABLE void repost(const QString &cid, const QString &uri,
+                            const QString &via_cid = QString(), const QString &via_uri = QString());
+    Q_INVOKABLE void like(const QString &cid, const QString &uri,
+                          const QString &via_cid = QString(), const QString &via_uri = QString());
     Q_INVOKABLE void follow(const QString &did);
     Q_INVOKABLE void mute(const QString &did);
     Q_INVOKABLE void block(const QString &did);

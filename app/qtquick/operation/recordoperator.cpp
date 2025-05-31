@@ -276,7 +276,8 @@ void RecordOperator::postWithImages()
     });
 }
 
-void RecordOperator::repost(const QString &cid, const QString &uri)
+void RecordOperator::repost(const QString &cid, const QString &uri, const QString &via_cid,
+                            const QString &via_uri)
 {
     if (running())
         return;
@@ -297,10 +298,11 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
         create_record->deleteLater();
     });
     create_record->setAccount(account());
-    create_record->repost(cid, uri);
+    create_record->repost(cid, uri, via_cid, via_uri);
 }
 
-void RecordOperator::like(const QString &cid, const QString &uri)
+void RecordOperator::like(const QString &cid, const QString &uri, const QString &via_cid,
+                          const QString &via_uri)
 {
     if (running())
         return;
@@ -321,7 +323,7 @@ void RecordOperator::like(const QString &cid, const QString &uri)
         create_record->deleteLater();
     });
     create_record->setAccount(account());
-    create_record->like(cid, uri);
+    create_record->like(cid, uri, via_cid, via_uri);
 }
 
 void RecordOperator::follow(const QString &did)
