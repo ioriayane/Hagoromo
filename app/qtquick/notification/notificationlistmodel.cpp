@@ -1249,12 +1249,12 @@ bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool 
     const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     QHash<QString, QStringList> *aggregatedTo = nullptr;
-    if (current.reason == "like") {
+    if (current.reason == "like" || current.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
-    } else if (current.reason == "repost") {
+    } else if (current.reason == "repost" || current.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(current.record);
         subject_cid = record.subject.cid;
@@ -1314,22 +1314,12 @@ bool NotificationListModel::aggregated(const QString &cid) const
     const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     const QHash<QString, QStringList> *aggregatedTo = nullptr;
-    if (current.reason == "like") {
+    if (current.reason == "like" || current.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
-    } else if (current.reason == "repost") {
-        const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                AtProtocolType::AppBskyFeedRepost::Main>(current.record);
-        subject_cid = record.subject.cid;
-        aggregatedTo = &m_reposted2Notification;
-    } else if (current.reason == "like-via-repost") {
-        const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                AtProtocolType::AppBskyFeedLike::Main>(current.record);
-        subject_cid = record.subject.cid;
-        aggregatedTo = &m_liked2Notification;
-    } else if (current.reason == "repost-via-repost") {
+    } else if (current.reason == "repost" || current.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(current.record);
         subject_cid = record.subject.cid;
@@ -1389,7 +1379,7 @@ void NotificationListModel::getPosts()
                     continue;
 
                 const auto &item = m_notificationHash[m_cidList.at(i)];
-                qDebug().noquote() << item.reason;
+
                 if (item.reason == "like") {
                     //                    AtProtocolType::AppBskyFeedLike::Main like =
                     //                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -1566,11 +1556,11 @@ QStringList NotificationListModel::getAggregatedItems(
 QStringList NotificationListModel::getAggregatedCids(
         const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const
 {
-    if (data.reason == "like") {
+    if (data.reason == "like" || data.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(data.record);
         return m_liked2Notification.value(record.subject.cid);
-    } else if (data.reason == "repost") {
+    } else if (data.reason == "repost" || data.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(data.record);
         return m_reposted2Notification.value(record.subject.cid);
@@ -1668,7 +1658,6 @@ void NotificationListModel::emitRecordDataChanged(const int i, const QStringList
     if (new_cid.contains(data.subject.cid)) {
         // データを取得できた
         emit dataChanged(index(i), index(i));
-        qDebug().noquote() << "   " << data.subject.cid;
     }
 }
 
