@@ -203,7 +203,9 @@ ScrollView {
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
-                        model.reason === NotificationListModel.ReasonRepost){
+                        model.reason === NotificationListModel.ReasonRepost ||
+                        model.reason === NotificationListModel.ReasonLikeViaRepost ||
+                        model.reason === NotificationListModel.ReasonRepostViaRepost){
                     if(model.quoteRecordUri.length > 0)
                         requestViewThread(model.quoteRecordUri)
                 }else if(model.reason === NotificationListModel.ReasonFollow){
@@ -220,7 +222,9 @@ ScrollView {
                                        model.reason === NotificationListModel.ReasonRepostViaRepost) &&
                                       contentMediaFilterFrame.showContent
             quoteRecordFrame.onClicked: {
-                if(model.reason === NotificationListModel.ReasonQuote){
+                if(model.reason === NotificationListModel.ReasonQuote ||
+                        model.reason === NotificationListModel.ReasonLikeViaRepost ||
+                        model.reason === NotificationListModel.ReasonRepostViaRepost){
                     requestViewThread(model.quoteRecordUri)
                 }
             }

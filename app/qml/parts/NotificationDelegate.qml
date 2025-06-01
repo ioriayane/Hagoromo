@@ -151,22 +151,28 @@ ClickableFrame {
             when: notificationFrame.reason === NotificationListModel.ReasonLikeViaRepost
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been liked.")}
+
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
             PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
             PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
             PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
             PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
             PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
+
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonRepostViaRepost
             PropertyChanges { target: reasonImage; source: "../images/repost.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been reposted.")}
+
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
             PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
             PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
             PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
             PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
             PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
+
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
