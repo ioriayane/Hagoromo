@@ -713,7 +713,7 @@ bool NotificationListModel::getLatest()
         });
         notification->setAccount(account());
         notification->setLabelers(labelerDids());
-        notification->listNotifications(QList<QString>(), 3, false, QString(), QString());
+        notification->listNotifications(QList<QString>(), 0, false, QString(), QString());
     });
     return true;
 }

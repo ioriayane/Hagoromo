@@ -627,8 +627,12 @@ bool TimelineListModel::repost(int row, bool do_count_up)
 
     const QString target_cid = item(row, CidRole).toString();
     const QString target_uri = item(row, UriRole).toString();
-    const QString via_cid = item(row, ReasonRepostedCidRole).toString();
-    const QString via_uri = item(row, ReasonRepostedUriRole).toString();
+    QString via_cid;
+    QString via_uri;
+    if (enableNotificationsForReactionsOnReposts()) {
+        via_cid = item(row, ReasonRepostedCidRole).toString();
+        via_uri = item(row, ReasonRepostedUriRole).toString();
+    }
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -682,8 +686,12 @@ bool TimelineListModel::like(int row, bool do_count_up)
 
     const QString target_cid = item(row, CidRole).toString();
     const QString target_uri = item(row, UriRole).toString();
-    const QString via_cid = item(row, ReasonRepostedCidRole).toString();
-    const QString via_uri = item(row, ReasonRepostedUriRole).toString();
+    QString via_cid;
+    QString via_uri;
+    if (enableNotificationsForReactionsOnReposts()) {
+        via_cid = item(row, ReasonRepostedCidRole).toString();
+        via_uri = item(row, ReasonRepostedUriRole).toString();
+    }
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);

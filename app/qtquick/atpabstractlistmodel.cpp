@@ -29,7 +29,9 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator,
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
       m_visibleContainingMutedWord(true),
-      m_displayPinnedPost(false)
+      m_displayPinnedPost(false),
+      m_enableNotificationsForReactionsOnReposts(
+              false) // 設定を反映したときはデフォルトONだけど内部的にはデフォルトOFF（通知が飛ばない方が安全側という判断）
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
     if (m_useTranslator) {
@@ -1473,4 +1475,18 @@ void AtpAbstractListModel::setDisplayPinnedPost(bool newDisplayPinnedPost)
         return;
     m_displayPinnedPost = newDisplayPinnedPost;
     emit displayPinnedPostChanged();
+}
+
+bool AtpAbstractListModel::enableNotificationsForReactionsOnReposts() const
+{
+    return m_enableNotificationsForReactionsOnReposts;
+}
+
+void AtpAbstractListModel::setEnableNotificationsForReactionsOnReposts(
+        bool newEnableNotificationsForReactionsOnReposts)
+{
+    if (m_enableNotificationsForReactionsOnReposts == newEnableNotificationsForReactionsOnReposts)
+        return;
+    m_enableNotificationsForReactionsOnReposts = newEnableNotificationsForReactionsOnReposts;
+    emit enableNotificationsForReactionsOnRepostsChanged();
 }

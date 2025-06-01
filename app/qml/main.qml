@@ -1001,6 +1001,7 @@ ApplicationWindow {
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
+                        item.settings.enableNotificationsForReactionsOnReposts = settingDialog.settings.enableNotificationsForReactionsOnReposts
                         item.settings.autoHideDetailMode = settingDialog.settings.autoHideDetailMode
                     }
 

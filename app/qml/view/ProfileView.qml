@@ -34,6 +34,7 @@ ColumnLayout {
     property string accountDid: ""  // 認証しているアカウント
 
     property bool autoHideDetailMode: true
+    property bool enableNotificationsForReactionsOnReposts: true
 
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -636,6 +637,7 @@ ColumnLayout {
                 id: authorFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
                 pinnedPost: userProfile.pinnedPost
@@ -695,6 +697,7 @@ ColumnLayout {
                 id: repostFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.RepostFeedType
@@ -735,6 +738,7 @@ ColumnLayout {
                 id: likesFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.LikeFeedType
@@ -775,6 +779,7 @@ ColumnLayout {
                 id: authorMediaFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
@@ -814,6 +819,7 @@ ColumnLayout {
                 id: authorVideoFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithVideo
 
