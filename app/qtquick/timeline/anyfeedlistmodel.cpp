@@ -65,10 +65,12 @@ bool AnyFeedListModel::getLatest()
             QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
             records->deleteLater();
         });
-        records->setAccount(account());
+        auto a = account();
         if (!targetServiceEndpoint().isEmpty()) {
-            records->setService(targetServiceEndpoint());
+            a.service = targetServiceEndpoint();
+            a.service_endpoint = targetServiceEndpoint();
         }
+        records->setAccount(a);
         switch (feedType()) {
         case AnyFeedListModelFeedType::LikeFeedType:
             records->listLikes(targetDid(), QString());
