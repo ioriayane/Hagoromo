@@ -152,6 +152,8 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                visibleLikeViaRepost: settings.visibleLikeViaRepost
+                visibleRepostViaRepost: settings.visibleRepostViaRepost
                 visibleContainingMutedWord: true   // 通知はミュートワードを含んでらたたんで表示
                 updateSeenNotification: settings.updateSeenNotification
                 aggregateReactions: settings.aggregateReactions

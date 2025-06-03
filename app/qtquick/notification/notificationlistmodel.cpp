@@ -1756,6 +1756,7 @@ void NotificationListModel::setVisibleLikeViaRepost(bool newVisibleLikeViaRepost
         return;
     m_visibleLikeViaRepost = newVisibleLikeViaRepost;
     emit visibleLikeViaRepostChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::visibleRepostViaRepost() const
@@ -1769,6 +1770,7 @@ void NotificationListModel::setVisibleRepostViaRepost(bool newVisibleRepostViaRe
         return;
     m_visibleRepostViaRepost = newVisibleRepostViaRepost;
     emit visibleRepostViaRepostChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::updateSeenNotification() const
