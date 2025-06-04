@@ -149,7 +149,7 @@ ClickableFrame {
         },
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonLikeViaRepost
-            PropertyChanges { target: reasonImage; source: "../images/like.png" }
+            PropertyChanges { target: reasonImage; source: "../images/like_via_repost.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been liked.")}
 
             // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
@@ -163,7 +163,7 @@ ClickableFrame {
         },
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonRepostViaRepost
-            PropertyChanges { target: reasonImage; source: "../images/repost.png" }
+            PropertyChanges { target: reasonImage; source: "../images/repost_via_repost.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been reposted.")}
 
             // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
@@ -241,6 +241,14 @@ ClickableFrame {
                         State {
                             when: notificationFrame.reason === NotificationListModel.ReasonQuote
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonLikeViaRepost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Pink) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonRepostViaRepost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
                         },
                         State {
                             when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
