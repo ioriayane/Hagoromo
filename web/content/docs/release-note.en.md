@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Supports notification of reactions to reposts
 - Upadte
   - Change to background processing of posts
   - Change to show who reposted in the repost tab of the profile
