@@ -38,6 +38,8 @@ struct ColumnPostType
     bool mention = true;
     bool reply = true;
     bool quote = true;
+    bool like_via_repost = true;
+    bool repost_via_repost = true;
     bool reply_to_unfollowed_users = true;
     bool repost_of_own = true;
     bool repost_of_following_users = true;
@@ -99,6 +101,8 @@ public:
         VisibleMentionRole,
         VisibleReplyRole,
         VisibleQuoteRole,
+        VisibleLikeViaRepostRole,
+        VisibleRepostViaRepostRole,
         VisibleReplyToUnfollowedUsersRole,
         VisibleRepostOfOwnRole,
         VisibleRepostOfFollowingUsersRole,

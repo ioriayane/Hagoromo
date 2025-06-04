@@ -347,6 +347,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_repost = true;
+                        info.reaction_cid = cid;
                         info.reaction_uri = uri;
                         info.reacted_by_did = repo;
                         info.reacted_by_handle = user_info.handle;
@@ -367,6 +368,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_like = true;
+                        info.reaction_cid = cid;
                         info.reaction_uri = uri;
                         info.reacted_by_did = repo;
                         infos.append(info);

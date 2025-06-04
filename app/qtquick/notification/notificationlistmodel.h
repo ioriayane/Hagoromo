@@ -22,6 +22,10 @@ class NotificationListModel : public AtpAbstractListModel
                        visibleMentionChanged)
     Q_PROPERTY(bool visibleReply READ visibleReply WRITE setVisibleReply NOTIFY visibleReplyChanged)
     Q_PROPERTY(bool visibleQuote READ visibleQuote WRITE setVisibleQuote NOTIFY visibleQuoteChanged)
+    Q_PROPERTY(bool visibleLikeViaRepost READ visibleLikeViaRepost WRITE setVisibleLikeViaRepost
+                       NOTIFY visibleLikeViaRepostChanged FINAL)
+    Q_PROPERTY(bool visibleRepostViaRepost READ visibleRepostViaRepost WRITE
+                       setVisibleRepostViaRepost NOTIFY visibleRepostViaRepostChanged FINAL)
 
     Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
                        setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
@@ -145,6 +149,8 @@ public:
         ReasonMention,
         ReasonReply,
         ReasonQuote,
+        ReasonLikeViaRepost,
+        ReasonRepostViaRepost,
         ReasonStaterPack,
     };
     Q_ENUM(NotificationListModelReason)
@@ -183,6 +189,10 @@ public:
     void setVisibleReply(bool newVisibleReply);
     bool visibleQuote() const;
     void setVisibleQuote(bool newVisibleQuote);
+    bool visibleLikeViaRepost() const;
+    void setVisibleLikeViaRepost(bool newVisibleLikeViaRepost);
+    bool visibleRepostViaRepost() const;
+    void setVisibleRepostViaRepost(bool newVisibleRepostViaRepost);
     bool updateSeenNotification() const;
     void setUpdateSeenNotification(bool newUpdateSeenNotification);
     bool aggregateReactions() const;
@@ -195,6 +205,8 @@ signals:
     void visibleMentionChanged();
     void visibleReplyChanged();
     void visibleQuoteChanged();
+    void visibleLikeViaRepostChanged();
+    void visibleRepostViaRepostChanged();
     void updateSeenNotificationChanged();
     void aggregateReactionsChanged();
 
@@ -275,6 +287,8 @@ private:
     bool m_visibleMention;
     bool m_visibleReply;
     bool m_visibleQuote;
+    bool m_visibleLikeViaRepost;
+    bool m_visibleRepostViaRepost;
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;

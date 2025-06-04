@@ -43,7 +43,9 @@ Dialog {
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
         property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        // Notification
         property bool enableChatNotification: true
+        property bool enableNotificationsForReactionsOnReposts: true
         // Layout
         property int rowCount: 1
         property int rowHeightRatio2: 50
@@ -79,7 +81,9 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
+            // Notificatin
             enableChatNotificationCheckBox.checked = settings.enableChatNotification
+            enableNotificationsForReactionsOnRepostsCheckBox.checked = settings.enableNotificationsForReactionsOnReposts
             // Layout
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
@@ -526,6 +530,11 @@ Dialog {
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Enable chat notification")
                             }
+                            CheckBox {
+                                id: enableNotificationsForReactionsOnRepostsCheckBox
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Enable notifications for likes/reposts on reposts")
+                            }
                         }
                     }
 
@@ -954,7 +963,9 @@ Dialog {
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
                     systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
+                    // Notification
                     settings.enableChatNotification = enableChatNotificationCheckBox.checked
+                    settings.enableNotificationsForReactionsOnReposts = enableNotificationsForReactionsOnRepostsCheckBox.checked
                     // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value

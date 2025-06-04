@@ -23,6 +23,7 @@ struct OperationInfo
     QString uri;
     bool is_like = false;
     bool is_repost = false;
+    QString reaction_cid;
     QString reaction_uri;
     QString reacted_by_did; // did
     QString reacted_by_handle;

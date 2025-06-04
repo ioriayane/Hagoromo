@@ -51,6 +51,10 @@ class AtpAbstractListModel : public QAbstractListModel
             QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged FINAL)
     Q_PROPERTY(bool displayPinnedPost READ displayPinnedPost WRITE setDisplayPinnedPost NOTIFY
                        displayPinnedPostChanged)
+    Q_PROPERTY(bool enableNotificationsForReactionsOnReposts READ
+                       enableNotificationsForReactionsOnReposts WRITE
+                               setEnableNotificationsForReactionsOnReposts NOTIFY
+                                       enableNotificationsForReactionsOnRepostsChanged FINAL)
 
     Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
     Q_PROPERTY(QString service READ service CONSTANT)
@@ -175,6 +179,10 @@ public:
     QString cursor() const;
     void setCursor(const QString &newCursor);
 
+    bool enableNotificationsForReactionsOnReposts() const;
+    void
+    setEnableNotificationsForReactionsOnReposts(bool newEnableNotificationsForReactionsOnReposts);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -186,6 +194,8 @@ signals:
     void displayPinnedPostChanged();
 
     void uuidChanged();
+
+    void enableNotificationsForReactionsOnRepostsChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
@@ -298,6 +308,7 @@ private:
     bool m_visibleContainingMutedWord;
     QString m_pinnedPost; // at-uri
     bool m_displayPinnedPost;
+    bool m_enableNotificationsForReactionsOnReposts;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

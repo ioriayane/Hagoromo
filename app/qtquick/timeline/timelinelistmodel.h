@@ -147,6 +147,9 @@ public:
         ThreadGateTypeRole,
         ThreadGateRulesRole,
 
+        ReasonRepostedCidRole,
+        ReasonRepostedUriRole,
+
         LabelsRole,
         LabelIconsRole,
         LanguagesRole,

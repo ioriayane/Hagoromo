@@ -62,7 +62,9 @@ void setDefaultSettings(QSettings &settings)
     setDefaultValue(settings, "updateSeenNotification", true);
     setDefaultValue(settings, "realtimeServiceEndpoint",
                     QStringLiteral("wss://jetstream1.us-west.bsky.network"));
+    // Notification
     setDefaultValue(settings, "enableChatNotification", true);
+    setDefaultValue(settings, "enableNotificationsForReactionsOnReposts", true);
     // Layout
     setDefaultValue(settings, "rowCount", 1);
     setDefaultValue(settings, "rowHeightRatio2", 50);

@@ -404,6 +404,8 @@ void RealtimeFeedListModel::getPostThread()
                 view_post.reason_ReasonRepost.by.did = ope_info.reacted_by_did;
                 view_post.reason_ReasonRepost.by.handle = ope_info.reacted_by_handle;
                 view_post.reason_ReasonRepost.by.displayName = ope_info.reacted_by_display_name;
+                view_post.reason_ReasonRepost.cid = ope_info.reaction_cid;
+                view_post.reason_ReasonRepost.uri = ope_info.reaction_uri;
             }
             if (post_thread->threadViewPost().parent_type
                         == AtProtocolType::AppBskyFeedDefs::ThreadViewPostParentType::

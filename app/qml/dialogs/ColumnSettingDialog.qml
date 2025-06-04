@@ -29,6 +29,8 @@ Dialog {
     property alias visibleMentionCheckBox: visibleMentionCheckBox
     property alias visibleReplyCheckBox: visibleReplyCheckBox
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
+    property alias visibleLikeViaRepostCheckBox: visibleLikeViaRepostCheckBox
+    property alias visibleRepostViaRepostCheckBox: visibleRepostViaRepostCheckBox
     property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
     property alias visibleRepostOfOwnCheckBox: visibleRepostOfOwnCheckBox
     property alias visibleRepostOfFollowingUsersCheckBox: visibleRepostOfFollowingUsersCheckBox
@@ -65,6 +67,8 @@ Dialog {
                 PropertyChanges { target: visibleMentionCheckBox; visible: true }
                 PropertyChanges { target: visibleReplyCheckBox; visible: true }
                 PropertyChanges { target: visibleQuoteCheckBox; visible: true }
+                PropertyChanges { target: visibleLikeViaRepostCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostViaRepostCheckBox; visible: true }
                 PropertyChanges { target: aggregateReactionsCheckBox; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
@@ -272,6 +276,24 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Quote")
                     }
+
+                    CheckBox {
+                        id: visibleLikeViaRepostCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Like via repost")
+                    }
+                    CheckBox {
+                        id: visibleRepostViaRepostCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Repost via repost")
+                    }
+
                     CheckBox {
                         id: visibleReplyToUnfollowedUsersCheckBox
                         topPadding: 5
