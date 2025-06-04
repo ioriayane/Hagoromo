@@ -699,6 +699,8 @@ ColumnLayout {
                 displayInterval: 0
                 enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 targetDid: profileView.userDid
+                targetHandle: userProfile.handle
+                targetDisplayName: userProfile.displayName
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.RepostFeedType
 

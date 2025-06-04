@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Upadte
   - Change to background processing of posts
+  - Change to show who reposted in the repost tab of the profile
 - Fix
   - Fix the repost and like tabs on the profile screen so that they now function properly
 

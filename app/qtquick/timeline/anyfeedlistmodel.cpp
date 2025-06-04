@@ -22,6 +22,8 @@ bool AnyFeedListModel::getLatest()
         return false;
     setRunning(true);
 
+    m_repostRefHash.clear();
+
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
         connect(records, &ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
@@ -47,6 +49,12 @@ bool AnyFeedListModel::getLatest()
                                 record.value);
                         indexed_at =
                                 getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
+                        {
+                            AtProtocolType::ComAtprotoRepoStrongRef::Main ref;
+                            ref.cid = record.cid;
+                            ref.uri = record.uri;
+                            m_repostRefHash[cid] = ref;
+                        }
                         break;
                     default:
                         break;
@@ -92,6 +100,8 @@ bool AnyFeedListModel::getNext()
     if (running() || m_cursor.isEmpty())
         return false;
     setRunning(true);
+
+    m_repostRefHash.clear();
 
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
@@ -168,6 +178,32 @@ void AnyFeedListModel::setTargetDid(const QString &newTargetDid)
     emit targetDidChanged();
 }
 
+QString AnyFeedListModel::targetHandle() const
+{
+    return m_targetHandle;
+}
+
+void AnyFeedListModel::setTargetHandle(const QString &newTargetHandle)
+{
+    if (m_targetHandle == newTargetHandle)
+        return;
+    m_targetHandle = newTargetHandle;
+    emit targetHandleChanged();
+}
+
+QString AnyFeedListModel::targetDisplayName() const
+{
+    return m_targetDisplayName;
+}
+
+void AnyFeedListModel::setTargetDisplayName(const QString &newTargetDisplayName)
+{
+    if (m_targetDisplayName == newTargetDisplayName)
+        return;
+    m_targetDisplayName = newTargetDisplayName;
+    emit targetDisplayNameChanged();
+}
+
 AnyFeedListModel::AnyFeedListModelFeedType AnyFeedListModel::feedType() const
 {
     return m_feedType;
@@ -213,6 +249,17 @@ void AnyFeedListModel::getPosts()
                  item++) {
                 AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
                 view_post.post = *item;
+                if (feedType() == AnyFeedListModelFeedType::RepostFeedType
+                    && m_repostRefHash.contains(view_post.post.cid)) {
+                    const auto ref = m_repostRefHash.value(view_post.post.cid);
+                    view_post.reason_type = AtProtocolType::AppBskyFeedDefs::
+                            FeedViewPostReasonType::reason_ReasonRepost;
+                    view_post.reason_ReasonRepost.by.did = targetDid();
+                    view_post.reason_ReasonRepost.by.handle = targetHandle();
+                    view_post.reason_ReasonRepost.by.displayName = targetDisplayName();
+                    view_post.reason_ReasonRepost.cid = ref.cid;
+                    view_post.reason_ReasonRepost.uri = ref.uri;
+                }
                 m_viewPostHash[item->cid] = view_post;
 
                 if (m_cidList.contains(item->cid)) {
