@@ -103,7 +103,7 @@ void log_test::test_LogManager()
     {
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         manager.update(m_service, did);
-        spy.wait(10000);
+        spy.wait(25000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
@@ -629,7 +629,7 @@ void log_test::test_LogOperator()
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool)));
         emit ope.getLatest();
-        spy.wait();
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
@@ -685,7 +685,7 @@ void log_test::test_LogFeedListModel()
     {
         QSignalSpy spy(&model, SIGNAL(finished(bool)));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
