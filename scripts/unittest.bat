@@ -66,7 +66,7 @@ cmake --build . --target tests\all
 if ERRORLEVEL 1 goto TEST_FAIL
 
 REM --- run -------
-ctest --test-dir tests -C Debug -j 4
+ctest --test-dir tests -C Debug -j 4 --verbose
 if ERRORLEVEL 1 goto TEST_FAIL
 
 cd %CWD%
