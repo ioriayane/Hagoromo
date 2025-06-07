@@ -41,36 +41,36 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      # - name: Build for Windows
-      #   id: build
-      #   env:
-      #     VERSION_NO: ${{ inputs.VERSION_NO }}
-      #   run: |
-      #     echo "::group::Build hagoromo"
-      #     $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
-      #     echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
-      #     echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
-      #     echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
-      #     echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
-      #     $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
-      #     $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
-      #     scripts\build.bat $env:QT_ROOT_DIR
-      #     echo "::endgroup::"
+      - name: Build for Windows
+        id: build
+        env:
+          VERSION_NO: ${{ inputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+          echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
+          $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
+          # scripts\build.bat $env:QT_ROOT_DIR
+          echo "::endgroup::"
 
-      #     # echo "Make for Windows"
-      #     # mkdir deploy-hagoromo/hagoromo
-      #     # echo "for windows" > deploy-hagoromo/hagoromo/hagoromo.txt
-      #     # Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
+          # echo "Make for Windows"
+          # mkdir deploy-hagoromo/hagoromo
+          # echo "for windows" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
 
-      #     ls .\deploy-hagoromo\
-      #     echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
-      # - name: Upload a archive
-      #   if: ${{ inputs.upload == true }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: archive_for_windows
-      #     path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
-      #     retention-days: 2
+          ls .\deploy-hagoromo\
+          echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
+      - name: Upload a archive
+        if: ${{ inputs.upload == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_windows
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+          retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         env:
