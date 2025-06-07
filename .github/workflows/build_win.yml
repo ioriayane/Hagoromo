@@ -74,8 +74,16 @@ jobs:
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         run: |
-          Set-TimeZone -Id "Tokyo Standard Time"
+          echo "::group::Set up environment for unit test"
+          echo "Get timezone and system locale"
           Get-TimeZone
+          Get-WinSystemLocale
+          echo "Set timezone and system locale"
+          Set-TimeZone -Id "Tokyo Standard Time"
+          Set-WinSystemLocale ja-JP
+          Get-TimeZone
+          Get-WinSystemLocale
+          echo "::endgroup::"
           scripts\unittest.bat $env:QT_ROOT_DIR
       - name: Upload a unit test result
         if: ${{ inputs.unit_test == true && failure() }}
