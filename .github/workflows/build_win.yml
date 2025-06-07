@@ -73,9 +73,10 @@ jobs:
           retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
-        env:
-          TZ: "Asia/Tokyo"
-        run: scripts\unittest.bat $env:QT_ROOT_DIR
+        run: |
+          Set-TimeZone -Id "Tokyo Standard Time"
+          Get-TimeZone
+          scripts\unittest.bat $env:QT_ROOT_DIR
       - name: Upload a unit test result
         if: ${{ inputs.unit_test == true && failure() }}
         uses: actions/upload-artifact@v4
