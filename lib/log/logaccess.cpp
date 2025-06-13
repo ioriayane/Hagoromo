@@ -130,6 +130,10 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                 const QStringList saved_cids = d->dbGetSavedCids();
                 for (const auto &cid : decoder.cids()) {
                     if (i++ % 100 == 0) {
+                        qDebug().noquote() << LOG_DATETIME
+                                           << QString("Updating local database ... (%1%)")
+                                                      .arg(static_cast<int>(
+                                                              100 * i / decoder.cids().length()));
                         emit progressMessage(
                                 QString("Updating local database ... (%1%)")
                                         .arg(static_cast<int>(100 * i / decoder.cids().length())));
