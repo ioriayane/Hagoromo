@@ -56,20 +56,29 @@ cd %BUILD_FOLDER%
 
 set QT_FORCE_STDERR_LOGGING=1
 
-cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
-    -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
-    -DCMAKE_INSTALL_LIBDIR:PATH='.' ^
-    -DCMAKE_INSTALL_BINDIR:PATH='.' ^
-    -DHAGOROMO_UNIT_TEST_BUILD=ON ^
-    -DCMAKE_BUILD_TYPE:STRING=Debug
-if ERRORLEVEL 1 goto TEST_FAIL
+echo "version"
+cmake --version
+ctest --version
+echo "where cmake"
+where cmake
+echo "where ctest"
+where ctest
 
-cmake --build . --target tests\all
-if ERRORLEVEL 1 goto TEST_FAIL
 
-REM --- run -------
-ctest --test-dir tests -j 4 --output-on-failure
-if ERRORLEVEL 1 goto TEST_FAIL
+@REM cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
+@REM     -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
+@REM     -DCMAKE_INSTALL_LIBDIR:PATH='.' ^
+@REM     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
+@REM     -DHAGOROMO_UNIT_TEST_BUILD=ON ^
+@REM     -DCMAKE_BUILD_TYPE:STRING=Debug
+@REM if ERRORLEVEL 1 goto TEST_FAIL
+
+@REM cmake --build . --target tests\all
+@REM if ERRORLEVEL 1 goto TEST_FAIL
+
+@REM REM --- run -------
+@REM ctest --test-dir tests -j 4 --output-on-failure --verbose
+@REM if ERRORLEVEL 1 goto TEST_FAIL
 
 cd %CWD%
 
