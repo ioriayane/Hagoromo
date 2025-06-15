@@ -37,6 +37,11 @@ AtProtocolInterface::AccountData RecordOperator::account() const
     return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
+QString RecordOperator::accountUuid() const
+{
+    return m_account.uuid;
+}
+
 void RecordOperator::setAccount(const QString &uuid)
 {
     m_account.uuid = uuid;
@@ -428,7 +433,11 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
                 setRunning(false);
                 create_record->deleteLater();
             });
-            create_record->setImageBlobs(m_embedImageBlobs);
+            if (!m_embedImageBlobs.isEmpty()) {
+                create_record->setImageBlobs(m_embedImageBlobs);
+            } else {
+                create_record->setImageBlobs(QList<AtProtocolType::Blob>());
+            }
             create_record->setAccount(account());
             create_record->list(
                     name,

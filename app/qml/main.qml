@@ -1,8 +1,10 @@
+pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.listslistmodel 1.0
@@ -10,6 +12,7 @@ import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "controls"
+import "data"
 import "dialogs"
 import "view"
 import "parts"
@@ -47,8 +50,8 @@ ApplicationWindow {
                                   accountDialog.visible ||
                                   addColumnDialog.visible ||
                                   searchDialog.visible ||
-                                  postDialog.visible ||
-                                  settingDialog.visible
+                                  settingDialog.visible ||
+                                  postDialogRepeater.working
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
@@ -81,26 +84,33 @@ ApplicationWindow {
     SystemTool {
         id: systemTool
     }
+    RecordOperator {
+        id: recordOperator
+        onFinished: (success) => {}
+        onErrorOccured: (code, message) => appWindow.errorHandler(recordOperator.accountUuid(), code, message)
+    }
 
     ApplicationShortcut {
         enabled: !appWindow.visibleDialogs
-        postDialogShortcut.onActivated: postDialog.open()
+        postDialogShortcut.onActivated: postDialogRepeater.open(
+                                            "", "", "", "", "", "",
+                                            "", "", "", "", "", []
+                                            )
         searchDialogShortcut.onActivated: searchDialog.open()
         addColumnDialogShortcut.onActivated: addColumnDialog.open()
         onShowLeftColumn: scrollView.showLeft()
         onShowRightColumn: scrollView.showRight()
         onShowColumn: (index) => {
-                          if(index === -1){
-                              //一番右
-                              scrollView.showRightMost()
-                          }else if(index === 1){
-                              scrollView.showLeftMost()
-                          }else if(index > 1 && index <= 9){
-                              scrollView.showColumn(index-1)
-                          }
-                      }
+            if(index === -1){
+                //一番右
+                scrollView.showRightMost()
+            }else if(index === 1){
+                scrollView.showLeftMost()
+            }else if(index > 1 && index <= 9){
+                scrollView.showColumn(index-1)
+            }
+        }
     }
-
 
     SettingDialog {
         id: settingDialog
@@ -110,12 +120,6 @@ ApplicationWindow {
             repeater.updateSettings(2)
             translatorChanger.triggered(settingDialog.settings.language)
         }
-    }
-
-    PostDialog {
-        id: postDialog
-        accountModel: accountListModel
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     SearchDialog {
@@ -150,26 +154,26 @@ ApplicationWindow {
             scrollView.showRightMost()
         }
         onOpenSatisticsAndLogs: (account_uuid) => {
-                                    console.log("onOpenSatisticsAndLogs:" + account_uuid)
-                                    if(logViewDialog.account.set(accountListModel, account_uuid)){
-                                        logViewDialog.open()
-                                    }
-                                }
+            console.log("onOpenSatisticsAndLogs:" + account_uuid)
+            if(logViewDialog.account.set(accountListModel, account_uuid)){
+                logViewDialog.open()
+            }
+        }
         onOpenDiscoverFeeds: (account_uuid) => {
-                                 console.log("onOpenDiscoverFeeds:" + account_uuid)
-                                 if(discoverFeedsDialog.account.set(accountListModel, account_uuid)){
-                                     discoverFeedsDialog.open()
-                                     addColumnDialog.reject()
-                                 }
-                             }
+            console.log("onOpenDiscoverFeeds:" + account_uuid)
+            if(discoverFeedsDialog.account.set(accountListModel, account_uuid)){
+                discoverFeedsDialog.open()
+                addColumnDialog.reject()
+            }
+        }
         onOpenRealtimeFeedEditor: (account_uuid, display_name, condition) => {
-                                      console.log("onOpenRealtimeFeedEditor:" + account_uuid
-                                                  + ", display_name:" + display_name
-                                                  + ", condition:" + condition)
-                                      if(realtimeFeedEditorDialog.account.set(accountListModel, account_uuid)){
-                                          realtimeFeedEditorDialog.setupAndOpen(display_name, condition)
-                                      }
-                                  }
+            console.log("onOpenRealtimeFeedEditor:" + account_uuid
+                        + ", display_name:" + display_name
+                        + ", condition:" + condition)
+            if(realtimeFeedEditorDialog.account.set(accountListModel, account_uuid)){
+                realtimeFeedEditorDialog.setupAndOpen(display_name, condition)
+            }
+        }
 
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
@@ -199,15 +203,15 @@ ApplicationWindow {
         }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onRequestAddMutedWords: (account_uuid) => {
-                                    if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
-                                        addMutedWordDialog.open()
-                                    }
-                                }
+            if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
+                addMutedWordDialog.open()
+            }
+        }
         onRequestStatisticsAndLogs: (account_uuid) => {
-                                        if(logViewDialog.account.set(accountListModel, account_uuid)){
-                                            logViewDialog.open()
-                                        }
-                                    }
+            if(logViewDialog.account.set(accountListModel, account_uuid)){
+                logViewDialog.open()
+            }
+        }
     }
 
     DiscoverFeedsDialog {
@@ -322,9 +326,9 @@ ApplicationWindow {
         property string updateSequence: "" // threadgate, postgate
         onOpened: {
             selectThreadGateDialog.ready = false
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
-            postDialog.recordOperator.clear()
-            postDialog.recordOperator.requestPostGate(postUri)
+            recordOperator.setAccount(selectThreadGateDialog.account.uuid)
+            recordOperator.clear()
+            recordOperator.requestPostGate(postUri)
         }
         onAccepted: {
             console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
@@ -357,32 +361,32 @@ ApplicationWindow {
                 updateSequence = "threadgate"
             }
 
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
-            postDialog.recordOperator.clear()
+            recordOperator.setAccount(selectThreadGateDialog.account.uuid)
+            recordOperator.clear()
             if(updateSequence === "threadgate"){
                 console.log("Update threadgate")
-                postDialog.recordOperator.updateThreadGate(postUri,
-                                                           threadgateUri,
-                                                           selectedType,
-                                                           selectedOptions)
+                recordOperator.updateThreadGate(postUri,
+                                                threadgateUri,
+                                                selectedType,
+                                                selectedOptions)
                 globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
             }else if(updateSequence === "postgate"){
                 console.log("Update postgate")
-                postDialog.recordOperator.updateQuoteEnabled(postUri,
-                                                             selectedQuoteEnabled)
+                recordOperator.updateQuoteEnabled(postUri,
+                                                  selectedQuoteEnabled)
                 globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
             }
         }
         Connections {
-            target: postDialog.recordOperator
+            target: recordOperator
             function onFinished(success, uri, cid) {
                 if(success && selectThreadGateDialog.postUri.length > 0){
                     if(selectThreadGateDialog.updateSequence === "threadgate"
                             && (selectThreadGateDialog.initialQuoteEnabled !== selectThreadGateDialog.selectedQuoteEnabled)){
                         console.log("Update postgate")
                         selectThreadGateDialog.updateSequence = "postgate"
-                        postDialog.recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
-                                                                     selectThreadGateDialog.selectedQuoteEnabled)
+                        recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
+                                                          selectThreadGateDialog.selectedQuoteEnabled)
                     }else{
                         globalProgressFrame.text = ""
                         selectThreadGateDialog.postUri = ""
@@ -408,56 +412,42 @@ ApplicationWindow {
         onErrorOccured: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
 
         onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
-                            console.log(account_uuid + ",\n" +
-                                        cid + ", "+ uri + ",\n" +
-                                        reply_root_cid + ", "+ reply_root_uri + ",\n" +
-                                        avatar + ",\n" +
-                                        display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
-                            postDialog.postType = "reply"
-                            postDialog.defaultAccountUuid = account_uuid
-                            postDialog.replyCid = cid
-                            postDialog.replyUri = uri
-                            postDialog.replyRootCid = reply_root_cid
-                            postDialog.replyRootUri = reply_root_uri
-                            postDialog.replyAvatar = avatar
-                            postDialog.replyDisplayName = display_name
-                            postDialog.replyHandle = handle
-                            postDialog.replyIndexedAt = indexed_at
-                            postDialog.replyText = text
-                            postDialog.open()
-                        }
+            console.log(account_uuid + ",\n" +
+                        cid + ", "+ uri + ",\n" +
+                        reply_root_cid + ", "+ reply_root_uri + ",\n" +
+                        avatar + ",\n" +
+                        display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
+            postDialogRepeater.open(
+                "reply", account_uuid, cid, uri, reply_root_cid, reply_root_uri,
+                avatar, display_name, handle, indexed_at, text, []
+                )
+        }
         onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
-                            postDialog.postType = "quote"
-                            postDialog.defaultAccountUuid = account_uuid
-                            postDialog.quoteCid = cid
-                            postDialog.quoteUri = uri
-                            postDialog.quoteAvatar = avatar
-                            postDialog.quoteDisplayName = display_name
-                            postDialog.quoteHandle = handle
-                            postDialog.quoteIndexedAt = indexed_at
-                            postDialog.quoteText = text
-                            postDialog.open()
-                        }
+            postDialogRepeater.open(
+                "quote", account_uuid, cid, uri, "", "",
+                avatar, display_name, handle, indexed_at, text, []
+                )
+        }
         // ダイアログより前に出せない
         // onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
         onRequestAddMutedWord: (account_uuid, text) => {
-                                   console.log(account_uuid + ", " + text)
-                                   if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
-                                       addMutedWordDialog.initialValue = text
-                                       addMutedWordDialog.open()
-                                   }
-                               }
+            console.log(account_uuid + ", " + text)
+            if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
+                addMutedWordDialog.initialValue = text
+                addMutedWordDialog.open()
+            }
+        }
         onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
-                                       if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
-                                           selectThreadGateDialog.postUri = uri
-                                           selectThreadGateDialog.threadgateUri = threadgate_uri
-                                           selectThreadGateDialog.initialQuoteEnabled = true
-                                           selectThreadGateDialog.initialType = type
-                                           selectThreadGateDialog.initialOptions = rules
-                                           selectThreadGateDialog.callback = callback
-                                           selectThreadGateDialog.open()
-                                       }
-                                   }
+            if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
+                selectThreadGateDialog.postUri = uri
+                selectThreadGateDialog.threadgateUri = threadgate_uri
+                selectThreadGateDialog.initialQuoteEnabled = true
+                selectThreadGateDialog.initialType = type
+                selectThreadGateDialog.initialOptions = rules
+                selectThreadGateDialog.callback = callback
+                selectThreadGateDialog.open()
+            }
+        }
         onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
     }
     RealtimeFeedEditorDialog {
@@ -553,7 +543,7 @@ ApplicationWindow {
         }
 
         onRunningChanged: {
-            console.log("listsListModel:" + running)
+            console.log("listsListModel:" + listsListModel.running)
             if(running){
                 return
             }
@@ -566,158 +556,144 @@ ApplicationWindow {
         id: columnView
         ColumnView {
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
-                                console.log(account_uuid + ",\n" +
-                                            cid + ", "+ uri + ",\n" +
-                                            reply_root_cid + ", "+ reply_root_uri + ",\n" +
-                                            avatar + ",\n" +
-                                            display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
-                                postDialog.postType = "reply"
-                                postDialog.defaultAccountUuid = account_uuid
-                                postDialog.replyCid = cid
-                                postDialog.replyUri = uri
-                                postDialog.replyRootCid = reply_root_cid
-                                postDialog.replyRootUri = reply_root_uri
-                                postDialog.replyAvatar = avatar
-                                postDialog.replyDisplayName = display_name
-                                postDialog.replyHandle = handle
-                                postDialog.replyIndexedAt = indexed_at
-                                postDialog.replyText = text
-                                postDialog.open()
-                            }
+                console.log(account_uuid + ",\n" +
+                            cid + ", "+ uri + ",\n" +
+                            reply_root_cid + ", "+ reply_root_uri + ",\n" +
+                            avatar + ",\n" +
+                            display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
+                postDialogRepeater.open(
+                    "reply", account_uuid, cid, uri, reply_root_cid, reply_root_uri,
+                    avatar, display_name, handle, indexed_at, text, []
+                    )
+            }
             onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
-                                postDialog.postType = "quote"
-                                postDialog.defaultAccountUuid = account_uuid
-                                postDialog.quoteCid = cid
-                                postDialog.quoteUri = uri
-                                postDialog.quoteAvatar = avatar
-                                postDialog.quoteDisplayName = display_name
-                                postDialog.quoteHandle = handle
-                                postDialog.quoteIndexedAt = indexed_at
-                                postDialog.quoteText = text
-                                postDialog.open()
-                            }
+                postDialogRepeater.open(
+                    "quote", account_uuid, cid, uri, "", "",
+                    avatar, display_name, handle, indexed_at, text, []
+                    )
+            }
             onRequestMention: (account_uuid, handle) => {
-                                  postDialog.postType = "normal"
-                                  postDialog.defaultAccountUuid = account_uuid
-                                  postDialog.postText.text = handle + " "
-                                  postDialog.open()
-                              }
+                postDialogRepeater.open(
+                    "normal", account_uuid, "", "", "", "",
+                    "", "", handle, "", "", []
+                    )
+            }
             onRequestMessage: (account_uuid, did, current_column_key) => {
-                                  var pos = columnManageModel.insertNext(current_column_key, account_uuid, 8, false, 300000, 350,
-                                                                         settingDialog.settings.imageLayoutType,
-                                                                         qsTr("Chat"), "", [did])
-                                  repeater.updateSettings(1)
-                                  scrollView.showColumn(pos)
-                              }
+                var pos = columnManageModel.insertNext(current_column_key, account_uuid, 8, false, 300000, 350,
+                                                       settingDialog.settings.imageLayoutType,
+                                                       qsTr("Chat"), "", [did])
+                repeater.updateSettings(1)
+                scrollView.showColumn(pos)
+            }
 
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
-                                         columnManageModel.append(account_uuid, 5, false, 300000, 400,
-                                                                  settingDialog.settings.imageLayoutType, handle, did, [])
-                                         scrollView.showRightMost()
-                                     }
+                columnManageModel.append(account_uuid, 5, false, 300000, 400,
+                                         settingDialog.settings.imageLayoutType, handle, did, [])
+                scrollView.showRightMost()
+            }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account_uuid, 4, false, 300000, 500,
-                                                                     settingDialog.settings.imageLayoutType, name, uri, [])
-                                            scrollView.showRightMost()
-                                        }
+                columnManageModel.append(account_uuid, 4, false, 300000, 500,
+                                         settingDialog.settings.imageLayoutType, name, uri, [])
+                scrollView.showRightMost()
+            }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
-                                          console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
-                                          var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
-                                                                                 settingDialog.settings.imageLayoutType,
-                                                                                 qsTr("Search posts"), text, [])
-                                          repeater.updateSettings(1)
-                                          scrollView.showColumn(pos)
-                                      }
+                console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
+                var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
+                                                       settingDialog.settings.imageLayoutType,
+                                                       qsTr("Search posts"), text, [])
+                repeater.updateSettings(1)
+                scrollView.showColumn(pos)
+            }
             onRequestViewListFeed: (account_uuid, uri, name) => {
-                                       console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
-                                       columnManageModel.append(account_uuid, 6, false, 300000, 500,
-                                                                settingDialog.settings.imageLayoutType, name, uri, [])
-                                       scrollView.showRightMost()
-                                   }
+                console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
+                columnManageModel.append(account_uuid, 6, false, 300000, 500,
+                                         settingDialog.settings.imageLayoutType, name, uri, [])
+                scrollView.showRightMost()
+            }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
-                                     if(reportDialog.account.set(accountListModel, account_uuid)){
-                                         reportDialog.targetUri = uri
-                                         reportDialog.targetCid = cid
-                                         reportDialog.open()
-                                     }
-                                 }
+                if(reportDialog.account.set(accountListModel, account_uuid)){
+                    reportDialog.targetUri = uri
+                    reportDialog.targetCid = cid
+                    reportDialog.open()
+                }
+            }
             onRequestReportAccount: (account_uuid, did) => {
-                                        if(reportAccountDialog.account.set(accountListModel, account_uuid)){
-                                            reportAccountDialog.targetDid = did
-                                            reportAccountDialog.open()
-                                        }
-                                    }
+                if(reportAccountDialog.account.set(accountListModel, account_uuid)){
+                    reportAccountDialog.targetDid = did
+                    reportAccountDialog.open()
+                }
+            }
             onRequestReportMessage: (account_uuid, did, convo_id, message_id) => {
-                                        if(reportMessageDialog.account.set(accountListModel, account_uuid)){
-                                            console.log("onRequestReportMessage: account_uuid=" + account_uuid + ", did=" + did + ", convo_id=" + convo_id + ", message_id=" + message_id)
-                                            reportMessageDialog.targetAccountDid = did
-                                            reportMessageDialog.targetConvoId = convo_id
-                                            reportMessageDialog.targetMessageId = message_id
-                                            reportMessageDialog.open()
-                                        }
-                                    }
+                if(reportMessageDialog.account.set(accountListModel, account_uuid)){
+                    console.log("onRequestReportMessage: account_uuid=" + account_uuid + ", did=" + did + ", convo_id=" + convo_id + ", message_id=" + message_id)
+                    reportMessageDialog.targetAccountDid = did
+                    reportMessageDialog.targetConvoId = convo_id
+                    reportMessageDialog.targetMessageId = message_id
+                    reportMessageDialog.open()
+                }
+            }
 
             onRequestAddRemoveFromLists: (account_uuid, did) => {
-                                             if(addToListDialog.account.set(accountListModel, account_uuid)){
-                                                 addToListDialog.targetDid = did
-                                                 addToListDialog.open()
-                                             }
-                                         }
+                if(addToListDialog.account.set(accountListModel, account_uuid)){
+                    addToListDialog.targetDid = did
+                    addToListDialog.open()
+                }
+            }
             onRequestAddMutedWord: (account_uuid, text) => {
-                                       console.log(account_uuid + ", " + text)
-                                       if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
-                                           addMutedWordDialog.initialValue = text
-                                           addMutedWordDialog.open()
-                                       }
-                                   }
+                console.log(account_uuid + ", " + text)
+                if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
+                    addMutedWordDialog.initialValue = text
+                    addMutedWordDialog.open()
+                }
+            }
 
             onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description) => {
-                                      if(editProfileDialog.account.set(accountListModel, account_uuid)){
-                                          editProfileDialog.avatar = avatar
-                                          editProfileDialog.banner = banner
-                                          editProfileDialog.displayName = display_name
-                                          editProfileDialog.description = description
-                                          editProfileDialog.open()
-                                      }
-                                  }
+                if(editProfileDialog.account.set(accountListModel, account_uuid)){
+                    editProfileDialog.avatar = avatar
+                    editProfileDialog.banner = banner
+                    editProfileDialog.displayName = display_name
+                    editProfileDialog.description = description
+                    editProfileDialog.open()
+                }
+            }
             onRequestEditList: (account_uuid, uri, avatar, name, description) => {
-                                   if(addListDialog.account.set(accountListModel, account_uuid)){
-                                       addListDialog.editMode = true
-                                       addListDialog.listUri = uri
-                                       addListDialog.avatar = avatar
-                                       addListDialog.displayName = name
-                                       addListDialog.description = description
-                                       addListDialog.open()
-                                   }
-                               }
+                if(addListDialog.account.set(accountListModel, account_uuid)){
+                    addListDialog.editMode = true
+                    addListDialog.listUri = uri
+                    addListDialog.avatar = avatar
+                    addListDialog.displayName = name
+                    addListDialog.description = description
+                    addListDialog.open()
+                }
+            }
             onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
-                                           if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
-                                               selectThreadGateDialog.postUri = uri
-                                               selectThreadGateDialog.threadgateUri = threadgate_uri
-                                               selectThreadGateDialog.initialType = type
-                                               selectThreadGateDialog.initialOptions = rules
-                                               selectThreadGateDialog.callback = callback
-                                               selectThreadGateDialog.open()
-                                           }
-                                       }
+                if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
+                    selectThreadGateDialog.postUri = uri
+                    selectThreadGateDialog.threadgateUri = threadgate_uri
+                    selectThreadGateDialog.initialType = type
+                    selectThreadGateDialog.initialOptions = rules
+                    selectThreadGateDialog.callback = callback
+                    selectThreadGateDialog.open()
+                }
+            }
 
             onRequestMoveToLeft: (key) => {
-                                     console.log("move to left:" + key)
-                                     columnManageModel.move(key, ColumnListModel.MoveLeft)
-                                     repeater.updateSettings(1)
-                                 }
+                console.log("move to left:" + key)
+                columnManageModel.move(key, ColumnListModel.MoveLeft)
+                repeater.updateSettings(1)
+            }
             onRequestMoveToRight: (key) => {
-                                      console.log("move to right:" + key)
-                                      columnManageModel.move(key, ColumnListModel.MoveRight)
-                                      repeater.updateSettings(1)
-                                  }
+                console.log("move to right:" + key)
+                columnManageModel.move(key, ColumnListModel.MoveRight)
+                repeater.updateSettings(1)
+            }
             onRequestRemove: (key) => {
-                                 console.log("remove column:" + key)
-                                 columnManageModel.removeByKey(key)
-                                 repeater.updateSettings(1)
-                             }
+                console.log("remove column:" + key)
+                columnManageModel.removeByKey(key)
+                repeater.updateSettings(1)
+            }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
@@ -746,7 +722,10 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.margins: 1
                 ready: accountListModel.allAccountsReady
-                post.onClicked: postDialog.open()
+                post.onClicked: postDialogRepeater.open(
+                                    "", "", "", "", "", "",
+                                    "", "", "", "", "", []
+                                    )
                 search.onClicked: searchDialog.open()
                 addColumn.onClicked: addColumnDialog.open()
                 moderation.onClicked: console.log("click moderation")
@@ -929,25 +908,51 @@ ApplicationWindow {
                             }
                         }
                     }
-                    width: model.width * AdjustedValues.ratio
-                    sourceComponent: columnView
                     property int row: 0
+                    required property int index
+                    required property string key
+                    required property string accountUuid
+                    required property int componentType
+                    required property bool autoLoading
+                    required property int loadingInterval
+                    required property int column_width
+                    required property int imageLayoutType
+                    required property string name
+                    required property string value
+                    required property variant valueList
+                    required property bool selected
+                    required property bool visibleLike
+                    required property bool visibleRepost
+                    required property bool visibleFollow
+                    required property bool visibleMention
+                    required property bool visibleReply
+                    required property bool visibleQuote
+                    required property bool visibleReplyToUnfollowedUsers
+                    required property bool visibleRepostOfOwn
+                    required property bool visibleRepostOfFollowingUsers
+                    required property bool visibleRepostOfUnfollowingUsers
+                    required property bool visibleRepostOfMine
+                    required property bool visibleRepostByMe
+                    required property bool aggregateReactions
+
+                    width: column_width * AdjustedValues.ratio
+                    sourceComponent: columnView
 
                     onLoaded: {
                         // Loaderで読み込んだComponentにアカウント情報など設定する
-                        var row = accountListModel.indexAt(model.accountUuid)
-                        console.log("(1) loader:" + row + ", " + model.accountUuid)
-                        if(!item.account.set(accountListModel, model.accountUuid)){
+                        var row = accountListModel.indexAt(accountUuid)
+                        console.log("(1) loader:" + row + ", " + accountUuid)
+                        if(!item.account.set(accountListModel, accountUuid)){
                             return
                         }
 
-                        item.columnKey = model.key
-                        item.componentType = model.componentType
-                        item.selected = model.selected
+                        item.columnKey = key
+                        item.componentType = componentType
+                        item.selected = selected
                         setSettings()
                         item.load()
 
-                        if(model.index === columnManageModel.rowCount() - 1){
+                        if(index === columnManageModel.rowCount() - 1){
                             // 最後の時にレイアウトを設定する
                             // 読み込んでいる過程では左がいない場合がある
                             repeater.updateSettings(1)
@@ -955,44 +960,44 @@ ApplicationWindow {
                     }
 
                     function setLayout() {
-                        var cur_pos = columnManageModel.getPosition(model.index)
-                        var left_index = columnManageModel.getPreviousRow(model.index)
+                        var cur_pos = columnManageModel.getPosition(index)
+                        var left_index = columnManageModel.getPreviousRow(index)
                         var count_in_row = Math.ceil(repeater.count / scrollView.rows)
                         var index_in_row = cur_pos % count_in_row
                         loader.row = Math.trunc(cur_pos / count_in_row)
-                        console.log("setLayout(1)   :" + model.index + ": row=" + loader.row + ", index_in_row=" + index_in_row + ", count_in_row=" + count_in_row)
+                        console.log("setLayout(1)   :" + index + ": row=" + loader.row + ", index_in_row=" + index_in_row + ", count_in_row=" + count_in_row)
                         if(index_in_row === 0){
-                            console.log("setLayout(2.1) :" + model.index + ": left_pos=" + left_index + ", left is " + loader.parent)
+                            console.log("setLayout(2.1) :" + index + ": left_pos=" + left_index + ", left is " + loader.parent)
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
                         }else{
-                            console.log("setLayout(2.2) :" + model.index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index).item.settings.columnName)
+                            console.log("setLayout(2.2) :" + index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index).item.settings.columnName)
                             loader.anchors.left = repeater.itemAt(left_index).right
                             loader.anchors.leftMargin = 3
                         }
                     }
 
                     function setSettings() {
-                        item.settings.autoLoading = model.autoLoading
-                        item.settings.loadingInterval = model.loadingInterval
-                        item.settings.columnName = model.name
-                        item.settings.columnValue = model.value
-                        item.settings.columnValueList = model.valueList
-                        item.settings.imageLayoutType = model.imageLayoutType
+                        item.settings.autoLoading = autoLoading
+                        item.settings.loadingInterval = loadingInterval
+                        item.settings.columnName = name
+                        item.settings.columnValue = value
+                        item.settings.columnValueList = valueList
+                        item.settings.imageLayoutType = imageLayoutType
 
-                        item.settings.visibleLike = model.visibleLike
-                        item.settings.visibleRepost = model.visibleRepost
-                        item.settings.visibleFollow = model.visibleFollow
-                        item.settings.visibleMention = model.visibleMention
-                        item.settings.visibleReply = model.visibleReply
-                        item.settings.visibleQuote = model.visibleQuote
-                        item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
-                        item.settings.visibleRepostOfOwn = model.visibleRepostOfOwn
-                        item.settings.visibleRepostOfFollowingUsers = model.visibleRepostOfFollowingUsers
-                        item.settings.visibleRepostOfUnfollowingUsers = model.visibleRepostOfUnfollowingUsers
-                        item.settings.visibleRepostOfMine = model.visibleRepostOfMine
-                        item.settings.visibleRepostByMe = model.visibleRepostByMe
-                        item.settings.aggregateReactions = model.aggregateReactions
+                        item.settings.visibleLike = visibleLike
+                        item.settings.visibleRepost = visibleRepost
+                        item.settings.visibleFollow = visibleFollow
+                        item.settings.visibleMention = visibleMention
+                        item.settings.visibleReply = visibleReply
+                        item.settings.visibleQuote = visibleQuote
+                        item.settings.visibleReplyToUnfollowedUsers = visibleReplyToUnfollowedUsers
+                        item.settings.visibleRepostOfOwn = visibleRepostOfOwn
+                        item.settings.visibleRepostOfFollowingUsers = visibleRepostOfFollowingUsers
+                        item.settings.visibleRepostOfUnfollowingUsers = visibleRepostOfUnfollowingUsers
+                        item.settings.visibleRepostOfMine = visibleRepostOfMine
+                        item.settings.visibleRepostByMe = visibleRepostByMe
+                        item.settings.aggregateReactions = aggregateReactions
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
@@ -1000,7 +1005,7 @@ ApplicationWindow {
                     }
 
                     function updateSelection() {
-                        item.selected = model.selected
+                        item.selected = selected
                     }
                 }
             }
@@ -1057,6 +1062,7 @@ ApplicationWindow {
     }
 
     ColumnLayout {
+        id: notificationLayout
         anchors.right: rootLayout.right
         anchors.bottom: rootLayout.bottom
         anchors.rightMargin: 5
@@ -1068,22 +1074,22 @@ ApplicationWindow {
             enabled: settingDialog.settings.enableChatNotification
             visible: enabled
             onRequestAddChatColumn: (uuid) => {
-                                        console.log("onRequestAddChatColumn:" + uuid)
-                                        if(columnManageModel.contains(uuid, 7)){
-                                            var index = columnManageModel.indexOf(uuid, 7, 0)
-                                            var position = columnManageModel.getPosition(index)
-                                            console.log("  already contains:" + index + ", " + position)
-                                            if(position >= 0){
-                                                scrollView.showColumn(position)
-                                            }
-                                        }else{
-                                            columnManageModel.append(uuid,
-                                                                     7, false, 300000, 500,
-                                                                     settingDialog.settings.imageLayoutType,
-                                                                     qsTr("Chat list"), "", [])
-                                            scrollView.showRightMost()
-                                        }
-                                    }
+                console.log("onRequestAddChatColumn:" + uuid)
+                if(columnManageModel.contains(uuid, 7)){
+                    var index = columnManageModel.indexOf(uuid, 7, 0)
+                    var position = columnManageModel.getPosition(index)
+                    console.log("  already contains:" + index + ", " + position)
+                    if(position >= 0){
+                        scrollView.showColumn(position)
+                    }
+                }else{
+                    columnManageModel.append(uuid,
+                                             7, false, 300000, 500,
+                                             settingDialog.settings.imageLayoutType,
+                                             qsTr("Chat list"), "", [])
+                    scrollView.showRightMost()
+                }
+            }
         }
         RealtimeFeedStatus {
             id: realtimeFeedStatus
@@ -1117,6 +1123,111 @@ ApplicationWindow {
         }
     }
 
+    Component {
+        id: postDialogComponent
+        PostDialog {
+            id: postDialog
+            parentWidth: appWindow.width
+            parentHeight: appWindow.height
+            bottomLine: notificationLayout.y
+            accountModel: accountListModel
+            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+            onClosed: postDialogRepeater.remove(dialog_no)
+            onClosedDialog: postDialogRepeater.working = false
+        }
+    }
+    Repeater {
+        id: postDialogRepeater
+        property int dialog_no: 0
+        property bool working: false
+        model: ListModel {}
+        onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
+        Loader {
+            required property int index
+            required property int dialog_no
+            required property string post_type
+            required property string account_uuid
+            required property string cid
+            required property string uri
+            required property string reply_root_cid
+            required property string reply_root_uri
+            required property string avatar
+            required property string display_name
+            required property string handle
+            required property string indexed_at
+            required property string text
+            required property string image_urls
+
+            sourceComponent: postDialogComponent
+            onLoaded: {
+                item.dialog_no = dialog_no
+                item.viewIndex = index
+                item.postType = post_type
+                item.defaultAccountUuid = account_uuid
+                if(item.postType === "reply"){
+                    item.replyCid = cid
+                    item.replyUri = uri
+                    item.replyRootCid = reply_root_cid
+                    item.replyRootUri = reply_root_uri
+                    item.replyAvatar = avatar
+                    item.replyDisplayName = display_name
+                    item.replyHandle = handle
+                    item.replyIndexedAt = indexed_at
+                    item.replyText = text
+                }else if(item.postType === "quote"){
+                    item.quoteCid = cid
+                    item.quoteUri = uri
+                    item.quoteAvatar = avatar
+                    item.quoteDisplayName = display_name
+                    item.quoteHandle = handle
+                    item.quoteIndexedAt = indexed_at
+                    item.quoteText = text
+                }
+                if(image_urls.length === 0){
+                    item.open()
+                }else{
+                    item.openWithFiles(image_urls.split("\n"))
+                }
+                console.timeEnd("post_dialog_open");
+            }
+        }
+        function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
+                      avatar, display_name, handle, indexed_at, text, image_urls) {
+            console.time("post_dialog_open");
+            working = true
+            postDialogRepeater.model.append({
+                                                "dialog_no": postDialogRepeater.dialog_no++,
+                                                "post_type": post_type,
+                                                "account_uuid": account_uuid,
+                                                "cid": cid,
+                                                "uri": uri,
+                                                "reply_root_cid": reply_root_cid,
+                                                "reply_root_uri": reply_root_uri,
+                                                "avatar": avatar,
+                                                "display_name": display_name,
+                                                "handle": handle,
+                                                "indexed_at": indexed_at,
+                                                "text": text,
+                                                "image_urls": image_urls.join("\n")
+                                            })
+        }
+        function remove(no){
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                if(no === loader_item.item.dialog_no){
+                    console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
+                    console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
+                    postDialogRepeater.model.remove(i)
+                    break
+                }
+            }
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                loader_item.item.viewIndex = i
+            }
+        }
+    }
+
     ImageFullView {
         id: imageFullView
         anchors.fill: parent
@@ -1127,7 +1238,10 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: 5
         enabled: accountListModel.count > 0 && !appWindow.visibleDialogs
-        onDropped: (urls) => postDialog.openWithFiles(urls)
+        onDropped: (urls) => postDialogRepeater.open(
+                       "", "", "", "", "", "",
+                       "", "", "", "", "", urls
+                       )
     }
 
 

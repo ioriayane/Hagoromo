@@ -1297,6 +1297,8 @@ void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &des
 {
     if (!src.isEmpty()) {
         AppBskyActorDefs::copyProfileViewBasic(src.value("by").toObject(), dest.by);
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
         dest.indexedAt = src.value("indexedAt").toString();
     }
 }
@@ -1321,6 +1323,7 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
             AppBskyFeedDefs::copyReasonPin(src.value("reason").toObject(), dest.reason_ReasonPin);
         }
         dest.feedContext = src.value("feedContext").toString();
+        dest.reqId = src.value("reqId").toString();
     }
 }
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
@@ -1417,6 +1420,7 @@ void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest)
         dest.item = src.value("item").toString();
         dest.event = src.value("event").toString();
         dest.feedContext = src.value("feedContext").toString();
+        dest.reqId = src.value("reqId").toString();
     }
 }
 }
@@ -1613,6 +1617,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedLike::Main &dest)
     if (!src.isEmpty()) {
         ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
         dest.createdAt = src.value("createdAt").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("via").toObject(), dest.via);
     }
 }
 }
@@ -1705,6 +1710,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
     if (!src.isEmpty()) {
         ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
         dest.createdAt = src.value("createdAt").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("via").toObject(), dest.via);
     }
 }
 }
@@ -1957,6 +1963,99 @@ void copyLiveNowConfig(const QJsonObject &src, AppBskyUnspeccedGetConfig::LiveNo
         dest.did = src.value("did").toString();
         for (const auto &value : src.value("domains").toArray()) {
             dest.domains.append(value.toString());
+        }
+    }
+}
+}
+// app.bsky.unspecced.getPostThreadHiddenV2
+namespace AppBskyUnspeccedGetPostThreadHiddenV2 {
+void copyThreadHiddenItemPost(const QJsonObject &src,
+                              AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItemPost &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyFeedDefs::copyPostView(src.value("post").toObject(), dest.post);
+        dest.hiddenByThreadgate = src.value("hiddenByThreadgate").toBool();
+        dest.mutedByViewer = src.value("mutedByViewer").toBool();
+    }
+}
+void copyThreadHiddenItem(const QJsonObject &src,
+                          AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItem &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.depth = src.value("depth").toInt();
+        QString value_type = src.value("value").toObject().value("$type").toString();
+        if (value_type
+            == QStringLiteral("app.bsky.unspecced.getPostThreadHiddenV2#threadHiddenItemPost")) {
+            dest.value_type = AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItemValueType::
+                    value_ThreadHiddenItemPost;
+            AppBskyUnspeccedGetPostThreadHiddenV2::copyThreadHiddenItemPost(
+                    src.value("value").toObject(), dest.value_ThreadHiddenItemPost);
+        }
+    }
+}
+}
+// app.bsky.unspecced.getPostThreadV2
+namespace AppBskyUnspeccedGetPostThreadV2 {
+void copyThreadItemPost(const QJsonObject &src,
+                        AppBskyUnspeccedGetPostThreadV2::ThreadItemPost &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyFeedDefs::copyPostView(src.value("post").toObject(), dest.post);
+        dest.moreParents = src.value("moreParents").toBool();
+        dest.moreReplies = src.value("moreReplies").toInt();
+        dest.opThread = src.value("opThread").toBool();
+    }
+}
+void copyThreadItemNoUnauthenticated(
+        const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItemNoUnauthenticated &dest)
+{
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
+}
+void copyThreadItemNotFound(const QJsonObject &src,
+                            AppBskyUnspeccedGetPostThreadV2::ThreadItemNotFound &dest)
+{
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
+}
+void copyThreadItemBlocked(const QJsonObject &src,
+                           AppBskyUnspeccedGetPostThreadV2::ThreadItemBlocked &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyFeedDefs::copyBlockedAuthor(src.value("author").toObject(), dest.author);
+    }
+}
+void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItem &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.depth = src.value("depth").toInt();
+        QString value_type = src.value("value").toObject().value("$type").toString();
+        if (value_type == QStringLiteral("app.bsky.unspecced.getPostThreadV2#threadItemPost")) {
+            dest.value_type =
+                    AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::value_ThreadItemPost;
+            AppBskyUnspeccedGetPostThreadV2::copyThreadItemPost(src.value("value").toObject(),
+                                                                dest.value_ThreadItemPost);
+        }
+        if (value_type
+            == QStringLiteral("app.bsky.unspecced.getPostThreadV2#threadItemNoUnauthenticated")) {
+            dest.value_type = AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::
+                    value_ThreadItemNoUnauthenticated;
+            AppBskyUnspeccedGetPostThreadV2::copyThreadItemNoUnauthenticated(
+                    src.value("value").toObject(), dest.value_ThreadItemNoUnauthenticated);
+        }
+        if (value_type == QStringLiteral("app.bsky.unspecced.getPostThreadV2#threadItemNotFound")) {
+            dest.value_type =
+                    AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::value_ThreadItemNotFound;
+            AppBskyUnspeccedGetPostThreadV2::copyThreadItemNotFound(src.value("value").toObject(),
+                                                                    dest.value_ThreadItemNotFound);
+        }
+        if (value_type == QStringLiteral("app.bsky.unspecced.getPostThreadV2#threadItemBlocked")) {
+            dest.value_type =
+                    AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::value_ThreadItemBlocked;
+            AppBskyUnspeccedGetPostThreadV2::copyThreadItemBlocked(src.value("value").toObject(),
+                                                                   dest.value_ThreadItemBlocked);
         }
     }
 }
@@ -3111,6 +3210,12 @@ void copySubjectStatusView(const QJsonObject &src,
                     subject_ComAtprotoRepoStrongRef_Main;
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
+        if (subject_type == QStringLiteral("chat.bsky.convo.defs#messageRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::SubjectStatusViewSubjectType::
+                    subject_ChatBskyConvoDefs_MessageRef;
+            ChatBskyConvoDefs::copyMessageRef(src.value("subject").toObject(),
+                                              dest.subject_ChatBskyConvoDefs_MessageRef);
         }
         QString hosting_type = src.value("hosting").toObject().value("$type").toString();
         if (hosting_type == QStringLiteral("tools.ozone.moderation.defs#accountHosting")) {

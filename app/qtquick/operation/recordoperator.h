@@ -31,6 +31,7 @@ public:
     Q_ENUM(ListPurpose);
 
     AtProtocolInterface::AccountData account() const;
+    Q_INVOKABLE QString accountUuid() const;
     Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void setText(const QString &text);
     Q_INVOKABLE void setReply(const QString &parent_cid, const QString &parent_uri,

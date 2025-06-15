@@ -50,6 +50,9 @@ qt_add_executable(Hagoromo
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )
 
+set_source_files_properties(qml/data/AdjustedValues.qml
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(Hagoromo
     URI tech.relog.hagoromo
     VERSION 1.0

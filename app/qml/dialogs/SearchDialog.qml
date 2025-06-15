@@ -1,7 +1,8 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import Qt.labs.platform 1.1 as P
+pragma ComponentBehavior: Bound
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -75,15 +76,19 @@ Dialog {
             textRole: "handle"
             valueRole: "did"
             delegate: ItemDelegate {
+                id: accountItemDelegate
+                required property string index
+                required property string avatar
+                required property string handle
                 width: parent.width
                 height: implicitHeight * AdjustedValues.ratio
                 font.pointSize: AdjustedValues.f10
-                onClicked: accountCombo.currentIndex = model.index
+                onClicked: accountCombo.currentIndex = accountItemDelegate.index
                 AccountLayout {
                     anchors.fill: parent
                     anchors.margins: 10
-                    source: model.avatar
-                    handle: model.handle
+                    source: accountItemDelegate.avatar
+                    handle: accountItemDelegate.handle
                 }
             }
             contentItem: AccountLayout {
@@ -97,7 +102,7 @@ Dialog {
                 var row = accountCombo.currentIndex
                 if(row >= 0){
                     accountAvatarLayout.source =
-                            postDialog.accountModel.item(row, AccountListModel.AvatarRole)
+                            searchDialog.accountModel.item(row, AccountListModel.AvatarRole)
                 }
             }
         }

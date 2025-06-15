@@ -41,18 +41,20 @@ set PATH=%CWD%\zlib\bin;%PATH%
 
 REM --- make folder -------
 if EXIST %BUILD_FOLDER% rmdir /s /q %BUILD_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
+if NOT ERRORLEVEL 0 goto TEST_FAIL
 mkdir %BUILD_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
+if NOT ERRORLEVEL 0 goto TEST_FAIL
 
 if EXIST %DEPLOY_FOLDER% rmdir /s /q %DEPLOY_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
+if NOT ERRORLEVEL 0 goto TEST_FAIL
 mkdir %DEPLOY_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
+if NOT ERRORLEVEL 0 goto TEST_FAIL
 
 
 REM --- build -------
 cd %BUILD_FOLDER%
+
+set QT_FORCE_STDERR_LOGGING=1
 
 cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_PREFIX:PATH='..\..\%DEPLOY_FOLDER%\hagoromo' ^
@@ -60,14 +62,14 @@ cmake .. -G Ninja -DCMAKE_PREFIX_PATH:PATH='%QTDIR%' ^
     -DCMAKE_INSTALL_BINDIR:PATH='.' ^
     -DHAGOROMO_UNIT_TEST_BUILD=ON ^
     -DCMAKE_BUILD_TYPE:STRING=Debug
-if ERRORLEVEL 1 goto QUIT
+if ERRORLEVEL 1 goto TEST_FAIL
 
 cmake --build . --target tests\all
-if ERRORLEVEL 1 goto QUIT
+if ERRORLEVEL 1 goto TEST_FAIL
 
 REM --- run -------
-ctest --test-dir tests -C Debug -j 4
-if ERRORLEVEL 1 goto QUIT
+ctest --test-dir tests -j 4 --output-on-failure
+if ERRORLEVEL 1 goto TEST_FAIL
 
 cd %CWD%
 

@@ -73,9 +73,18 @@ jobs:
           retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
-        env:
-          TZ: "Asia/Tokyo"
-        run: scripts\unittest.bat $env:QT_ROOT_DIR
+        run: |
+          echo "::group::Set up environment for unit test"
+          echo "Get timezone and system locale"
+          Get-TimeZone
+          Get-WinSystemLocale
+          echo "Set timezone and system locale"
+          Set-TimeZone -Id "Tokyo Standard Time"
+          Set-WinSystemLocale ja-JP
+          Get-TimeZone
+          Get-WinSystemLocale
+          echo "::endgroup::"
+          scripts\unittest.bat $env:QT_ROOT_DIR
       - name: Upload a unit test result
         if: ${{ inputs.unit_test == true && failure() }}
         uses: actions/upload-artifact@v4
