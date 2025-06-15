@@ -54,7 +54,7 @@ jobs:
           echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
           $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
           $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
-          scripts\build.bat $env:QT_ROOT_DIR
+          # scripts\build.bat $env:QT_ROOT_DIR
           echo "::endgroup::"
 
           # echo "Make for Windows"
@@ -62,8 +62,8 @@ jobs:
           # echo "for windows" > deploy-hagoromo/hagoromo/hagoromo.txt
           # Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
 
-          ls .\deploy-hagoromo\
-          echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
+          # ls .\deploy-hagoromo\
+          # echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
       - name: Upload a archive
         if: ${{ inputs.upload == true }}
         uses: actions/upload-artifact@v4
