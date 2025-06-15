@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.51.0 - 2025/6/15
+
 - Upadte
   - Change the column settings for "Following" to show replies to yourself when "Reply to unfollowed users" is turned off
   - Change to background processing of posts
