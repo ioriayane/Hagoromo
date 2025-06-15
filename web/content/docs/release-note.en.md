@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
   - Change to background processing of posts
 - Fix
   - Fix the repost and like tabs on the profile screen so that they now function properly
+  - Fix a bug where lists could not be registered without icons
 
 ### v0.50.0 - 2025/5/18
 
