@@ -50,6 +50,7 @@ public:
 
     Q_INVOKABLE void post();
     Q_INVOKABLE void postWithImages();
+    Q_INVOKABLE void postWithVideo();
     Q_INVOKABLE void repost(const QString &cid, const QString &uri);
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
     Q_INVOKABLE void follow(const QString &did);
@@ -105,6 +106,8 @@ private:
                     std::function<void(bool, const QString &, const QString &)> callback);
     void postGate(const QString &uri,
                   std::function<void(bool, const QString &, const QString &)> callback);
+
+    void checkUploadVideoLimit(const int video_size, std::function<void(bool)> callback);
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;

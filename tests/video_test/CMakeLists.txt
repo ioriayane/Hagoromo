@@ -32,6 +32,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Test
     TestsCommon
     HagoromoLib
+    HagoromoGuiLib
 )
 
 include(../tests.cmake)

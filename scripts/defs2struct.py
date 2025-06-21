@@ -234,6 +234,7 @@ class Defs2Struct:
         ]
         self.need_extension = [
             'app.bsky.actor.putPreferences',
+            'app.bsky.video.getUploadLimits',
             'com.atproto.moderation.createReport',
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',

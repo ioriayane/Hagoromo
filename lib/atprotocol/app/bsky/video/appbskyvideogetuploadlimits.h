@@ -18,9 +18,10 @@ public:
     const QString &message() const;
     const QString &error() const;
 
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
+private:
     bool m_canUpload;
     int m_remainingDailyVideos;
     int m_remainingDailyBytes;

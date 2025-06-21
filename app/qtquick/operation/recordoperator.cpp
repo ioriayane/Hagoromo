@@ -3,6 +3,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
+#include "atprotocol/app/bsky/video/appbskyvideogetuploadlimits.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -10,11 +11,13 @@
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "tools/accountmanager.h"
 
+#include <QFileInfo>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
+using AtProtocolInterface::AppBskyVideoGetUploadLimits;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -268,6 +271,27 @@ void RecordOperator::postWithImages()
     uploadBlob([=](bool success) {
         if (success) {
             post();
+        } else {
+            setProgressMessage(QString());
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+    });
+}
+
+void RecordOperator::postWithVideo()
+{
+    setRunning(true);
+
+    qint64 video_size = 0;
+    QFileInfo fileInfo("/path/to/video.mp4");
+    video_size = fileInfo.size();
+
+    checkUploadVideoLimit(video_size, [=](bool success) {
+        if (success) {
+            // post
+            emit finished(success, QString(), QString()); // for Debug
+            setRunning(false); // for Debug
         } else {
             setProgressMessage(QString());
             emit finished(success, QString(), QString());
@@ -1290,6 +1314,16 @@ void RecordOperator::postGate(const QString &uri,
     });
     create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
+}
+
+void RecordOperator::checkUploadVideoLimit(const int video_size, std::function<void(bool)> callback)
+{
+    if (video_size <= 0) {
+        callback(false);
+        return;
+    }
+
+    callback(true);
 }
 
 QString RecordOperator::progressMessage() const
