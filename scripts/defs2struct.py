@@ -178,7 +178,6 @@ class Defs2Struct:
             'com.atproto.server.deleteSession',
             'com.atproto.server.describeServer',
             'com.atproto.server.getAccountInviteCodes',
-            'com.atproto.server.getServiceAuth',
             'com.atproto.server.getSession',
             'com.atproto.server.listAppPasswords',
             'com.atproto.server.requestAccountDelete',

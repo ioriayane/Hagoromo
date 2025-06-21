@@ -191,6 +191,8 @@ add_library(HagoromoLib STATIC
     atprotocol/com/atproto/repo/comatprotorepouploadblob.h
     atprotocol/com/atproto/server/comatprotoservercreatesession.cpp
     atprotocol/com/atproto/server/comatprotoservercreatesession.h
+    atprotocol/com/atproto/server/comatprotoservergetserviceauth.cpp
+    atprotocol/com/atproto/server/comatprotoservergetserviceauth.h
     atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp
     atprotocol/com/atproto/server/comatprotoserverrefreshsession.h
     atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp
