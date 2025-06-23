@@ -435,7 +435,11 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
                 setRunning(false);
                 create_record->deleteLater();
             });
-            create_record->setImageBlobs(m_embedImageBlobs);
+            if (!m_embedImageBlobs.isEmpty()) {
+                create_record->setImageBlobs(m_embedImageBlobs);
+            } else {
+                create_record->setImageBlobs(QList<AtProtocolType::Blob>());
+            }
             create_record->setAccount(account());
             create_record->list(
                     name,
