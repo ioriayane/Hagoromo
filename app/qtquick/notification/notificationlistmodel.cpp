@@ -1585,9 +1585,9 @@ bool NotificationListModel::enableReason(const QString &reason) const
         return true;
     else if (reason == "quote" && visibleQuote())
         return true;
-    else if (reason == "repost-via-repost" && visibleLikeViaRepost())
+    else if (reason == "repost-via-repost" && visibleRepostViaRepost())
         return true;
-    else if (reason == "like-via-repost" && visibleRepostViaRepost())
+    else if (reason == "like-via-repost" && visibleLikeViaRepost())
         return true;
     else if (reason == "starterpack-joined")
         return true;
