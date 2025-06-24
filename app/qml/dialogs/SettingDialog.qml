@@ -81,7 +81,7 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
-            // Notificatin
+            // Notification
             enableChatNotificationCheckBox.checked = settings.enableChatNotification
             enableNotificationsForReactionsOnRepostsCheckBox.checked = settings.enableNotificationsForReactionsOnReposts
             // Layout
