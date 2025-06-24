@@ -16,12 +16,44 @@ build_openssl(){
 
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
         ../openssl/config --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
+        make -j4
+        make install
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        ../openssl/Configure darwin64-x86_64-cc --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
-    fi
+        # Universal build for mac: x86_64 and arm64
+        OPENSSL_BUILD_DIR_X86="build-openssl-x86_64"
+        OPENSSL_BUILD_DIR_ARM="build-openssl-arm64"
+        OPENSSL_INSTALL_DIR_X86="${ROOT_FOLDER}/openssl_x86_64"
+        OPENSSL_INSTALL_DIR_ARM="${ROOT_FOLDER}/openssl_arm64"
+        OPENSSL_UNIVERSAL_DIR="${ROOT_FOLDER}/openssl"
 
-    make -j4
-    make install
+        # x86_64 build
+        make_dir "../${OPENSSL_BUILD_DIR_X86}"
+        cd "../${OPENSSL_BUILD_DIR_X86}"
+        ../openssl/Configure darwin64-x86_64-cc --prefix="${OPENSSL_INSTALL_DIR_X86}" --openssldir="${OPENSSL_INSTALL_DIR_X86}"
+        make -j4
+        make install_sw
+        make clean
+
+        # arm64 build
+        make_dir "../${OPENSSL_BUILD_DIR_ARM}"
+        cd "../${OPENSSL_BUILD_DIR_ARM}"
+        ../openssl/Configure darwin64-arm64-cc --prefix="${OPENSSL_INSTALL_DIR_ARM}" --openssldir="${OPENSSL_INSTALL_DIR_ARM}"
+        make -j4
+        make install_sw
+        make clean
+
+        # Create universal binaries
+        mkdir -p "${OPENSSL_UNIVERSAL_DIR}/lib"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.a" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.a" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.a"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.a" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.a" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.a"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.dylib"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.dylib"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.3.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.3.dylib"
+        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.3.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.3.dylib"
+        # Copy headers
+        mkdir -p "${OPENSSL_UNIVERSAL_DIR}/include"
+        cp -R "${OPENSSL_INSTALL_DIR_X86}/include/"* "${OPENSSL_UNIVERSAL_DIR}/include/"
+    fi
 
     popd
 }
@@ -36,7 +68,7 @@ build_zlib(){
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
         cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64"
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
     fi
     cmake --build . --config RELEASE --target install
     cmake --build . --config DEBUG --target install
@@ -67,9 +99,9 @@ build_hagoromo(){
             -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
             -DHAGOROMO_RELEASE_BUILD=ON \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64"
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
     fi
-    cmake --build . --target update_translations
+    # cmake --build . --target update_translations
     cmake --build . --target install
 
     popd
@@ -115,6 +147,8 @@ deploy_hagoromo(){
         cp -r ${build_dir}/app/Hagoromo.app ${work_dir}/
         ${QTDIR}/bin/macdeployqt ${work_dir}/Hagoromo.app -qmldir=app/qml
 
+        cp -RL "openssl/lib/libcrypto.3.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
+        cp -RL "openssl/lib/libssl.3.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
         cp -RL "zlib/lib/libz.1.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
     fi
 
@@ -158,8 +192,8 @@ if [ "${PLATFORM_TYPE}" == "mac" ]; then
     PATH=$PATH:$QTDIR/../../Tools/Ninja/
 fi
 
-build_openssl
-build_zlib
-build_hagoromo
+# build_openssl
+# build_zlib
+# build_hagoromo
 deploy_hagoromo
 # update_web
