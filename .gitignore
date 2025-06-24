@@ -71,6 +71,9 @@ openssl/private
 openssl/share
 openssl/*.cnf
 openssl/*.cnf.dist
+openssl/lib.lipo
+openssl_x86_64/
+openssl_arm64/
 zlib/bin
 zlib/include
 zlib/lib
