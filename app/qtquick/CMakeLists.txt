@@ -11,11 +11,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
-    Core5Compat
     Gui
     Network
     Quick
     QuickControls2
+)
+find_package(Qt6 OPTIONAL_COMPONENTS
+    Core5Compat
 )
 
 add_library(HagoromoGuiLib STATIC
@@ -146,7 +148,7 @@ target_include_directories(HagoromoGuiLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(HagoromoGuiLib PRIVATE
     Qt6::Core
-    Qt6::Core5Compat
+    $<$<TARGET_EXISTS:Qt6::Core5Compat>:Qt6::Core5Compat>
     Qt6::Gui
     Qt6::Network
     Qt6::Quick
