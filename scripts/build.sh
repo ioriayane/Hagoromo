@@ -101,7 +101,7 @@ build_hagoromo(){
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
     fi
-    # cmake --build . --target update_translations
+    cmake --build . --target update_translations
     cmake --build . --target install
 
     popd
@@ -192,8 +192,7 @@ if [ "${PLATFORM_TYPE}" == "mac" ]; then
     PATH=$PATH:$QTDIR/../../Tools/Ninja/
 fi
 
-# build_openssl
-# build_zlib
-# build_hagoromo
+build_openssl
+build_zlib
+build_hagoromo
 deploy_hagoromo
-# update_web
