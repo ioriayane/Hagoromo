@@ -44,12 +44,10 @@ build_openssl(){
 
         # Create universal binaries
         mkdir -p "${OPENSSL_UNIVERSAL_DIR}/lib"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.a" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.a" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.a"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.a" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.a" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.a"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.dylib"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.dylib"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libssl.3.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libssl.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.3.dylib"
-        lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/libcrypto.3.dylib" "${OPENSSL_INSTALL_DIR_ARM}/lib/libcrypto.dylib" -output "${OPENSSL_UNIVERSAL_DIR}/lib/libcrypto.3.dylib"
+        declare -a libraries=("libssl.a" "libcrypto.a" "libssl.dylib" "libcrypto.dylib" "libssl.3.dylib" "libcrypto.3.dylib")
+        for lib in "${libraries[@]}"; do
+            lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/${lib}" "${OPENSSL_INSTALL_DIR_ARM}/lib/${lib}" -output "${OPENSSL_UNIVERSAL_DIR}/lib/${lib}"
+        done
         # Copy headers
         mkdir -p "${OPENSSL_UNIVERSAL_DIR}/include"
         cp -R "${OPENSSL_INSTALL_DIR_X86}/include/"* "${OPENSSL_UNIVERSAL_DIR}/include/"
