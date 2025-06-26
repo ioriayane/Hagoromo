@@ -44,9 +44,11 @@ Official site : [Qt](https://www.qt.io/)
 
 ### Windows
 
-[Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
+[Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition も利用可能です）。
 
-改行コードをCRLFでチェックアウトしてください。
+CRLF（Windows のデフォルト）の改行コードでリポジトリを確認してください。
+
+> **注意:** 以下のコマンドはコマンドプロンプト（`cmd`）用です。PowerShell を使用する場合は、コメントの `REM` を `#` に置き換えてください。
 
 ```cmd
 REM checkout repo
@@ -184,14 +186,16 @@ Official site : [Qt](https://www.qt.io/)
 
 ### Windows
 
-Install [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/) (Community Edition  is also available).
+Install [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/) (Community Edition is also available).
 
-Check out the newline code in CRLF.
+Check out the repository with CRLF (Windows default) line endings.
+
+> **Note:** The following commands are for Command Prompt (`cmd`). If you use PowerShell, replace `REM` with `#` for comments.
 
 ```cmd
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
->cd Hangoromo
+>cd Hagoromo
 >git submodule update -i
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
@@ -203,7 +207,7 @@ REM Execute
 
 ### Ubuntu
 
-It is built in build.sh.
+It is built with build.sh.
 
 ```bash
 # checkout repo
@@ -223,7 +227,7 @@ $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 
 ### Mac
 
-It is built in build.sh.
+It is built with build.sh.
 
 ```bash
 # checkout repo
@@ -243,11 +247,11 @@ $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 
 If you want to make changes, please branch from `dev` and submit a pull request to `dev`.
 
-Also, please do the following: Check in Github Actions.
+Also, please make sure your changes pass the checks in Github Actions.
 
 ### Code formatting
 
-[pre-commit](https://pre-commit.com/) are used for source code formatting.
+[pre-commit](https://pre-commit.com/) is used for source code formatting.
 Please check the official site and set it up to run with git hook.
 
 Setup Example
@@ -260,9 +264,11 @@ $ pre-commit install
 pre-commit installed at .git/hooks/pre-commit
 ```
 
+> **Note:** Ensure that `.pre-commit-config.yaml` exists in the repository root.
+
 ### Unit Tests
 
-Please confirm that you can clear it by running it in one of the environments.
+Please confirm that you can clear the tests by running them in one of the environments.
 
 Windows
 ```cmd
