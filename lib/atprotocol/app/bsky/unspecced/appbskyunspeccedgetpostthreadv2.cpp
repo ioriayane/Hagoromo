@@ -53,9 +53,9 @@ AppBskyUnspeccedGetPostThreadV2::threadgate() const
     return m_threadgate;
 }
 
-const bool &AppBskyUnspeccedGetPostThreadV2::hasHiddenReplies() const
+const bool &AppBskyUnspeccedGetPostThreadV2::hasOtherReplies() const
 {
-    return m_hasHiddenReplies;
+    return m_hasOtherReplies;
 }
 
 bool AppBskyUnspeccedGetPostThreadV2::parseJson(bool success, const QString reply_json)
@@ -71,8 +71,8 @@ bool AppBskyUnspeccedGetPostThreadV2::parseJson(bool success, const QString repl
         }
         AtProtocolType::AppBskyFeedDefs::copyThreadgateView(
                 json_doc.object().value("threadgate").toObject(), m_threadgate);
-        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("hasHiddenReplies"),
-                                                      m_hasHiddenReplies);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("hasOtherReplies"),
+                                                      m_hasOtherReplies);
     }
 
     return success;
