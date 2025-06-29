@@ -9,6 +9,7 @@
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/app/bsky/video/appbskyvideogetuploadlimitsex.h"
+#include "extension/app/bsky/video/appbskyvideouploadvideoex.h"
 #include "tools/accountmanager.h"
 
 #include <QFileInfo>
@@ -18,6 +19,7 @@ using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyVideoGetUploadLimitsEx;
+using AtProtocolInterface::AppBskyVideoUploadVideoEx;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -291,14 +293,21 @@ void RecordOperator::postWithVideo()
     setProgressMessage(tr("Uploading video ..."));
 
     AppBskyVideoGetUploadLimitsEx *limit = new AppBskyVideoGetUploadLimitsEx(this);
-    connect(limit, &AppBskyVideoGetUploadLimitsEx::finished, [=](bool success) {
-        if (success) {
-            // post
-            emit finished(success, QString(), QString()); // for Debug
-            setRunning(false); // for Debug
+    connect(limit, &AppBskyVideoGetUploadLimitsEx::finished, [=](bool success_of_limit) {
+        if (success_of_limit) {
+            uploadVideoBlob([=](bool success_of_upload) {
+                if (success_of_upload) {
+                    // check video progress
+                    emit finished(success_of_upload, QString(), QString()); // for Debug
+                    setRunning(false); // for Debug
+                } else {
+                    emit finished(success_of_upload, QString(), QString()); // for Debug
+                    setRunning(false); // for Debug
+                }
+            });
         } else {
             setProgressMessage(QString());
-            emit finished(success, QString(), QString());
+            emit finished(success_of_limit, QString(), QString());
             setRunning(false);
         }
     });
@@ -1165,6 +1174,20 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
     });
     upload_blob->setAccount(account());
     upload_blob->uploadBlob(path);
+}
+
+void RecordOperator::uploadVideoBlob(std::function<void(bool)> callback)
+{
+    AppBskyVideoUploadVideoEx *upload = new AppBskyVideoUploadVideoEx(this);
+    connect(upload, &AppBskyVideoUploadVideoEx::finished, [=](bool success) {
+        if (success) {
+        } else {
+        }
+        callback(success);
+        upload->deleteLater();
+    });
+    upload->setAccount(account());
+    upload->uploadVideo(m_embedVideo);
 }
 
 bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)

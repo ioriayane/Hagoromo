@@ -96,18 +96,6 @@ void video_teset::test_get()
         QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == false);
     }
-    {
-        ope.setVideo(":/data/example01.mp4");
-
-        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
-        ope.postWithVideo();
-        spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
-    }
 
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/limit/2", "id2", "pass2", "did:plc:ipj5qejfoqu6eukvt72uhyit_2",
@@ -158,6 +146,24 @@ void video_teset::test_get()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == false);
+    }
+
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/limit/5", "id5", "pass5", "did:plc:ipj5qejfoqu6eukvt72uhyit_5",
+            "hogehoge5.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    ope.setAccount(uuid);
+    {
+        ope.setVideo(":/data/example01.mp4");
+
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.postWithVideo();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
+        QVERIFY(arguments.at(0).toBool() == true);
     }
 }
 

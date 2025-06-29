@@ -14,9 +14,10 @@ public:
 
     const AtProtocolType::AppBskyVideoDefs::JobStatus &jobStatus() const;
 
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
+private:
     AtProtocolType::AppBskyVideoDefs::JobStatus m_jobStatus;
 };
 

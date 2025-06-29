@@ -209,6 +209,8 @@ add_library(HagoromoLib STATIC
     extension/app/bsky/actor/appbskyactorputpreferencesex.h
     extension/app/bsky/video/appbskyvideogetuploadlimitsex.cpp
     extension/app/bsky/video/appbskyvideogetuploadlimitsex.h
+    extension/app/bsky/video/appbskyvideouploadvideoex.cpp
+    extension/app/bsky/video/appbskyvideouploadvideoex.h
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.h
     extension/com/atproto/repo/comatprotorepocreaterecordex.cpp

@@ -101,6 +101,7 @@ signals:
 
 private:
     void uploadBlob(std::function<void(bool)> callback);
+    void uploadVideoBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
     bool threadGate(const QString &uri,

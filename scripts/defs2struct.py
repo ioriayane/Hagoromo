@@ -225,6 +225,7 @@ class Defs2Struct:
             'app.bsky.feed.getFeedSkeleton',
             'app.bsky.feed.describeFeedGenerator',
             'app.bsky.actor.getSuggestions'
+            'app.bsky.video.uploadVideo',
         ]
         self.unuse_auth = [
             'com.atproto.server.createSession',
@@ -235,6 +236,7 @@ class Defs2Struct:
         self.need_extension = [
             'app.bsky.actor.putPreferences',
             'app.bsky.video.getUploadLimits',
+            'app.bsky.video.uploadVideo',
             'com.atproto.moderation.createReport',
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',
