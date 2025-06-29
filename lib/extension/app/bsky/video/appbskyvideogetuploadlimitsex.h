@@ -12,6 +12,8 @@ public:
     explicit AppBskyVideoGetUploadLimitsEx(QObject *parent = nullptr);
 
     void canUpload(const QString &path);
+
+    void getServiceAuth(std::function<void(const QString &)> callback);
 };
 
 }

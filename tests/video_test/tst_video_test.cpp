@@ -142,6 +142,23 @@ void video_teset::test_get()
         QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == false);
     }
+
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/limit/4", "id4", "pass4", "did:plc:ipj5qejfoqu6eukvt72uhyit_4",
+            "hogehoge4.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    ope.setAccount(uuid);
+    {
+        ope.setVideo(":/data/example01.mp4");
+
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.postWithVideo();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
+        QVERIFY(arguments.at(0).toBool() == false);
+    }
 }
 
 QTEST_MAIN(video_teset)

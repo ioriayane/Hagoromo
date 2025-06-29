@@ -5,5 +5,11 @@
         <file>response/limit/2/xrpc/app.bsky.video.getUploadLimits</file>
         <file>response/limit/3/xrpc/app.bsky.video.getUploadLimits</file>
         <file>response/limit/4/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/5/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/1/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/2/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/3/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/4/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/5/xrpc/com.atproto.server.getServiceAuth</file>
     </qresource>
 </RCC>

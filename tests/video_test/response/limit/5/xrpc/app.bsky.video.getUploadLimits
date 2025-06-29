@@ -1,5 +1,5 @@
 {
-    "canUpload": false,
+    "canUpload": true,
     "message": "User can upload",
     "remainingDailyBytes": 40000000000,
     "remainingDailyVideos": 100
