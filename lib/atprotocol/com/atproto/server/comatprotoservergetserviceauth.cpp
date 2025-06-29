@@ -13,7 +13,7 @@ ComAtprotoServerGetServiceAuth::ComAtprotoServerGetServiceAuth(QObject *parent)
 {
 }
 
-void ComAtprotoServerGetServiceAuth::getServiceAuth(const QString &aud, const int exp,
+void ComAtprotoServerGetServiceAuth::getServiceAuth(const QString &aud, const qint64 exp,
                                                     const QString &lxm)
 {
     QUrlQuery url_query;

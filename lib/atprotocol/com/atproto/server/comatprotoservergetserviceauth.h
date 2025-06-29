@@ -10,7 +10,7 @@ class ComAtprotoServerGetServiceAuth : public AccessAtProtocol
 public:
     explicit ComAtprotoServerGetServiceAuth(QObject *parent = nullptr);
 
-    void getServiceAuth(const QString &aud, const int exp, const QString &lxm);
+    void getServiceAuth(const QString &aud, const qint64 exp, const QString &lxm);
 
     const QString &token() const;
 

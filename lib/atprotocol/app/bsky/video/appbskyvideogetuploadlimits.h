@@ -13,8 +13,8 @@ public:
     void getUploadLimits();
 
     const bool &canUpload() const;
-    const int &remainingDailyVideos() const;
-    const int &remainingDailyBytes() const;
+    const qint64 &remainingDailyVideos() const;
+    const qint64 &remainingDailyBytes() const;
     const QString &message() const;
     const QString &error() const;
 
@@ -23,8 +23,8 @@ protected:
 
 private:
     bool m_canUpload;
-    int m_remainingDailyVideos;
-    int m_remainingDailyBytes;
+    qint64 m_remainingDailyVideos;
+    qint64 m_remainingDailyBytes;
     QString m_message;
     QString m_error;
 };

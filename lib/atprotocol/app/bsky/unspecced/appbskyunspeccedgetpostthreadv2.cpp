@@ -14,7 +14,8 @@ AppBskyUnspeccedGetPostThreadV2::AppBskyUnspeccedGetPostThreadV2(QObject *parent
 }
 
 void AppBskyUnspeccedGetPostThreadV2::getPostThreadV2(const QString &anchor, const bool above,
-                                                      const int below, const int branchingFactor,
+                                                      const qint64 below,
+                                                      const qint64 branchingFactor,
                                                       const bool prioritizeFollowedUsers,
                                                       const QString &sort)
 {

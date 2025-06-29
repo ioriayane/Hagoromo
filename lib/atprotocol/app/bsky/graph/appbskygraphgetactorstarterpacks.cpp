@@ -12,7 +12,8 @@ AppBskyGraphGetActorStarterPacks::AppBskyGraphGetActorStarterPacks(QObject *pare
 {
 }
 
-void AppBskyGraphGetActorStarterPacks::getActorStarterPacks(const QString &actor, const int limit,
+void AppBskyGraphGetActorStarterPacks::getActorStarterPacks(const QString &actor,
+                                                            const qint64 limit,
                                                             const QString &cursor)
 {
     QUrlQuery url_query;

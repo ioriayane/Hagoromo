@@ -12,7 +12,7 @@ AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent)
 {
 }
 
-void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int limit,
+void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const qint64 limit,
                                          const QString &cursor)
 {
     QUrlQuery url_query;

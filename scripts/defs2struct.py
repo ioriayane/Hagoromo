@@ -29,13 +29,13 @@ class FunctionArgument:
             if self._type == 'string':
                 arg_def = f"const QList<QString> &{self._name}"
             elif self._type == 'integer':
-                arg_def =  f"const QList<int> &{self._name}"
+                arg_def =  f"const QList<qint64> &{self._name}"
             elif self._type == 'boolean':
                 arg_def = f"const QList<bool> &{self._name}"
         elif self._type == 'string' or self._type == 'json_string':
             arg_def = f"const QString &{self._name}"
         elif self._type == 'integer':
-            arg_def = f"const int {self._name}"
+            arg_def = f"const qint64 {self._name}"
         elif self._type == 'boolean':
             arg_def = f"const bool {self._name}"
         elif self._type == 'unknown':
@@ -556,7 +556,7 @@ class Defs2Struct:
                 elif p_type == 'unknown':
                     self.output_text[namespace].append('    QVariant %s;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'integer':
-                    self.output_text[namespace].append('    int %s = 0;%s' % (self.to_property_style(property_name), p_comment, ))
+                    self.output_text[namespace].append('    qint64 %s = 0;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'boolean':
                     self.output_text[namespace].append('    bool %s = false;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'string':
@@ -569,7 +569,7 @@ class Defs2Struct:
                         (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), p_comment, True)
                         enum_text.extend(temp_enum)
                     elif items_type == 'integer':
-                        self.output_text[namespace].append('    QList<int> %s;%s' % (self.to_property_style(property_name), p_comment, ))
+                        self.output_text[namespace].append('    QList<qint64> %s;%s' % (self.to_property_style(property_name), p_comment, ))
                     elif items_type == 'boolean':
                         self.output_text[namespace].append('    QList<bool> %s;%s' % (self.to_property_style(property_name), p_comment, ))
                     elif items_type == 'string':
@@ -596,7 +596,7 @@ class Defs2Struct:
 
         elif obj.get('type') == 'integer':
             # 数値は型定義にする
-            self.output_text[namespace].append('typedef int %s;%s' % (self.to_struct_style(type_name), obj_comment,))
+            self.output_text[namespace].append('typedef qint64 %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
         elif obj.get('type') == 'boolean':
@@ -637,7 +637,7 @@ class Defs2Struct:
                 self.output_text[namespace].append('typedef QList<%s> %s;%s' % (self.to_struct_style(ref_type_name), self.to_struct_style(type_name), obj_comment, ))
 
             elif items_type == 'integer':
-                self.output_text[namespace].append('typedef QList<int> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+                self.output_text[namespace].append('typedef QList<qint64> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
             elif items_type == 'boolean':
                 self.output_text[namespace].append('typedef QList<bool> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
             elif items_type == 'string':
@@ -763,7 +763,7 @@ class Defs2Struct:
                         self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
 
                     elif p_type == 'integer':
-                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
+                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInteger();' % (self.to_property_style(property_name), property_name, ))
 
                     elif p_type == 'boolean':
                         self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
@@ -843,7 +843,7 @@ class Defs2Struct:
 
                         elif items_type == 'integer':
                             self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (self.to_property_style(property_name), ))
+                            self.output_func_text[namespace].append('            dest.%s.append(value.toInteger());' % (self.to_property_style(property_name), ))
                             self.output_func_text[namespace].append('        }')
 
                         elif items_type == 'boolean':
@@ -881,7 +881,7 @@ class Defs2Struct:
 
         elif obj.get('type') == 'integer':
             # 数値は型定義にする
-            # self.output_text[namespace].append('typedef int %s;' % (self.to_struct_style(type_name), ))
+            # self.output_text[namespace].append('typedef qint64 %s;' % (self.to_struct_style(type_name), ))
             if namespace not in self.output_func_text:
                 self.output_func_text[namespace] = []
 
@@ -889,7 +889,7 @@ class Defs2Struct:
                 self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
             self.output_func_text[namespace].append(function_define)
             self.output_func_text[namespace].append('{')
-            self.output_func_text[namespace].append('    dest = src.toInt();')
+            self.output_func_text[namespace].append('    dest = src.toInteger();')
             self.output_func_text[namespace].append('}')
 
             self.append_func_history(namespace, function_define)
@@ -1040,7 +1040,7 @@ class Defs2Struct:
             data['variable_type'] = 'bool'
         elif pro_type == 'integer':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyInt'
-            data['variable_type'] = 'int'
+            data['variable_type'] = 'qint64'
         elif pro_type == 'blob':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBlob'
             data['variable_type'] = 'Blob'

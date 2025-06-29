@@ -9,7 +9,7 @@ AppBskyFeedGetAuthorFeed::AppBskyFeedGetAuthorFeed(QObject *parent)
     m_listKey = QStringLiteral("feed");
 }
 
-void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int limit,
+void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const qint64 limit,
                                              const QString &cursor, const QString &filter,
                                              const bool includePins)
 {

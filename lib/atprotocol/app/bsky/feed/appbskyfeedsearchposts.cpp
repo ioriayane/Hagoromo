@@ -13,7 +13,7 @@ void AppBskyFeedSearchPosts::searchPosts(const QString &q, const QString &sort,
                                          const QString &mentions, const QString &author,
                                          const QString &lang, const QString &domain,
                                          const QString &url, const QList<QString> &tag,
-                                         const int limit, const QString &cursor)
+                                         const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (!q.isEmpty()) {

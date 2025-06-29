@@ -10,7 +10,7 @@ class AppBskyNotificationListNotifications : public AccessAtProtocol
 public:
     explicit AppBskyNotificationListNotifications(QObject *parent = nullptr);
 
-    void listNotifications(const QList<QString> &reasons, const int limit, const bool priority,
+    void listNotifications(const QList<QString> &reasons, const qint64 limit, const bool priority,
                            const QString &cursor, const QString &seenAt);
 
     const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> &

@@ -10,7 +10,7 @@ class AppBskyFeedGetTimeline : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetTimeline(QObject *parent = nullptr);
 
-    void getTimeline(const QString &algorithm, const int limit, const QString &cursor);
+    void getTimeline(const QString &algorithm, const qint64 limit, const QString &cursor);
 
     const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedList() const;
 

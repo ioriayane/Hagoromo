@@ -10,7 +10,7 @@ class AppBskyFeedGetRepostedBy : public AppBskyGraphGetFollows
 public:
     explicit AppBskyFeedGetRepostedBy(QObject *parent = nullptr);
 
-    void getRepostedBy(const QString &uri, const QString &cid, const int limit,
+    void getRepostedBy(const QString &uri, const QString &cid, const qint64 limit,
                        const QString &cursor);
 };
 

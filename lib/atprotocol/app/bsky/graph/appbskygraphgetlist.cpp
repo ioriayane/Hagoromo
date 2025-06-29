@@ -9,7 +9,7 @@ namespace AtProtocolInterface {
 
 AppBskyGraphGetList::AppBskyGraphGetList(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyGraphGetList::getList(const QString &list, const int limit, const QString &cursor)
+void AppBskyGraphGetList::getList(const QString &list, const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (!list.isEmpty()) {

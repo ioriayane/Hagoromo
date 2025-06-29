@@ -10,7 +10,7 @@ class AppBskyGraphGetLists : public AccessAtProtocol
 public:
     explicit AppBskyGraphGetLists(QObject *parent = nullptr);
 
-    void getLists(const QString &actor, const int limit, const QString &cursor);
+    void getLists(const QString &actor, const qint64 limit, const QString &cursor);
 
     const QList<AtProtocolType::AppBskyGraphDefs::ListView> &listsList() const;
 

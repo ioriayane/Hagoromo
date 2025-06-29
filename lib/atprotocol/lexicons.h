@@ -56,7 +56,7 @@ struct Main;
 namespace ComAtprotoLabelDefs {
 struct Label
 {
-    int ver = 0; // The AT Protocol version of the label object.
+    qint64 ver = 0; // The AT Protocol version of the label object.
     QString src; // did , DID of the actor who created this label.
     QString uri; // uri , AT URI of the record, repository (account), or other resource that this
                  // label applies to.
@@ -114,7 +114,7 @@ struct ListViewBasic
     QString name;
     ListPurpose purpose;
     QString avatar; // uri
-    int listItemCount = 0;
+    qint64 listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -125,9 +125,9 @@ struct StarterPackViewBasic
     QString cid; // cid
     QVariant record;
     QSharedPointer<AppBskyActorDefs::ProfileViewBasic> creator;
-    int listItemCount = 0;
-    int joinedWeekCount = 0;
-    int joinedAllTimeCount = 0;
+    qint64 listItemCount = 0;
+    qint64 joinedWeekCount = 0;
+    qint64 joinedAllTimeCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     QString indexedAt; // datetime
 };
@@ -141,7 +141,7 @@ struct ListView
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
     QString avatar; // uri
-    int listItemCount = 0;
+    qint64 listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -160,8 +160,8 @@ struct StarterPackView
     ListViewBasic list;
     QList<ListItemView> listItemsSample;
     QList<QSharedPointer<AppBskyFeedDefs::GeneratorView>> feeds;
-    int joinedWeekCount = 0;
-    int joinedAllTimeCount = 0;
+    qint64 joinedWeekCount = 0;
+    qint64 joinedAllTimeCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     QString indexedAt; // datetime
 };
@@ -309,15 +309,15 @@ struct ProfileAssociatedChat
 };
 struct ProfileAssociated
 {
-    int lists = 0;
-    int feedgens = 0;
-    int starterPacks = 0;
+    qint64 lists = 0;
+    qint64 feedgens = 0;
+    qint64 starterPacks = 0;
     bool labeler = false;
     ProfileAssociatedChat chat;
 };
 struct KnownFollowers
 {
-    int count = 0;
+    qint64 count = 0;
     QList<QSharedPointer<ProfileViewBasic>> followers;
 };
 struct ViewerState
@@ -396,9 +396,9 @@ struct ProfileViewDetailed
     QString description;
     QString avatar; // uri
     QString banner; // uri
-    int followersCount = 0;
-    int followsCount = 0;
-    int postsCount = 0;
+    qint64 followersCount = 0;
+    qint64 followsCount = 0;
+    qint64 postsCount = 0;
     ProfileAssociated associated;
     AppBskyGraphDefs::StarterPackViewBasic joinedViaStarterPack;
     QString indexedAt; // datetime
@@ -424,7 +424,7 @@ struct SavedFeedsPref
 {
     QList<QString> pinned;
     QList<QString> saved;
-    int timelineIndex = 0;
+    qint64 timelineIndex = 0;
 };
 struct SavedFeed
 {
@@ -447,7 +447,7 @@ struct FeedViewPref
     bool hideReplies = false; // Hide replies in the feed.
     bool hideRepliesByUnfollowed =
             false; // Hide replies in the feed if they are not by followed users.
-    int hideRepliesByLikeCount =
+    qint64 hideRepliesByLikeCount =
             0; // Hide replies in the feed if they do not have this number of likes.
     bool hideReposts = false; // Hide reposts in the feed.
     bool hideQuotePosts = false; // Hide quote posts in the feed.
@@ -623,8 +623,8 @@ struct Main
     AppBskyEmbedExternal::Main
             embed_AppBskyEmbedExternal_Main; // An optional embed associated with the status.
     // union end : embed
-    int durationMinutes = 0; // The duration of the status in minutes. Applications can choose to
-                             // impose minimum and maximum limits.
+    qint64 durationMinutes = 0; // The duration of the status in minutes. Applications can choose to
+                                // impose minimum and maximum limits.
     QString createdAt; // datetime
 };
 }
@@ -633,8 +633,8 @@ struct Main
 namespace AppBskyEmbedDefs {
 struct AspectRatio
 {
-    int width = 0;
-    int height = 0;
+    qint64 width = 0;
+    qint64 height = 0;
 };
 }
 
@@ -740,8 +740,8 @@ enum class MainFeaturesType : int {
 };
 struct ByteSlice
 {
-    int byteStart = 0;
-    int byteEnd = 0;
+    qint64 byteStart = 0;
+    qint64 byteEnd = 0;
 };
 struct Mention
 {
@@ -830,7 +830,7 @@ struct GeneratorView
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     QString avatar; // uri
-    int likeCount = 0;
+    qint64 likeCount = 0;
     bool acceptsInteractions = false;
     QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
@@ -867,10 +867,10 @@ struct PostView
     QSharedPointer<AppBskyEmbedRecord::View> embed_AppBskyEmbedRecord_View;
     AppBskyEmbedRecordWithMedia::View embed_AppBskyEmbedRecordWithMedia_View;
     // union end : embed
-    int replyCount = 0;
-    int repostCount = 0;
-    int likeCount = 0;
-    int quoteCount = 0;
+    qint64 replyCount = 0;
+    qint64 repostCount = 0;
+    qint64 likeCount = 0;
+    qint64 quoteCount = 0;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -992,7 +992,7 @@ struct LabelerView
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView creator;
-    int likeCount = 0;
+    qint64 likeCount = 0;
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -1008,7 +1008,7 @@ struct LabelerViewDetailed
     QString cid; // cid
     AppBskyActorDefs::ProfileView creator;
     AppBskyLabelerDefs::LabelerPolicies policies;
-    int likeCount = 0;
+    qint64 likeCount = 0;
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -1054,10 +1054,10 @@ struct ViewRecord
     AppBskyActorDefs::ProfileViewBasic author;
     QVariant value; // The record data itself.
     QList<ComAtprotoLabelDefs::Label> labels;
-    int replyCount = 0;
-    int repostCount = 0;
-    int likeCount = 0;
-    int quoteCount = 0;
+    qint64 replyCount = 0;
+    qint64 repostCount = 0;
+    qint64 likeCount = 0;
+    qint64 quoteCount = 0;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
@@ -1173,8 +1173,8 @@ enum class MainLabelsType : int {
 };
 struct TextSlice
 {
-    int start = 0;
-    int end = 0;
+    qint64 start = 0;
+    qint64 end = 0;
 };
 struct Entity
 {
@@ -1393,7 +1393,7 @@ struct SkeletonTrend
     QString displayName;
     QString link;
     QString startedAt; // datetime
-    int postCount = 0;
+    qint64 postCount = 0;
     QString status;
     QString category;
     QList<QString> dids;
@@ -1404,7 +1404,7 @@ struct TrendView
     QString displayName;
     QString link;
     QString startedAt; // datetime
-    int postCount = 0;
+    qint64 postCount = 0;
     QString status;
     QString category;
     QList<AppBskyActorDefs::ProfileViewBasic> actors;
@@ -1436,8 +1436,8 @@ struct ThreadHiddenItemPost
 struct ThreadHiddenItem
 {
     QString uri; // at-uri
-    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
-                   // Items above have negative depths, items below have positive depths.
+    qint64 depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor
+                      // item. Items above have negative depths, items below have positive depths.
     // union start : value
     ThreadHiddenItemValueType value_type = ThreadHiddenItemValueType::none;
     ThreadHiddenItemPost value_ThreadHiddenItemPost;
@@ -1459,8 +1459,9 @@ struct ThreadItemPost
     AppBskyFeedDefs::PostView post;
     bool moreParents = false; // This post has more parents that were not present in the response.
                               // This is just a boolean, without the number of parents.
-    int moreReplies = 0; // This post has more replies that were not present in the response. This
-                         // is a numeric value, which is best-effort and might not be accurate.
+    qint64 moreReplies =
+            0; // This post has more replies that were not present in the response. This is a
+               // numeric value, which is best-effort and might not be accurate.
     bool opThread = false; // This post is part of a contiguous thread by the OP from the thread
                            // root. Many different OP threads can happen in the same thread.
 };
@@ -1477,8 +1478,8 @@ struct ThreadItemBlocked
 struct ThreadItem
 {
     QString uri; // at-uri
-    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
-                   // Items above have negative depths, items below have positive depths.
+    qint64 depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor
+                      // item. Items above have negative depths, items below have positive depths.
     // union start : value
     ThreadItemValueType value_type = ThreadItemValueType::none;
     ThreadItemPost value_ThreadItemPost;
@@ -1507,7 +1508,7 @@ struct JobStatus
     QString did; // did
     QString state; // The state of the video processing job. All values not listed as a known value
                    // indicate that the job is in process.
-    int progress = 0; // Progress within the current processing state.
+    qint64 progress = 0; // Progress within the current processing state.
     Blob blob;
     QString error;
     QString message;
@@ -1655,7 +1656,7 @@ struct ConvoView
     // union end : lastReaction
     bool muted = false;
     QString status;
-    int unreadCount = 0;
+    qint64 unreadCount = 0;
 };
 struct LogBeginConvo
 {
@@ -1749,10 +1750,10 @@ struct BatchItem
 namespace ChatBskyModerationGetActorMetadata {
 struct Metadata
 {
-    int messagesSent = 0;
-    int messagesReceived = 0;
-    int convos = 0;
-    int convosStarted = 0;
+    qint64 messagesSent = 0;
+    qint64 messagesReceived = 0;
+    qint64 convos = 0;
+    qint64 convosStarted = 0;
 };
 }
 
@@ -1766,7 +1767,7 @@ struct InviteCodeUse
 struct InviteCode
 {
     QString code;
-    int available = 0;
+    qint64 available = 0;
     bool disabled = false;
     QString forAccount;
     QString createdBy;
@@ -1828,7 +1829,7 @@ struct IdentityInfo
 namespace ComAtprotoLabelSubscribeLabels {
 struct Labels
 {
-    int seq = 0;
+    qint64 seq = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
 struct Info
@@ -1842,8 +1843,8 @@ struct Info
 namespace ComAtprotoLexiconSchema {
 struct Main
 {
-    int lexicon = 0; // Indicates the 'version' of the Lexicon language. Must be '1' for the current
-                     // atproto/Lexicon schema system.
+    qint64 lexicon = 0; // Indicates the 'version' of the Lexicon language. Must be '1' for the
+                        // current atproto/Lexicon schema system.
 };
 }
 
@@ -1965,9 +1966,9 @@ namespace ComAtprotoSyncListHosts {
 struct Host
 {
     QString hostname; // hostname of server; not a URL (no scheme)
-    int seq = 0; // Recent repo stream event sequence number. May be delayed from actual stream
-                 // processing (eg, persisted cursor not in-memory cursor).
-    int accountCount = 0;
+    qint64 seq = 0; // Recent repo stream event sequence number. May be delayed from actual stream
+                    // processing (eg, persisted cursor not in-memory cursor).
+    qint64 accountCount = 0;
     ComAtprotoSyncDefs::HostStatus status;
 };
 }
@@ -2003,7 +2004,7 @@ struct RepoOp
 };
 struct Commit
 {
-    int seq = 0; // The stream sequence number of this message.
+    qint64 seq = 0; // The stream sequence number of this message.
     QString repo; // did , The repo this event comes from. Note that all other message types name
                   // this field 'did'.
     QString rev; // tid , The rev of the emitted commit. Note that this information is also in the
@@ -2014,7 +2015,7 @@ struct Commit
 };
 struct Sync
 {
-    int seq = 0; // The stream sequence number of this message.
+    qint64 seq = 0; // The stream sequence number of this message.
     QString did; // did , The account this repo event corresponds to. Must match that in the commit
                  // object.
     QString rev; // The rev of the commit. This value must match that in the commit object.
@@ -2022,7 +2023,7 @@ struct Sync
 };
 struct Identity
 {
-    int seq = 0;
+    qint64 seq = 0;
     QString did; // did
     QString time; // datetime
     QString handle; // handle , The current handle for the account, or 'handle.invalid' if
@@ -2032,7 +2033,7 @@ struct Identity
 };
 struct Account
 {
-    int seq = 0;
+    qint64 seq = 0;
     QString did; // did
     QString time; // datetime
     bool active = false; // Indicates that the account has a repository which can be fetched from
@@ -2186,7 +2187,7 @@ enum class ModEventViewSubjectType : int {
 struct ModEventTakedown
 {
     QString comment;
-    int durationInHours =
+    qint64 durationInHours =
             0; // Indicates how long the takedown should be in effect before automatically expiring.
     bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
                                              // this account will be resolved (acknowledged).
@@ -2214,8 +2215,8 @@ struct ModEventLabel
     QString comment;
     QList<QString> createLabelVals;
     QList<QString> negateLabelVals;
-    int durationInHours = 0; // Indicates how long the label will remain on the subject. Only
-                             // applies on labels that are being added.
+    qint64 durationInHours = 0; // Indicates how long the label will remain on the subject. Only
+                                // applies on labels that are being added.
 };
 struct ModEventAcknowledge
 {
@@ -2230,7 +2231,7 @@ struct ModEventEscalate
 struct ModEventMute
 {
     QString comment;
-    int durationInHours = 0; // Indicates how long the subject should remain muted.
+    qint64 durationInHours = 0; // Indicates how long the subject should remain muted.
 };
 struct ModEventUnmute
 {
@@ -2239,8 +2240,8 @@ struct ModEventUnmute
 struct ModEventMuteReporter
 {
     QString comment;
-    int durationInHours = 0; // Indicates how long the account should remain muted. Falsy value here
-                             // means a permanent mute.
+    qint64 durationInHours = 0; // Indicates how long the account should remain muted. Falsy value
+                                // here means a permanent mute.
 };
 struct ModEventUnmuteReporter
 {
@@ -2293,11 +2294,11 @@ struct RecordEvent
 struct ModEventPriorityScore
 {
     QString comment;
-    int score = 0;
+    qint64 score = 0;
 };
 struct ModEventView
 {
-    int id = 0;
+    qint64 id = 0;
     // union start : event
     ModEventViewEventType event_type = ModEventViewEventType::none;
     ModEventTakedown event_ModEventTakedown;
@@ -2351,26 +2352,26 @@ struct RecordHosting
 typedef QString SubjectReviewState;
 struct AccountStats
 {
-    int reportCount = 0; // Total number of reports on the account
-    int appealCount = 0; // Total number of appeals against a moderation action on the account
-    int suspendCount = 0; // Number of times the account was suspended
-    int escalateCount = 0; // Number of times the account was escalated
-    int takedownCount = 0; // Number of times the account was taken down
+    qint64 reportCount = 0; // Total number of reports on the account
+    qint64 appealCount = 0; // Total number of appeals against a moderation action on the account
+    qint64 suspendCount = 0; // Number of times the account was suspended
+    qint64 escalateCount = 0; // Number of times the account was escalated
+    qint64 takedownCount = 0; // Number of times the account was taken down
 };
 struct RecordsStats
 {
-    int totalReports = 0; // Cumulative sum of the number of reports on the items in the set
-    int reportedCount = 0; // Number of items that were reported at least once
-    int escalatedCount = 0; // Number of items that were escalated at least once
-    int appealedCount = 0; // Number of items that were appealed at least once
-    int subjectCount = 0; // Total number of item in the set
-    int pendingCount = 0; // Number of item currently in "reviewOpen" or "reviewEscalated" state
-    int processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
-    int takendownCount = 0; // Number of item currently taken down
+    qint64 totalReports = 0; // Cumulative sum of the number of reports on the items in the set
+    qint64 reportedCount = 0; // Number of items that were reported at least once
+    qint64 escalatedCount = 0; // Number of items that were escalated at least once
+    qint64 appealedCount = 0; // Number of items that were appealed at least once
+    qint64 subjectCount = 0; // Total number of item in the set
+    qint64 pendingCount = 0; // Number of item currently in "reviewOpen" or "reviewEscalated" state
+    qint64 processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
+    qint64 takendownCount = 0; // Number of item currently taken down
 };
 struct SubjectStatusView
 {
-    int id = 0;
+    qint64 id = 0;
     // union start : subject
     SubjectStatusViewSubjectType subject_type = SubjectStatusViewSubjectType::none;
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
@@ -2390,8 +2391,8 @@ struct SubjectStatusView
                        // event was emitted on the subject
     SubjectReviewState reviewState;
     QString comment; // Sticky comment on the subject.
-    int priorityScore = 0; // Numeric value representing the level of priority. Higher score means
-                           // higher priority.
+    qint64 priorityScore = 0; // Numeric value representing the level of priority. Higher score
+                              // means higher priority.
     QString muteUntil; // datetime
     QString muteReportingUntil; // datetime
     QString lastReviewedBy; // did
@@ -2446,20 +2447,20 @@ struct RecordViewNotFound
 };
 struct ImageDetails
 {
-    int width = 0;
-    int height = 0;
+    qint64 width = 0;
+    qint64 height = 0;
 };
 struct VideoDetails
 {
-    int width = 0;
-    int height = 0;
-    int length = 0;
+    qint64 width = 0;
+    qint64 height = 0;
+    qint64 length = 0;
 };
 struct BlobView
 {
     QString cid; // cid
     QString mimeType;
-    int size = 0;
+    qint64 size = 0;
     QString createdAt; // datetime
     // union start : details
     BlobViewDetailsType details_type = BlobViewDetailsType::none;
@@ -2470,7 +2471,7 @@ struct BlobView
 };
 struct ModEventViewDetail
 {
-    int id = 0;
+    qint64 id = 0;
     // union start : event
     ModEventViewDetailEventType event_type = ModEventViewDetailEventType::none;
     ModEventTakedown event_ModEventTakedown;
@@ -2548,17 +2549,17 @@ struct SubjectView
 struct ReporterStats
 {
     QString did; // did
-    int accountReportCount = 0; // The total number of reports made by the user on accounts.
-    int recordReportCount = 0; // The total number of reports made by the user on records.
-    int reportedAccountCount = 0; // The total number of accounts reported by the user.
-    int reportedRecordCount = 0; // The total number of records reported by the user.
-    int takendownAccountCount =
+    qint64 accountReportCount = 0; // The total number of reports made by the user on accounts.
+    qint64 recordReportCount = 0; // The total number of reports made by the user on records.
+    qint64 reportedAccountCount = 0; // The total number of accounts reported by the user.
+    qint64 reportedRecordCount = 0; // The total number of records reported by the user.
+    qint64 takendownAccountCount =
             0; // The total number of accounts taken down as a result of the user's reports.
-    int takendownRecordCount =
+    qint64 takendownRecordCount =
             0; // The total number of records taken down as a result of the user's reports.
-    int labeledAccountCount =
+    qint64 labeledAccountCount =
             0; // The total number of accounts labeled as a result of the user's reports.
-    int labeledRecordCount =
+    qint64 labeledRecordCount =
             0; // The total number of records labeled as a result of the user's reports.
 };
 }
@@ -2586,7 +2587,7 @@ struct SetView
 {
     QString name;
     QString description;
-    int setSize = 0;
+    qint64 setSize = 0;
     QString createdAt; // datetime
     QString updatedAt; // datetime
 };
@@ -2750,8 +2751,8 @@ struct Comment
 struct Ogp
 {
     QString url; // uri
-    int width = 0;
-    int height = 0;
+    qint64 width = 0;
+    qint64 height = 0;
 };
 struct BlobMetadata
 {
@@ -2862,7 +2863,7 @@ namespace OauthDefs {
 struct PushedAuthorizationResponse
 {
     QString request_uri;
-    int expires_in = 0;
+    qint64 expires_in = 0;
 };
 struct TokenResponse
 {
@@ -2871,7 +2872,7 @@ struct TokenResponse
     QString refresh_token;
     QString scope;
     QString sub;
-    int expires_in = 0;
+    qint64 expires_in = 0;
 };
 }
 

@@ -10,7 +10,7 @@ class AppBskyActorSearchActors : public AppBskyGraphGetFollows
 public:
     explicit AppBskyActorSearchActors(QObject *parent = nullptr);
 
-    void searchActors(const QString &q, const int limit, const QString &cursor);
+    void searchActors(const QString &q, const qint64 limit, const QString &cursor);
 };
 
 }

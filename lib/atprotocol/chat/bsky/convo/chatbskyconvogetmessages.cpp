@@ -10,7 +10,7 @@ namespace AtProtocolInterface {
 ChatBskyConvoGetMessages::ChatBskyConvoGetMessages(QObject *parent)
     : AccessAtProtocol { parent } { }
 
-void ChatBskyConvoGetMessages::getMessages(const QString &convoId, const int limit,
+void ChatBskyConvoGetMessages::getMessages(const QString &convoId, const qint64 limit,
                                            const QString &cursor)
 {
     QUrlQuery url_query;

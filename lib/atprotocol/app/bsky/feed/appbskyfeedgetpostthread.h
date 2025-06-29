@@ -10,7 +10,7 @@ class AppBskyFeedGetPostThread : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetPostThread(QObject *parent = nullptr);
 
-    void getPostThread(const QString &uri, const int depth, const int parentHeight);
+    void getPostThread(const QString &uri, const qint64 depth, const qint64 parentHeight);
 
     const AtProtocolType::AppBskyFeedDefs::ThreadViewPost &threadViewPost() const;
     const AtProtocolType::AppBskyFeedDefs::NotFoundPost &notFoundPost() const;

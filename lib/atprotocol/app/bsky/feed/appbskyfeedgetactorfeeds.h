@@ -10,7 +10,7 @@ class AppBskyFeedGetActorFeeds : public AppBskyFeedGetFeedGenerators
 public:
     explicit AppBskyFeedGetActorFeeds(QObject *parent = nullptr);
 
-    void getActorFeeds(const QString &actor, const int limit, const QString &cursor);
+    void getActorFeeds(const QString &actor, const qint64 limit, const QString &cursor);
 };
 
 }

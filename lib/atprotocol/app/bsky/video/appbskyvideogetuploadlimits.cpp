@@ -25,12 +25,12 @@ const bool &AppBskyVideoGetUploadLimits::canUpload() const
     return m_canUpload;
 }
 
-const int &AppBskyVideoGetUploadLimits::remainingDailyVideos() const
+const qint64 &AppBskyVideoGetUploadLimits::remainingDailyVideos() const
 {
     return m_remainingDailyVideos;
 }
 
-const int &AppBskyVideoGetUploadLimits::remainingDailyBytes() const
+const qint64 &AppBskyVideoGetUploadLimits::remainingDailyBytes() const
 {
     return m_remainingDailyBytes;
 }

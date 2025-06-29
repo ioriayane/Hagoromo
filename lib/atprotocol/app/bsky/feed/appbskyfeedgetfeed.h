@@ -10,7 +10,7 @@ class AppBskyFeedGetFeed : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetFeed(QObject *parent = nullptr);
 
-    void getFeed(const QString &feed, const int limit, const QString &cursor);
+    void getFeed(const QString &feed, const qint64 limit, const QString &cursor);
 };
 
 }

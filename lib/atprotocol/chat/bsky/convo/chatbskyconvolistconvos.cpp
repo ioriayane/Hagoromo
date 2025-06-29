@@ -9,7 +9,7 @@ namespace AtProtocolInterface {
 
 ChatBskyConvoListConvos::ChatBskyConvoListConvos(QObject *parent) : AccessAtProtocol { parent } { }
 
-void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
+void ChatBskyConvoListConvos::listConvos(const qint64 limit, const QString &cursor,
                                          const QString &readState, const QString &status)
 {
     QUrlQuery url_query;
