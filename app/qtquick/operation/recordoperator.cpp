@@ -3,12 +3,12 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
-#include "atprotocol/app/bsky/video/appbskyvideogetuploadlimits.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "extension/app/bsky/video/appbskyvideogetuploadlimitsex.h"
 #include "tools/accountmanager.h"
 
 #include <QFileInfo>
@@ -17,7 +17,7 @@
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
-using AtProtocolInterface::AppBskyVideoGetUploadLimits;
+using AtProtocolInterface::AppBskyVideoGetUploadLimitsEx;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -80,6 +80,11 @@ void RecordOperator::setImages(const QStringList &images, const QStringList &alt
         }
         m_embedImages.append(e);
     }
+}
+
+void RecordOperator::setVideo(const QString &video)
+{
+    m_embedVideo = video;
 }
 
 void RecordOperator::setPostLanguages(const QStringList &langs)
@@ -283,11 +288,10 @@ void RecordOperator::postWithVideo()
 {
     setRunning(true);
 
-    qint64 video_size = 0;
-    QFileInfo fileInfo("/path/to/video.mp4");
-    video_size = fileInfo.size();
+    setProgressMessage(tr("Uploading video ..."));
 
-    checkUploadVideoLimit(video_size, [=](bool success) {
+    AppBskyVideoGetUploadLimitsEx *limit = new AppBskyVideoGetUploadLimitsEx(this);
+    connect(limit, &AppBskyVideoGetUploadLimitsEx::finished, [=](bool success) {
         if (success) {
             // post
             emit finished(success, QString(), QString()); // for Debug
@@ -298,6 +302,8 @@ void RecordOperator::postWithVideo()
             setRunning(false);
         }
     });
+    limit->setAccount(account());
+    limit->canUpload(m_embedVideo);
 }
 
 void RecordOperator::repost(const QString &cid, const QString &uri)
@@ -1314,16 +1320,6 @@ void RecordOperator::postGate(const QString &uri,
     });
     create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
-}
-
-void RecordOperator::checkUploadVideoLimit(const int video_size, std::function<void(bool)> callback)
-{
-    if (video_size <= 0) {
-        callback(false);
-        return;
-    }
-
-    callback(true);
 }
 
 QString RecordOperator::progressMessage() const

@@ -38,6 +38,7 @@ public:
                               const QString &root_cid, const QString &root_uri);
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setImages(const QStringList &images, const QStringList &alts);
+    Q_INVOKABLE void setVideo(const QString &video);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
                                      const QString &description, const QString &image_path);
@@ -107,8 +108,6 @@ private:
     void postGate(const QString &uri,
                   std::function<void(bool, const QString &, const QString &)> callback);
 
-    void checkUploadVideoLimit(const int video_size, std::function<void(bool)> callback);
-
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
     int m_sequentialPostsCurrent;
@@ -119,6 +118,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<EmbedImage> m_embedImages;
+    QString m_embedVideo;
     QList<AtProtocolType::Blob> m_embedImageBlobs;
     QStringList m_postLanguages;
     QString m_externalLinkUri;

@@ -1,4 +1,9 @@
 <RCC>
     <qresource prefix="/">
+        <file>data/example01.mp4</file>
+        <file>response/limit/1/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/2/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/3/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/4/xrpc/app.bsky.video.getUploadLimits</file>
     </qresource>
 </RCC>
