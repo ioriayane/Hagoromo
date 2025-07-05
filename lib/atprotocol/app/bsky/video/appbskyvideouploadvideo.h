@@ -10,7 +10,7 @@ class AppBskyVideoUploadVideo : public AccessAtProtocol
 public:
     explicit AppBskyVideoUploadVideo(QObject *parent = nullptr);
 
-    void uploadVideo();
+    void uploadVideo(const QString &path);
 
     const AtProtocolType::AppBskyVideoDefs::JobStatus &jobStatus() const;
 

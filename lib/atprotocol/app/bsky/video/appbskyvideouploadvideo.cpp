@@ -8,9 +8,9 @@ namespace AtProtocolInterface {
 
 AppBskyVideoUploadVideo::AppBskyVideoUploadVideo(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyVideoUploadVideo::uploadVideo()
+void AppBskyVideoUploadVideo::uploadVideo(const QString &path)
 {
-    post(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), QByteArray());
+    postWithImage(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), path);
 }
 
 const AtProtocolType::AppBskyVideoDefs::JobStatus &AppBskyVideoUploadVideo::jobStatus() const

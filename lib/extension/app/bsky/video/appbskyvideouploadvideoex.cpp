@@ -1,8 +1,10 @@
 #include "appbskyvideouploadvideoex.h"
 #include "atprotocol/com/atproto/server/comatprotoservergetserviceauth.h"
+#include "atprotocol/app/bsky/video/appbskyvideouploadvideo.h"
 
 #include <QFileInfo>
 
+using AtProtocolInterface::AppBskyVideoUploadVideo;
 using AtProtocolInterface::ComAtprotoServerGetServiceAuth;
 
 namespace AtProtocolInterface {
@@ -24,8 +26,30 @@ void AppBskyVideoUploadVideoEx::uploadVideo(const QString &path)
             qDebug().noquote() << "Can't get service token.";
             emit finished(false);
         } else {
-            qDebug() << "Upload process and job status check";
-            emit finished(false); // for debug
+            qDebug() << "Upload process";
+
+            AppBskyVideoUploadVideo *upload = new AppBskyVideoUploadVideo(this);
+            connect(upload, &AppBskyVideoUploadVideo::finished, [=](bool success) {
+                if (success) {
+                    if (upload->jobStatus().state == "JOB_STATE_COMPLETED") {
+                        qDebug() << "Completed to upload video."
+                                 << "\n  =" << upload->jobStatus().state
+                                 << "\n  jobId=" << upload->jobStatus().jobId;
+                    } else {
+                        qDebug() << "Check job status."
+                                 << "\n  =" << upload->jobStatus().state
+                                 << "\n  jobId=" << upload->jobStatus().jobId;
+
+                        success = false;
+                    }
+                } else {
+                    qDebug().noquote() << "Failed to upload video.";
+                }
+                emit finished(success); // for debug
+                upload->deleteLater();
+            });
+            upload->setAccount(account());
+            upload->uploadVideo(path);
         }
     });
 }

@@ -11,5 +11,7 @@
         <file>response/limit/3/xrpc/com.atproto.server.getServiceAuth</file>
         <file>response/limit/4/xrpc/com.atproto.server.getServiceAuth</file>
         <file>response/limit/5/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/5/xrpc/app.bsky.video.getJobStatus</file>
+        <file>response/limit/5/xrpc/app.bsky.video.uploadVideo</file>
     </qresource>
 </RCC>
