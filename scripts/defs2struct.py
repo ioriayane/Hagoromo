@@ -224,14 +224,15 @@ class Defs2Struct:
             'app.bsky.feed.getSuggestedFeeds',
             'app.bsky.feed.getFeedSkeleton',
             'app.bsky.feed.describeFeedGenerator',
-            'app.bsky.actor.getSuggestions'
-            'app.bsky.video.uploadVideo',
+            'app.bsky.actor.getSuggestions',
+            'app.bsky.video.uploadVideo'
         ]
         self.unuse_auth = [
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
             'com.atproto.repo.describeRepo',
-            'com.atproto.repo.listRecords'
+            'com.atproto.repo.listRecords',
+            'app.bsky.video.getJobStatus'
         ]
         self.need_extension = [
             'app.bsky.actor.putPreferences',
