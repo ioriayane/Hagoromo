@@ -26,6 +26,10 @@ bool AppBskyVideoUploadVideo::parseJson(bool success, const QString reply_json)
     } else {
         AtProtocolType::AppBskyVideoDefs::copyJobStatus(
                 json_doc.object().value("jobStatus").toObject(), m_jobStatus);
+        if (m_jobStatus.state.isEmpty()) {
+            // lexiconどおりのレスポンスがこないので暫定処理
+            AtProtocolType::AppBskyVideoDefs::copyJobStatus(json_doc.object(), m_jobStatus);
+        }
     }
 
     return success;

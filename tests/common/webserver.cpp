@@ -1,6 +1,6 @@
 #include "webserver.h"
 
-WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
+WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent), m_videoGetJobStatus(0) { }
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
@@ -62,6 +62,9 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                                   .split("/")
                                   .last();
             }
+        } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus")) {
+            path += "_" + QString::number(m_videoGetJobStatus);
+            m_videoGetJobStatus++;
         }
         if (request.query().hasQueryItem("cursor")) {
             path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
@@ -104,6 +107,11 @@ quint16 WebServer::listen(const QHostAddress &address, quint16 port)
         return 0;
     }
     return tcpserver->serverPort();
+}
+
+void WebServer::reset()
+{
+    m_videoGetJobStatus = 0;
 }
 #endif
 

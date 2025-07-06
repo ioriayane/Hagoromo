@@ -17,6 +17,8 @@ public:
     quint16 listen(const QHostAddress &address = QHostAddress::Any, quint16 port = 0);
 #endif
 
+    void reset();
+
     static QString convertResoucePath(const QUrl &url);
     static bool readFile(const QString &path, QByteArray &data);
 signals:
@@ -24,7 +26,7 @@ signals:
 
 private:
     QMimeDatabase m_MimeDb;
-
+    int m_videoGetJobStatus;
     bool verifyHttpHeader(const QHttpServerRequest &request) const;
 };
 

@@ -22,6 +22,7 @@ private slots:
     void test_postWithVideo_3();
     void test_postWithVideo_4();
     void test_postWithVideo_5();
+    void test_postWithVideo_6();
 
 private:
     WebServer m_mockServer;
@@ -88,6 +89,7 @@ void video_teset::test_postWithVideo_1()
             QString(), m_service + "/limit/1", "id1", "pass1", "did:plc:ipj5qejfoqu6eukvt72uhyit_1",
             "hogehoge1.bsky.social", "email", "accessJwt", "refreshJwt", true);
 
+    m_mockServer.reset();
     RecordOperator ope;
     ope.setAccount(uuid);
     {
@@ -109,6 +111,8 @@ void video_teset::test_postWithVideo_2()
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/limit/2", "id2", "pass2", "did:plc:ipj5qejfoqu6eukvt72uhyit_2",
             "hogehoge2.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    m_mockServer.reset();
     RecordOperator ope;
     ope.setAccount(uuid);
     {
@@ -132,6 +136,7 @@ void video_teset::test_postWithVideo_3()
             QString(), m_service + "/limit/3", "id3", "pass3", "did:plc:ipj5qejfoqu6eukvt72uhyit_3",
             "hogehoge3.bsky.social", "email", "accessJwt", "refreshJwt", true);
 
+    m_mockServer.reset();
     RecordOperator ope;
     ope.setAccount(uuid);
     {
@@ -152,6 +157,7 @@ void video_teset::test_postWithVideo_4()
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/limit/4", "id4", "pass4", "did:plc:ipj5qejfoqu6eukvt72uhyit_4",
             "hogehoge4.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    m_mockServer.reset();
     RecordOperator ope;
     ope.setAccount(uuid);
     {
@@ -170,10 +176,37 @@ void video_teset::test_postWithVideo_4()
 
 void video_teset::test_postWithVideo_5()
 {
+    //一度アップロードして使わなかった動画を再アップロードしたとき？
+
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/limit/5", "id5", "pass5", "did:plc:ipj5qejfoqu6eukvt72uhyit_5",
             "hogehoge5.bsky.social", "email", "accessJwt", "refreshJwt", true);
 
+    m_mockServer.reset();
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    {
+        ope.setVideo(":/data/example01.mp4");
+
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.postWithVideo();
+        spy.wait(30 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
+}
+
+void video_teset::test_postWithVideo_6()
+{
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/limit/6", "id6", "pass6", "did:plc:ipj5qejfoqu6eukvt72uhyit_6",
+            "hogehoge6.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    m_mockServer.reset();
     RecordOperator ope;
     ope.setAccount(uuid);
     {
