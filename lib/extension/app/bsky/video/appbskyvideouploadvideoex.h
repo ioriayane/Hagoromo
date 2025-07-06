@@ -14,6 +14,10 @@ public:
     void uploadVideo(const QString &path);
 
     void getServiceAuth(std::function<void(const QString &)> callback);
+
+private:
+    QString m_jobId;
+    void checkJobStatus();
 };
 }
 #endif // APPBSKYVIDEOUPLOADVIDEOEX_H
