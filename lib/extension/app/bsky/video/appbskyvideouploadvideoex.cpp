@@ -4,6 +4,7 @@
 #include "atprotocol/app/bsky/video/appbskyvideogetjobstatus.h"
 
 #include <QFileInfo>
+#include <QMimeDatabase>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyVideoGetJobStatus;
@@ -13,7 +14,7 @@ using AtProtocolInterface::ComAtprotoServerGetServiceAuth;
 namespace AtProtocolInterface {
 
 AppBskyVideoUploadVideoEx::AppBskyVideoUploadVideoEx(QObject *parent)
-    : AppBskyVideoUploadVideo { parent }
+    : AppBskyVideoUploadVideo { parent }, m_endpoint("https://video.bsky.app")
 {
 }
 
@@ -58,7 +59,10 @@ void AppBskyVideoUploadVideoEx::uploadVideo(const QString &path)
                 }
                 upload->deleteLater();
             });
-            upload->setAccount(account());
+            AtProtocolInterface::AccountData a = account();
+            a.accessJwt = token;
+            a.service_endpoint = m_endpoint;
+            upload->setAccount(a);
             upload->uploadVideo(path);
         }
     });
@@ -79,6 +83,33 @@ void AppBskyVideoUploadVideoEx::getServiceAuth(std::function<void(const QString 
     auth->getServiceAuth("did:web:video.bsky.app", 0, "app.bsky.video.uploadVideo");
 }
 
+void AppBskyVideoUploadVideoEx::setEndpoint(const QString &newEndpoint)
+{
+    if (newEndpoint.isEmpty())
+        return;
+    m_endpoint = newEndpoint;
+}
+
+QString AppBskyVideoUploadVideoEx::cid() const
+{
+    return m_cid;
+}
+
+qint64 AppBskyVideoUploadVideoEx::size() const
+{
+    return m_size;
+}
+
+QString AppBskyVideoUploadVideoEx::mimeType() const
+{
+    return m_mimeType;
+}
+
+QSize AppBskyVideoUploadVideoEx::aspectRatio() const
+{
+    return m_aspectRatio;
+}
+
 void AppBskyVideoUploadVideoEx::checkJobStatus()
 {
     if (m_jobId.isEmpty()) {
@@ -96,9 +127,13 @@ void AppBskyVideoUploadVideoEx::checkJobStatus()
                          << "\n  jobId=" << status->jobStatus().jobId;
                 emit finished(false);
             } else if (status->jobStatus().state == "JOB_STATE_COMPLETED") {
+                m_cid = status->jobStatus().blob.cid;
+                m_mimeType = status->jobStatus().blob.mimeType;
+                m_size = status->jobStatus().blob.size;
                 qDebug() << "Completed to process the video."
                          << "\n  =" << status->jobStatus().state
-                         << "\n  jobId=" << status->jobStatus().jobId;
+                         << "\n  jobId=" << status->jobStatus().jobId << "\n  cid=" << m_cid
+                         << "\n mimeType=" << m_mimeType << "\n  size=" << m_size;
                 emit finished(true);
             } else {
                 qDebug() << "Check job status."

@@ -33,6 +33,7 @@ RecordOperator::RecordOperator(QObject *parent)
       m_sequentialPostsTotal(0),
       m_sequentialPostsCurrent(0),
       m_embedImagesTotal(0),
+      m_threadGateType("everybody"),
       m_running(false)
 {
 }
@@ -297,12 +298,11 @@ void RecordOperator::postWithVideo()
         if (success_of_limit) {
             uploadVideoBlob([=](bool success_of_upload) {
                 if (success_of_upload) {
-                    // check video progress
-                    emit finished(success_of_upload, QString(), QString()); // for Debug
-                    setRunning(false); // for Debug
+                    post();
                 } else {
+                    setProgressMessage(QString());
                     emit finished(success_of_upload, QString(), QString()); // for Debug
-                    setRunning(false); // for Debug
+                    setRunning(false);
                 }
             });
         } else {
@@ -310,7 +310,11 @@ void RecordOperator::postWithVideo()
             emit finished(success_of_limit, QString(), QString());
             setRunning(false);
         }
+        limit->deleteLater();
     });
+#ifdef QT_DEBUG
+    limit->setEndpoint(m_videoEndpoint);
+#endif
     limit->setAccount(account());
     limit->canUpload(m_embedVideo);
 }
@@ -1181,11 +1185,25 @@ void RecordOperator::uploadVideoBlob(std::function<void(bool)> callback)
     AppBskyVideoUploadVideoEx *upload = new AppBskyVideoUploadVideoEx(this);
     connect(upload, &AppBskyVideoUploadVideoEx::finished, [=](bool success) {
         if (success) {
+            qDebug().noquote() << "Uploaded video blob" << upload->cid() << upload->mimeType()
+                               << upload->size();
+
+            AtProtocolType::Blob blob;
+            blob.cid = upload->cid();
+            blob.mimeType = upload->mimeType();
+            blob.size = upload->size();
+            blob.aspect_ratio = upload->aspectRatio();
+            m_embedImageBlobs.append(blob);
+
         } else {
+            emit errorOccured(upload->errorCode(), upload->errorMessage());
         }
         callback(success);
         upload->deleteLater();
     });
+#ifdef QT_DEBUG
+    upload->setEndpoint(m_videoEndpoint);
+#endif
     upload->setAccount(account());
     upload->uploadVideo(m_embedVideo);
 }
@@ -1344,6 +1362,13 @@ void RecordOperator::postGate(const QString &uri,
     create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
+
+#ifdef QT_DEBUG
+void RecordOperator::setVideoEndpoint(const QString &newVideoEndpoint)
+{
+    m_videoEndpoint = newVideoEndpoint;
+}
+#endif
 
 QString RecordOperator::progressMessage() const
 {

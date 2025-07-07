@@ -91,6 +91,7 @@ void video_teset::test_postWithVideo_1()
 
     m_mockServer.reset();
     RecordOperator ope;
+    ope.setVideoEndpoint(m_service + "/limit/1");
     ope.setAccount(uuid);
     {
         ope.setVideo(":/data/example_unknown.mp4");
@@ -114,6 +115,7 @@ void video_teset::test_postWithVideo_2()
 
     m_mockServer.reset();
     RecordOperator ope;
+    ope.setVideoEndpoint(m_service + "/limit/2");
     ope.setAccount(uuid);
     {
         ope.setVideo(":/data/example01.mp4");
@@ -138,6 +140,7 @@ void video_teset::test_postWithVideo_3()
 
     m_mockServer.reset();
     RecordOperator ope;
+    ope.setVideoEndpoint(m_service + "/limit/3");
     ope.setAccount(uuid);
     {
         ope.setVideo(":/data/example01.mp4");
@@ -159,6 +162,7 @@ void video_teset::test_postWithVideo_4()
             "hogehoge4.bsky.social", "email", "accessJwt", "refreshJwt", true);
     m_mockServer.reset();
     RecordOperator ope;
+    ope.setVideoEndpoint(m_service + "/limit/4");
     ope.setAccount(uuid);
     {
         ope.setVideo(":/data/example01.mp4");
@@ -184,6 +188,7 @@ void video_teset::test_postWithVideo_5()
 
     m_mockServer.reset();
     RecordOperator ope;
+    ope.setVideoEndpoint(m_service + "/limit/5");
     ope.setAccount(uuid);
     {
         ope.setVideo(":/data/example01.mp4");
@@ -208,13 +213,16 @@ void video_teset::test_postWithVideo_6()
 
     m_mockServer.reset();
     RecordOperator ope;
+    // ope.clear();
+    ope.setVideoEndpoint(m_service + "/limit/6");
     ope.setAccount(uuid);
     {
+        ope.setText("upload video");
         ope.setVideo(":/data/example01.mp4");
 
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.postWithVideo();
-        spy.wait(30 * 1000);
+        spy.wait(90 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();

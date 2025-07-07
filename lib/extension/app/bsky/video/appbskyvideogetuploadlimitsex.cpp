@@ -11,7 +11,7 @@ using AtProtocolInterface::ComAtprotoServerGetServiceAuth;
 namespace AtProtocolInterface {
 
 AppBskyVideoGetUploadLimitsEx::AppBskyVideoGetUploadLimitsEx(QObject *parent)
-    : AppBskyVideoGetUploadLimits { parent }
+    : AppBskyVideoGetUploadLimits { parent }, m_endpoint("https://video.bsky.app")
 {
 }
 
@@ -65,5 +65,12 @@ void AppBskyVideoGetUploadLimitsEx::getServiceAuth(std::function<void(const QStr
     });
     auth->setAccount(account());
     auth->getServiceAuth("did:web:video.bsky.app", 0, "app.bsky.video.getUploadLimits");
+}
+
+void AppBskyVideoGetUploadLimitsEx::setEndpoint(const QString &newEndpoint)
+{
+    if (newEndpoint.isEmpty())
+        return;
+    m_endpoint = newEndpoint;
 }
 }

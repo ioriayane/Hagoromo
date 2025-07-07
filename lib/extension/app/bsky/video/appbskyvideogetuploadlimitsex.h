@@ -14,6 +14,11 @@ public:
     void canUpload(const QString &path);
 
     void getServiceAuth(std::function<void(const QString &)> callback);
+
+    void setEndpoint(const QString &newEndpoint);
+
+private:
+    QString m_endpoint;
 };
 
 }

@@ -85,6 +85,10 @@ public:
 
     Q_INVOKABLE void requestPostGate(const QString &uri);
 
+#ifdef QT_DEBUG
+    void setVideoEndpoint(const QString &newVideoEndpoint);
+#endif
+
     bool running() const;
     void setRunning(bool newRunning);
     QString progressMessage() const;
@@ -108,6 +112,10 @@ private:
                     std::function<void(bool, const QString &, const QString &)> callback);
     void postGate(const QString &uri,
                   std::function<void(bool, const QString &, const QString &)> callback);
+
+#ifdef QT_DEBUG
+    QString m_videoEndpoint; // for debug
+#endif
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;

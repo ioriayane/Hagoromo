@@ -62,8 +62,10 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                                   .split("/")
                                   .last();
             }
-        } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus") && m_videoGetJobStatus > 0) {
-            path += "_" + QString::number(m_videoGetJobStatus);
+        } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus")) {
+            if (m_videoGetJobStatus > 0) {
+                path += "_" + QString::number(m_videoGetJobStatus);
+            }
             m_videoGetJobStatus++;
         }
         if (request.query().hasQueryItem("cursor")) {

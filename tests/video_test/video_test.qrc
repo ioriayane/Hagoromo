@@ -21,5 +21,6 @@
         <file>response/limit/6/xrpc/app.bsky.video.getUploadLimits</file>
         <file>response/limit/6/xrpc/app.bsky.video.uploadVideo</file>
         <file>response/limit/6/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/6/xrpc/com.atproto.repo.createRecord</file>
     </qresource>
 </RCC>
