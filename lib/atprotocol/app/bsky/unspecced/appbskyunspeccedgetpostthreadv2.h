@@ -16,14 +16,14 @@ public:
 
     const QList<AtProtocolType::AppBskyUnspeccedGetPostThreadV2::ThreadItem> &threadList() const;
     const AtProtocolType::AppBskyFeedDefs::ThreadgateView &threadgate() const;
-    const bool &hasHiddenReplies() const;
+    const bool &hasOtherReplies() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyUnspeccedGetPostThreadV2::ThreadItem> m_threadList;
     AtProtocolType::AppBskyFeedDefs::ThreadgateView m_threadgate;
-    bool m_hasHiddenReplies;
+    bool m_hasOtherReplies;
 };
 
 }
