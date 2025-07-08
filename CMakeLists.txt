@@ -4,6 +4,8 @@ project(HagoromoProject LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+enable_testing()
+
 
 add_subdirectory(lib)
 add_subdirectory(app)

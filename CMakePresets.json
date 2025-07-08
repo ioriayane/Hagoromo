@@ -1,0 +1,295 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Default build configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release Config",
+      "description": "Release build configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "displayName": "Default Build",
+      "configurePreset": "default"
+    },
+    {
+      "name": "release",
+      "displayName": "Release Build", 
+      "configurePreset": "release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "displayName": "All Tests",
+      "description": "Run all available tests",
+      "configurePreset": "default",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "verbose",
+      "displayName": "All Tests (Verbose)",
+      "description": "Run all tests with verbose output",
+      "configurePreset": "default",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "verbose"
+      }
+    },
+    {
+      "name": "atprotocol",
+      "displayName": "AT Protocol Tests",
+      "description": "Run AT Protocol related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "AtprotocolTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "chat",
+      "displayName": "Chat Tests",
+      "description": "Run chat related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "ChatTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "hagoromo",
+      "displayName": "Hagoromo Tests",
+      "description": "Run Hagoromo application tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "Hagoromo.*"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "http",
+      "displayName": "HTTP Tests",
+      "description": "Run HTTP related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "HttpTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "log",
+      "displayName": "Log Tests",
+      "description": "Run logging related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "LogTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "oauth",
+      "displayName": "OAuth Tests",
+      "description": "Run OAuth related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "OauthTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "realtime",
+      "displayName": "Realtime Tests",
+      "description": "Run realtime related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "RealtimeTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "search",
+      "displayName": "Search Tests",
+      "description": "Run search related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "SearchTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "tools",
+      "displayName": "Tools Tests",
+      "description": "Run tools related tests",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "ToolsTest"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "hagoromo1",
+      "displayName": "Hagoromo Test 1",
+      "description": "Run HagoromoTest only",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "HagoromoTest"
+        },
+        "exclude": {
+          "name": "HagoromoTest2"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "hagoromo2",
+      "displayName": "Hagoromo Test 2",
+      "description": "Run HagoromoTest2 only",
+      "configurePreset": "default",
+      "filter": {
+        "include": {
+          "name": "HagoromoTest2"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    },
+    {
+      "name": "release-tests",
+      "displayName": "Release Tests",
+      "description": "Run tests with release build",
+      "configurePreset": "release",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    }
+  ]
+}
