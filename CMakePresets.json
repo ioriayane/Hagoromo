@@ -38,9 +38,9 @@
   ],
   "testPresets": [
     {
-      "name": "default",
-      "displayName": "All Tests",
-      "description": "Run all available tests",
+      "name": "base-test",
+      "displayName": "Base Test Configuration",
+      "description": "Common configuration for all tests",
       "configurePreset": "default",
       "execution": {
         "noTestsAction": "error",
@@ -49,12 +49,13 @@
       "output": {
         "outputOnFailure": true,
         "verbosity": "default"
-      }
+      },
+      "hidden": true
     },
     {
-      "name": "verbose",
-      "displayName": "All Tests (Verbose)",
-      "description": "Run all tests with verbose output",
+      "name": "base-verbose",
+      "displayName": "Base Verbose Test Configuration", 
+      "description": "Common configuration for verbose tests",
       "configurePreset": "default",
       "execution": {
         "noTestsAction": "error",
@@ -63,184 +64,125 @@
       "output": {
         "outputOnFailure": true,
         "verbosity": "verbose"
-      }
+      },
+      "hidden": true
+    },
+    {
+      "name": "default",
+      "displayName": "All Tests",
+      "description": "Run all available tests",
+      "inherits": "base-test"
+    },
+    {
+      "name": "verbose",
+      "displayName": "All Tests (Verbose)",
+      "description": "Run all tests with verbose output",
+      "inherits": "base-verbose"
     },
     {
       "name": "atprotocol",
       "displayName": "AT Protocol Tests",
       "description": "Run AT Protocol related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "AtprotocolTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "chat",
       "displayName": "Chat Tests",
       "description": "Run chat related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "ChatTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "hagoromo",
       "displayName": "Hagoromo Tests",
       "description": "Run Hagoromo application tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "Hagoromo.*"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "http",
       "displayName": "HTTP Tests",
       "description": "Run HTTP related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "HttpTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "log",
       "displayName": "Log Tests",
       "description": "Run logging related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "LogTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "oauth",
       "displayName": "OAuth Tests",
       "description": "Run OAuth related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "OauthTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "realtime",
       "displayName": "Realtime Tests",
       "description": "Run realtime related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "RealtimeTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "search",
       "displayName": "Search Tests",
       "description": "Run search related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "SearchTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "tools",
       "displayName": "Tools Tests",
       "description": "Run tools related tests",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "ToolsTest"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "hagoromo1",
       "displayName": "Hagoromo Test 1",
       "description": "Run HagoromoTest only",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "HagoromoTest"
@@ -248,33 +190,17 @@
         "exclude": {
           "name": "HagoromoTest2"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
       "name": "hagoromo2",
       "displayName": "Hagoromo Test 2",
       "description": "Run HagoromoTest2 only",
-      "configurePreset": "default",
+      "inherits": "base-test",
       "filter": {
         "include": {
           "name": "HagoromoTest2"
         }
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      },
-      "output": {
-        "outputOnFailure": true,
-        "verbosity": "default"
       }
     },
     {
