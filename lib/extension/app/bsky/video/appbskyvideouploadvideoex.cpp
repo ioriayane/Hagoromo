@@ -40,11 +40,6 @@ void AppBskyVideoUploadVideoEx::uploadVideo(const QString &path)
                                  << "\n  =" << upload->jobStatus().state
                                  << "\n  jobId=" << upload->jobStatus().jobId;
                         emit finished(false);
-                    } else if (upload->jobStatus().state == "JOB_STATE_COMPLETED") {
-                        qDebug() << "Completed to upload video."
-                                 << "\n  =" << upload->jobStatus().state
-                                 << "\n  jobId=" << upload->jobStatus().jobId;
-                        emit finished(true);
                     } else {
                         qDebug() << "Check job status."
                                  << "\n  =" << upload->jobStatus().state

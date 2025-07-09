@@ -191,6 +191,7 @@ void video_teset::test_postWithVideo_5()
     ope.setVideoEndpoint(m_service + "/limit/5");
     ope.setAccount(uuid);
     {
+        ope.setText("upload video 5");
         ope.setVideo(":/data/example01.mp4");
 
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
@@ -217,7 +218,7 @@ void video_teset::test_postWithVideo_6()
     ope.setVideoEndpoint(m_service + "/limit/6");
     ope.setAccount(uuid);
     {
-        ope.setText("upload video");
+        ope.setText("upload video 6");
         ope.setVideo(":/data/example01.mp4");
 
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
