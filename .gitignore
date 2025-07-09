@@ -53,6 +53,7 @@ compile_commands.json
 
 *_qmlcache.qrc
 
+.qmlls.ini
 
 scripts/out/*
 scripts/out_ex/*
