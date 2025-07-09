@@ -180,6 +180,55 @@ struct Relationship
 };
 }
 
+// app.bsky.notification.defs
+namespace AppBskyNotificationDefs {
+struct ActivitySubscription
+{
+    bool post = false;
+    bool reply = false;
+};
+struct RecordDeleted
+{
+};
+struct ChatPreference
+{
+    QString include;
+    bool push = false;
+};
+struct FilterablePreference
+{
+    QString include;
+    bool list = false;
+    bool push = false;
+};
+struct Preference
+{
+    bool list = false;
+    bool push = false;
+};
+struct Preferences
+{
+    ChatPreference chat;
+    FilterablePreference follow;
+    FilterablePreference like;
+    FilterablePreference likeViaRepost;
+    FilterablePreference mention;
+    FilterablePreference quote;
+    FilterablePreference reply;
+    FilterablePreference repost;
+    FilterablePreference repostViaRepost;
+    Preference starterpackJoined;
+    Preference subscribedPost;
+    Preference unverified;
+    Preference verified;
+};
+struct SubjectActivitySubscription
+{
+    QString subject; // did
+    ActivitySubscription activitySubscription;
+};
+}
+
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 struct ViewExternal
@@ -307,6 +356,10 @@ struct ProfileAssociatedChat
 {
     QString allowIncoming;
 };
+struct ProfileAssociatedActivitySubscription
+{
+    QString allowSubscriptions;
+};
 struct ProfileAssociated
 {
     int lists = 0;
@@ -314,6 +367,7 @@ struct ProfileAssociated
     int starterPacks = 0;
     bool labeler = false;
     ProfileAssociatedChat chat;
+    ProfileAssociatedActivitySubscription activitySubscription;
 };
 struct KnownFollowers
 {
@@ -330,6 +384,7 @@ struct ViewerState
     QString following; // at-uri
     QString followedBy; // at-uri
     KnownFollowers knownFollowers;
+    AppBskyNotificationDefs::ActivitySubscription activitySubscription;
 };
 struct VerificationView
 {
@@ -1342,10 +1397,13 @@ struct Main
 };
 }
 
-// app.bsky.notification.defs
-namespace AppBskyNotificationDefs {
-struct RecordDeleted
+// app.bsky.notification.declaration
+namespace AppBskyNotificationDeclaration {
+struct Main
 {
+    QString allowSubscriptions; // A declaration of the user's preference for allowing activity
+                                // subscriptions from other users. Absence of a record implies
+                                // 'followers'.
 };
 }
 
@@ -1409,51 +1467,6 @@ struct TrendView
     QString category;
     QList<AppBskyActorDefs::ProfileViewBasic> actors;
 };
-}
-
-// app.bsky.unspecced.getConfig
-namespace AppBskyUnspeccedGetConfig {
-struct LiveNowConfig
-{
-    QString did; // did
-    QList<QString> domains;
-};
-}
-
-// app.bsky.unspecced.getPostThreadHiddenV2
-namespace AppBskyUnspeccedGetPostThreadHiddenV2 {
-enum class ThreadHiddenItemValueType : int {
-    none,
-    value_ThreadHiddenItemPost,
-};
-struct ThreadHiddenItemPost
-{
-    AppBskyFeedDefs::PostView post;
-    bool hiddenByThreadgate = false; // The threadgate created by the author indicates this post as
-                                     // a reply to be hidden for everyone consuming the thread.
-    bool mutedByViewer = false; // This is by an account muted by the viewer requesting it.
-};
-struct ThreadHiddenItem
-{
-    QString uri; // at-uri
-    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
-                   // Items above have negative depths, items below have positive depths.
-    // union start : value
-    ThreadHiddenItemValueType value_type = ThreadHiddenItemValueType::none;
-    ThreadHiddenItemPost value_ThreadHiddenItemPost;
-    // union end : value
-};
-}
-
-// app.bsky.unspecced.getPostThreadV2
-namespace AppBskyUnspeccedGetPostThreadV2 {
-enum class ThreadItemValueType : int {
-    none,
-    value_ThreadItemPost,
-    value_ThreadItemNoUnauthenticated,
-    value_ThreadItemNotFound,
-    value_ThreadItemBlocked,
-};
 struct ThreadItemPost
 {
     AppBskyFeedDefs::PostView post;
@@ -1463,6 +1476,9 @@ struct ThreadItemPost
                          // is a numeric value, which is best-effort and might not be accurate.
     bool opThread = false; // This post is part of a contiguous thread by the OP from the thread
                            // root. Many different OP threads can happen in the same thread.
+    bool hiddenByThreadgate = false; // The threadgate created by the author indicates this post as
+                                     // a reply to be hidden for everyone consuming the thread.
+    bool mutedByViewer = false; // This is by an account muted by the viewer requesting it.
 };
 struct ThreadItemNoUnauthenticated
 {
@@ -1474,6 +1490,23 @@ struct ThreadItemBlocked
 {
     AppBskyFeedDefs::BlockedAuthor author;
 };
+}
+
+// app.bsky.unspecced.getConfig
+namespace AppBskyUnspeccedGetConfig {
+struct LiveNowConfig
+{
+    QString did; // did
+    QList<QString> domains;
+};
+}
+
+// app.bsky.unspecced.getPostThreadOtherV2
+namespace AppBskyUnspeccedGetPostThreadOtherV2 {
+enum class ThreadItemValueType : int {
+    none,
+    value_AppBskyUnspeccedDefs_ThreadItemPost,
+};
 struct ThreadItem
 {
     QString uri; // at-uri
@@ -1481,10 +1514,32 @@ struct ThreadItem
                    // Items above have negative depths, items below have positive depths.
     // union start : value
     ThreadItemValueType value_type = ThreadItemValueType::none;
-    ThreadItemPost value_ThreadItemPost;
-    ThreadItemNoUnauthenticated value_ThreadItemNoUnauthenticated;
-    ThreadItemNotFound value_ThreadItemNotFound;
-    ThreadItemBlocked value_ThreadItemBlocked;
+    AppBskyUnspeccedDefs::ThreadItemPost value_AppBskyUnspeccedDefs_ThreadItemPost;
+    // union end : value
+};
+}
+
+// app.bsky.unspecced.getPostThreadV2
+namespace AppBskyUnspeccedGetPostThreadV2 {
+enum class ThreadItemValueType : int {
+    none,
+    value_AppBskyUnspeccedDefs_ThreadItemPost,
+    value_AppBskyUnspeccedDefs_ThreadItemNoUnauthenticated,
+    value_AppBskyUnspeccedDefs_ThreadItemNotFound,
+    value_AppBskyUnspeccedDefs_ThreadItemBlocked,
+};
+struct ThreadItem
+{
+    QString uri; // at-uri
+    int depth = 0; // The nesting level of this item in the thread. Depth 0 means the anchor item.
+                   // Items above have negative depths, items below have positive depths.
+    // union start : value
+    ThreadItemValueType value_type = ThreadItemValueType::none;
+    AppBskyUnspeccedDefs::ThreadItemPost value_AppBskyUnspeccedDefs_ThreadItemPost;
+    AppBskyUnspeccedDefs::ThreadItemNoUnauthenticated
+            value_AppBskyUnspeccedDefs_ThreadItemNoUnauthenticated;
+    AppBskyUnspeccedDefs::ThreadItemNotFound value_AppBskyUnspeccedDefs_ThreadItemNotFound;
+    AppBskyUnspeccedDefs::ThreadItemBlocked value_AppBskyUnspeccedDefs_ThreadItemBlocked;
     // union end : value
 };
 }
