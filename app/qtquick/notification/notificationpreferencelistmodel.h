@@ -1,0 +1,109 @@
+#ifndef NOTIFICATIONPREFERENCELISTMODEL_H
+#define NOTIFICATIONPREFERENCELISTMODEL_H
+
+#include "atprotocol/lexicons.h"
+#include "tools/accountmanager.h"
+
+#include <QAbstractListModel>
+#include <QObject>
+
+class NotificationPreferenceListModel : public QAbstractListModel
+{
+    Q_OBJECT
+
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(QString account READ account WRITE setAccount NOTIFY accountChanged)
+
+public:
+    explicit NotificationPreferenceListModel(QObject *parent = nullptr);
+
+    enum PreferenceRoles {
+        TypeRole = Qt::UserRole + 1,
+        DisplayNameRole,
+        IncludeRole,
+        ListRole,
+        PushRole,
+        CategoryRole
+    };
+    Q_ENUM(PreferenceRoles)
+
+    // リストモデルの基本実装
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant item(int row, PreferenceRoles role) const;
+    QHash<int, QByteArray> roleNames() const override;
+
+    enum PreferenceType {
+        ChatType,
+        FollowType,
+        LikeType,
+        LikeViaRepostType,
+        MentionType,
+        QuoteType,
+        ReplyType,
+        RepostType,
+        RepostViaRepostType,
+        StarterpackJoinedType,
+        SubscribedPostType,
+        UnverifiedType,
+        VerifiedType
+    };
+    Q_ENUM(PreferenceType)
+
+    enum PreferenceCategory {
+        SocialCategory,      // フォロー、いいね、リポスト等
+        InteractionCategory, // メンション、引用、リプライ
+        SystemCategory,      // チャット、認証済み/未認証
+        ActivityCategory     // スターターパック、サブスクリプション
+    };
+    Q_ENUM(PreferenceCategory)
+
+    // プロパティのアクセサ
+    bool running() const { return m_running; }
+    QString account() const { return m_account.uuid; }
+
+    AtProtocolInterface::AccountData getAccountData() const;
+    void setAccount(const QString &uuid);
+
+    // 設定項目の更新メソッド
+    Q_INVOKABLE void updateInclude(int index, const QString &include);
+    Q_INVOKABLE void updateList(int index, bool list);
+    Q_INVOKABLE void updatePush(int index, bool push);
+
+    // 設定の読み込みと保存
+    Q_INVOKABLE void loadPreferences();
+    Q_INVOKABLE void savePreferences();
+
+    // 便利メソッド
+    Q_INVOKABLE QString getIncludeDisplayName(const QString &include) const;
+    Q_INVOKABLE QStringList getAvailableIncludeOptions(int type) const;
+
+signals:
+    void runningChanged();
+    void accountChanged();
+    void errorOccurred(const QString &error);
+    void preferencesUpdated();
+
+private:
+    struct PreferenceItem {
+        PreferenceType type;
+        QString displayName;
+        QString include;
+        bool list;
+        bool push;
+        PreferenceCategory category;
+        bool hasInclude;  // include設定があるかどうか
+    };
+
+    void setRunning(bool running);
+    void setupPreferenceItems();
+    void updateFromAtProtocolPreferences(const AtProtocolType::AppBskyNotificationDefs::Preferences &prefs);
+    AtProtocolType::AppBskyNotificationDefs::Preferences createAtProtocolPreferences() const;
+    QJsonObject createPreferenceJson(const PreferenceItem &item) const;
+
+    QList<PreferenceItem> m_preferenceItems;
+    bool m_running;
+    AtProtocolInterface::AccountData m_account;
+};
+
+#endif // NOTIFICATIONPREFERENCELISTMODEL_H

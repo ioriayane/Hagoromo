@@ -91,6 +91,8 @@ add_library(HagoromoGuiLib STATIC
     moderation/reporter.h
     notification/notificationlistmodel.cpp
     notification/notificationlistmodel.h
+    notification/notificationpreferencelistmodel.cpp
+    notification/notificationpreferencelistmodel.h
     operation/recordoperator.cpp
     operation/recordoperator.h
     operation/skybluroperator.cpp
