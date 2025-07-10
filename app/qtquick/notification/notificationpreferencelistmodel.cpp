@@ -489,7 +489,12 @@ QJsonObject NotificationPreferenceListModel::createPreferenceJson(const Preferen
     if (item.hasInclude) {
         json["include"] = item.include;
     }
-    json["list"] = item.list;
+    
+    // chatPreferenceにはlistフィールドがない
+    if (item.type != ChatType) {
+        json["list"] = item.list;
+    }
+    
     json["push"] = item.push;
     
     return json;

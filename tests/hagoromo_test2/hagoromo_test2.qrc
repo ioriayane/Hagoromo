@@ -38,5 +38,8 @@
         <file>response/account/account1/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/account/account2/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/notification/preference/0/xrpc/app.bsky.notification.getPreferences</file>
+        <file>response/notification/preference/save/xrpc/app.bsky.notification.getPreferences</file>
+        <file>response/notification/preference/save/xrpc/app.bsky.notification.putPreferencesV2</file>
+        <file>data/notification/preference/save/app.bsky.notification.putPreferences</file>
     </qresource>
 </RCC>

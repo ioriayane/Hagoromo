@@ -42,6 +42,7 @@ private slots:
     void test_ListItemListModel_error();
     void test_ListFeedListModel();
     void test_NotificationPreferenceListModel();
+    void test_NotificationPreferenceListModel_save();
 
 private:
     WebServer m_mockServer;
@@ -51,6 +52,7 @@ private:
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
+    void test_putNotificationPreferences(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
@@ -79,6 +81,10 @@ hagoromo_test::hagoromo_test()
                     result = true;
                 } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
                     test_putRecord(request.url().path(), request.body());
+                    json = "{}";
+                    result = true;
+                } else if (request.url().path().endsWith("/xrpc/app.bsky.notification.putPreferencesV2")) {
+                    test_putNotificationPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
                 } else if (request.url().path().endsWith(
@@ -950,6 +956,39 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     }
 }
 
+void hagoromo_test::test_NotificationPreferenceListModel_save()
+{
+    // テストリソースファイルの存在確認
+    QFile resourceFile(":/data/notification/preference/save/app.bsky.notification.putPreferences");
+    QVERIFY2(resourceFile.exists(), "Test resource file should exist");
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notification/preference/save", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "hogehoge.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
+    NotificationPreferenceListModel model;
+    model.setAccount(uuid);
+    
+    // 初期状態のデータロード
+    {
+        QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
+        model.loadPreferences();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("loadPreferences spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    // 保存処理のテスト - savePreferences()が期待通りのJSONを送信するかを検証
+    {
+        QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
+        model.savePreferences();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("savePreferences spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    
+    qDebug() << "=== savePreferences() test completed successfully ===";
+}
+
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -1008,6 +1047,18 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
         QVERIFY(false);
     }
 
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
+}
+
+void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect = UnitTestCommon::loadJson(":/data/notification/preference/save/app.bsky.notification.putPreferences");
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
 
     if (json_doc_expect.object() != json_doc.object()) {
