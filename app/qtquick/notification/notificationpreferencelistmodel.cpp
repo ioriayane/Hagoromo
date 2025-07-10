@@ -9,6 +9,7 @@
 NotificationPreferenceListModel::NotificationPreferenceListModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_running(false)
+    , m_modified(false)
 {
     setupPreferenceItems();
 }
@@ -44,7 +45,22 @@ QVariant NotificationPreferenceListModel::item(int row, PreferenceRoles role) co
     case PushRole:
         return item.push;
     case CategoryRole:
-        return static_cast<int>(item.category);
+        switch (item.category) {
+        case SocialCategory:
+            return tr("Social");
+        case InteractionCategory:
+            return tr("Interaction");
+        case SystemCategory:
+            return tr("System");
+        case ActivityCategory:
+            return tr("Activity");
+        default:
+            return tr("Other");
+        }
+    case EnabledRole:
+        return item.list || item.push;  // list または push が有効なら enabled
+    case DescriptionRole:
+        return tr("Configure notification settings for %1").arg(item.displayName);
     default:
         return QVariant();
     }
@@ -59,6 +75,8 @@ QHash<int, QByteArray> NotificationPreferenceListModel::roleNames() const
     roles[ListRole] = "list";
     roles[PushRole] = "push";
     roles[CategoryRole] = "category";
+    roles[EnabledRole] = "enabled";
+    roles[DescriptionRole] = "description";
     return roles;
 }
 
@@ -140,6 +158,7 @@ void NotificationPreferenceListModel::loadPreferences()
 
                 const auto &prefs = getPreferences->preferences();
                 updateFromAtProtocolPreferences(prefs);
+                setModified(false);  // ロード完了後はmodifiedをfalseに
                 emit preferencesUpdated();
                 getPreferences->deleteLater();
             });
@@ -175,6 +194,7 @@ void NotificationPreferenceListModel::savePreferences()
                     return;
                 }
 
+                setModified(false);  // 保存完了後はmodifiedをfalseに
                 emit preferencesUpdated();
                 putPreferences->deleteLater();
             });
@@ -267,6 +287,15 @@ void NotificationPreferenceListModel::setRunning(bool running)
     }
     m_running = running;
     emit runningChanged();
+}
+
+void NotificationPreferenceListModel::setModified(bool modified)
+{
+    if (m_modified == modified) {
+        return;
+    }
+    m_modified = modified;
+    emit modifiedChanged();
 }
 
 void NotificationPreferenceListModel::setupPreferenceItems()
@@ -498,4 +527,70 @@ QJsonObject NotificationPreferenceListModel::createPreferenceJson(const Preferen
     json["push"] = item.push;
     
     return json;
+}
+
+bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_preferenceItems.size()) {
+        return false;
+    }
+
+    PreferenceItem &item = m_preferenceItems[index.row()];
+    bool changed = false;
+
+    switch (static_cast<PreferenceRoles>(role)) {
+    case IncludeRole:
+        if (item.include != value.toString()) {
+            item.include = value.toString();
+            changed = true;
+        }
+        break;
+    case ListRole:
+        if (item.list != value.toBool()) {
+            item.list = value.toBool();
+            changed = true;
+        }
+        break;
+    case PushRole:
+        if (item.push != value.toBool()) {
+            item.push = value.toBool();
+            changed = true;
+        }
+        break;
+    case EnabledRole:
+        // enabled はlist と push の組み合わせ
+        if (value.toBool()) {
+            // 有効にする場合、list を true に設定
+            if (!item.list) {
+                item.list = true;
+                changed = true;
+            }
+        } else {
+            // 無効にする場合、list と push の両方を false に設定
+            if (item.list || item.push) {
+                item.list = false;
+                item.push = false;
+                changed = true;
+            }
+        }
+        break;
+    default:
+        return false;
+    }
+
+    if (changed) {
+        setModified(true);
+        emit dataChanged(index, index, { role });
+        return true;
+    }
+
+    return false;
+}
+
+Qt::ItemFlags NotificationPreferenceListModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid()) {
+        return Qt::NoItemFlags;
+    }
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }

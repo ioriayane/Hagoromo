@@ -12,6 +12,7 @@ class NotificationPreferenceListModel : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(bool modified READ modified NOTIFY modifiedChanged)
     Q_PROPERTY(QString account READ account WRITE setAccount NOTIFY accountChanged)
 
 public:
@@ -23,13 +24,17 @@ public:
         IncludeRole,
         ListRole,
         PushRole,
-        CategoryRole
+        CategoryRole,
+        EnabledRole,
+        DescriptionRole
     };
     Q_ENUM(PreferenceRoles)
 
     // リストモデルの基本実装
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant item(int row, PreferenceRoles role) const;
     QHash<int, QByteArray> roleNames() const override;
 
@@ -60,6 +65,7 @@ public:
 
     // プロパティのアクセサ
     bool running() const { return m_running; }
+    bool modified() const { return m_modified; }
     QString account() const { return m_account.uuid; }
 
     AtProtocolInterface::AccountData getAccountData() const;
@@ -71,6 +77,8 @@ public:
     Q_INVOKABLE void updatePush(int index, bool push);
 
     // 設定の読み込みと保存
+    Q_INVOKABLE void load() { loadPreferences(); }
+    Q_INVOKABLE void save() { savePreferences(); }
     Q_INVOKABLE void loadPreferences();
     Q_INVOKABLE void savePreferences();
 
@@ -80,6 +88,7 @@ public:
 
 signals:
     void runningChanged();
+    void modifiedChanged();
     void accountChanged();
     void errorOccurred(const QString &error);
     void preferencesUpdated();
@@ -96,6 +105,7 @@ private:
     };
 
     void setRunning(bool running);
+    void setModified(bool modified);
     void setupPreferenceItems();
     void updateFromAtProtocolPreferences(const AtProtocolType::AppBskyNotificationDefs::Preferences &prefs);
     AtProtocolType::AppBskyNotificationDefs::Preferences createAtProtocolPreferences() const;
@@ -103,6 +113,7 @@ private:
 
     QList<PreferenceItem> m_preferenceItems;
     bool m_running;
+    bool m_modified;
     AtProtocolInterface::AccountData m_account;
 };
 

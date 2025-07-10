@@ -1,0 +1,219 @@
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
+
+import tech.relog.hagoromo.notificationpreferencelistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
+
+import "../controls"
+import "../data"
+import "../parts"
+
+Dialog {
+    id: notificationPreferenceSettingDialog
+    modal: true
+    x: (parent.width - width) * 0.5
+    y: (parent.height - height) * 0.5
+    title: qsTr("Notification Preferences")
+
+    property bool ready: false
+    property alias account: account
+    Account {
+        id: account
+    }
+    onOpened: {
+        if(account.service.length === 0){
+            return
+        }
+        notificationPreferenceListModel.load()
+        notificationPreferenceSettingDialog.ready = true
+    }
+    onClosed: {
+        notificationPreferenceSettingDialog.ready = false
+    }
+
+    ColumnLayout {
+        spacing: 0
+        RowLayout {
+            Layout.bottomMargin: 10
+            AvatarImage {
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
+                source: account.avatar
+            }
+            Label {
+                font.pointSize: AdjustedValues.f10
+                text: account.handle
+                elide: Text.ElideRight
+            }
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+            }
+        }
+
+        ScrollView {
+            id: settingScrollView
+            Layout.bottomMargin: 10
+            Layout.preferredWidth: 500 * AdjustedValues.ratio
+            Layout.preferredHeight: 400 * AdjustedValues.ratio
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            enabled: !notificationPreferenceListModel.running && notificationPreferenceSettingDialog.ready
+
+            ListView {
+                id: settingListView
+                clip: true
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+                model: NotificationPreferenceListModel {
+                    id: notificationPreferenceListModel
+                    account: account.uuid
+                }
+                
+                section.property: "category"
+                section.criteria: ViewSection.FullString
+                section.labelPositioning: ViewSection.InlineLabels
+                section.delegate: Rectangle {
+                    id: sectionHeader
+                    width: settingListView.width
+                    height: 40 * AdjustedValues.ratio
+                    color: Material.color(Material.Grey, Material.Shade200)
+                    Label {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pointSize: AdjustedValues.f10
+                        font.bold: true
+                        text: section
+                    }
+                }
+
+                delegate: Rectangle {
+                    id: listItemLayout
+                    width: settingListView.width
+                    height: enabled ? (contentLayout.height + 20 * AdjustedValues.ratio) : 0
+                    visible: enabled
+                    enabled: true  // 常に表示
+                    color: "transparent"
+
+                    ColumnLayout {
+                        id: contentLayout
+                        anchors.fill: parent
+                        anchors.margins: 10 * AdjustedValues.ratio
+                        spacing: 5 * AdjustedValues.ratio
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10 * AdjustedValues.ratio
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 3
+                                Label {
+                                    Layout.fillWidth: true
+                                    font.pointSize: AdjustedValues.f10
+                                    text: model.displayName
+                                    wrapMode: Text.Wrap
+                                }
+                                Label {
+                                    Layout.fillWidth: true
+                                    wrapMode: Text.Wrap
+                                    font.pointSize: AdjustedValues.f8
+                                    color: Material.color(Material.Grey)
+                                    text: model.description
+                                    visible: model.description.length > 0
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 15 * AdjustedValues.ratio
+
+                            RowLayout {
+                                spacing: 5 * AdjustedValues.ratio
+                                Label {
+                                    font.pointSize: AdjustedValues.f8
+                                    text: qsTr("Timeline")
+                                }
+                                Switch {
+                                    id: listSwitch
+                                    checked: model.list
+                                    onCheckedChanged: {
+                                        if (checked !== model.list) {
+                                            notificationPreferenceListModel.setData(
+                                                notificationPreferenceListModel.index(model.index, 0),
+                                                checked,
+                                                NotificationPreferenceListModel.ListRole
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                spacing: 5 * AdjustedValues.ratio
+                                Label {
+                                    font.pointSize: AdjustedValues.f8
+                                    text: qsTr("Push notification")
+                                }
+                                Switch {
+                                    id: pushSwitch
+                                    checked: model.push
+                                    onCheckedChanged: {
+                                        if (checked !== model.push) {
+                                            notificationPreferenceListModel.setData(
+                                                notificationPreferenceListModel.index(model.index, 0),
+                                                checked,
+                                                NotificationPreferenceListModel.PushRole
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1
+                        color: Material.color(Material.Grey, Material.Shade300)
+                    }
+                }
+            }
+        }
+
+        RowLayout {
+            Button {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Cancel")
+                flat: true
+                onClicked: notificationPreferenceSettingDialog.reject()
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+            Button {
+                id: applyButton
+                enabled: !notificationPreferenceListModel.running && notificationPreferenceSettingDialog.ready
+                font.pointSize: AdjustedValues.f10
+                highlighted: notificationPreferenceListModel.modified
+                text: qsTr("Apply")
+                onClicked: {
+                    notificationPreferenceListModel.save()
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: notificationPreferenceListModel.running
+                }
+            }
+        }
+    }
+}
