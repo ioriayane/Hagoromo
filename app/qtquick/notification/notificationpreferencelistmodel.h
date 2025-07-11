@@ -58,7 +58,7 @@ public:
     enum PreferenceCategory {
         SocialCategory,      // フォロー、いいね、リポスト等
         InteractionCategory, // メンション、引用、リプライ
-        SystemCategory,      // チャット、認証済み/未認証
+        SystemCategory,      // 認証済み/未認証
         ActivityCategory     // スターターパック、サブスクリプション
     };
     Q_ENUM(PreferenceCategory)
@@ -72,6 +72,7 @@ public:
     void setAccount(const QString &uuid);
 
     // 設定項目の更新メソッド
+    Q_INVOKABLE void update(int row, PreferenceRoles role, const QVariant &value);
     Q_INVOKABLE void updateInclude(int index, const QString &include);
     Q_INVOKABLE void updateList(int index, bool list);
     Q_INVOKABLE void updatePush(int index, bool push);
@@ -102,6 +103,7 @@ private:
         bool push;
         PreferenceCategory category;
         bool hasInclude;  // include設定があるかどうか
+        bool enabled;     // 設定項目を表示するかどうか
     };
 
     void setRunning(bool running);

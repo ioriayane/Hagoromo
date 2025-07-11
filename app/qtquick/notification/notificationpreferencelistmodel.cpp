@@ -58,7 +58,7 @@ QVariant NotificationPreferenceListModel::item(int row, PreferenceRoles role) co
             return tr("Other");
         }
     case EnabledRole:
-        return item.list || item.push;  // list または push が有効なら enabled
+        return item.enabled;
     case DescriptionRole:
         return tr("Configure notification settings for %1").arg(item.displayName);
     default:
@@ -96,39 +96,17 @@ AtProtocolInterface::AccountData NotificationPreferenceListModel::getAccountData
 
 void NotificationPreferenceListModel::updateInclude(int index, const QString &include)
 {
-    if (index < 0 || index >= m_preferenceItems.size()) {
-        return;
-    }
-
-    if (!m_preferenceItems[index].hasInclude) {
-        return;
-    }
-
-    m_preferenceItems[index].include = include;
-    QModelIndex modelIndex = this->index(index);
-    emit dataChanged(modelIndex, modelIndex, { IncludeRole });
+    update(index, IncludeRole, include);
 }
 
 void NotificationPreferenceListModel::updateList(int index, bool list)
 {
-    if (index < 0 || index >= m_preferenceItems.size()) {
-        return;
-    }
-
-    m_preferenceItems[index].list = list;
-    QModelIndex modelIndex = this->index(index);
-    emit dataChanged(modelIndex, modelIndex, { ListRole });
+    update(index, ListRole, list);
 }
 
 void NotificationPreferenceListModel::updatePush(int index, bool push)
 {
-    if (index < 0 || index >= m_preferenceItems.size()) {
-        return;
-    }
-
-    m_preferenceItems[index].push = push;
-    QModelIndex modelIndex = this->index(index);
-    emit dataChanged(modelIndex, modelIndex, { PushRole });
+    update(index, PushRole, push);
 }
 
 void NotificationPreferenceListModel::loadPreferences()
@@ -302,16 +280,6 @@ void NotificationPreferenceListModel::setupPreferenceItems()
 {
     m_preferenceItems.clear();
 
-    // チャット設定
-    m_preferenceItems.append({
-        ChatType,
-        tr("Chat"),
-        "all",
-        false,
-        false,
-        SystemCategory,
-        true
-    });
 
     // ソーシャルカテゴリ
     m_preferenceItems.append({
@@ -321,7 +289,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SocialCategory,
-        true
+        true,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -331,17 +300,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SocialCategory,
-        true
-    });
-
-    m_preferenceItems.append({
-        LikeViaRepostType,
-        tr("Like via Repost"),
-        "all",
         true,
-        true,
-        SocialCategory,
-        true
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -351,7 +311,19 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SocialCategory,
-        true
+        true,
+        true  // enabled
+    });
+
+    m_preferenceItems.append({
+        LikeViaRepostType,
+        tr("Like via Repost"),
+        "all",
+        true,
+        true,
+        SocialCategory,
+        true,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -361,7 +333,19 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SocialCategory,
-        true
+        true,
+        true  // enabled
+    });
+
+    m_preferenceItems.append({
+        ChatType,
+        tr("Chat"),
+        "all",
+        false,
+        false,
+        SocialCategory,
+        true,
+        false  // enabled
     });
 
     // インタラクションカテゴリ
@@ -372,7 +356,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         InteractionCategory,
-        true
+        true,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -382,7 +367,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         InteractionCategory,
-        true
+        true,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -392,7 +378,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         InteractionCategory,
-        true
+        true,
+        true  // enabled
     });
 
     // システムカテゴリ
@@ -403,7 +390,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SystemCategory,
-        false
+        false,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -413,7 +401,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         SystemCategory,
-        false
+        false,
+        true  // enabled
     });
 
     // アクティビティカテゴリ
@@ -424,7 +413,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         ActivityCategory,
-        false
+        false,
+        true  // enabled
     });
 
     m_preferenceItems.append({
@@ -434,7 +424,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         true,
         ActivityCategory,
-        false
+        false,
+        true  // enabled
     });
 }
 
@@ -558,20 +549,9 @@ bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QV
         }
         break;
     case EnabledRole:
-        // enabled はlist と push の組み合わせ
-        if (value.toBool()) {
-            // 有効にする場合、list を true に設定
-            if (!item.list) {
-                item.list = true;
-                changed = true;
-            }
-        } else {
-            // 無効にする場合、list と push の両方を false に設定
-            if (item.list || item.push) {
-                item.list = false;
-                item.push = false;
-                changed = true;
-            }
+        if (item.enabled != value.toBool()) {
+            item.enabled = value.toBool();
+            changed = true;
         }
         break;
     default:
@@ -585,6 +565,51 @@ bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QV
     }
 
     return false;
+}
+
+void NotificationPreferenceListModel::update(int row, PreferenceRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= m_preferenceItems.size()) {
+        return;
+    }
+
+    PreferenceItem &item = m_preferenceItems[row];
+    bool changed = false;
+
+    switch (role) {
+    case IncludeRole:
+        if (item.hasInclude && item.include != value.toString()) {
+            item.include = value.toString();
+            changed = true;
+        }
+        break;
+    case ListRole:
+        if (item.list != value.toBool()) {
+            item.list = value.toBool();
+            changed = true;
+        }
+        break;
+    case PushRole:
+        if (item.push != value.toBool()) {
+            item.push = value.toBool();
+            changed = true;
+        }
+        break;
+    case EnabledRole:
+        if (item.enabled != value.toBool()) {
+            item.enabled = value.toBool();
+            changed = true;
+        }
+        break;
+    default:
+        return;
+    }
+
+    if (changed) {
+        setModified(true);
+        QModelIndex modelIndex = this->index(row);
+        emit dataChanged(modelIndex, modelIndex, { role });
+    }
 }
 
 Qt::ItemFlags NotificationPreferenceListModel::flags(const QModelIndex &index) const

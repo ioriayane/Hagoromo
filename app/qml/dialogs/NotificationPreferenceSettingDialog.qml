@@ -92,16 +92,14 @@ Dialog {
                 delegate: Rectangle {
                     id: listItemLayout
                     width: settingListView.width
-                    height: enabled ? (contentLayout.height + 20 * AdjustedValues.ratio) : 0
-                    visible: enabled
-                    enabled: true  // 常に表示
+                    height: model.enabled ? (contentLayout.height + 20 * AdjustedValues.ratio) : 0
+                    visible: model.enabled
                     color: "transparent"
 
                     ColumnLayout {
                         id: contentLayout
-                        anchors.fill: parent
-                        anchors.margins: 10 * AdjustedValues.ratio
-                        spacing: 5 * AdjustedValues.ratio
+                        Layout.fillWidth: true
+                        spacing: 8 * AdjustedValues.ratio
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -135,17 +133,17 @@ Dialog {
                                 spacing: 5 * AdjustedValues.ratio
                                 Label {
                                     font.pointSize: AdjustedValues.f8
-                                    text: qsTr("Timeline")
+                                    text: qsTr("In-app notifications")
                                 }
                                 Switch {
                                     id: listSwitch
                                     checked: model.list
                                     onCheckedChanged: {
                                         if (checked !== model.list) {
-                                            notificationPreferenceListModel.setData(
-                                                notificationPreferenceListModel.index(model.index, 0),
-                                                checked,
-                                                NotificationPreferenceListModel.ListRole
+                                            notificationPreferenceListModel.update(
+                                                model.index,
+                                                NotificationPreferenceListModel.ListRole,
+                                                checked
                                             )
                                         }
                                     }
@@ -156,17 +154,17 @@ Dialog {
                                 spacing: 5 * AdjustedValues.ratio
                                 Label {
                                     font.pointSize: AdjustedValues.f8
-                                    text: qsTr("Push notification")
+                                    text: qsTr("Push notifications")
                                 }
                                 Switch {
                                     id: pushSwitch
                                     checked: model.push
                                     onCheckedChanged: {
                                         if (checked !== model.push) {
-                                            notificationPreferenceListModel.setData(
-                                                notificationPreferenceListModel.index(model.index, 0),
-                                                checked,
-                                                NotificationPreferenceListModel.PushRole
+                                            notificationPreferenceListModel.update(
+                                                model.index,
+                                                NotificationPreferenceListModel.PushRole,
+                                                checked
                                             )
                                         }
                                     }
