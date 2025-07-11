@@ -170,9 +170,40 @@ Dialog {
                                     }
                                 }
                             }
+                        }
 
-                            Item {
-                                Layout.fillWidth: true
+                        // Include settings - only show if the preference type supports it
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10 * AdjustedValues.ratio
+                            visible: model.includeType !== undefined && model.includeType !== NotificationPreferenceListModel.NoInclude
+
+                            Label {
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Include notifications from")
+                            }
+
+                            property var availableOptions: model.type !== undefined ? 
+                                notificationPreferenceListModel.getAvailableIncludeOptions(model.type) : []
+                            property int optionIndex: availableOptions.indexOf(model.include)
+
+                            function updateInclude(newInclude) {
+                                if (newInclude !== model.include) {
+                                    notificationPreferenceListModel.update(
+                                        model.index,
+                                        NotificationPreferenceListModel.IncludeRole,
+                                        newInclude
+                                    )
+                                }
+                            }
+
+                            ComboBox {
+                                id: includeComboBox
+                                Layout.preferredWidth: 150 * AdjustedValues.ratio
+                                font.pointSize: AdjustedValues.f8
+                                model: parent.availableOptions
+                                onModelChanged: currentIndex = parent.optionIndex
+                                onActivated: parent.updateInclude(currentText)
                             }
                         }
                     }
@@ -190,7 +221,7 @@ Dialog {
         RowLayout {
             Button {
                 font.pointSize: AdjustedValues.f10
-                text: qsTr("Cancel")
+                text: qsTr("Close")
                 flat: true
                 onClicked: notificationPreferenceSettingDialog.reject()
             }

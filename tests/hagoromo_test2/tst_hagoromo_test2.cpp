@@ -765,43 +765,43 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     
     // リソースファイルから読み込まれた実際の設定値の詳細検証
     
-    // Chat (System category) - リソース: include="all", push=true
-    QVERIFY(model.item(0, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::ChatType);
-    QVERIFY(model.item(0, NotificationPreferenceListModel::CategoryRole).toString()
-            == "System");
-    QVERIFY2(model.item(0, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Chat include expected 'all', got '%1'")
-             .arg(model.item(0, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
-    QVERIFY2(model.item(0, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Chat push should be true from resource");
-    
     // Follow (Social category) - リソース: include="all", list=true, push=false
-    QVERIFY(model.item(1, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(0, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::FollowType);
-    QVERIFY(model.item(1, NotificationPreferenceListModel::CategoryRole).toString()
+    QVERIFY(model.item(0, NotificationPreferenceListModel::CategoryRole).toString()
             == "Social");
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::IncludeRole).toString() == "all",
              QString("Follow include expected 'all', got '%1'")
-             .arg(model.item(1, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::ListRole).toBool() == true,
+             .arg(model.item(0, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::ListRole).toBool() == true,
              "Follow list should be true from resource");
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::PushRole).toBool() == false,
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::PushRole).toBool() == false,
              "Follow push should be false from resource");
     
     // Like (Social category) - リソース: include="all", list=true, push=true
-    QVERIFY(model.item(2, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(1, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::LikeType);
-    QVERIFY(model.item(2, NotificationPreferenceListModel::CategoryRole).toString()
+    QVERIFY(model.item(1, NotificationPreferenceListModel::CategoryRole).toString()
             == "Social");
-    QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::IncludeRole).toString() == "all",
              QString("Like include expected 'all', got '%1'")
+             .arg(model.item(1, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Like list should be true from resource");
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Like push should be true from resource");
+
+    // Repost (Social category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(2, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::RepostType);
+    QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Repost include expected 'all', got '%1'")
              .arg(model.item(2, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
     QVERIFY2(model.item(2, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Like list should be true from resource");
+             "Repost list should be true from resource");
     QVERIFY2(model.item(2, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Like push should be true from resource");
-    
+             "Repost push should be true from resource");
+
     // LikeViaRepost - リソース: include="all", list=true, push=true
     QVERIFY(model.item(3, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::LikeViaRepostType);
@@ -813,101 +813,105 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     QVERIFY2(model.item(3, NotificationPreferenceListModel::PushRole).toBool() == true,
              "LikeViaRepost push should be true from resource");
     
-    // Mention (Interaction category) - リソース: include="all", list=true, push=true
+    // RepostViaRepost - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(4, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::RepostViaRepostType);
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("RepostViaRepost include expected 'all', got '%1'")
+             .arg(model.item(4, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "RepostViaRepost list should be true from resource");
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "RepostViaRepost push should be true from resource");
+
+    // Chat (System category) - リソース: include="all", push=true
+    QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::ChatType);
+    QVERIFY(model.item(5, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Social");
+    QVERIFY2(model.item(5, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Chat include expected 'all', got '%1'")
+             .arg(model.item(5, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(5, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Chat push should be true from resource");
+
+
+    // Reply (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(6, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::MentionType);
+            == NotificationPreferenceListModel::ReplyType);
     QVERIFY(model.item(6, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
     QVERIFY2(model.item(6, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Mention include expected 'all', got '%1'")
+             QString("Reply include expected 'all', got '%1'")
              .arg(model.item(6, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
     QVERIFY2(model.item(6, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Mention list should be true from resource");
+             "Reply list should be true from resource");
     QVERIFY2(model.item(6, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Reply push should be true from resource");
+
+    // Mention (Interaction category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(7, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::MentionType);
+    QVERIFY(model.item(7, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Interaction");
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Mention include expected 'all', got '%1'")
+             .arg(model.item(7, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Mention list should be true from resource");
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::PushRole).toBool() == true,
              "Mention push should be true from resource");
     
     // Quote (Interaction category) - リソース: include="all", list=true, push=true
-    QVERIFY(model.item(7, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::QuoteType);
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Quote include expected 'all', got '%1'")
-             .arg(model.item(7, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Quote list should be true from resource");
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Quote push should be true from resource");
-    
-    // Reply (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(8, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::ReplyType);
-    QVERIFY(model.item(8, NotificationPreferenceListModel::CategoryRole).toString()
-            == "Interaction");
+            == NotificationPreferenceListModel::QuoteType);
     QVERIFY2(model.item(8, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Reply include expected 'all', got '%1'")
+             QString("Quote include expected 'all', got '%1'")
              .arg(model.item(8, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
     QVERIFY2(model.item(8, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Reply list should be true from resource");
+             "Quote list should be true from resource");
     QVERIFY2(model.item(8, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Reply push should be true from resource");
+             "Quote push should be true from resource");
     
-    // Repost (Social category) - リソース: include="all", list=true, push=true
-    QVERIFY(model.item(4, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::RepostType);
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Repost include expected 'all', got '%1'")
-             .arg(model.item(4, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Repost list should be true from resource");
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Repost push should be true from resource");
     
-    // RepostViaRepost - リソース: include="all", list=true, push=true
-    QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::RepostViaRepostType);
-    QVERIFY2(model.item(5, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("RepostViaRepost include expected 'all', got '%1'")
-             .arg(model.item(5, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
-    QVERIFY2(model.item(5, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "RepostViaRepost list should be true from resource");
-    QVERIFY2(model.item(5, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "RepostViaRepost push should be true from resource");
     
     // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
-    QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::StarterpackJoinedType);
-    QVERIFY(model.item(11, NotificationPreferenceListModel::CategoryRole).toString()
+    QVERIFY(model.item(9, NotificationPreferenceListModel::CategoryRole).toString()
             == "Activity");
-    QVERIFY2(model.item(11, NotificationPreferenceListModel::ListRole).toBool() == true,
+    QVERIFY2(model.item(9, NotificationPreferenceListModel::ListRole).toBool() == true,
              "StarterpackJoined list should be true from resource");
-    QVERIFY2(model.item(11, NotificationPreferenceListModel::PushRole).toBool() == true,
+    QVERIFY2(model.item(9, NotificationPreferenceListModel::PushRole).toBool() == true,
              "StarterpackJoined push should be true from resource");
     
     // SubscribedPost (Activity category) - リソース: list=true, push=true (include設定なし)
-    QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(10, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::SubscribedPostType);
-    QVERIFY2(model.item(12, NotificationPreferenceListModel::ListRole).toBool() == true,
+    QVERIFY2(model.item(10, NotificationPreferenceListModel::ListRole).toBool() == true,
              "SubscribedPost list should be true from resource");
-    QVERIFY2(model.item(12, NotificationPreferenceListModel::PushRole).toBool() == true,
+    QVERIFY2(model.item(10, NotificationPreferenceListModel::PushRole).toBool() == true,
              "SubscribedPost push should be true from resource");
-    
+
+
     // Unverified (System category) - リソース: list=true, push=true (include設定なし)
-    QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::UnverifiedType);
-    QVERIFY(model.item(9, NotificationPreferenceListModel::CategoryRole).toString()
+    QVERIFY(model.item(11, NotificationPreferenceListModel::CategoryRole).toString()
             == "System");
-    QVERIFY2(model.item(9, NotificationPreferenceListModel::ListRole).toBool() == true,
+    QVERIFY2(model.item(11, NotificationPreferenceListModel::ListRole).toBool() == true,
              "Unverified list should be true from resource");
-    QVERIFY2(model.item(9, NotificationPreferenceListModel::PushRole).toBool() == true,
+    QVERIFY2(model.item(11, NotificationPreferenceListModel::PushRole).toBool() == true,
              "Unverified push should be true from resource");
     
     // Verified (System category) - リソース: list=true, push=true (include設定なし)
-    QVERIFY(model.item(10, NotificationPreferenceListModel::TypeRole).toInt()
+    QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::VerifiedType);
-    QVERIFY(model.item(10, NotificationPreferenceListModel::CategoryRole).toString()
+    QVERIFY(model.item(12, NotificationPreferenceListModel::CategoryRole).toString()
             == "System");
-    QVERIFY2(model.item(10, NotificationPreferenceListModel::ListRole).toBool() == true,
+    QVERIFY2(model.item(12, NotificationPreferenceListModel::ListRole).toBool() == true,
              "Verified list should be true from resource");
-    QVERIFY2(model.item(10, NotificationPreferenceListModel::PushRole).toBool() == true,
+    QVERIFY2(model.item(12, NotificationPreferenceListModel::PushRole).toBool() == true,
              "Verified push should be true from resource");
     
     // 設定変更のテスト

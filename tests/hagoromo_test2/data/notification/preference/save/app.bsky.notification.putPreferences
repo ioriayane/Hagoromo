@@ -1,8 +1,4 @@
 {
-    "chat": {
-        "include": "all",
-        "push": true
-    },
     "follow": {
         "include": "all",
         "list": true,
@@ -13,7 +9,26 @@
         "list": true,
         "push": true
     },
+    "repost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
     "likeViaRepost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "repostViaRepost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "chat": {
+        "include": "all",
+        "push": true
+    },
+    "reply": {
         "include": "all",
         "list": true,
         "push": true
@@ -24,21 +39,6 @@
         "push": true
     },
     "quote": {
-        "include": "all",
-        "list": true,
-        "push": true
-    },
-    "reply": {
-        "include": "all",
-        "list": true,
-        "push": true
-    },
-    "repost": {
-        "include": "all",
-        "list": true,
-        "push": true
-    },
-    "repostViaRepost": {
         "include": "all",
         "list": true,
         "push": true

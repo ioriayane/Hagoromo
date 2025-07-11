@@ -26,7 +26,8 @@ public:
         PushRole,
         CategoryRole,
         EnabledRole,
-        DescriptionRole
+        DescriptionRole,
+        IncludeTypeRole
     };
     Q_ENUM(PreferenceRoles)
 
@@ -39,15 +40,15 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     enum PreferenceType {
-        ChatType,
         FollowType,
         LikeType,
+        RepostType,
         LikeViaRepostType,
+        RepostViaRepostType,
+        ChatType,
+        ReplyType,
         MentionType,
         QuoteType,
-        ReplyType,
-        RepostType,
-        RepostViaRepostType,
         StarterpackJoinedType,
         SubscribedPostType,
         UnverifiedType,
@@ -62,6 +63,13 @@ public:
         ActivityCategory     // スターターパック、サブスクリプション
     };
     Q_ENUM(PreferenceCategory)
+
+    enum IncludeType {
+        NoInclude,       // include設定なし
+        FollowsInclude,  // all/followsの選択
+        AcceptedInclude  // all/acceptedの選択
+    };
+    Q_ENUM(IncludeType)
 
     // プロパティのアクセサ
     bool running() const { return m_running; }
@@ -102,7 +110,7 @@ private:
         bool list;
         bool push;
         PreferenceCategory category;
-        bool hasInclude;  // include設定があるかどうか
+        IncludeType includeType;  // include設定の種類
         bool enabled;     // 設定項目を表示するかどうか
     };
 
