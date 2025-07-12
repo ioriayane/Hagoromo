@@ -78,7 +78,7 @@ Dialog {
                     id: sectionHeader
                     width: settingListView.width
                     height: sectionLabel.contentHeight * 1.2
-                    color: Material.color(Material.Grey, Material.Shade200)
+                    color: Material.color(Material.Grey)
                     Label {
                         id: sectionLabel
                         anchors.left: parent.left
@@ -103,6 +103,7 @@ Dialog {
 
                         Label {
                             Layout.fillWidth: true
+                            Layout.topMargin: 8 * AdjustedValues.ratio
                             Layout.leftMargin: 10 * AdjustedValues.ratio
                             font.pointSize: AdjustedValues.f10
                             text: model.displayName
@@ -219,6 +220,7 @@ Dialog {
                             ComboBoxEx {
                                 id: includeComboBox
                                 Layout.preferredWidth: 150 * AdjustedValues.ratio
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                                 font.pointSize: AdjustedValues.f8
                                 model: parent.includeType === NotificationPreferenceListModel.FollowsInclude ? includeOptionsFollowsModel : includeOptionsAcceptedModel
                                 onModelChanged: currentIndex = parent.optionIndex

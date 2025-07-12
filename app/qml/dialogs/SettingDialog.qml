@@ -245,6 +245,7 @@ Dialog {
                     GroupBox {
                         id: appearanceGroupBox
                         title: qsTr("Appearance")
+                        font.pointSize: AdjustedValues.f10
                         GridLayout {
                             id: generalPageLayout
                             columns: 2
@@ -352,6 +353,7 @@ Dialog {
                             ComboBox {
                                 id: fontFamilyComboBox
                                 Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                                 font.pointSize: AdjustedValues.f10
                                 font.family: currentText
                                 model: Qt.fontFamilies()
@@ -391,6 +393,7 @@ Dialog {
                     GroupBox {
                         id: layoutGroupBox
                         title: qsTr("Layout")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -522,6 +525,7 @@ Dialog {
                     GroupBox {
                         id: notificationGroupBox
                         title: qsTr("Notification")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         ColumnLayout {
                             anchors.fill: parent
@@ -542,6 +546,7 @@ Dialog {
                     GroupBox {
                         id: feedGroupBox
                         title: qsTr("Feed")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -608,6 +613,7 @@ Dialog {
                     GroupBox {
                         id: scrollGroupBox
                         title: qsTr("Scroll")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         RowLayout {
                             anchors.fill: parent
@@ -786,6 +792,7 @@ Dialog {
                     GroupBox {
                         id: translateGroupBox
                         title: qsTr("Translate")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -866,6 +873,7 @@ Dialog {
                     GroupBox {
                         id: otherGroupBox
                         title: qsTr("Other")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         ColumnLayout {
                             CheckBox {
@@ -887,6 +895,7 @@ Dialog {
                     GroupBox {
                         id: aboutGroupBox
                         title: qsTr("About")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             // anchors.left: parent.left
