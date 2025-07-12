@@ -17,11 +17,13 @@ set(ZLIB_ROOT "../zlib")
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
-    Core5Compat
     Gui
-    HttpServer
     Network
     LinguistTools
+)
+find_package(Qt6 OPTIONAL_COMPONENTS
+    Core5Compat
+    HttpServer
     Sql
     Xml
     WebSockets
@@ -113,10 +115,14 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/graph/appbskygraphunmutethread.h
     atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp
     atprotocol/app/bsky/labeler/appbskylabelergetservices.h
+    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
+    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.h
+    atprotocol/app/bsky/notification/appbskynotificationputpreferencesv2.cpp
+    atprotocol/app/bsky/notification/appbskynotificationputpreferencesv2.h
     atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp
     atprotocol/app/bsky/notification/appbskynotificationupdateseen.h
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.cpp
@@ -315,13 +321,13 @@ target_include_directories(HagoromoLib PRIVATE
 )
 target_link_libraries(HagoromoLib PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    Qt6::Core5Compat
+    $<$<TARGET_EXISTS:Qt6::Core5Compat>:Qt6::Core5Compat>
     Qt6::Gui
-    Qt6::HttpServer
+    $<$<TARGET_EXISTS:Qt6::HttpServer>:Qt6::HttpServer>
     Qt6::Network
-    Qt6::Sql
-    Qt6::Xml
-    Qt6::WebSockets
+    $<$<TARGET_EXISTS:Qt6::Sql>:Qt6::Sql>
+    $<$<TARGET_EXISTS:Qt6::Xml>:Qt6::Xml>
+    $<$<TARGET_EXISTS:Qt6::WebSockets>:Qt6::WebSockets>
     OpenSSL::SSL
     OpenSSL::Crypto
     ZLIB::ZLIB

@@ -66,5 +66,7 @@
         <file>qml/images/visibility_on.png</file>
         <file>qtquick/controls/emoji.json</file>
         <file>qml/images/live.png</file>
+        <file>qml/images/like_via_repost.png</file>
+        <file>qml/images/repost_via_repost.png</file>
     </qresource>
 </RCC>

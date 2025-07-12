@@ -148,9 +148,37 @@ ClickableFrame {
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
         },
         State {
+            when: notificationFrame.reason === NotificationListModel.ReasonLikeViaRepost
+            PropertyChanges { target: reasonImage; source: "../images/like_via_repost.png" }
+            PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been liked.")}
+
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
+            PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
+            PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
+            PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
+            PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
+            PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
+
+            PropertyChanges { target: notificationFrame; bottomPadding: 5 }
+        },
+        State {
+            when: notificationFrame.reason === NotificationListModel.ReasonRepostViaRepost
+            PropertyChanges { target: reasonImage; source: "../images/repost_via_repost.png" }
+            PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("Your repost has been reposted.")}
+
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
+            PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
+            PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
+            PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
+            PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
+            PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
+
+            PropertyChanges { target: notificationFrame; bottomPadding: 5 }
+        },
+        State {
             when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
             PropertyChanges { target: reasonImage; source: "../images/starterpack.png" }
-            PropertyChanges { target: joinedViaStaterPackText; visible: true }
+            PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("signed up with your starter pack")}
         }
     ]
 
@@ -215,6 +243,14 @@ ClickableFrame {
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
                         },
                         State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonLikeViaRepost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Pink) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonRepostViaRepost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
+                        },
+                        State {
                             when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
                         }
@@ -261,6 +297,15 @@ ClickableFrame {
                     Layout.preferredWidth: parent.basisWidth
                     spacing: 0
                     visible: contentFilterFrame.showContent
+
+                    Label {
+                        id: commonNotificationMessageText
+                        Layout.preferredWidth: parent.width
+                        Layout.leftMargin: postAvatarImage.width + 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                    }
 
                     MouseArea {
                         id: recrdTextMouseArea
@@ -401,16 +446,6 @@ ClickableFrame {
                             id: blockedQuoteFrameLabel
                             font.pointSize: AdjustedValues.f10
                         }
-                    }
-
-                    Label {
-                        id: joinedViaStaterPackText
-                        Layout.preferredWidth: parent.width
-                        Layout.leftMargin: postAvatarImage.width + 5
-                        visible: false
-                        font.pointSize: AdjustedValues.f8
-                        color: Material.color(Material.Grey)
-                        text: qsTr("signed up with your starter pack")
                     }
 
                     PostControls {

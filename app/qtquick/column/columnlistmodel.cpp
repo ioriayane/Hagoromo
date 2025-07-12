@@ -66,6 +66,10 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.reply;
     else if (role == VisibleQuoteRole)
         return m_columnList.at(row).type_visibility.quote;
+    else if (role == VisibleLikeViaRepostRole)
+        return m_columnList.at(row).type_visibility.like_via_repost;
+    else if (role == VisibleRepostViaRepostRole)
+        return m_columnList.at(row).type_visibility.repost_via_repost;
     else if (role == VisibleReplyToUnfollowedUsersRole)
         return m_columnList.at(row).type_visibility.reply_to_unfollowed_users;
     else if (role == VisibleRepostOfOwnRole)
@@ -122,6 +126,10 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.reply = value.toBool();
     else if (role == VisibleQuoteRole)
         m_columnList[row].type_visibility.quote = value.toBool();
+    else if (role == VisibleLikeViaRepostRole)
+        m_columnList[row].type_visibility.like_via_repost = value.toBool();
+    else if (role == VisibleRepostViaRepostRole)
+        m_columnList[row].type_visibility.repost_via_repost = value.toBool();
     else if (role == VisibleReplyToUnfollowedUsersRole)
         m_columnList[row].type_visibility.reply_to_unfollowed_users = value.toBool();
     else if (role == VisibleRepostOfOwnRole)
@@ -437,6 +445,8 @@ void ColumnListModel::save() const
         notification["mention"] = item.type_visibility.mention;
         notification["reply"] = item.type_visibility.reply;
         notification["quote"] = item.type_visibility.quote;
+        notification["like_via_repost"] = item.type_visibility.like_via_repost;
+        notification["repost_via_repost"] = item.type_visibility.repost_via_repost;
         notification["reply_to_unfollowed_users"] = item.type_visibility.reply_to_unfollowed_users;
         notification["repost_of_own"] = item.type_visibility.repost_of_own;
         notification["repost_of_following_users"] = item.type_visibility.repost_of_following_users;
@@ -497,6 +507,14 @@ void ColumnListModel::load()
                         obj.value("type_visibility").toObject().value("reply").toBool(true);
                 item.type_visibility.quote =
                         obj.value("type_visibility").toObject().value("quote").toBool(true);
+                item.type_visibility.like_via_repost = obj.value("type_visibility")
+                                                               .toObject()
+                                                               .value("like_via_repost")
+                                                               .toBool(true);
+                item.type_visibility.repost_via_repost = obj.value("type_visibility")
+                                                                 .toObject()
+                                                                 .value("repost_via_repost")
+                                                                 .toBool(true);
                 item.type_visibility.reply_to_unfollowed_users =
                         obj.value("type_visibility")
                                 .toObject()
@@ -582,6 +600,8 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleMentionRole] = "visibleMention";
     roles[VisibleReplyRole] = "visibleReply";
     roles[VisibleQuoteRole] = "visibleQuote";
+    roles[VisibleLikeViaRepostRole] = "visibleLikeViaRepost";
+    roles[VisibleRepostViaRepostRole] = "visibleRepostViaRepost";
     roles[VisibleReplyToUnfollowedUsersRole] = "visibleReplyToUnfollowedUsers";
     roles[VisibleRepostOfOwnRole] = "visibleRepostOfOwn";
     roles[VisibleRepostOfFollowingUsersRole] = "visibleRepostOfFollowingUsers";

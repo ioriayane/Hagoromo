@@ -150,111 +150,111 @@
 <context>
     <name>LogAccess</name>
     <message>
-        <location filename="log/logaccess.cpp" line="573"/>
-        <location filename="log/logaccess.cpp" line="574"/>
-        <location filename="log/logaccess.cpp" line="576"/>
+        <location filename="log/logaccess.cpp" line="577"/>
+        <location filename="log/logaccess.cpp" line="578"/>
+        <location filename="log/logaccess.cpp" line="580"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="573"/>
+        <location filename="log/logaccess.cpp" line="577"/>
         <source>Total number of posts</source>
         <translation>総ポスト数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="574"/>
+        <location filename="log/logaccess.cpp" line="578"/>
         <source>Number of days posts</source>
         <translation>ポストした日数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="576"/>
+        <location filename="log/logaccess.cpp" line="580"/>
         <source>Average number of daily posts</source>
         <translation>1日あたりの平均ポスト数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="577"/>
-        <location filename="log/logaccess.cpp" line="578"/>
-        <location filename="log/logaccess.cpp" line="580"/>
+        <location filename="log/logaccess.cpp" line="581"/>
+        <location filename="log/logaccess.cpp" line="582"/>
+        <location filename="log/logaccess.cpp" line="584"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="577"/>
+        <location filename="log/logaccess.cpp" line="581"/>
         <source>Total number of likes</source>
         <translation>総いいね数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="578"/>
+        <location filename="log/logaccess.cpp" line="582"/>
         <source>Number of days likes</source>
         <translation>いいねした日数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="580"/>
+        <location filename="log/logaccess.cpp" line="584"/>
         <source>Average number of daily likes</source>
         <translation>1日あたりの平均いいね数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="581"/>
-        <location filename="log/logaccess.cpp" line="582"/>
-        <location filename="log/logaccess.cpp" line="584"/>
+        <location filename="log/logaccess.cpp" line="585"/>
+        <location filename="log/logaccess.cpp" line="586"/>
+        <location filename="log/logaccess.cpp" line="588"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="581"/>
+        <location filename="log/logaccess.cpp" line="585"/>
         <source>Total number of reposts</source>
         <translation>総リポスト数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="582"/>
+        <location filename="log/logaccess.cpp" line="586"/>
         <source>Number of days reposts</source>
         <translation>リポストした日数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="584"/>
+        <location filename="log/logaccess.cpp" line="588"/>
         <source>Average number of daily reposts</source>
         <translation>1日あたりの平均リポスト数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="585"/>
-        <location filename="log/logaccess.cpp" line="586"/>
+        <location filename="log/logaccess.cpp" line="589"/>
+        <location filename="log/logaccess.cpp" line="590"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="585"/>
+        <location filename="log/logaccess.cpp" line="589"/>
         <source>Total number of lists</source>
         <translation>リストの数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="586"/>
+        <location filename="log/logaccess.cpp" line="590"/>
         <source>Total number of list items</source>
         <translation>リストに登録している総アカウント数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="587"/>
-        <location filename="log/logaccess.cpp" line="589"/>
-        <location filename="log/logaccess.cpp" line="590"/>
+        <location filename="log/logaccess.cpp" line="591"/>
+        <location filename="log/logaccess.cpp" line="593"/>
+        <location filename="log/logaccess.cpp" line="594"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="587"/>
+        <location filename="log/logaccess.cpp" line="591"/>
         <source>Total number of follows</source>
         <translation>フォロー数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="589"/>
+        <location filename="log/logaccess.cpp" line="593"/>
         <source>Total number of who can reply</source>
         <translation>リプライ制限をした数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="590"/>
+        <location filename="log/logaccess.cpp" line="594"/>
         <source>Total number of blocks</source>
         <translation>総ブロック数</translation>
     </message>
     <message>
-        <location filename="log/logaccess.cpp" line="668"/>
+        <location filename="log/logaccess.cpp" line="672"/>
         <source>Number of registrations for list</source>
         <translation>リストに登録しているアカウント数</translation>
     </message>

@@ -18,6 +18,8 @@ namespace AtProtocolType {
 namespace AppBskyActorDefs {
 void copyProfileAssociatedChat(const QJsonObject &src,
                                AppBskyActorDefs::ProfileAssociatedChat &dest);
+void copyProfileAssociatedActivitySubscription(
+        const QJsonObject &src, AppBskyActorDefs::ProfileAssociatedActivitySubscription &dest);
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
 void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest);
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
@@ -72,6 +74,19 @@ void copyLabelValueDefinitionStrings(const QJsonObject &src,
                                      ComAtprotoLabelDefs::LabelValueDefinitionStrings &dest);
 void copyLabelValueDefinition(const QJsonObject &src,
                               ComAtprotoLabelDefs::LabelValueDefinition &dest);
+}
+// app.bsky.notification.defs
+namespace AppBskyNotificationDefs {
+void copyActivitySubscription(const QJsonObject &src,
+                              AppBskyNotificationDefs::ActivitySubscription &dest);
+void copyRecordDeleted(const QJsonObject &src, AppBskyNotificationDefs::RecordDeleted &dest);
+void copyChatPreference(const QJsonObject &src, AppBskyNotificationDefs::ChatPreference &dest);
+void copyFilterablePreference(const QJsonObject &src,
+                              AppBskyNotificationDefs::FilterablePreference &dest);
+void copyPreference(const QJsonObject &src, AppBskyNotificationDefs::Preference &dest);
+void copyPreferences(const QJsonObject &src, AppBskyNotificationDefs::Preferences &dest);
+void copySubjectActivitySubscription(const QJsonObject &src,
+                                     AppBskyNotificationDefs::SubjectActivitySubscription &dest);
 }
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
@@ -238,9 +253,9 @@ void copySubjectType(const QJsonValue &src, ComAtprotoModerationDefs::SubjectTyp
 namespace AppBskyLabelerService {
 void copyMain(const QJsonObject &src, AppBskyLabelerService::Main &dest);
 }
-// app.bsky.notification.defs
-namespace AppBskyNotificationDefs {
-void copyRecordDeleted(const QJsonObject &src, AppBskyNotificationDefs::RecordDeleted &dest);
+// app.bsky.notification.declaration
+namespace AppBskyNotificationDeclaration {
+void copyMain(const QJsonObject &src, AppBskyNotificationDeclaration::Main &dest);
 }
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
@@ -257,28 +272,22 @@ void copySkeletonSearchStarterPack(const QJsonObject &src,
 void copyTrendingTopic(const QJsonObject &src, AppBskyUnspeccedDefs::TrendingTopic &dest);
 void copySkeletonTrend(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonTrend &dest);
 void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest);
+void copyThreadItemPost(const QJsonObject &src, AppBskyUnspeccedDefs::ThreadItemPost &dest);
+void copyThreadItemNoUnauthenticated(const QJsonObject &src,
+                                     AppBskyUnspeccedDefs::ThreadItemNoUnauthenticated &dest);
+void copyThreadItemNotFound(const QJsonObject &src, AppBskyUnspeccedDefs::ThreadItemNotFound &dest);
+void copyThreadItemBlocked(const QJsonObject &src, AppBskyUnspeccedDefs::ThreadItemBlocked &dest);
 }
 // app.bsky.unspecced.getConfig
 namespace AppBskyUnspeccedGetConfig {
 void copyLiveNowConfig(const QJsonObject &src, AppBskyUnspeccedGetConfig::LiveNowConfig &dest);
 }
-// app.bsky.unspecced.getPostThreadHiddenV2
-namespace AppBskyUnspeccedGetPostThreadHiddenV2 {
-void copyThreadHiddenItemPost(const QJsonObject &src,
-                              AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItemPost &dest);
-void copyThreadHiddenItem(const QJsonObject &src,
-                          AppBskyUnspeccedGetPostThreadHiddenV2::ThreadHiddenItem &dest);
+// app.bsky.unspecced.getPostThreadOtherV2
+namespace AppBskyUnspeccedGetPostThreadOtherV2 {
+void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadOtherV2::ThreadItem &dest);
 }
 // app.bsky.unspecced.getPostThreadV2
 namespace AppBskyUnspeccedGetPostThreadV2 {
-void copyThreadItemPost(const QJsonObject &src,
-                        AppBskyUnspeccedGetPostThreadV2::ThreadItemPost &dest);
-void copyThreadItemNoUnauthenticated(
-        const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItemNoUnauthenticated &dest);
-void copyThreadItemNotFound(const QJsonObject &src,
-                            AppBskyUnspeccedGetPostThreadV2::ThreadItemNotFound &dest);
-void copyThreadItemBlocked(const QJsonObject &src,
-                           AppBskyUnspeccedGetPostThreadV2::ThreadItemBlocked &dest);
 void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::ThreadItem &dest);
 }
 // app.bsky.unspecced.getTaggedSuggestions

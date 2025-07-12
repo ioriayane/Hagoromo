@@ -23,8 +23,8 @@ ScrollView {
     property alias model: rootListView.model
 
     signal requestReply(string cid, string uri,
-                          string reply_root_cid, string reply_root_uri,
-                          string avatar, string display_name, string handle, string indexed_at, string text)
+                        string reply_root_cid, string reply_root_uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
@@ -74,9 +74,9 @@ ScrollView {
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
-//        add: Transition {
-//            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
-//        }
+        //        add: Transition {
+        //            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+        //        }
 
         delegate: NotificationDelegate {
             Layout.preferredWidth: rootListView.width
@@ -178,11 +178,11 @@ ScrollView {
             postControls.moreButton.enabled: !model.runningOtherPrcessing
             postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
-                                                               model.replyRootCid, model.replyRootUri,
-                                                               model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+                                                             model.replyRootCid, model.replyRootUri,
+                                                             model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.repostMenuItem.onTriggered: rootListView.model.repost(model.index)
             postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
-                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+                                                                 model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: rootListView.model.like(model.index)
             postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
@@ -203,7 +203,9 @@ ScrollView {
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
-                        model.reason === NotificationListModel.ReasonRepost){
+                        model.reason === NotificationListModel.ReasonRepost ||
+                        model.reason === NotificationListModel.ReasonLikeViaRepost ||
+                        model.reason === NotificationListModel.ReasonRepostViaRepost){
                     if(model.quoteRecordUri.length > 0)
                         requestViewThread(model.quoteRecordUri)
                 }else if(model.reason === NotificationListModel.ReasonFollow){
@@ -214,11 +216,15 @@ ScrollView {
                 }
             }
 
-            quoteRecordFrame.visible: (model.reason === NotificationListModel.ReasonQuote) &&
-                                      model.quoteRecordCid.length > 0 &&
+            quoteRecordFrame.visible: ((model.reason === NotificationListModel.ReasonQuote &&
+                                        model.quoteRecordCid.length > 0) ||
+                                       model.reason === NotificationListModel.ReasonLikeViaRepost ||
+                                       model.reason === NotificationListModel.ReasonRepostViaRepost) &&
                                       contentMediaFilterFrame.showContent
             quoteRecordFrame.onClicked: {
-                if(model.reason === NotificationListModel.ReasonQuote){
+                if(model.reason === NotificationListModel.ReasonQuote ||
+                        model.reason === NotificationListModel.ReasonLikeViaRepost ||
+                        model.reason === NotificationListModel.ReasonRepostViaRepost){
                     requestViewThread(model.quoteRecordUri)
                 }
             }

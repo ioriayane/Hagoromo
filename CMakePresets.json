@@ -1,0 +1,221 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Default build configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release Config",
+      "description": "Release build configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "displayName": "Default Build",
+      "configurePreset": "default"
+    },
+    {
+      "name": "release",
+      "displayName": "Release Build", 
+      "configurePreset": "release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base-test",
+      "displayName": "Base Test Configuration",
+      "description": "Common configuration for all tests",
+      "configurePreset": "default",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      },
+      "hidden": true
+    },
+    {
+      "name": "base-verbose",
+      "displayName": "Base Verbose Test Configuration", 
+      "description": "Common configuration for verbose tests",
+      "configurePreset": "default",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "verbose"
+      },
+      "hidden": true
+    },
+    {
+      "name": "default",
+      "displayName": "All Tests",
+      "description": "Run all available tests",
+      "inherits": "base-test"
+    },
+    {
+      "name": "verbose",
+      "displayName": "All Tests (Verbose)",
+      "description": "Run all tests with verbose output",
+      "inherits": "base-verbose"
+    },
+    {
+      "name": "atprotocol",
+      "displayName": "AT Protocol Tests",
+      "description": "Run AT Protocol related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "AtprotocolTest"
+        }
+      }
+    },
+    {
+      "name": "chat",
+      "displayName": "Chat Tests",
+      "description": "Run chat related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "ChatTest"
+        }
+      }
+    },
+    {
+      "name": "hagoromo",
+      "displayName": "Hagoromo Tests",
+      "description": "Run Hagoromo application tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "Hagoromo.*"
+        }
+      }
+    },
+    {
+      "name": "http",
+      "displayName": "HTTP Tests",
+      "description": "Run HTTP related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "HttpTest"
+        }
+      }
+    },
+    {
+      "name": "log",
+      "displayName": "Log Tests",
+      "description": "Run logging related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "LogTest"
+        }
+      }
+    },
+    {
+      "name": "oauth",
+      "displayName": "OAuth Tests",
+      "description": "Run OAuth related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "OauthTest"
+        }
+      }
+    },
+    {
+      "name": "realtime",
+      "displayName": "Realtime Tests",
+      "description": "Run realtime related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "RealtimeTest"
+        }
+      }
+    },
+    {
+      "name": "search",
+      "displayName": "Search Tests",
+      "description": "Run search related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "SearchTest"
+        }
+      }
+    },
+    {
+      "name": "tools",
+      "displayName": "Tools Tests",
+      "description": "Run tools related tests",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "ToolsTest"
+        }
+      }
+    },
+    {
+      "name": "hagoromo1",
+      "displayName": "Hagoromo Test 1",
+      "description": "Run HagoromoTest only",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "HagoromoTest"
+        },
+        "exclude": {
+          "name": "HagoromoTest2"
+        }
+      }
+    },
+    {
+      "name": "hagoromo2",
+      "displayName": "Hagoromo Test 2",
+      "description": "Run HagoromoTest2 only",
+      "inherits": "base-test",
+      "filter": {
+        "include": {
+          "name": "HagoromoTest2"
+        }
+      }
+    },
+    {
+      "name": "release-tests",
+      "displayName": "Release Tests",
+      "description": "Run tests with release build",
+      "configurePreset": "release",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      }
+    }
+  ]
+}

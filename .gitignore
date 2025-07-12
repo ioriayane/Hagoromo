@@ -53,6 +53,8 @@ compile_commands.json
 
 *_qmlcache.qrc
 
+.qmlls.ini
+Testing/
 
 scripts/out/*
 scripts/out_ex/*
@@ -71,6 +73,9 @@ openssl/private
 openssl/share
 openssl/*.cnf
 openssl/*.cnf.dist
+openssl/lib.lipo
+openssl_x86_64/
+openssl_arm64/
 zlib/bin
 zlib/include
 zlib/lib
