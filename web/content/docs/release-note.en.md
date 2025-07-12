@@ -9,7 +9,8 @@ description: This is a multi-column Bluesky client.
 ## 2025
 
 - Add
-  - Supports notification of reactions to reposts
+  - Add related features to notify likes and reposts on reposts
+  - Add settings for various notification functions
 
 ### v0.51.0 - 2025/6/15
 
