@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.51.0"));
+    app.setApplicationVersion(QStringLiteral("0.52.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -93,8 +93,9 @@ int main(int argc, char *argv[])
                                      "ColumnListModel");
     qmlRegisterType<NotificationListModel>("tech.relog.hagoromo.notificationlistmodel", 1, 0,
                                            "NotificationListModel");
-    qmlRegisterType<NotificationPreferenceListModel>("tech.relog.hagoromo.notificationpreferencelistmodel", 1, 0,
-                                                     "NotificationPreferenceListModel");
+    qmlRegisterType<NotificationPreferenceListModel>(
+            "tech.relog.hagoromo.notificationpreferencelistmodel", 1, 0,
+            "NotificationPreferenceListModel");
     qmlRegisterType<PostThreadListModel>("tech.relog.hagoromo.postthreadlistmodel", 1, 0,
                                          "PostThreadListModel");
     qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,
