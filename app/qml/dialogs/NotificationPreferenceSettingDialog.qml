@@ -186,6 +186,7 @@ Dialog {
                             property var availableOptions: model.type !== undefined ? 
                                 notificationPreferenceListModel.getAvailableIncludeOptions(model.type) : []
                             property int optionIndex: availableOptions.indexOf(model.include)
+                            property int includeType: model.includeType
 
                             function updateInclude(newInclude) {
                                 if (newInclude !== model.include) {
@@ -197,13 +198,23 @@ Dialog {
                                 }
                             }
 
-                            ComboBox {
+                            ListModel {
+                                id: includeOptionsFollowsModel
+                                    ListElement { value: "all"; text: qsTr("Everyone") }
+                                    ListElement { value: "follows"; text: qsTr("People I follow") }
+                            }
+                            ListModel {
+                                id: includeOptionsAcceptedModel
+                                    ListElement { value: "all"; text: qsTr("Everyone") }
+                                    ListElement { value: "accepted"; text: qsTr("Accepted") }
+                            }
+                            ComboBoxEx {
                                 id: includeComboBox
                                 Layout.preferredWidth: 150 * AdjustedValues.ratio
                                 font.pointSize: AdjustedValues.f8
-                                model: parent.availableOptions
+                                model: parent.includeType === NotificationPreferenceListModel.FollowsInclude ? includeOptionsFollowsModel : includeOptionsAcceptedModel
                                 onModelChanged: currentIndex = parent.optionIndex
-                                onActivated: parent.updateInclude(currentText)
+                                onActivated: parent.updateInclude(currentValue)
                             }
                         }
                     }
