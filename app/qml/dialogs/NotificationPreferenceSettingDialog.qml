@@ -77,9 +77,10 @@ Dialog {
                 section.delegate: Rectangle {
                     id: sectionHeader
                     width: settingListView.width
-                    height: 40 * AdjustedValues.ratio
+                    height: sectionLabel.contentHeight * 1.2
                     color: Material.color(Material.Grey, Material.Shade200)
                     Label {
+                        id: sectionLabel
                         anchors.left: parent.left
                         anchors.leftMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
@@ -98,35 +99,40 @@ Dialog {
 
                     ColumnLayout {
                         id: contentLayout
-                        Layout.fillWidth: true
                         spacing: 8 * AdjustedValues.ratio
 
-                        RowLayout {
+                        Label {
                             Layout.fillWidth: true
-                            spacing: 10 * AdjustedValues.ratio
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 3
-                                Label {
-                                    Layout.fillWidth: true
-                                    font.pointSize: AdjustedValues.f10
-                                    text: model.displayName
-                                    wrapMode: Text.Wrap
-                                }
-                                Label {
-                                    Layout.fillWidth: true
-                                    wrapMode: Text.Wrap
-                                    font.pointSize: AdjustedValues.f8
-                                    color: Material.color(Material.Grey)
-                                    text: model.description
-                                    visible: model.description.length > 0
-                                }
-                            }
+                            Layout.leftMargin: 10 * AdjustedValues.ratio
+                            font.pointSize: AdjustedValues.f10
+                            text: model.displayName
+                            wrapMode: Text.Wrap
                         }
 
+                        // ColumnLayout {
+                        //     Layout.fillWidth: true
+                        //     Layout.leftMargin: 10 * AdjustedValues.ratio
+                        //     spacing: 3
+                        //     Label {
+                        //         Layout.fillWidth: true
+                        //         font.pointSize: AdjustedValues.f10
+                        //         text: model.displayName
+                        //         wrapMode: Text.Wrap
+                        //     }
+                        //     Label {
+                        //         Layout.fillWidth: true
+                        //         Layout.leftMargin: 5 * AdjustedValues.ratio
+                        //         wrapMode: Text.Wrap
+                        //         font.pointSize: AdjustedValues.f8
+                        //         color: Material.color(Material.Grey)
+                        //         text: model.description
+                        //         visible: model.description.length > 0
+                        //     }
+                        // }
+
                         RowLayout {
                             Layout.fillWidth: true
+                            Layout.leftMargin: 20 * AdjustedValues.ratio
                             spacing: 15 * AdjustedValues.ratio
 
                             RowLayout {
@@ -175,6 +181,7 @@ Dialog {
                         // Include settings - only show if the preference type supports it
                         RowLayout {
                             Layout.fillWidth: true
+                            Layout.leftMargin: 20 * AdjustedValues.ratio
                             spacing: 10 * AdjustedValues.ratio
                             visible: model.includeType !== undefined && model.includeType !== NotificationPreferenceListModel.NoInclude
 
