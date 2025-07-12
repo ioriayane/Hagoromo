@@ -9,6 +9,7 @@
 #include "qtquick/account/accountlistmodel.h"
 #include "qtquick/column/columnlistmodel.h"
 #include "qtquick/notification/notificationlistmodel.h"
+#include "qtquick/notification/notificationpreferencelistmodel.h"
 #include "qtquick/timeline/postthreadlistmodel.h"
 #include "qtquick/timeline/timelinelistmodel.h"
 #include "qtquick/timeline/authorfeedlistmodel.h"
@@ -92,6 +93,8 @@ int main(int argc, char *argv[])
                                      "ColumnListModel");
     qmlRegisterType<NotificationListModel>("tech.relog.hagoromo.notificationlistmodel", 1, 0,
                                            "NotificationListModel");
+    qmlRegisterType<NotificationPreferenceListModel>("tech.relog.hagoromo.notificationpreferencelistmodel", 1, 0,
+                                                     "NotificationPreferenceListModel");
     qmlRegisterType<PostThreadListModel>("tech.relog.hagoromo.postthreadlistmodel", 1, 0,
                                          "PostThreadListModel");
     qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,

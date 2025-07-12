@@ -37,6 +37,9 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
+    NotificationPreferenceSettingDialog {
+        id: notificationPreferenceSettingDialog
+    }
     BlockedAccountsDialog {
         id: blockedAccountsDialog
     }
@@ -179,6 +182,15 @@ Dialog {
                                 onTriggered: accountDialog.requestStatisticsAndLogs(model.uuid)
                             }
                             MenuSeparator {}
+                            Action {
+                                icon.source: "../images/notification.png"
+                                text: qsTr("Notification preferences")
+                                onTriggered: {
+                                    if(notificationPreferenceSettingDialog.account.set(accountList.model, model.uuid)){
+                                        notificationPreferenceSettingDialog.open()
+                                    }
+                                }
+                            }
                             Action {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")

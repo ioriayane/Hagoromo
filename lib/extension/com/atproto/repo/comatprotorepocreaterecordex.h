@@ -16,8 +16,10 @@ public:
     };
 
     void post(const QString &text);
-    void repost(const QString &cid, const QString &uri);
-    void like(const QString &cid, const QString &uri);
+    void repost(const QString &cid, const QString &uri, const QString &via_cid = QString(),
+                const QString &via_uri = QString());
+    void like(const QString &cid, const QString &uri, const QString &via_cid = QString(),
+              const QString &via_uri = QString());
     void follow(const QString &did);
     void block(const QString &did);
     void blockList(const QString &uri);

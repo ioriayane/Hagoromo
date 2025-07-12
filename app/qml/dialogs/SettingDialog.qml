@@ -43,7 +43,9 @@ Dialog {
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
         property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        // Notification
         property bool enableChatNotification: true
+        property bool enableNotificationsForReactionsOnReposts: true
         // Layout
         property int rowCount: 1
         property int rowHeightRatio2: 50
@@ -79,7 +81,9 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
+            // Notification
             enableChatNotificationCheckBox.checked = settings.enableChatNotification
+            enableNotificationsForReactionsOnRepostsCheckBox.checked = settings.enableNotificationsForReactionsOnReposts
             // Layout
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
@@ -241,6 +245,7 @@ Dialog {
                     GroupBox {
                         id: appearanceGroupBox
                         title: qsTr("Appearance")
+                        font.pointSize: AdjustedValues.f10
                         GridLayout {
                             id: generalPageLayout
                             columns: 2
@@ -348,6 +353,7 @@ Dialog {
                             ComboBox {
                                 id: fontFamilyComboBox
                                 Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                                 font.pointSize: AdjustedValues.f10
                                 font.family: currentText
                                 model: Qt.fontFamilies()
@@ -387,6 +393,7 @@ Dialog {
                     GroupBox {
                         id: layoutGroupBox
                         title: qsTr("Layout")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -518,6 +525,7 @@ Dialog {
                     GroupBox {
                         id: notificationGroupBox
                         title: qsTr("Notification")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         ColumnLayout {
                             anchors.fill: parent
@@ -526,6 +534,11 @@ Dialog {
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Enable chat notification")
                             }
+                            CheckBox {
+                                id: enableNotificationsForReactionsOnRepostsCheckBox
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Enable notifications for likes/reposts on reposts")
+                            }
                         }
                     }
 
@@ -533,6 +546,7 @@ Dialog {
                     GroupBox {
                         id: feedGroupBox
                         title: qsTr("Feed")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -599,6 +613,7 @@ Dialog {
                     GroupBox {
                         id: scrollGroupBox
                         title: qsTr("Scroll")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         RowLayout {
                             anchors.fill: parent
@@ -777,6 +792,7 @@ Dialog {
                     GroupBox {
                         id: translateGroupBox
                         title: qsTr("Translate")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             anchors.fill: parent
@@ -857,6 +873,7 @@ Dialog {
                     GroupBox {
                         id: otherGroupBox
                         title: qsTr("Other")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         ColumnLayout {
                             CheckBox {
@@ -878,6 +895,7 @@ Dialog {
                     GroupBox {
                         id: aboutGroupBox
                         title: qsTr("About")
+                        font.pointSize: AdjustedValues.f10
                         Layout.fillWidth: true
                         GridLayout {
                             // anchors.left: parent.left
@@ -954,7 +972,9 @@ Dialog {
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
                     systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
+                    // Notification
                     settings.enableChatNotification = enableChatNotificationCheckBox.checked
+                    settings.enableNotificationsForReactionsOnReposts = enableNotificationsForReactionsOnRepostsCheckBox.checked
                     // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value

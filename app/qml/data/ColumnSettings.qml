@@ -14,6 +14,9 @@ QtObject {
     property bool visibleMention: true
     property bool visibleReply: true
     property bool visibleQuote: true
+    property bool visibleLikeViaRepost: true
+    property bool visibleRepostViaRepost: true
+
     property bool visibleReplyToUnfollowedUsers: true
     property bool visibleRepostOfOwn: true
     property bool visibleRepostOfFollowingUsers: true
@@ -26,5 +29,6 @@ QtObject {
     property bool updateSeenNotification: true
     property bool sequentialDisplayOfPosts: true
     property int displayInterval: sequentialDisplayOfPosts ? 400 : 0
+    property bool enableNotificationsForReactionsOnReposts: true
     property bool autoHideDetailMode: true
 }

@@ -249,6 +249,8 @@ ApplicationWindow {
                 visibleMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleMentionRole)
                 visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
                 visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
+                visibleLikeViaRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleLikeViaRepostRole)
+                visibleRepostViaRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostViaRepostRole)
                 visibleReplyToUnfollowedUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole)
                 visibleRepostOfOwnCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfOwnRole)
                 visibleRepostOfFollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfFollowingUsersRole)
@@ -276,6 +278,8 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleMentionRole, visibleMentionCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleLikeViaRepostRole, visibleLikeViaRepostCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostViaRepostRole, visibleRepostViaRepostCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfOwnRole, visibleRepostOfOwnCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfFollowingUsersRole, visibleRepostOfFollowingUsersCheckBox.checked)
@@ -927,6 +931,8 @@ ApplicationWindow {
                     required property bool visibleMention
                     required property bool visibleReply
                     required property bool visibleQuote
+                    required property bool visibleLikeViaRepost
+                    required property bool visibleRepostViaRepost
                     required property bool visibleReplyToUnfollowedUsers
                     required property bool visibleRepostOfOwn
                     required property bool visibleRepostOfFollowingUsers
@@ -970,8 +976,8 @@ ApplicationWindow {
                             console.log("setLayout(2.1) :" + index + ": left_pos=" + left_index + ", left is " + loader.parent)
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
-                        }else{
-                            console.log("setLayout(2.2) :" + index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index).item.settings.columnName)
+                        }else if(left_index >= 0){
+                            console.log("setLayout(2.2) :" + index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index))//.item.settings.columnName)
                             loader.anchors.left = repeater.itemAt(left_index).right
                             loader.anchors.leftMargin = 3
                         }
@@ -991,6 +997,8 @@ ApplicationWindow {
                         item.settings.visibleMention = visibleMention
                         item.settings.visibleReply = visibleReply
                         item.settings.visibleQuote = visibleQuote
+                        item.settings.visibleLikeViaRepost = visibleLikeViaRepost
+                        item.settings.visibleRepostViaRepost = visibleRepostViaRepost
                         item.settings.visibleReplyToUnfollowedUsers = visibleReplyToUnfollowedUsers
                         item.settings.visibleRepostOfOwn = visibleRepostOfOwn
                         item.settings.visibleRepostOfFollowingUsers = visibleRepostOfFollowingUsers
@@ -1001,6 +1009,7 @@ ApplicationWindow {
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
+                        item.settings.enableNotificationsForReactionsOnReposts = settingDialog.settings.enableNotificationsForReactionsOnReposts
                         item.settings.autoHideDetailMode = settingDialog.settings.autoHideDetailMode
                     }
 

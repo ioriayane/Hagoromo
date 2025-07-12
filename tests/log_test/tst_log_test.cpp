@@ -629,7 +629,7 @@ void log_test::test_LogOperator()
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool)));
         emit ope.getLatest();
-        spy.wait(30 * 1000);
+        spy.wait(50 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();

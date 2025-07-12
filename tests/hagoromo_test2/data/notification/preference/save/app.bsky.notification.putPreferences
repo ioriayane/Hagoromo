@@ -1,0 +1,62 @@
+{
+    "follow": {
+        "include": "all",
+        "list": true,
+        "push": false
+    },
+    "like": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "repost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "likeViaRepost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "repostViaRepost": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "chat": {
+        "include": "all",
+        "push": true
+    },
+    "reply": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "mention": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "quote": {
+        "include": "all",
+        "list": true,
+        "push": true
+    },
+    "starterpackJoined": {
+        "list": true,
+        "push": true
+    },
+    "subscribedPost": {
+        "list": true,
+        "push": true
+    },
+    "unverified": {
+        "list": true,
+        "push": true
+    },
+    "verified": {
+        "list": true,
+        "push": true
+    }
+}

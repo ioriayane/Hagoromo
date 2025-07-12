@@ -15,6 +15,7 @@
 #include "list/listslistmodel.h"
 #include "list/listitemlistmodel.h"
 #include "list/listfeedlistmodel.h"
+#include "notification/notificationpreferencelistmodel.h"
 #include "tools/accountmanager.h"
 
 class hagoromo_test : public QObject
@@ -40,6 +41,8 @@ private slots:
     void test_ListItemListModel();
     void test_ListItemListModel_error();
     void test_ListFeedListModel();
+    void test_NotificationPreferenceListModel();
+    void test_NotificationPreferenceListModel_save();
 
 private:
     WebServer m_mockServer;
@@ -49,6 +52,7 @@ private:
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
+    void test_putNotificationPreferences(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
@@ -77,6 +81,10 @@ hagoromo_test::hagoromo_test()
                     result = true;
                 } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
                     test_putRecord(request.url().path(), request.body());
+                    json = "{}";
+                    result = true;
+                } else if (request.url().path().endsWith("/xrpc/app.bsky.notification.putPreferencesV2")) {
+                    test_putNotificationPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
                 } else if (request.url().path().endsWith(
@@ -726,6 +734,278 @@ void hagoromo_test::test_ListFeedListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
 }
 
+void hagoromo_test::test_NotificationPreferenceListModel()
+{
+    // テストリソースファイルの存在確認
+    QFile resourceFile(":/response/notification/preference/0/xrpc/app.bsky.notification.getPreferences");
+    QVERIFY2(resourceFile.exists(), "Test resource file should exist");
+    
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notification/preference/0", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "hogehoge.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
+    NotificationPreferenceListModel model;
+    model.setAccount(uuid);
+    
+    // 初期状態では13の設定項目があることを確認
+    QVERIFY2(model.rowCount() == 13,
+             QString("Initial model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    
+    {
+        QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
+        model.loadPreferences();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    
+    // 設定読み込み後も13の設定項目があることを確認
+    QVERIFY2(model.rowCount() == 13,
+             QString("After load model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    
+    // リソースファイルから読み込まれた実際の設定値の詳細検証
+    
+    // Follow (Social category) - リソース: include="all", list=true, push=false
+    QVERIFY(model.item(0, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::FollowType);
+    QVERIFY(model.item(0, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Social");
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Follow include expected 'all', got '%1'")
+             .arg(model.item(0, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Follow list should be true from resource");
+    QVERIFY2(model.item(0, NotificationPreferenceListModel::PushRole).toBool() == false,
+             "Follow push should be false from resource");
+    
+    // Like (Social category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(1, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::LikeType);
+    QVERIFY(model.item(1, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Social");
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Like include expected 'all', got '%1'")
+             .arg(model.item(1, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Like list should be true from resource");
+    QVERIFY2(model.item(1, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Like push should be true from resource");
+
+    // Repost (Social category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(2, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::RepostType);
+    QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Repost include expected 'all', got '%1'")
+             .arg(model.item(2, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(2, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Repost list should be true from resource");
+    QVERIFY2(model.item(2, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Repost push should be true from resource");
+
+    // LikeViaRepost - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(3, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::LikeViaRepostType);
+    QVERIFY2(model.item(3, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("LikeViaRepost include expected 'all', got '%1'")
+             .arg(model.item(3, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(3, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "LikeViaRepost list should be true from resource");
+    QVERIFY2(model.item(3, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "LikeViaRepost push should be true from resource");
+    
+    // RepostViaRepost - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(4, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::RepostViaRepostType);
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("RepostViaRepost include expected 'all', got '%1'")
+             .arg(model.item(4, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "RepostViaRepost list should be true from resource");
+    QVERIFY2(model.item(4, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "RepostViaRepost push should be true from resource");
+
+    // Chat (System category) - リソース: include="all", push=true
+    QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::ChatType);
+    QVERIFY(model.item(5, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Interaction");
+    QVERIFY2(model.item(5, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Chat include expected 'all', got '%1'")
+             .arg(model.item(5, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(5, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Chat push should be true from resource");
+
+
+    // Reply (Interaction category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(6, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::ReplyType);
+    QVERIFY(model.item(6, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Interaction");
+    QVERIFY2(model.item(6, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Reply include expected 'all', got '%1'")
+             .arg(model.item(6, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(6, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Reply list should be true from resource");
+    QVERIFY2(model.item(6, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Reply push should be true from resource");
+
+    // Mention (Interaction category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(7, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::MentionType);
+    QVERIFY(model.item(7, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Interaction");
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Mention include expected 'all', got '%1'")
+             .arg(model.item(7, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Mention list should be true from resource");
+    QVERIFY2(model.item(7, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Mention push should be true from resource");
+    
+    // Quote (Interaction category) - リソース: include="all", list=true, push=true
+    QVERIFY(model.item(8, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::QuoteType);
+    QVERIFY2(model.item(8, NotificationPreferenceListModel::IncludeRole).toString() == "all",
+             QString("Quote include expected 'all', got '%1'")
+             .arg(model.item(8, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
+    QVERIFY2(model.item(8, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Quote list should be true from resource");
+    QVERIFY2(model.item(8, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Quote push should be true from resource");
+    
+    
+    
+    // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
+    QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::StarterpackJoinedType);
+    QVERIFY(model.item(9, NotificationPreferenceListModel::CategoryRole).toString()
+            == "Activity");
+    QVERIFY2(model.item(9, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "StarterpackJoined list should be true from resource");
+    QVERIFY2(model.item(9, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "StarterpackJoined push should be true from resource");
+    
+    // SubscribedPost (Activity category) - リソース: list=true, push=true (include設定なし)
+    QVERIFY(model.item(10, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::SubscribedPostType);
+    QVERIFY2(model.item(10, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "SubscribedPost list should be true from resource");
+    QVERIFY2(model.item(10, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "SubscribedPost push should be true from resource");
+
+
+    // Unverified (System category) - リソース: list=true, push=true (include設定なし)
+    QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::UnverifiedType);
+    QVERIFY(model.item(11, NotificationPreferenceListModel::CategoryRole).toString()
+            == "System");
+    QVERIFY2(model.item(11, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Unverified list should be true from resource");
+    QVERIFY2(model.item(11, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Unverified push should be true from resource");
+    
+    // Verified (System category) - リソース: list=true, push=true (include設定なし)
+    QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
+            == NotificationPreferenceListModel::VerifiedType);
+    QVERIFY(model.item(12, NotificationPreferenceListModel::CategoryRole).toString()
+            == "System");
+    QVERIFY2(model.item(12, NotificationPreferenceListModel::ListRole).toBool() == true,
+             "Verified list should be true from resource");
+    QVERIFY2(model.item(12, NotificationPreferenceListModel::PushRole).toBool() == true,
+             "Verified push should be true from resource");
+    
+    // 設定変更のテスト
+    {
+        // Include設定の変更
+        model.updateInclude(2, "follows"); // Likeの設定を"follows"に変更
+        QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString() == "follows",
+                 "Like include should be updated to 'follows'");
+        
+        // List設定の変更
+        model.updateList(2, false); // Likeのlist設定をfalseに変更
+        QVERIFY2(model.item(2, NotificationPreferenceListModel::ListRole).toBool() == false,
+                 "Like list should be updated to false");
+        
+        // Push設定の変更
+        model.updatePush(2, false); // Likeのpush設定をfalseに変更
+        QVERIFY2(model.item(2, NotificationPreferenceListModel::PushRole).toBool() == false,
+                 "Like push should be updated to false");
+    }
+    
+    // include選択肢のテスト
+    QStringList chatOptions = model.getAvailableIncludeOptions(NotificationPreferenceListModel::ChatType);
+    QVERIFY2(chatOptions.contains("all"), "Chat should support 'all' option");
+    QVERIFY2(chatOptions.contains("accepted"), "Chat should support 'accepted' option");
+    QVERIFY2(chatOptions.size() == 2, QString("Chat should have 2 options, got %1").arg(chatOptions.size()).toLocal8Bit());
+    
+    QStringList followOptions = model.getAvailableIncludeOptions(NotificationPreferenceListModel::FollowType);
+    QVERIFY2(followOptions.contains("all"), "Follow should support 'all' option");
+    QVERIFY2(followOptions.contains("follows"), "Follow should support 'follows' option");
+    QVERIFY2(followOptions.size() == 2, QString("Follow should have 2 options, got %1").arg(followOptions.size()).toLocal8Bit());
+    
+    // 表示名のテスト
+    QVERIFY2(model.getIncludeDisplayName("all") == "All", "Include display name for 'all' should be 'All'");
+    QVERIFY2(model.getIncludeDisplayName("follows") == "Follows only", "Include display name for 'follows' should be 'Follows only'");
+    QVERIFY2(model.getIncludeDisplayName("accepted") == "Accepted only", "Include display name for 'accepted' should be 'Accepted only'");
+    
+    // ShowListRoleのテスト
+    // ChatTypeのみshowListがfalseであることを確認
+    for (int i = 0; i < model.rowCount(); ++i) {
+        int type = model.item(i, NotificationPreferenceListModel::TypeRole).toInt();
+        bool showList = model.item(i, NotificationPreferenceListModel::ShowListRole).toBool();
+        
+        if (type == NotificationPreferenceListModel::ChatType) {
+            QVERIFY2(showList == false, QString("ChatType showList should be false, got %1").arg(showList).toLocal8Bit());
+        } else {
+            QVERIFY2(showList == true, QString("Type %1 showList should be true, got %2").arg(type).arg(showList).toLocal8Bit());
+        }
+    }
+    
+    // データ整合性の確認
+    qDebug() << "=== Loaded notification preferences from resource ===";
+    for (int i = 0; i < model.rowCount(); ++i) {
+        qDebug() << QString("Row %1: Type=%2, Include=%3, List=%4, Push=%5")
+                    .arg(i)
+                    .arg(model.item(i, NotificationPreferenceListModel::TypeRole).toInt())
+                    .arg(model.item(i, NotificationPreferenceListModel::IncludeRole).toString())
+                    .arg(model.item(i, NotificationPreferenceListModel::ListRole).toBool())
+                    .arg(model.item(i, NotificationPreferenceListModel::PushRole).toBool());
+    }
+}
+
+void hagoromo_test::test_NotificationPreferenceListModel_save()
+{
+    // テストリソースファイルの存在確認
+    QFile resourceFile(":/data/notification/preference/save/app.bsky.notification.putPreferences");
+    QVERIFY2(resourceFile.exists(), "Test resource file should exist");
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notification/preference/save", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "hogehoge.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
+    NotificationPreferenceListModel model;
+    model.setAccount(uuid);
+    
+    // 初期状態のデータロード
+    {
+        QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
+        model.loadPreferences();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("loadPreferences spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    // 保存処理のテスト - savePreferences()が期待通りのJSONを送信するかを検証
+    {
+        QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
+        model.savePreferences();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("savePreferences spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    
+    qDebug() << "=== savePreferences() test completed successfully ===";
+}
+
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -784,6 +1064,18 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
         QVERIFY(false);
     }
 
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
+}
+
+void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect = UnitTestCommon::loadJson(":/data/notification/preference/save/app.bsky.notification.putPreferences");
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
 
     if (json_doc_expect.object() != json_doc.object()) {
