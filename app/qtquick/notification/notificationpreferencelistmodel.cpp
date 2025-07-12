@@ -351,18 +351,18 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true  // enabled
     });
 
+    // インタラクションカテゴリ
     m_preferenceItems.append({
         ChatType,
         tr("Chat"),
         "all",
         false,
         false,
-        SocialCategory, 
+        InteractionCategory, 
         AcceptedInclude,  // accepted/allの選択
-        false  // enabled
+        true  // enabled
     });
 
-    // インタラクションカテゴリ
     m_preferenceItems.append({
         ReplyType,
         tr("Reply"),

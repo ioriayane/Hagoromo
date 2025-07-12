@@ -828,7 +828,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::ChatType);
     QVERIFY(model.item(5, NotificationPreferenceListModel::CategoryRole).toString()
-            == "Social");
+            == "Interaction");
     QVERIFY2(model.item(5, NotificationPreferenceListModel::IncludeRole).toString() == "all",
              QString("Chat include expected 'all', got '%1'")
              .arg(model.item(5, NotificationPreferenceListModel::IncludeRole).toString()).toLocal8Bit());
