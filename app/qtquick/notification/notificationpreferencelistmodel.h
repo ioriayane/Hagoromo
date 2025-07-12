@@ -27,7 +27,8 @@ public:
         CategoryRole,
         EnabledRole,
         DescriptionRole,
-        IncludeTypeRole
+        IncludeTypeRole,
+        ShowListRole
     };
     Q_ENUM(PreferenceRoles)
 
@@ -112,6 +113,7 @@ private:
         PreferenceCategory category;
         IncludeType includeType;  // include設定の種類
         bool enabled;     // 設定項目を表示するかどうか
+        bool showList;    // リスト設定を表示するかどうか
     };
 
     void setRunning(bool running);

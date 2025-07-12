@@ -136,6 +136,7 @@ Dialog {
                             spacing: 15 * AdjustedValues.ratio
 
                             RowLayout {
+                                visible: model.showList
                                 spacing: 5 * AdjustedValues.ratio
                                 Label {
                                     font.pointSize: AdjustedValues.f8

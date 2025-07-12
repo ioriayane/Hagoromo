@@ -948,6 +948,19 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     QVERIFY2(model.getIncludeDisplayName("follows") == "Follows only", "Include display name for 'follows' should be 'Follows only'");
     QVERIFY2(model.getIncludeDisplayName("accepted") == "Accepted only", "Include display name for 'accepted' should be 'Accepted only'");
     
+    // ShowListRoleのテスト
+    // ChatTypeのみshowListがfalseであることを確認
+    for (int i = 0; i < model.rowCount(); ++i) {
+        int type = model.item(i, NotificationPreferenceListModel::TypeRole).toInt();
+        bool showList = model.item(i, NotificationPreferenceListModel::ShowListRole).toBool();
+        
+        if (type == NotificationPreferenceListModel::ChatType) {
+            QVERIFY2(showList == false, QString("ChatType showList should be false, got %1").arg(showList).toLocal8Bit());
+        } else {
+            QVERIFY2(showList == true, QString("Type %1 showList should be true, got %2").arg(type).arg(showList).toLocal8Bit());
+        }
+    }
+    
     // データ整合性の確認
     qDebug() << "=== Loaded notification preferences from resource ===";
     for (int i = 0; i < model.rowCount(); ++i) {

@@ -63,6 +63,8 @@ QVariant NotificationPreferenceListModel::item(int row, PreferenceRoles role) co
         return tr("Configure notification settings for %1").arg(item.displayName);
     case IncludeTypeRole:
         return static_cast<int>(item.includeType);
+    case ShowListRole:
+        return item.showList;
     default:
         return QVariant();
     }
@@ -80,6 +82,7 @@ QHash<int, QByteArray> NotificationPreferenceListModel::roleNames() const
     roles[EnabledRole] = "enabled";
     roles[DescriptionRole] = "description";
     roles[IncludeTypeRole] = "includeType";
+    roles[ShowListRole] = "showList";
     return roles;
 }
 
@@ -304,7 +307,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SocialCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -315,7 +319,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SocialCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -326,7 +331,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SocialCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -337,7 +343,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SocialCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -348,7 +355,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SocialCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     // インタラクションカテゴリ
@@ -360,7 +368,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         false,
         InteractionCategory, 
         AcceptedInclude,  // accepted/allの選択
-        true  // enabled
+        true,  // enabled
+        false  // showList (Chatのみfalse)
     });
 
     m_preferenceItems.append({
@@ -371,7 +380,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         InteractionCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -382,7 +392,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         InteractionCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -393,7 +404,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         InteractionCategory,
         FollowsInclude,  // follows/allの選択
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     // アクティビティカテゴリ
@@ -405,7 +417,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         ActivityCategory,
         NoInclude,  // include設定なし
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -416,7 +429,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         ActivityCategory,
         NoInclude,  // include設定なし
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     // システムカテゴリ
@@ -428,7 +442,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SystemCategory,
         NoInclude,  // include設定なし
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 
     m_preferenceItems.append({
@@ -439,7 +454,8 @@ void NotificationPreferenceListModel::setupPreferenceItems()
         true,
         SystemCategory,
         NoInclude,  // include設定なし
-        true  // enabled
+        true,  // enabled
+        true   // showList
     });
 }
 
@@ -568,6 +584,12 @@ bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QV
             changed = true;
         }
         break;
+    case ShowListRole:
+        if (item.showList != value.toBool()) {
+            item.showList = value.toBool();
+            changed = true;
+        }
+        break;
     default:
         return false;
     }
@@ -612,6 +634,12 @@ void NotificationPreferenceListModel::update(int row, PreferenceRoles role, cons
     case EnabledRole:
         if (item.enabled != value.toBool()) {
             item.enabled = value.toBool();
+            changed = true;
+        }
+        break;
+    case ShowListRole:
+        if (item.showList != value.toBool()) {
+            item.showList = value.toBool();
             changed = true;
         }
         break;
