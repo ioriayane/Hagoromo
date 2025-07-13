@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.52.0 - 2025/7/12
+
 - Add
   - Add related features to notify likes and reposts on reposts
   - Add settings for various notification functions
