@@ -82,6 +82,7 @@ public:
     Q_INVOKABLE void updateQuoteEnabled(const QString &uri, bool enabled);
     Q_INVOKABLE void updateDetachedStatusOfQuote(bool detached, QString target_uri,
                                                  QString detach_uri);
+    Q_INVOKABLE void updateActivitySubscription(const QString &did, bool post, bool replay);
 
     Q_INVOKABLE void requestPostGate(const QString &uri);
 

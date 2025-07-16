@@ -60,6 +60,7 @@ ColumnLayout {
     signal requestAddRemoveFromLists(string did)
     signal requestAddMutedWord(string text)
     signal requestEditProfile(string did, string avatar, string banner, string display_name, string description)
+    signal requestSubscribeToPosts(string did, bool post, bool reply)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -477,6 +478,12 @@ ColumnLayout {
                         icon.source: "../images/chat.png"
                         enabled: userProfile.handle.length > 0 && userProfile.associatedChatAllow
                         onTriggered: requestMessage(userProfile.did)
+                    }
+                    Action {
+                        text: qsTr("Subscribe to posts")
+                        icon.source: "../images/add_notification.png"
+                        enabled: userProfile.handle.length > 0 && userProfile.allowSubscriptions
+                        onTriggered: requestSubscribeToPosts(userProfile.did, userProfile.activitySubscriptionPost, userProfile.activitySubscriptionReply)
                     }
                     MenuSeparator {}
                     Action {

@@ -3,6 +3,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
+#include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -15,6 +16,7 @@
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
+using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -1051,6 +1053,33 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
     });
     record->setAccount(account());
     record->postGate(account().did, target_rkey);
+}
+
+void RecordOperator::updateActivitySubscription(const QString &did, bool post, bool replay)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QJsonObject subscription_json;
+    subscription_json.insert(QStringLiteral("post"), post);
+    subscription_json.insert(QStringLiteral("reply"), replay);
+
+    AppBskyNotificationPutActivitySubscription *subscription =
+            new AppBskyNotificationPutActivitySubscription(this);
+    connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
+        if (success) {
+            qDebug().noquote() << "Activity subscription updated for" << did << "post:"
+                               << post << "reply:" << replay;
+        } else {
+            emit errorOccured(subscription->errorCode(), subscription->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        subscription->deleteLater();
+    });
+    subscription->setAccount(account());
+    subscription->putActivitySubscription(did, subscription_json);
 }
 
 void RecordOperator::requestPostGate(const QString &uri)
