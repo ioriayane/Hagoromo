@@ -35,6 +35,11 @@ Dialog {
         postSwitch.checked = updateActivitySubscriptionDialog.defaultPost
         replySwitch.checked = updateActivitySubscriptionDialog.defaultReply
     }
+    onClosed: {
+        updateActivitySubscriptionDialog.targetDid = ""
+        postSwitch.checked = false
+        replySwitch.checked = false
+    }
 
     RecordOperator {
         id: recordOperator
