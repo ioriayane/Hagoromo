@@ -176,7 +176,15 @@ ClickableFrame {
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
-            when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
+            when: notificationFrame.reason === NotificationListModel.ReasonSubscribedPost
+            PropertyChanges { target: reasonImage; source: "../images/notification.png" }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
+            PropertyChanges { target: postControls; visible: true }
+            PropertyChanges { target: notificationFrame; bottomPadding: 2 }
+        },
+        State {
+            when: notificationFrame.reason === NotificationListModel.ReasonStarterPack
             PropertyChanges { target: reasonImage; source: "../images/starterpack.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("signed up with your starter pack")}
         }
@@ -251,7 +259,11 @@ ClickableFrame {
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
                         },
                         State {
-                            when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
+                            when: notificationFrame.reason === NotificationListModel.ReasonSubscribedPost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonStarterPack
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
                         }
                     ]
