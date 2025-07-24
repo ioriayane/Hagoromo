@@ -186,7 +186,7 @@ public:
     bool activitySubscriptionPost() const;
     void setActivitySubscriptionPost(bool newActivitySubscriptionPost);
     bool activitySubscriptionReply() const;
-    void setActivitySubscriptionReply(bool newActivitySubscriptionReplay);
+    void setActivitySubscriptionReply(bool newActivitySubscriptionReply);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
