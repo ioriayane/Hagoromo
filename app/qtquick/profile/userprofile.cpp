@@ -156,13 +156,14 @@ void UserProfile::getProfile(const QString &did)
                 setLiveLinkThumb(detail.status.embed_AppBskyEmbedExternal_View.external.thumb);
                 setLiveExpiresAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
                         detail.status.expiresAt, true));
-                
+
                 if (detail.did == m_account.did) {
                     setAllowSubscriptions(false);
                 } else if (detail.associated.activitySubscription.allowSubscriptions == "mutuals") {
                     // 相互
                     setAllowSubscriptions(following() && followedBy());
-                } else if (detail.associated.activitySubscription.allowSubscriptions == "followers") {
+                } else if (detail.associated.activitySubscription.allowSubscriptions
+                           == "followers") {
                     // プロフィールの主をフォローしている
                     setAllowSubscriptions(followedBy());
                 } else {

@@ -686,17 +686,21 @@ bool NotificationListModel::getLatest()
                             m_cueGetPost.append(item->uri);
                         }
                     } else if (item->reason == "subscribed-post") {
-                        //
-                        if (m_auth2SubscribedPost.contains(item->author.did)) {
-                            auto index = m_cidList.indexOf(m_auth2SubscribedPost[item->author.did]);
-                            if(index >= 0){
-                                beginRemoveRows(QModelIndex(), index, index);
-                                m_cidList.removeAt(index);
-                                endRemoveRows();
-                            }
-                        }
                         m_auth2SubscribedPost[item->author.did] = item->cid;
                     } else if (item->reason == "starterpack-joined") {
+                    }
+                }
+
+                for (const auto &author : m_auth2SubscribedPost.keys()) {
+                    auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
+                    if (index >= 0) {
+                        if (m_cidList[index] == m_auth2SubscribedPost[author]) {
+                            // 同じときは消さない
+                        } else {
+                            beginRemoveRows(QModelIndex(), index, index);
+                            m_cidList.removeAt(index);
+                            endRemoveRows();
+                        }
                     }
                 }
 
