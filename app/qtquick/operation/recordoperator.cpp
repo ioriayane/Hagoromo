@@ -1082,6 +1082,51 @@ void RecordOperator::updateActivitySubscription(const QString &did, bool post, b
     subscription->putActivitySubscription(did, subscription_json);
 }
 
+void RecordOperator::updateNotificationDeclaration(const QString &declaration)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoRepoPutRecordEx *create_record = new ComAtprotoRepoPutRecordEx(this);
+    connect(create_record, &ComAtprotoRepoPutRecordEx::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(account());
+    create_record->notificationDeclaration(declaration);
+}
+
+void RecordOperator::requestNotificationDeclaration()
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        QString declaration;
+        if (success) {
+            qDebug().noquote() << "requestNotificationDeclaration:" << record->replyJson();
+            AppBskyNotificationDeclaration::Main notification_declaration =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyNotificationDeclaration::Main>(
+                            record->value());
+            declaration = notification_declaration.allowSubscriptions;
+        } else {
+            emit errorOccured(record->errorCode(), record->errorMessage());
+        }
+        setRunning(false);
+        emit finishedRequestNotificationDeclaration(success, declaration);
+        record->deleteLater();
+    });
+    record->setAccount(account());
+    record->notificationDeclaration(account().did);
+}
+
 void RecordOperator::requestPostGate(const QString &uri)
 {
     QString rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(uri);

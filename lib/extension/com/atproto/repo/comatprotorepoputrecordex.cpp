@@ -87,6 +87,21 @@ void ComAtprotoRepoPutRecordEx::postGate(
               makePostGateJsonObject(uri, type, detached_uris), QString(), QString());
 }
 
+void ComAtprotoRepoPutRecordEx::notificationDeclaration(const QString &declaration)
+{
+    if (declaration.isEmpty()) {
+        emit finished(false);
+        return;
+    }
+
+    QJsonObject json_record;
+    json_record.insert("allowSubscriptions", declaration);
+    json_record.insert("$type", "app.bsky.notification.declaration");
+
+    putRecord(this->did(), QStringLiteral("app.bsky.notification.declaration"), QStringLiteral("self"),
+                 true, json_record, QString(), QString());
+}
+
 bool ComAtprotoRepoPutRecordEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoRepoPutRecord::parseJson(success, reply_json);

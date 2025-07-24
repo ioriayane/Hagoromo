@@ -40,6 +40,10 @@ Dialog {
     NotificationPreferenceSettingDialog {
         id: notificationPreferenceSettingDialog
     }
+    UpdateNotificationDeclarationDialog {
+        id: updateNotificationDeclarationDialog
+        onErrorOccured: (code, message) => accountDialog.errorOccured(account.did, code, message)
+    }
     BlockedAccountsDialog {
         id: blockedAccountsDialog
     }
@@ -197,6 +201,18 @@ Dialog {
                                 onTriggered: {
                                     if(contentFilter.account.set(accountList.model, model.uuid)){
                                         contentFilter.open()
+                                    }
+                                }
+                            }
+                            MenuEx {
+                                title: qsTr("Privacy and Security")
+                                Action {
+                                    icon.source: "../images/mute.png"
+                                    text: qsTr("Allow others to be notified of your posts")
+                                    onTriggered: {
+                                        if(updateNotificationDeclarationDialog.account.set(accountList.model, model.uuid)){
+                                            updateNotificationDeclarationDialog.open()
+                                        }
                                     }
                                 }
                             }
