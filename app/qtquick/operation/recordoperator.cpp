@@ -1055,7 +1055,7 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
     record->postGate(account().did, target_rkey);
 }
 
-void RecordOperator::updateActivitySubscription(const QString &did, bool post, bool replay)
+void RecordOperator::updateActivitySubscription(const QString &did, bool post, bool reply)
 {
     if (running())
         return;
