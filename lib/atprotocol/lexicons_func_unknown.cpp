@@ -60,6 +60,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         AppBskyFeedPostgate::Main record;
         AppBskyFeedPostgate::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("app.bsky.notification.declaration")) {
+        AppBskyNotificationDeclaration::Main record;
+        AppBskyNotificationDeclaration::copyMain(src, record);
+        dest.setValue(record);
     } else if (type == QStringLiteral("com.whtwnd.blog.entry")) {
         ComWhtwndBlogEntry::Main record;
         ComWhtwndBlogEntry::copyMain(src, record);

@@ -159,12 +159,19 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
                  QString());
 }
 
-void ComAtprotoRepoCreateRecordEx::repost(const QString &cid, const QString &uri)
+void ComAtprotoRepoCreateRecordEx::repost(const QString &cid, const QString &uri,
+                                          const QString &via_cid, const QString &via_uri)
 {
     QJsonObject json_subject;
     json_subject.insert("cid", cid);
     json_subject.insert("uri", uri);
     QJsonObject json_record;
+    if (!via_cid.isEmpty() && !via_uri.isEmpty()) {
+        QJsonObject json_via;
+        json_via.insert("cid", via_cid);
+        json_via.insert("uri", via_uri);
+        json_record.insert("via", json_via);
+    }
     json_record.insert("subject", json_subject);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 
@@ -172,12 +179,19 @@ void ComAtprotoRepoCreateRecordEx::repost(const QString &cid, const QString &uri
                  QString());
 }
 
-void ComAtprotoRepoCreateRecordEx::like(const QString &cid, const QString &uri)
+void ComAtprotoRepoCreateRecordEx::like(const QString &cid, const QString &uri,
+                                        const QString &via_cid, const QString &via_uri)
 {
     QJsonObject json_subject;
     json_subject.insert("cid", cid);
     json_subject.insert("uri", uri);
     QJsonObject json_record;
+    if (!via_cid.isEmpty() && !via_uri.isEmpty()) {
+        QJsonObject json_via;
+        json_via.insert("cid", via_cid);
+        json_via.insert("uri", via_uri);
+        json_record.insert("via", json_via);
+    }
     json_record.insert("subject", json_subject);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 

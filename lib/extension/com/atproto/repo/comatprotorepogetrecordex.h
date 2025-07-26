@@ -14,6 +14,7 @@ public:
     void list(const QString &did, const QString &rkey);
     void postGate(const QString &did, const QString &rkey);
     void skyBlurPost(const QString &did, const QString &rkey);
+    void notificationDeclaration(const QString &did);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

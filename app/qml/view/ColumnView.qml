@@ -60,6 +60,7 @@ ColumnLayout {
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
     signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
+    signal requestSubscribeToPosts(string account_uuid, string did, bool post, bool reply)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -98,6 +99,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 visibleReplyToUnfollowedUsers: settings.visibleReplyToUnfollowedUsers
                 visibleRepostOfOwn: settings.visibleRepostOfOwn
                 visibleRepostOfFollowingUsers: settings.visibleRepostOfFollowingUsers
@@ -144,12 +146,15 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 visibleLike: settings.visibleLike
                 visibleRepost: settings.visibleRepost
                 visibleFollow: settings.visibleFollow
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                visibleLikeViaRepost: settings.visibleLikeViaRepost
+                visibleRepostViaRepost: settings.visibleRepostViaRepost
                 visibleContainingMutedWord: true   // 通知はミュートワードを含んでらたたんで表示
                 updateSeenNotification: settings.updateSeenNotification
                 aggregateReactions: settings.aggregateReactions
@@ -187,6 +192,7 @@ ColumnLayout {
             id: postThreadView
             model: PostThreadListModel {
                 autoLoading: false
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 postThreadUri: postThreadView.postUri
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -232,6 +238,7 @@ ColumnLayout {
             model: QuotedPostListModel {
                 autoLoading: fase
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 postUri: quotedPostsView.postUri
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -277,6 +284,7 @@ ColumnLayout {
         ProfileView {
             imageLayoutType: settings.imageLayoutType
             autoHideDetailMode: settings.autoHideDetailMode
+            enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -311,6 +319,7 @@ ColumnLayout {
             onRequestEditProfile: (did, avatar, banner, display_name, description) => {
                                       columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description)
                                   }
+            onRequestSubscribeToPosts: (did, post, reply) => columnView.requestSubscribeToPosts(account.uuid, did, post, reply)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -328,6 +337,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 text: settings.columnValue
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -383,6 +393,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 uri: settings.columnValue
                 visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
                 onSavingChanged: {
@@ -427,6 +438,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 authorDid: settings.columnValue
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -533,6 +545,7 @@ ColumnLayout {
             model: ListFeedListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 uri: settings.columnValue
                 visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
@@ -618,6 +631,7 @@ ColumnLayout {
         id: realtimeFeedComponent
         TimelineView {
             model: RealtimeFeedListModel {
+                enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 selectorJson: settings.columnValue
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
                 onReceivingChanged: {

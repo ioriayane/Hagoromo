@@ -34,6 +34,7 @@ ColumnLayout {
     property string accountDid: ""  // 認証しているアカウント
 
     property bool autoHideDetailMode: true
+    property bool enableNotificationsForReactionsOnReposts: true
 
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -59,6 +60,7 @@ ColumnLayout {
     signal requestAddRemoveFromLists(string did)
     signal requestAddMutedWord(string text)
     signal requestEditProfile(string did, string avatar, string banner, string display_name, string description)
+    signal requestSubscribeToPosts(string did, bool post, bool reply)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -477,6 +479,12 @@ ColumnLayout {
                         enabled: userProfile.handle.length > 0 && userProfile.associatedChatAllow
                         onTriggered: requestMessage(userProfile.did)
                     }
+                    Action {
+                        text: qsTr("Subscribe to posts")
+                        icon.source: "../images/add_notification.png"
+                        enabled: userProfile.handle.length > 0 && userProfile.allowSubscriptions
+                        onTriggered: requestSubscribeToPosts(userProfile.did, userProfile.activitySubscriptionPost, userProfile.activitySubscriptionReply)
+                    }
                     MenuSeparator {}
                     Action {
                         text: qsTr("Copy handle")
@@ -636,6 +644,7 @@ ColumnLayout {
                 id: authorFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
                 pinnedPost: userProfile.pinnedPost
@@ -695,7 +704,10 @@ ColumnLayout {
                 id: repostFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 targetDid: profileView.userDid
+                targetHandle: userProfile.handle
+                targetDisplayName: userProfile.displayName
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.RepostFeedType
 
@@ -735,6 +747,7 @@ ColumnLayout {
                 id: likesFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.LikeFeedType
@@ -775,6 +788,7 @@ ColumnLayout {
                 id: authorMediaFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
@@ -814,6 +828,7 @@ ColumnLayout {
                 id: authorVideoFeedListModel
                 autoLoading: false
                 displayInterval: 0
+                enableNotificationsForReactionsOnReposts: profileView.enableNotificationsForReactionsOnReposts
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithVideo
 

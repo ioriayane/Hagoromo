@@ -28,6 +28,8 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleMention(true),
       m_visibleReply(true),
       m_visibleQuote(true),
+      m_visibleLikeViaRepost(true),
+      m_visibleRepostViaRepost(true),
       m_updateSeenNotification(true),
       m_aggregateReactions(true)
 {
@@ -318,8 +320,14 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonReply;
         } else if (current.reason == "quote") {
             return NotificationListModelReason::ReasonQuote;
+        } else if (current.reason == "like-via-repost") {
+            return NotificationListModelReason::ReasonLikeViaRepost;
+        } else if (current.reason == "repost-via-repost") {
+            return NotificationListModelReason::ReasonRepostViaRepost;
+        } else if (current.reason == "subscribed-post") {
+            return NotificationListModelReason::ReasonSubscribedPost;
         } else if (current.reason == "starterpack-joined") {
-            return NotificationListModelReason::ReasonStaterPack;
+            return NotificationListModelReason::ReasonStarterPack;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -359,12 +367,12 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     } else {
         QString record_cid;
-        if (current.reason == "like") {
+        if (current.reason == "like" || current.reason == "like-via-repost") {
             AtProtocolType::AppBskyFeedLike::Main like =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                             AtProtocolType::AppBskyFeedLike::Main>(current.record);
             record_cid = like.subject.cid;
-        } else if (current.reason == "repost") {
+        } else if (current.reason == "repost" || current.reason == "repost-via-repost") {
             AtProtocolType::AppBskyFeedRepost::Main repost =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                             AtProtocolType::AppBskyFeedRepost::Main>(current.record);
@@ -663,6 +671,10 @@ bool NotificationListModel::getLatest()
                         } else {
                             appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                         }
+                    } else if (item->reason == "like-via-repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                    } else if (item->reason == "repost-via-repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
                         // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
@@ -673,7 +685,22 @@ bool NotificationListModel::getLatest()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
+                        m_auth2SubscribedPost[item->author.did] = item->cid;
                     } else if (item->reason == "starterpack-joined") {
+                    }
+                }
+
+                for (const auto &author : m_auth2SubscribedPost.keys()) {
+                    auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
+                    if (index >= 0) {
+                        if (m_cidList[index] == m_auth2SubscribedPost[author]) {
+                            // 同じときは消さない
+                        } else {
+                            beginRemoveRows(QModelIndex(), index, index);
+                            m_cidList.removeAt(index);
+                            endRemoveRows();
+                        }
                     }
                 }
 
@@ -753,6 +780,10 @@ bool NotificationListModel::getNext()
                         } else {
                             appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                         }
+                    } else if (item->reason == "like-via-repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                    } else if (item->reason == "repost-via-repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
                         // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
@@ -763,6 +794,7 @@ bool NotificationListModel::getNext()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
                     } else if (item->reason == "starterpack-joined") {
                     }
                 }
@@ -1088,6 +1120,18 @@ bool NotificationListModel::checkVisibility(const QString &cid)
         }
     }
 
+    if (current.reason == "subscribed-post") {
+        if (m_auth2SubscribedPost.contains(current.author.did)) {
+            if (m_auth2SubscribedPost.value(current.author.did) != current.cid) {
+                // 他のサブスクライブポストを表示対象にしている
+                return false;
+            }
+        } else {
+            // 他のサブスクライブポストを表示対象にしている
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -1235,12 +1279,12 @@ bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool 
     const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     QHash<QString, QStringList> *aggregatedTo = nullptr;
-    if (current.reason == "like") {
+    if (current.reason == "like" || current.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
-    } else if (current.reason == "repost") {
+    } else if (current.reason == "repost" || current.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(current.record);
         subject_cid = record.subject.cid;
@@ -1300,12 +1344,12 @@ bool NotificationListModel::aggregated(const QString &cid) const
     const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     const QHash<QString, QStringList> *aggregatedTo = nullptr;
-    if (current.reason == "like") {
+    if (current.reason == "like" || current.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
-    } else if (current.reason == "repost") {
+    } else if (current.reason == "repost" || current.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(current.record);
         subject_cid = record.subject.cid;
@@ -1364,7 +1408,9 @@ void NotificationListModel::getPosts()
                 if (!m_notificationHash.contains(m_cidList.at(i)))
                     continue;
 
-                if (m_notificationHash[m_cidList.at(i)].reason == "like") {
+                const auto &item = m_notificationHash[m_cidList.at(i)];
+
+                if (item.reason == "like") {
                     //                    AtProtocolType::AppBskyFeedLike::Main like =
                     //                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                     //                                    AtProtocolType::AppBskyFeedLike::Main>(
@@ -1373,16 +1419,22 @@ void NotificationListModel::getPosts()
                     //                        // データを取得できた
                     //                        emit dataChanged(index(i), index(i));
                     //                    }
-                    emitRecordDataChanged<AtProtocolType::AppBskyFeedLike::Main>(
-                            i, new_cid, m_notificationHash[m_cidList.at(i)].record);
-                } else if (m_notificationHash[m_cidList.at(i)].reason == "repost") {
-                    emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(
-                            i, new_cid, m_notificationHash[m_cidList.at(i)].record);
-                } else if (m_notificationHash[m_cidList.at(i)].reason == "quote") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedLike::Main>(i, new_cid,
+                                                                                 item.record);
+                } else if (item.reason == "repost") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(i, new_cid,
+                                                                                   item.record);
+                } else if (item.reason == "like-via-repost") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedLike::Main>(i, new_cid,
+                                                                                 item.record);
+                } else if (item.reason == "repost-via-repost") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(i, new_cid,
+                                                                                   item.record);
+
+                } else if (item.reason == "quote") {
                     AtProtocolType::AppBskyFeedPost::Main post_quote =
                             AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedPost::Main>(
-                                    m_notificationHash[m_cidList.at(i)].record);
+                                    AtProtocolType::AppBskyFeedPost::Main>(item.record);
                     switch (post_quote.embed_type) {
                     case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                             embed_AppBskyEmbedImages_Main:
@@ -1409,8 +1461,7 @@ void NotificationListModel::getPosts()
                     default:
                         break;
                     }
-                } else if (m_notificationHash[m_cidList.at(i)].reason == "reply"
-                           || m_notificationHash[m_cidList.at(i)].reason == "mention") {
+                } else if (item.reason == "reply" || item.reason == "mention") {
                     if (new_cid.contains(m_cidList.at(i))) {
                         emit dataChanged(index(i), index(i));
                     }
@@ -1535,11 +1586,11 @@ QStringList NotificationListModel::getAggregatedItems(
 QStringList NotificationListModel::getAggregatedCids(
         const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const
 {
-    if (data.reason == "like") {
+    if (data.reason == "like" || data.reason == "like-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(data.record);
         return m_liked2Notification.value(record.subject.cid);
-    } else if (data.reason == "repost") {
+    } else if (data.reason == "repost" || data.reason == "repost-via-repost") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedRepost::Main>(data.record);
         return m_reposted2Notification.value(record.subject.cid);
@@ -1563,6 +1614,12 @@ bool NotificationListModel::enableReason(const QString &reason) const
     else if (reason == "reply" && visibleReply())
         return true;
     else if (reason == "quote" && visibleQuote())
+        return true;
+    else if (reason == "repost-via-repost" && visibleRepostViaRepost())
+        return true;
+    else if (reason == "like-via-repost" && visibleLikeViaRepost())
+        return true;
+    else if (reason == "subscribed-post")
         return true;
     else if (reason == "starterpack-joined")
         return true;
@@ -1717,6 +1774,34 @@ void NotificationListModel::setVisibleQuote(bool newVisibleQuote)
         return;
     m_visibleQuote = newVisibleQuote;
     emit visibleQuoteChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleLikeViaRepost() const
+{
+    return m_visibleLikeViaRepost;
+}
+
+void NotificationListModel::setVisibleLikeViaRepost(bool newVisibleLikeViaRepost)
+{
+    if (m_visibleLikeViaRepost == newVisibleLikeViaRepost)
+        return;
+    m_visibleLikeViaRepost = newVisibleLikeViaRepost;
+    emit visibleLikeViaRepostChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleRepostViaRepost() const
+{
+    return m_visibleRepostViaRepost;
+}
+
+void NotificationListModel::setVisibleRepostViaRepost(bool newVisibleRepostViaRepost)
+{
+    if (m_visibleRepostViaRepost == newVisibleRepostViaRepost)
+        return;
+    m_visibleRepostViaRepost = newVisibleRepostViaRepost;
+    emit visibleRepostViaRepostChanged();
     reflectVisibility();
 }
 

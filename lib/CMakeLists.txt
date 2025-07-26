@@ -115,10 +115,16 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/graph/appbskygraphunmutethread.h
     atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp
     atprotocol/app/bsky/labeler/appbskylabelergetservices.h
+    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
+    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h
+    atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.cpp
+    atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.h
+    atprotocol/app/bsky/notification/appbskynotificationputpreferencesv2.cpp
+    atprotocol/app/bsky/notification/appbskynotificationputpreferencesv2.h
     atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp
     atprotocol/app/bsky/notification/appbskynotificationupdateseen.h
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.cpp

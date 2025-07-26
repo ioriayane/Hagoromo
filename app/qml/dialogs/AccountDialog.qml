@@ -37,6 +37,13 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
+    NotificationPreferenceSettingDialog {
+        id: notificationPreferenceSettingDialog
+    }
+    UpdateNotificationDeclarationDialog {
+        id: updateNotificationDeclarationDialog
+        onErrorOccured: (code, message) => accountDialog.errorOccured(account.did, code, message)
+    }
     BlockedAccountsDialog {
         id: blockedAccountsDialog
     }
@@ -180,11 +187,32 @@ Dialog {
                             }
                             MenuSeparator {}
                             Action {
+                                icon.source: "../images/notification.png"
+                                text: qsTr("Notification preferences")
+                                onTriggered: {
+                                    if(notificationPreferenceSettingDialog.account.set(accountList.model, model.uuid)){
+                                        notificationPreferenceSettingDialog.open()
+                                    }
+                                }
+                            }
+                            Action {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
                                 onTriggered: {
                                     if(contentFilter.account.set(accountList.model, model.uuid)){
                                         contentFilter.open()
+                                    }
+                                }
+                            }
+                            MenuEx {
+                                title: qsTr("Privacy and Security")
+                                Action {
+                                    icon.source: "../images/mute.png"
+                                    text: qsTr("Allow others to be notified of your posts")
+                                    onTriggered: {
+                                        if(updateNotificationDeclarationDialog.account.set(accountList.model, model.uuid)){
+                                            updateNotificationDeclarationDialog.open()
+                                        }
                                     }
                                 }
                             }

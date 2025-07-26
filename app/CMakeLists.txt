@@ -121,6 +121,9 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/LoginDialog.qml
         qml/dialogs/LanguageSelectionDialog.qml
         qml/dialogs/ContentFilterSettingDialog.qml
+        qml/dialogs/NotificationPreferenceSettingDialog.qml
+        qml/dialogs/UpdateActivitySubscriptionDialog.qml
+        qml/dialogs/UpdateNotificationDeclarationDialog.qml
         qml/dialogs/AccountDialog.qml
         qml/dialogs/ReportAccountDialog.qml
         qml/dialogs/RealtimeFeedEditorDialog.qml

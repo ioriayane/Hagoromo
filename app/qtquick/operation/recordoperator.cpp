@@ -3,6 +3,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
+#include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -20,6 +21,7 @@ using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyVideoGetUploadLimitsEx;
 using AtProtocolInterface::AppBskyVideoUploadVideoEx;
+using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -319,7 +321,8 @@ void RecordOperator::postWithVideo()
     limit->canUpload(m_embedVideo);
 }
 
-void RecordOperator::repost(const QString &cid, const QString &uri)
+void RecordOperator::repost(const QString &cid, const QString &uri, const QString &via_cid,
+                            const QString &via_uri)
 {
     if (running())
         return;
@@ -340,10 +343,11 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
         create_record->deleteLater();
     });
     create_record->setAccount(account());
-    create_record->repost(cid, uri);
+    create_record->repost(cid, uri, via_cid, via_uri);
 }
 
-void RecordOperator::like(const QString &cid, const QString &uri)
+void RecordOperator::like(const QString &cid, const QString &uri, const QString &via_cid,
+                          const QString &via_uri)
 {
     if (running())
         return;
@@ -364,7 +368,7 @@ void RecordOperator::like(const QString &cid, const QString &uri)
         create_record->deleteLater();
     });
     create_record->setAccount(account());
-    create_record->like(cid, uri);
+    create_record->like(cid, uri, via_cid, via_uri);
 }
 
 void RecordOperator::follow(const QString &did)
@@ -1092,6 +1096,78 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
     });
     record->setAccount(account());
     record->postGate(account().did, target_rkey);
+}
+
+void RecordOperator::updateActivitySubscription(const QString &did, bool post, bool reply)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QJsonObject subscription_json;
+    subscription_json.insert(QStringLiteral("post"), post);
+    subscription_json.insert(QStringLiteral("reply"), reply);
+
+    AppBskyNotificationPutActivitySubscription *subscription =
+            new AppBskyNotificationPutActivitySubscription(this);
+    connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
+        if (success) {
+            qDebug().noquote() << "Activity subscription updated for" << did << "post:"
+                               << post << "reply:" << reply;
+        } else {
+            emit errorOccured(subscription->errorCode(), subscription->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        subscription->deleteLater();
+    });
+    subscription->setAccount(account());
+    subscription->putActivitySubscription(did, subscription_json);
+}
+
+void RecordOperator::updateNotificationDeclaration(const QString &declaration)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoRepoPutRecordEx *create_record = new ComAtprotoRepoPutRecordEx(this);
+    connect(create_record, &ComAtprotoRepoPutRecordEx::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(account());
+    create_record->notificationDeclaration(declaration);
+}
+
+void RecordOperator::requestNotificationDeclaration()
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        QString declaration;
+        if (success) {
+            qDebug().noquote() << "requestNotificationDeclaration:" << record->replyJson();
+            AppBskyNotificationDeclaration::Main notification_declaration =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyNotificationDeclaration::Main>(
+                            record->value());
+            declaration = notification_declaration.allowSubscriptions;
+        } else {
+            emit errorOccured(record->errorCode(), record->errorMessage());
+        }
+        setRunning(false);
+        emit finishedRequestNotificationDeclaration(success, declaration);
+        record->deleteLater();
+    });
+    record->setAccount(account());
+    record->notificationDeclaration(account().did);
 }
 
 void RecordOperator::requestPostGate(const QString &uri)
