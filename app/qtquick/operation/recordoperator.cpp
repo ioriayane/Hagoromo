@@ -19,9 +19,9 @@
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
+using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
 using AtProtocolInterface::AppBskyVideoGetUploadLimitsEx;
 using AtProtocolInterface::AppBskyVideoUploadVideoEx;
-using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -89,7 +89,12 @@ void RecordOperator::setImages(const QStringList &images, const QStringList &alt
 
 void RecordOperator::setVideo(const QString &video)
 {
-    m_embedVideo = video;
+    QUrl url(video);
+    if (url.isValid() && url.isLocalFile()) {
+        m_embedVideo = url.toLocalFile();
+    } else {
+        m_embedVideo = video;
+    }
 }
 
 void RecordOperator::setPostLanguages(const QStringList &langs)
@@ -1112,8 +1117,8 @@ void RecordOperator::updateActivitySubscription(const QString &did, bool post, b
             new AppBskyNotificationPutActivitySubscription(this);
     connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
         if (success) {
-            qDebug().noquote() << "Activity subscription updated for" << did << "post:"
-                               << post << "reply:" << reply;
+            qDebug().noquote() << "Activity subscription updated for" << did << "post:" << post
+                               << "reply:" << reply;
         } else {
             emit errorOccured(subscription->errorCode(), subscription->errorMessage());
         }

@@ -651,12 +651,18 @@ Item {
                             iconSource: "../images/add_image.png"
                             iconSize: AdjustedValues.i18
                             flat: true
-                            onClicked: {
-                                if(fileDialog.prevFolder.length > 0){
-                                    fileDialog.folder = fileDialog.prevFolder
-                                }
-                                fileDialog.open()
-                            }
+                            onClicked: fileDialog.openForImage()
+                        }
+                        IconButton {
+                            enabled: !createRecord.running &&
+                                     !externalLink.valid &&
+                                     !feedGeneratorLink.valid &&
+                                     !listLink.valid &&
+                                     !embedImageListModel.running
+                            iconSource: "../images/add_video.png"
+                            iconSize: AdjustedValues.i18
+                            flat: true
+                            onClicked: fileDialog.openForVideo()
                         }
 
                         Label {
@@ -719,10 +725,16 @@ Item {
                                 }else if(embedImageListModel.count > 0){
                                     createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
                                     createRecord.postWithImages()
+                                }else if(videoPath.length > 0){
+                                    createRecord.setVideo(videoPath)
+                                    createRecord.postWithVideo()
                                 }else{
                                     createRecord.post()
                                 }
                             }
+
+                            property string videoPath: ""
+
                             BusyIndicator {
                                 anchors.fill: parent
                                 anchors.margins: 3
@@ -754,9 +766,34 @@ Item {
                 for(var i=0; i<files.length; i++){
                     new_files.push(files[i])
                 }
-                embedImageListModel.append(new_files)
+                if(mode === 0){
+                    embedImageListModel.append(new_files)
+                }else if(mode === 1){
+                    console.log("selected video:" + new_files[0])
+                    postButton.videoPath = new_files[0]
+                }
             }
             property string prevFolder
+            property int mode: 0    // 0:image, 1:video
+
+            function openForImage() {
+                if(prevFolder.length > 0){
+                    folder = prevFolder
+                }
+                nameFilters = ["Image files (*.jpg *.jpeg *.png *.gif)"
+                               , "All files (*)"]
+                mode = 0
+                open()
+            }
+            function openForVideo() {
+                if(prevFolder.length > 0){
+                    folder = prevFolder
+                }
+                nameFilters = ["Video files (*.mp4)"
+                               , "All files (*)"]
+                mode = 1
+                open()
+            }
         }
 
         LanguageSelectionDialog {

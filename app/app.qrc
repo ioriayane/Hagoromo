@@ -69,5 +69,6 @@
         <file>qml/images/live.png</file>
         <file>qml/images/like_via_repost.png</file>
         <file>qml/images/repost_via_repost.png</file>
+        <file>qml/images/add_video.png</file>
     </qresource>
 </RCC>

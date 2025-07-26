@@ -75,7 +75,7 @@ void AppBskyVideoUploadVideoEx::getServiceAuth(std::function<void(const QString 
         auth->deleteLater();
     });
     auth->setAccount(account());
-    auth->getServiceAuth("did:web:video.bsky.app", 0, "app.bsky.video.uploadVideo");
+    auth->getServiceAuth("did:web:video.bsky.app", 0, "com.atproto.repo.uploadBlob");
 }
 
 void AppBskyVideoUploadVideoEx::setEndpoint(const QString &newEndpoint)

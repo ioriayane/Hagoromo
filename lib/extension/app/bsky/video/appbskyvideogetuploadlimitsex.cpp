@@ -46,6 +46,7 @@ void AppBskyVideoGetUploadLimitsEx::canUpload(const QString &path)
             });
             AtProtocolInterface::AccountData a = account();
             a.accessJwt = token;
+            a.service_endpoint = m_endpoint;
             limit->setAccount(a);
             limit->getUploadLimits();
         }
