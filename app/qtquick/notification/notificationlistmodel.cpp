@@ -324,8 +324,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonLikeViaRepost;
         } else if (current.reason == "repost-via-repost") {
             return NotificationListModelReason::ReasonRepostViaRepost;
+        } else if (current.reason == "subscribed-post") {
+            return NotificationListModelReason::ReasonSubscribedPost;
         } else if (current.reason == "starterpack-joined") {
-            return NotificationListModelReason::ReasonStaterPack;
+            return NotificationListModelReason::ReasonStarterPack;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -683,7 +685,22 @@ bool NotificationListModel::getLatest()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
+                        m_auth2SubscribedPost[item->author.did] = item->cid;
                     } else if (item->reason == "starterpack-joined") {
+                    }
+                }
+
+                for (const auto &author : m_auth2SubscribedPost.keys()) {
+                    auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
+                    if (index >= 0) {
+                        if (m_cidList[index] == m_auth2SubscribedPost[author]) {
+                            // 同じときは消さない
+                        } else {
+                            beginRemoveRows(QModelIndex(), index, index);
+                            m_cidList.removeAt(index);
+                            endRemoveRows();
+                        }
                     }
                 }
 
@@ -777,6 +794,7 @@ bool NotificationListModel::getNext()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
                     } else if (item->reason == "starterpack-joined") {
                     }
                 }
@@ -1098,6 +1116,18 @@ bool NotificationListModel::checkVisibility(const QString &cid)
     for (const auto &label : current.labels) {
         if (visibilityBylabeler(label.val, true, label.src) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide notification by post's label. " << current.author.handle << cid;
+            return false;
+        }
+    }
+
+    if (current.reason == "subscribed-post") {
+        if (m_auth2SubscribedPost.contains(current.author.did)) {
+            if (m_auth2SubscribedPost.value(current.author.did) != current.cid) {
+                // 他のサブスクライブポストを表示対象にしている
+                return false;
+            }
+        } else {
+            // 他のサブスクライブポストを表示対象にしている
             return false;
         }
     }
@@ -1588,6 +1618,8 @@ bool NotificationListModel::enableReason(const QString &reason) const
     else if (reason == "repost-via-repost" && visibleRepostViaRepost())
         return true;
     else if (reason == "like-via-repost" && visibleLikeViaRepost())
+        return true;
+    else if (reason == "subscribed-post")
         return true;
     else if (reason == "starterpack-joined")
         return true;

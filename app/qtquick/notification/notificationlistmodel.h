@@ -151,7 +151,8 @@ public:
         ReasonQuote,
         ReasonLikeViaRepost,
         ReasonRepostViaRepost,
-        ReasonStaterPack,
+        ReasonSubscribedPost,
+        ReasonStarterPack,
     };
     Q_ENUM(NotificationListModelReason)
 
@@ -231,6 +232,8 @@ private:
     QHash<QString, QStringList> m_liked2Notification; // QHash<cid, QStringList<cid>>
     QHash<QString, QStringList> m_reposted2Notification; // QHash<cid, QStringList<cid>>
     QHash<QString, QStringList> m_follow2Notification;
+
+    QHash<QString, QString> m_auth2SubscribedPost; // QHash<author did, cid>
 
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::QuoteRecordRoles>

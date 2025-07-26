@@ -319,6 +319,10 @@ ApplicationWindow {
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
     }
+    UpdateActivitySubscriptionDialog {
+        id: updateActivitySubscriptionDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+    }
     AddMutedWordDialog {
         id: addMutedWordDialog
     }
@@ -670,6 +674,16 @@ ApplicationWindow {
                     addListDialog.displayName = name
                     addListDialog.description = description
                     addListDialog.open()
+                }
+            }
+            onRequestSubscribeToPosts: (account_uuid, did, post, reply) => {
+                console.log("onRequestSubscribeToPosts:" + account_uuid
+                            + ", did:" + did + ", post:" + post + ", reply:" + reply)
+                if(updateActivitySubscriptionDialog.account.set(accountListModel, account_uuid)){
+                    updateActivitySubscriptionDialog.targetDid = did
+                    updateActivitySubscriptionDialog.defaultPost = post
+                    updateActivitySubscriptionDialog.defaultReply = reply
+                    updateActivitySubscriptionDialog.open()
                 }
             }
             onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {

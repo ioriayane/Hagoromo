@@ -85,6 +85,13 @@ class UserProfile : public QObject
     Q_PROPERTY(QString liveExpiresAt READ liveExpiresAt WRITE setLiveExpiresAt NOTIFY
                        liveExpiresAtChanged FINAL)
 
+    Q_PROPERTY(bool allowSubscriptions READ allowSubscriptions WRITE
+                       setAllowSubscriptions NOTIFY allowSubscriptionsChanged FINAL)
+    Q_PROPERTY(bool activitySubscriptionPost READ activitySubscriptionPost WRITE
+                       setActivitySubscriptionPost NOTIFY activitySubscriptionPostChanged FINAL)
+    Q_PROPERTY(bool activitySubscriptionReply READ activitySubscriptionReply WRITE
+                       setActivitySubscriptionReply NOTIFY activitySubscriptionReplyChanged FINAL)
+
 public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
@@ -173,6 +180,14 @@ public:
     QString liveExpiresAt() const;
     void setLiveExpiresAt(const QString &newLiveExpiresAt);
 
+    bool allowSubscriptions() const;
+    void setAllowSubscriptions(bool newAllowSubscriptions);
+
+    bool activitySubscriptionPost() const;
+    void setActivitySubscriptionPost(bool newActivitySubscriptionPost);
+    bool activitySubscriptionReply() const;
+    void setActivitySubscriptionReply(bool newActivitySubscriptionReply);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -219,6 +234,9 @@ signals:
     void liveLinkThumbChanged();
     void liveExpiresAtChanged();
 
+    void allowSubscriptionsChanged();
+    void activitySubscriptionPostChanged();
+    void activitySubscriptionReplyChanged();
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
     void finishedConnector(const QString &labeler_did);
@@ -284,6 +302,9 @@ private:
     QString m_liveLinkDescription;
     QString m_liveLinkThumb;
     QString m_liveExpiresAt;
+    bool m_allowSubscriptions;
+    bool m_activitySubscriptionPost;
+    bool m_activitySubscriptionReply;
 };
 
 #endif // USERPROFILE_H
