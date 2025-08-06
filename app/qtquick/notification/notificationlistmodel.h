@@ -260,7 +260,7 @@ private:
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
-    void refrectAggregation();
+    void reflectAggregation();
 
     void getPosts();
     void getFeedGenerators();

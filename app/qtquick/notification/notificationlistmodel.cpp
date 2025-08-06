@@ -1243,7 +1243,7 @@ void NotificationListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-void NotificationListModel::refrectAggregation()
+void NotificationListModel::reflectAggregation()
 {
     int prev_row = -1;
     for (const auto &cid : std::as_const(m_originalCidList)) {
@@ -1830,7 +1830,7 @@ void NotificationListModel::setAggregateReactions(bool newAggregateReactions)
         return;
     m_aggregateReactions = newAggregateReactions;
     emit aggregateReactionsChanged();
-    refrectAggregation();
+    reflectAggregation();
 }
 
 bool NotificationListModel::visibleSubscribedPost() const
