@@ -251,6 +251,7 @@ ApplicationWindow {
                 visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
                 visibleLikeViaRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleLikeViaRepostRole)
                 visibleRepostViaRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostViaRepostRole)
+                visibleSubscribedPostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleSubscribedPostRole)
                 visibleReplyToUnfollowedUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole)
                 visibleRepostOfOwnCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfOwnRole)
                 visibleRepostOfFollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfFollowingUsersRole)
@@ -280,6 +281,7 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleLikeViaRepostRole, visibleLikeViaRepostCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostViaRepostRole, visibleRepostViaRepostCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleSubscribedPostRole, visibleSubscribedPostCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfOwnRole, visibleRepostOfOwnCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfFollowingUsersRole, visibleRepostOfFollowingUsersCheckBox.checked)
@@ -947,6 +949,7 @@ ApplicationWindow {
                     required property bool visibleQuote
                     required property bool visibleLikeViaRepost
                     required property bool visibleRepostViaRepost
+                    required property bool visibleSubscribedPost
                     required property bool visibleReplyToUnfollowedUsers
                     required property bool visibleRepostOfOwn
                     required property bool visibleRepostOfFollowingUsers
@@ -1013,6 +1016,7 @@ ApplicationWindow {
                         item.settings.visibleQuote = visibleQuote
                         item.settings.visibleLikeViaRepost = visibleLikeViaRepost
                         item.settings.visibleRepostViaRepost = visibleRepostViaRepost
+                        item.settings.visibleSubscribedPost = visibleSubscribedPost
                         item.settings.visibleReplyToUnfollowedUsers = visibleReplyToUnfollowedUsers
                         item.settings.visibleRepostOfOwn = visibleRepostOfOwn
                         item.settings.visibleRepostOfFollowingUsers = visibleRepostOfFollowingUsers

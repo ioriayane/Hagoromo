@@ -82,6 +82,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.repost_of_mine;
     else if (role == VisibleRepostByMeRole)
         return m_columnList.at(row).type_visibility.repost_by_me;
+    else if (role == VisibleSubscribedPostRole)
+        return m_columnList.at(row).type_visibility.subscribed_post;
     else if (role == AggregateReactionsRole)
         return m_columnList.at(row).aggregate_reactions;
 
@@ -142,6 +144,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.repost_of_mine = value.toBool();
     else if (role == VisibleRepostByMeRole)
         m_columnList[row].type_visibility.repost_by_me = value.toBool();
+    else if (role == VisibleSubscribedPostRole)
+        m_columnList[row].type_visibility.subscribed_post = value.toBool();
     else if (role == AggregateReactionsRole)
         m_columnList[row].aggregate_reactions = value.toBool();
 
@@ -454,6 +458,7 @@ void ColumnListModel::save() const
                 item.type_visibility.repost_of_unfollowing_users;
         notification["repost_of_mine"] = item.type_visibility.repost_of_mine;
         notification["repost_by_me"] = item.type_visibility.repost_by_me;
+        notification["subscribed_post"] = item.type_visibility.subscribed_post;
         column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
@@ -539,6 +544,10 @@ void ColumnListModel::load()
                                                               .toBool(true);
                 item.type_visibility.repost_by_me =
                         obj.value("type_visibility").toObject().value("repost_by_me").toBool(true);
+                item.type_visibility.subscribed_post = obj.value("type_visibility")
+                                                               .toObject()
+                                                               .value("subscribed_post")
+                                                               .toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -608,6 +617,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleRepostOfUnfollowingUsersRole] = "visibleRepostOfUnfollowingUsers";
     roles[VisibleRepostOfMineRole] = "visibleRepostOfMine";
     roles[VisibleRepostByMeRole] = "visibleRepostByMe";
+    roles[VisibleSubscribedPostRole] = "visibleSubscribedPost";
 
     roles[AggregateReactionsRole] = "aggregateReactions";
 
