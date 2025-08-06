@@ -26,6 +26,8 @@ class NotificationListModel : public AtpAbstractListModel
                        NOTIFY visibleLikeViaRepostChanged FINAL)
     Q_PROPERTY(bool visibleRepostViaRepost READ visibleRepostViaRepost WRITE
                        setVisibleRepostViaRepost NOTIFY visibleRepostViaRepostChanged FINAL)
+    Q_PROPERTY(bool visibleSubscribedPost READ visibleSubscribedPost WRITE setVisibleSubscribedPost
+                       NOTIFY visibleSubscribedPostChanged FINAL)
 
     Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
                        setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
@@ -199,6 +201,9 @@ public:
     bool aggregateReactions() const;
     void setAggregateReactions(bool newAggregateReactions);
 
+    bool visibleSubscribedPost() const;
+    void setVisibleSubscribedPost(bool newVisibleSubscribedPost);
+
 signals:
     void visibleLikeChanged();
     void visibleRepostChanged();
@@ -210,6 +215,8 @@ signals:
     void visibleRepostViaRepostChanged();
     void updateSeenNotificationChanged();
     void aggregateReactionsChanged();
+
+    void visibleSubscribedPostChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -298,6 +305,7 @@ private:
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
     bool m_aggregateReactions;
+    bool m_visibleSubscribedPost;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

@@ -31,7 +31,8 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleLikeViaRepost(true),
       m_visibleRepostViaRepost(true),
       m_updateSeenNotification(true),
-      m_aggregateReactions(true)
+      m_aggregateReactions(true),
+      m_visibleSubscribedPost(true)
 {
     m_toQuoteRecordRoles[HasQuoteRecordRole] =
             AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
@@ -1619,7 +1620,7 @@ bool NotificationListModel::enableReason(const QString &reason) const
         return true;
     else if (reason == "like-via-repost" && visibleLikeViaRepost())
         return true;
-    else if (reason == "subscribed-post")
+    else if (reason == "subscribed-post" && visibleSubscribedPost())
         return true;
     else if (reason == "starterpack-joined")
         return true;
@@ -1830,4 +1831,18 @@ void NotificationListModel::setAggregateReactions(bool newAggregateReactions)
     m_aggregateReactions = newAggregateReactions;
     emit aggregateReactionsChanged();
     refrectAggregation();
+}
+
+bool NotificationListModel::visibleSubscribedPost() const
+{
+    return m_visibleSubscribedPost;
+}
+
+void NotificationListModel::setVisibleSubscribedPost(bool newVisibleSubscribedPost)
+{
+    if (m_visibleSubscribedPost == newVisibleSubscribedPost)
+        return;
+    m_visibleSubscribedPost = newVisibleSubscribedPost;
+    emit visibleSubscribedPostChanged();
+    reflectVisibility();
 }
