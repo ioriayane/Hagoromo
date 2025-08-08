@@ -46,6 +46,7 @@ struct ColumnPostType
     bool repost_of_unfollowing_users = true;
     bool repost_of_mine = true;
     bool repost_by_me = true;
+    bool subscribed_post = true;
 };
 
 struct ColumnItem
@@ -109,6 +110,7 @@ public:
         VisibleRepostOfUnfollowingUsersRole,
         VisibleRepostOfMineRole,
         VisibleRepostByMeRole,
+        VisibleSubscribedPostRole,
 
         AggregateReactionsRole,
     };
