@@ -379,6 +379,11 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
                     }
                 }
             }
+        } else if (reply->statusCode() == 409 && m_errorCode == "already_exists"
+                   && json_doc.object().contains("state")
+                   && json_doc.object().value("state").toString() == "JOB_STATE_COMPLETED") {
+            // アップロード済みの動画だった場合。
+            status = true;
         }
         qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
         qCritical().noquote() << LOG_DATETIME << m_replyJson;

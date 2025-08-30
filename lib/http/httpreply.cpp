@@ -6,7 +6,8 @@
 #include <QDateTime>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
-HttpReply::HttpReply(QObject *parent) : QObject { parent }, m_error(HttpReply::Unknown)
+HttpReply::HttpReply(QObject *parent)
+    : QObject { parent }, m_error(HttpReply::Unknown), m_statusCode(-1)
 {
     qDebug().noquote() << LOG_DATETIME << this << "HttpReply()"
                        << ", parent" << parent;
@@ -123,4 +124,14 @@ void HttpReply::setContentType(const QByteArray &name, const QByteArray &value)
             m_contentType = items.first();
         }
     }
+}
+
+int HttpReply::statusCode() const
+{
+    return m_statusCode;
+}
+
+void HttpReply::setStatusCode(int newStatusCode)
+{
+    m_statusCode = newStatusCode;
 }

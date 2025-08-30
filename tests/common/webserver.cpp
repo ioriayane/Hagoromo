@@ -17,7 +17,8 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
     } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
-        emit receivedPost(request, result, json);
+        QHttpServerResponder::StatusCode status_code = QHttpServerResponder::StatusCode::Ok;
+        emit receivedPost(request, result, json, status_code);
         if (result) {
             if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -38,16 +39,13 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                 headers.append("ratelimit-policy", "30;w=300");
 #endif
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Unauthorized);
-                } else {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Ok);
+                    status_code = QHttpServerResponder::StatusCode::Unauthorized;
                 }
+                MAKE_RESPONDER.write(json.toUtf8(), headers, status_code);
             } else {
                 MAKE_RESPONDER.write(json.toUtf8(),
                                      m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+                                     status_code);
             }
         } else {
             MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);

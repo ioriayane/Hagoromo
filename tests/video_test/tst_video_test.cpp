@@ -39,7 +39,8 @@ video_teset::video_teset()
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 
     connect(&m_mockServer, &WebServer::receivedPost,
-            [=](const QHttpServerRequest &request, bool &result, QString &json) {
+            [=](const QHttpServerRequest &request, bool &result, QString &json,
+                QHttpServerResponder::StatusCode &status_code) {
                 qDebug() << "receive POST" << request.url().path();
                 QByteArray data;
                 if (request.url().path().endsWith("/xrpc/app.bsky.video.uploadVideo")) {
@@ -67,12 +68,17 @@ video_teset::video_teset()
                 data.clear();
                 if (WebServer::readFile(WebServer::convertResoucePath(request.url()), data)) {
                     json = QString::fromUtf8(data);
+                    if (request.url().toString().contains("/limit/5/")
+                        && json.contains("already_exists")) {
+                        status_code = QHttpServerResponder::StatusCode::Conflict;
+                    }
                     result = true;
                 } else {
                     json = "{}";
                     result = false;
                 }
-                qDebug() << "  result:" << result << ", json:" << json;
+                qDebug() << "  result:" << result << ", status_code:" << status_code
+                         << ", json:" << json;
                 qDebug() << "  " << WebServer::convertResoucePath(request.url());
             });
 }
@@ -180,7 +186,7 @@ void video_teset::test_postWithVideo_4()
 
 void video_teset::test_postWithVideo_5()
 {
-    //一度アップロードして使わなかった動画を再アップロードしたとき？
+    // 一度アップロードして使わなかった動画を再アップロードしたとき？
 
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/limit/5", "id5", "pass5", "did:plc:ipj5qejfoqu6eukvt72uhyit_5",
