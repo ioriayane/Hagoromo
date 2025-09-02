@@ -223,7 +223,7 @@ ClickableFrame {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             textFormat: Text.StyledText
-                            wrapMode: Text.WrapAnywhere
+                            wrapMode: Text.Wrap
                             font.pointSize: AdjustedValues.f10
                             lineHeight: 1.3
                             onLinkActivated: (url) => openLink(url, recrdTextMouseArea.mouseX, recrdTextMouseArea.mouseY)

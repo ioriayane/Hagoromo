@@ -230,7 +230,7 @@ Item {
                             }
                             Label {
                                 Layout.preferredWidth: postText.width - replyFrame.padding * 2
-                                wrapMode: Text.WrapAnywhere
+                                wrapMode: Text.Wrap
                                 font.pointSize: AdjustedValues.f8
                                 text: postDialogItem.replyText
                             }
@@ -599,7 +599,7 @@ Item {
                             }
                             Label {
                                 Layout.preferredWidth: postText.width - quoteFrame.padding * 2
-                                wrapMode: Text.WrapAnywhere
+                                wrapMode: Text.Wrap
                                 font.pointSize: AdjustedValues.f8
                                 text: postDialogItem.quoteText
                             }
