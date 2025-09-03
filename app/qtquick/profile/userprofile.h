@@ -85,8 +85,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString liveExpiresAt READ liveExpiresAt WRITE setLiveExpiresAt NOTIFY
                        liveExpiresAtChanged FINAL)
 
-    Q_PROPERTY(bool allowSubscriptions READ allowSubscriptions WRITE
-                       setAllowSubscriptions NOTIFY allowSubscriptionsChanged FINAL)
+    Q_PROPERTY(bool allowSubscriptions READ allowSubscriptions WRITE setAllowSubscriptions NOTIFY
+                       allowSubscriptionsChanged FINAL)
     Q_PROPERTY(bool activitySubscriptionPost READ activitySubscriptionPost WRITE
                        setActivitySubscriptionPost NOTIFY activitySubscriptionPostChanged FINAL)
     Q_PROPERTY(bool activitySubscriptionReply READ activitySubscriptionReply WRITE

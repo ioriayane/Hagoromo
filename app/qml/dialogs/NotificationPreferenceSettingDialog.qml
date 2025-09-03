@@ -70,7 +70,7 @@ Dialog {
                     id: notificationPreferenceListModel
                     account: account.uuid
                 }
-                
+
                 section.property: "category"
                 section.criteria: ViewSection.FullString
                 section.labelPositioning: ViewSection.InlineLabels
@@ -192,7 +192,7 @@ Dialog {
                                 text: qsTr("Include notifications from")
                             }
 
-                            property var availableOptions: model.type !== undefined ? 
+                            property var availableOptions: model.type !== undefined ?
                                 notificationPreferenceListModel.getAvailableIncludeOptions(model.type) : []
                             property int optionIndex: availableOptions.indexOf(model.include)
                             property int includeType: model.includeType

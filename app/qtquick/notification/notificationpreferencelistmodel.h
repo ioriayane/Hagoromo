@@ -58,17 +58,17 @@ public:
     Q_ENUM(PreferenceType)
 
     enum PreferenceCategory {
-        SocialCategory,      // フォロー、いいね、リポスト等
+        SocialCategory, // フォロー、いいね、リポスト等
         InteractionCategory, // メンション、引用、リプライ
-        SystemCategory,      // 認証済み/未認証
-        ActivityCategory     // スターターパック、サブスクリプション
+        SystemCategory, // 認証済み/未認証
+        ActivityCategory // スターターパック、サブスクリプション
     };
     Q_ENUM(PreferenceCategory)
 
     enum IncludeType {
-        NoInclude,       // include設定なし
-        FollowsInclude,  // all/followsの選択
-        AcceptedInclude  // all/acceptedの選択
+        NoInclude, // include設定なし
+        FollowsInclude, // all/followsの選択
+        AcceptedInclude // all/acceptedの選択
     };
     Q_ENUM(IncludeType)
 
@@ -104,22 +104,24 @@ signals:
     void preferencesUpdated();
 
 private:
-    struct PreferenceItem {
+    struct PreferenceItem
+    {
         PreferenceType type;
         QString displayName;
         QString include;
         bool list;
         bool push;
         PreferenceCategory category;
-        IncludeType includeType;  // include設定の種類
-        bool enabled;     // 設定項目を表示するかどうか
-        bool showList;    // リスト設定を表示するかどうか
+        IncludeType includeType; // include設定の種類
+        bool enabled; // 設定項目を表示するかどうか
+        bool showList; // リスト設定を表示するかどうか
     };
 
     void setRunning(bool running);
     void setModified(bool modified);
     void setupPreferenceItems();
-    void updateFromAtProtocolPreferences(const AtProtocolType::AppBskyNotificationDefs::Preferences &prefs);
+    void updateFromAtProtocolPreferences(
+            const AtProtocolType::AppBskyNotificationDefs::Preferences &prefs);
     AtProtocolType::AppBskyNotificationDefs::Preferences createAtProtocolPreferences() const;
     QJsonObject createPreferenceJson(const PreferenceItem &item) const;
 

@@ -29,7 +29,8 @@ void ComAtprotoRepoGetRecordEx::skyBlurPost(const QString &did, const QString &r
 
 void ComAtprotoRepoGetRecordEx::notificationDeclaration(const QString &did)
 {
-    getRecord(did, QStringLiteral("app.bsky.notification.declaration"), QStringLiteral("self"), QString());
+    getRecord(did, QStringLiteral("app.bsky.notification.declaration"), QStringLiteral("self"),
+              QString());
 }
 
 bool ComAtprotoRepoGetRecordEx::parseJson(bool success, const QString reply_json)
