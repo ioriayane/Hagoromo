@@ -37,7 +37,7 @@ MouseArea {
                 text: (verificationState === "verifier" ?
                           qsTr("Accounts with a scalloped blue check mark can verify others. These trusted verifiers are selected by Bluesky.") :
                           qsTr("This account has a checkmark because it's been verified by trusted sources."))
-                wrapMode: Text.WrapAnywhere
+                wrapMode: Text.Wrap
             }
             Label {
                 font.pointSize: AdjustedValues.f8

@@ -319,7 +319,7 @@ ColumnLayout {
                         Label {
                             Layout.preferredWidth: parent.basisWidth
                             Layout.maximumWidth: parent.basisWidth
-                            wrapMode: Text.WrapAnywhere
+                            wrapMode: Text.Wrap
                             font.pointSize: AdjustedValues.f8
                             lineHeight: 1.3
                             textFormat: Text.StyledText
