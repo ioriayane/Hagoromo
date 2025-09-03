@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support for post subscription feature
+- Update
+  - Change text wrapping settings
 
 ### v0.52.0 - 2025/7/12
 
