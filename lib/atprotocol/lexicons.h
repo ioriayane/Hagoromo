@@ -45,6 +45,7 @@ struct Main;
 struct View;
 }
 namespace AppBskyFeedDefs {
+struct BlockedAuthor;
 struct GeneratorView;
 struct ThreadViewPost;
 }
@@ -383,7 +384,8 @@ struct ViewerState
     AppBskyGraphDefs::ListViewBasic blockingByList;
     QString following; // at-uri
     QString followedBy; // at-uri
-    KnownFollowers knownFollowers;
+    KnownFollowers
+            knownFollowers; // This property is present only in selected cases, as an optimization.
     AppBskyNotificationDefs::ActivitySubscription activitySubscription;
 };
 struct VerificationView
@@ -695,17 +697,6 @@ struct AspectRatio
 
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
-// A set of images embedded in a Bluesky record (eg, a post).
-struct Image
-{
-    Blob image;
-    QString alt; // Alt text description of the image, for accessibility.
-    AppBskyEmbedDefs::AspectRatio aspectRatio;
-};
-struct Main
-{
-    QList<Image> images;
-};
 struct ViewImage
 {
     QString thumb; // uri , Fully-qualified URL where a thumbnail of the image can be fetched. For
@@ -719,6 +710,17 @@ struct ViewImage
 struct View
 {
     QList<ViewImage> images;
+};
+// A set of images embedded in a Bluesky record (eg, a post).
+struct Image
+{
+    Blob image;
+    QString alt; // Alt text description of the image, for accessibility.
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
+};
+struct Main
+{
+    QList<Image> images;
 };
 }
 
@@ -782,6 +784,131 @@ struct Main
     AppBskyEmbedVideo::Main media_AppBskyEmbedVideo_Main;
     AppBskyEmbedExternal::Main media_AppBskyEmbedExternal_Main;
     // union end : media
+};
+}
+
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+typedef QString ReasonType;
+typedef QString SubjectType; // Tag describing a type of subject that might be reported.
+}
+
+// app.bsky.labeler.defs
+namespace AppBskyLabelerDefs {
+struct LabelerViewerState
+{
+    QString like; // at-uri
+};
+struct LabelerView
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    AppBskyActorDefs::ProfileView creator;
+    int likeCount = 0;
+    LabelerViewerState viewer;
+    QString indexedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+};
+struct LabelerPolicies
+{
+    QList<ComAtprotoLabelDefs::LabelValue> labelValues;
+    QList<ComAtprotoLabelDefs::LabelValueDefinition> labelValueDefinitions;
+};
+struct LabelerViewDetailed
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    AppBskyActorDefs::ProfileView creator;
+    AppBskyLabelerDefs::LabelerPolicies policies;
+    int likeCount = 0;
+    LabelerViewerState viewer;
+    QString indexedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
+    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
+    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
+                                       // reported to this service. If not defined (distinct from
+                                       // empty array), default is any record type.
+};
+}
+
+// app.bsky.embed.record
+namespace AppBskyEmbedRecord {
+enum class ViewRecordType : int {
+    none,
+    record_ViewRecord,
+    record_ViewNotFound,
+    record_ViewBlocked,
+    record_ViewDetached,
+    record_AppBskyFeedDefs_GeneratorView,
+    record_AppBskyGraphDefs_ListView,
+    record_AppBskyLabelerDefs_LabelerView,
+    record_AppBskyGraphDefs_StarterPackViewBasic,
+};
+enum class ViewRecordEmbedsType : int {
+    none,
+    embeds_AppBskyEmbedImages_View,
+    embeds_AppBskyEmbedVideo_View,
+    embeds_AppBskyEmbedExternal_View,
+    embeds_AppBskyEmbedRecord_View,
+    embeds_AppBskyEmbedRecordWithMedia_View,
+};
+struct ViewRecord
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    AppBskyActorDefs::ProfileViewBasic author;
+    QVariant value; // The record data itself.
+    QList<ComAtprotoLabelDefs::Label> labels;
+    int replyCount = 0;
+    int repostCount = 0;
+    int likeCount = 0;
+    int quoteCount = 0;
+    // union start : embeds
+    ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
+    QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
+    QList<AppBskyEmbedVideo::View> embeds_AppBskyEmbedVideo_View;
+    QList<AppBskyEmbedExternal::View> embeds_AppBskyEmbedExternal_View;
+    QList<QSharedPointer<AppBskyEmbedRecord::View>> embeds_AppBskyEmbedRecord_View;
+    QList<AppBskyEmbedRecordWithMedia::View> embeds_AppBskyEmbedRecordWithMedia_View;
+    // union end : embeds
+    QString indexedAt; // datetime
+};
+struct ViewNotFound
+{
+    QString uri; // at-uri
+    bool notFound = false;
+};
+struct ViewBlocked
+{
+    QString uri; // at-uri
+    bool blocked = false;
+    QSharedPointer<AppBskyFeedDefs::BlockedAuthor> author;
+};
+struct ViewDetached
+{
+    QString uri; // at-uri
+    bool detached = false;
+};
+struct View
+{
+    // union start : record
+    ViewRecordType record_type = ViewRecordType::none;
+    ViewRecord record_ViewRecord;
+    ViewNotFound record_ViewNotFound;
+    ViewBlocked record_ViewBlocked;
+    ViewDetached record_ViewDetached;
+    QSharedPointer<AppBskyFeedDefs::GeneratorView> record_AppBskyFeedDefs_GeneratorView;
+    AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
+    AppBskyLabelerDefs::LabelerView record_AppBskyLabelerDefs_LabelerView;
+    AppBskyGraphDefs::StarterPackViewBasic record_AppBskyGraphDefs_StarterPackViewBasic;
+    // union end : record
+};
+// A representation of a record embedded in a Bluesky record (eg, a post). For example, a
+// quote-post, or sharing a feed generator record.
+struct Main
+{
+    ComAtprotoRepoStrongRef::Main record;
 };
 }
 
@@ -871,6 +998,17 @@ struct BlockedAuthor
     QString did; // did
     AppBskyActorDefs::ViewerState viewer;
 };
+struct BlockedPost
+{
+    QString uri; // at-uri
+    bool blocked = false;
+    BlockedAuthor author;
+};
+struct NotFoundPost
+{
+    QString uri; // at-uri
+    bool notFound = false;
+};
 struct GeneratorViewerState
 {
     QString like; // at-uri
@@ -896,6 +1034,7 @@ struct ViewerState
 {
     QString repost; // at-uri
     QString like; // at-uri
+    bool bookmarked = false;
     bool threadMuted = false;
     bool replyDisabled = false;
     bool embeddingDisabled = false;
@@ -919,9 +1058,10 @@ struct PostView
     AppBskyEmbedImages::View embed_AppBskyEmbedImages_View;
     AppBskyEmbedVideo::View embed_AppBskyEmbedVideo_View;
     AppBskyEmbedExternal::View embed_AppBskyEmbedExternal_View;
-    QSharedPointer<AppBskyEmbedRecord::View> embed_AppBskyEmbedRecord_View;
+    AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     AppBskyEmbedRecordWithMedia::View embed_AppBskyEmbedRecordWithMedia_View;
     // union end : embed
+    int bookmarkCount = 0;
     int replyCount = 0;
     int repostCount = 0;
     int likeCount = 0;
@@ -934,17 +1074,6 @@ struct PostView
 struct ThreadContext
 {
     QString rootAuthorLike; // at-uri
-};
-struct NotFoundPost
-{
-    QString uri; // at-uri
-    bool notFound = false;
-};
-struct BlockedPost
-{
-    QString uri; // at-uri
-    bool blocked = false;
-    BlockedAuthor author;
 };
 struct ReplyRef
 {
@@ -1030,128 +1159,28 @@ struct Interaction
 };
 }
 
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-typedef QString ReasonType;
-typedef QString SubjectType; // Tag describing a type of subject that might be reported.
-}
-
-// app.bsky.labeler.defs
-namespace AppBskyLabelerDefs {
-struct LabelerViewerState
-{
-    QString like; // at-uri
-};
-struct LabelerView
-{
-    QString uri; // at-uri
-    QString cid; // cid
-    AppBskyActorDefs::ProfileView creator;
-    int likeCount = 0;
-    LabelerViewerState viewer;
-    QString indexedAt; // datetime
-    QList<ComAtprotoLabelDefs::Label> labels;
-};
-struct LabelerPolicies
-{
-    QList<ComAtprotoLabelDefs::LabelValue> labelValues;
-    QList<ComAtprotoLabelDefs::LabelValueDefinition> labelValueDefinitions;
-};
-struct LabelerViewDetailed
-{
-    QString uri; // at-uri
-    QString cid; // cid
-    AppBskyActorDefs::ProfileView creator;
-    AppBskyLabelerDefs::LabelerPolicies policies;
-    int likeCount = 0;
-    LabelerViewerState viewer;
-    QString indexedAt; // datetime
-    QList<ComAtprotoLabelDefs::Label> labels;
-    QList<ComAtprotoModerationDefs::ReasonType> reasonTypes;
-    QList<ComAtprotoModerationDefs::SubjectType> subjectTypes;
-    QList<QString> subjectCollections; // Set of record types (collection NSIDs) which can be
-                                       // reported to this service. If not defined (distinct from
-                                       // empty array), default is any record type.
-};
-}
-
-// app.bsky.embed.record
-namespace AppBskyEmbedRecord {
-enum class ViewRecordType : int {
+// app.bsky.bookmark.defs
+namespace AppBskyBookmarkDefs {
+enum class BookmarkViewItemType : int {
     none,
-    record_ViewRecord,
-    record_ViewNotFound,
-    record_ViewBlocked,
-    record_ViewDetached,
-    record_AppBskyFeedDefs_GeneratorView,
-    record_AppBskyGraphDefs_ListView,
-    record_AppBskyLabelerDefs_LabelerView,
-    record_AppBskyGraphDefs_StarterPackViewBasic,
+    item_AppBskyFeedDefs_BlockedPost,
+    item_AppBskyFeedDefs_NotFoundPost,
+    item_AppBskyFeedDefs_PostView,
 };
-enum class ViewRecordEmbedsType : int {
-    none,
-    embeds_AppBskyEmbedImages_View,
-    embeds_AppBskyEmbedVideo_View,
-    embeds_AppBskyEmbedExternal_View,
-    embeds_AppBskyEmbedRecord_View,
-    embeds_AppBskyEmbedRecordWithMedia_View,
-};
-// A representation of a record embedded in a Bluesky record (eg, a post). For example, a
-// quote-post, or sharing a feed generator record.
-struct Main
+struct Bookmark
 {
-    ComAtprotoRepoStrongRef::Main record;
+    ComAtprotoRepoStrongRef::Main subject;
 };
-struct ViewRecord
+struct BookmarkView
 {
-    QString uri; // at-uri
-    QString cid; // cid
-    AppBskyActorDefs::ProfileViewBasic author;
-    QVariant value; // The record data itself.
-    QList<ComAtprotoLabelDefs::Label> labels;
-    int replyCount = 0;
-    int repostCount = 0;
-    int likeCount = 0;
-    int quoteCount = 0;
-    // union start : embeds
-    ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
-    QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
-    QList<AppBskyEmbedVideo::View> embeds_AppBskyEmbedVideo_View;
-    QList<AppBskyEmbedExternal::View> embeds_AppBskyEmbedExternal_View;
-    QList<QSharedPointer<AppBskyEmbedRecord::View>> embeds_AppBskyEmbedRecord_View;
-    QList<AppBskyEmbedRecordWithMedia::View> embeds_AppBskyEmbedRecordWithMedia_View;
-    // union end : embeds
-    QString indexedAt; // datetime
-};
-struct ViewNotFound
-{
-    QString uri; // at-uri
-    bool notFound = false;
-};
-struct ViewBlocked
-{
-    QString uri; // at-uri
-    bool blocked = false;
-    AppBskyFeedDefs::BlockedAuthor author;
-};
-struct ViewDetached
-{
-    QString uri; // at-uri
-    bool detached = false;
-};
-struct View
-{
-    // union start : record
-    ViewRecordType record_type = ViewRecordType::none;
-    ViewRecord record_ViewRecord;
-    ViewNotFound record_ViewNotFound;
-    ViewBlocked record_ViewBlocked;
-    ViewDetached record_ViewDetached;
-    AppBskyFeedDefs::GeneratorView record_AppBskyFeedDefs_GeneratorView;
-    AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
-    AppBskyLabelerDefs::LabelerView record_AppBskyLabelerDefs_LabelerView;
-    AppBskyGraphDefs::StarterPackViewBasic record_AppBskyGraphDefs_StarterPackViewBasic;
-    // union end : record
+    ComAtprotoRepoStrongRef::Main subject;
+    QString createdAt; // datetime
+    // union start : item
+    BookmarkViewItemType item_type = BookmarkViewItemType::none;
+    AppBskyFeedDefs::BlockedPost item_AppBskyFeedDefs_BlockedPost;
+    AppBskyFeedDefs::NotFoundPost item_AppBskyFeedDefs_NotFoundPost;
+    AppBskyFeedDefs::PostView item_AppBskyFeedDefs_PostView;
+    // union end : item
 };
 }
 
@@ -1298,6 +1327,24 @@ struct Main
 {
     QString subject; // did
     QString createdAt; // datetime
+};
+}
+
+// app.bsky.graph.getListsWithMembership
+namespace AppBskyGraphGetListsWithMembership {
+struct ListWithMembership
+{
+    AppBskyGraphDefs::ListView list;
+    AppBskyGraphDefs::ListItemView listItem;
+};
+}
+
+// app.bsky.graph.getStarterPacksWithMembership
+namespace AppBskyGraphGetStarterPacksWithMembership {
+struct StarterPackWithMembership
+{
+    AppBskyGraphDefs::StarterPackView starterPack;
+    AppBskyGraphDefs::ListItemView listItem;
 };
 }
 
@@ -1489,6 +1536,23 @@ struct ThreadItemNotFound
 struct ThreadItemBlocked
 {
     AppBskyFeedDefs::BlockedAuthor author;
+};
+struct AgeAssuranceState
+{
+    QString lastInitiatedAt; // datetime , The timestamp when this state was last updated.
+    QString status; // The status of the age assurance process.
+};
+struct AgeAssuranceEvent
+{
+    QString createdAt; // datetime , The date and time of this write operation.
+    QString status; // The status of the age assurance process.
+    QString attemptId; // The unique identifier for this instance of the age assurance flow, in UUID
+                       // format.
+    QString email; // The email used for AA.
+    QString initIp; // The IP address used when initiating the AA flow.
+    QString initUa; // The user agent used when initiating the AA flow.
+    QString completeIp; // The IP address used when completing the AA flow.
+    QString completeUa; // The user agent used when completing the AA flow.
 };
 }
 
@@ -1902,6 +1966,15 @@ struct Main
 };
 }
 
+// com.atproto.moderation.createReport
+namespace ComAtprotoModerationCreateReport {
+struct ModTool
+{
+    QString name; // Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')
+    QVariant meta; // Additional arbitrary metadata about the source
+};
+}
+
 // com.atproto.repo.applyWrites
 namespace ComAtprotoRepoApplyWrites {
 struct Create
@@ -2102,6 +2175,23 @@ struct Info
 };
 }
 
+// com.atproto.temp.checkHandleAvailability
+namespace ComAtprotoTempCheckHandleAvailability {
+struct ResultAvailable
+{
+};
+struct Suggestion
+{
+    QString handle; // handle
+    QString method; // Method used to build this suggestion. Should be considered opaque to clients.
+                    // Can be used for metrics.
+};
+struct ResultUnavailable
+{
+    QList<Suggestion> suggestions; // List of suggested handles based on the provided inputs.
+};
+}
+
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {
 struct TemplateView
@@ -2186,6 +2276,8 @@ enum class ModEventViewDetailEventType : int {
     event_IdentityEvent,
     event_RecordEvent,
     event_ModEventPriorityScore,
+    event_AgeAssuranceEvent,
+    event_AgeAssuranceOverrideEvent,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -2231,6 +2323,8 @@ enum class ModEventViewEventType : int {
     event_IdentityEvent,
     event_RecordEvent,
     event_ModEventPriorityScore,
+    event_AgeAssuranceEvent,
+    event_AgeAssuranceOverrideEvent,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -2350,6 +2444,28 @@ struct ModEventPriorityScore
     QString comment;
     int score = 0;
 };
+struct AgeAssuranceEvent
+{
+    QString createdAt; // datetime , The date and time of this write operation.
+    QString status; // The status of the age assurance process.
+    QString attemptId; // The unique identifier for this instance of the age assurance flow, in UUID
+                       // format.
+    QString initIp; // The IP address used when initiating the AA flow.
+    QString initUa; // The user agent used when initiating the AA flow.
+    QString completeIp; // The IP address used when completing the AA flow.
+    QString completeUa; // The user agent used when completing the AA flow.
+};
+struct AgeAssuranceOverrideEvent
+{
+    QString status; // The status to be set for the user decided by a moderator, overriding whatever
+                    // value the user had previously. Use reset to default to original state.
+    QString comment; // Comment describing the reason for the override.
+};
+struct ModTool
+{
+    QString name; // Name/identifier of the source (e.g., 'automod', 'ozone/workspace')
+    QVariant meta; // Additional arbitrary metadata about the source
+};
 struct ModEventView
 {
     int id = 0;
@@ -2374,6 +2490,8 @@ struct ModEventView
     IdentityEvent event_IdentityEvent;
     RecordEvent event_RecordEvent;
     ModEventPriorityScore event_ModEventPriorityScore;
+    AgeAssuranceEvent event_AgeAssuranceEvent;
+    AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -2386,6 +2504,7 @@ struct ModEventView
     QString createdAt; // datetime
     QString creatorHandle;
     QString subjectHandle;
+    ModTool modTool;
 };
 struct AccountHosting
 {
@@ -2463,6 +2582,9 @@ struct SubjectStatusView
     AccountStats accountStats; // Statistics related to the account subject
     RecordsStats recordsStats; // Statistics related to the record subjects authored by the
                                // subject's account
+    QString ageAssuranceState; // Current age assurance state of the subject.
+    QString ageAssuranceUpdatedBy; // Whether or not the last successful update to age assurance was
+                                   // made by the user or admin.
 };
 struct Moderation
 {
@@ -2547,6 +2669,8 @@ struct ModEventViewDetail
     IdentityEvent event_IdentityEvent;
     RecordEvent event_RecordEvent;
     ModEventPriorityScore event_ModEventPriorityScore;
+    AgeAssuranceEvent event_AgeAssuranceEvent;
+    AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -2558,6 +2682,7 @@ struct ModEventViewDetail
     QList<BlobView> subjectBlobs;
     QString createdBy; // did
     QString createdAt; // datetime
+    ModTool modTool;
 };
 struct ModerationDetail
 {
@@ -2615,6 +2740,57 @@ struct ReporterStats
             0; // The total number of accounts labeled as a result of the user's reports.
     int labeledRecordCount =
             0; // The total number of records labeled as a result of the user's reports.
+};
+}
+
+// tools.ozone.moderation.getAccountTimeline
+namespace ToolsOzoneModerationGetAccountTimeline {
+struct TimelineItemSummary
+{
+    QString eventSubjectType;
+    QString eventType;
+    int count = 0;
+};
+struct TimelineItem
+{
+    QString day;
+    QList<TimelineItemSummary> summary;
+};
+}
+
+// tools.ozone.report.defs
+namespace ToolsOzoneReportDefs {
+typedef QString ReasonType;
+}
+
+// tools.ozone.safelink.defs
+namespace ToolsOzoneSafelinkDefs {
+typedef QString EventType;
+typedef QString PatternType;
+typedef QString ActionType;
+typedef QString ReasonType;
+struct Event
+{
+    int id = 0; // Auto-incrementing row ID
+    EventType eventType;
+    QString url; // The URL that this rule applies to
+    PatternType pattern;
+    ActionType action;
+    ReasonType reason;
+    QString createdBy; // did , DID of the user who created this rule
+    QString createdAt; // datetime
+    QString comment; // Optional comment about the decision
+};
+struct UrlRule
+{
+    QString url; // The URL or domain to apply the rule to
+    PatternType pattern;
+    ActionType action;
+    ReasonType reason;
+    QString comment; // Optional comment about the decision
+    QString createdBy; // did , DID of the user added the rule.
+    QString createdAt; // datetime , Timestamp when the rule was created
+    QString updatedAt; // datetime , Timestamp when the rule was last updated
 };
 }
 

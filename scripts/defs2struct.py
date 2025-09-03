@@ -1145,7 +1145,8 @@ class Defs2Struct:
                                 arguments.append(FunctionArgument(pro_type, pro_name, True))
                         elif pro_type == 'ref':
                             pro_ref = pro_value.get('ref', '')
-                            arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                            if pro_ref in self.history_type:
+                                arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
                         elif pro_type == 'union':
                             pro_refs = pro_value.get('refs', [])
                             for pro_ref in pro_refs:
