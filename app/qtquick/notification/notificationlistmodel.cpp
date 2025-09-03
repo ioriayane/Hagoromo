@@ -31,7 +31,8 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleLikeViaRepost(true),
       m_visibleRepostViaRepost(true),
       m_updateSeenNotification(true),
-      m_aggregateReactions(true)
+      m_aggregateReactions(true),
+      m_visibleSubscribedPost(true)
 {
     m_toQuoteRecordRoles[HasQuoteRecordRole] =
             AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
@@ -324,8 +325,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonLikeViaRepost;
         } else if (current.reason == "repost-via-repost") {
             return NotificationListModelReason::ReasonRepostViaRepost;
+        } else if (current.reason == "subscribed-post") {
+            return NotificationListModelReason::ReasonSubscribedPost;
         } else if (current.reason == "starterpack-joined") {
-            return NotificationListModelReason::ReasonStaterPack;
+            return NotificationListModelReason::ReasonStarterPack;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -683,7 +686,22 @@ bool NotificationListModel::getLatest()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
+                        m_auth2SubscribedPost[item->author.did] = item->cid;
                     } else if (item->reason == "starterpack-joined") {
+                    }
+                }
+
+                for (const auto &author : m_auth2SubscribedPost.keys()) {
+                    auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
+                    if (index >= 0) {
+                        if (m_cidList[index] == m_auth2SubscribedPost[author]) {
+                            // 同じときは消さない
+                        } else {
+                            beginRemoveRows(QModelIndex(), index, index);
+                            m_cidList.removeAt(index);
+                            endRemoveRows();
+                        }
                     }
                 }
 
@@ -777,6 +795,7 @@ bool NotificationListModel::getNext()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "subscribed-post") {
                     } else if (item->reason == "starterpack-joined") {
                     }
                 }
@@ -1102,6 +1121,18 @@ bool NotificationListModel::checkVisibility(const QString &cid)
         }
     }
 
+    if (current.reason == "subscribed-post") {
+        if (m_auth2SubscribedPost.contains(current.author.did)) {
+            if (m_auth2SubscribedPost.value(current.author.did) != current.cid) {
+                // 他のサブスクライブポストを表示対象にしている
+                return false;
+            }
+        } else {
+            // 他のサブスクライブポストを表示対象にしている
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -1212,7 +1243,7 @@ void NotificationListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-void NotificationListModel::refrectAggregation()
+void NotificationListModel::reflectAggregation()
 {
     int prev_row = -1;
     for (const auto &cid : std::as_const(m_originalCidList)) {
@@ -1589,6 +1620,8 @@ bool NotificationListModel::enableReason(const QString &reason) const
         return true;
     else if (reason == "like-via-repost" && visibleLikeViaRepost())
         return true;
+    else if (reason == "subscribed-post" && visibleSubscribedPost())
+        return true;
     else if (reason == "starterpack-joined")
         return true;
 
@@ -1797,5 +1830,19 @@ void NotificationListModel::setAggregateReactions(bool newAggregateReactions)
         return;
     m_aggregateReactions = newAggregateReactions;
     emit aggregateReactionsChanged();
-    refrectAggregation();
+    reflectAggregation();
+}
+
+bool NotificationListModel::visibleSubscribedPost() const
+{
+    return m_visibleSubscribedPost;
+}
+
+void NotificationListModel::setVisibleSubscribedPost(bool newVisibleSubscribedPost)
+{
+    if (m_visibleSubscribedPost == newVisibleSubscribedPost)
+        return;
+    m_visibleSubscribedPost = newVisibleSubscribedPost;
+    emit visibleSubscribedPostChanged();
+    reflectVisibility();
 }

@@ -26,6 +26,8 @@ class NotificationListModel : public AtpAbstractListModel
                        NOTIFY visibleLikeViaRepostChanged FINAL)
     Q_PROPERTY(bool visibleRepostViaRepost READ visibleRepostViaRepost WRITE
                        setVisibleRepostViaRepost NOTIFY visibleRepostViaRepostChanged FINAL)
+    Q_PROPERTY(bool visibleSubscribedPost READ visibleSubscribedPost WRITE setVisibleSubscribedPost
+                       NOTIFY visibleSubscribedPostChanged FINAL)
 
     Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
                        setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
@@ -151,7 +153,8 @@ public:
         ReasonQuote,
         ReasonLikeViaRepost,
         ReasonRepostViaRepost,
-        ReasonStaterPack,
+        ReasonSubscribedPost,
+        ReasonStarterPack,
     };
     Q_ENUM(NotificationListModelReason)
 
@@ -198,6 +201,9 @@ public:
     bool aggregateReactions() const;
     void setAggregateReactions(bool newAggregateReactions);
 
+    bool visibleSubscribedPost() const;
+    void setVisibleSubscribedPost(bool newVisibleSubscribedPost);
+
 signals:
     void visibleLikeChanged();
     void visibleRepostChanged();
@@ -209,6 +215,8 @@ signals:
     void visibleRepostViaRepostChanged();
     void updateSeenNotificationChanged();
     void aggregateReactionsChanged();
+
+    void visibleSubscribedPostChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -232,6 +240,8 @@ private:
     QHash<QString, QStringList> m_reposted2Notification; // QHash<cid, QStringList<cid>>
     QHash<QString, QStringList> m_follow2Notification;
 
+    QHash<QString, QString> m_auth2SubscribedPost; // QHash<author did, cid>
+
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -250,7 +260,7 @@ private:
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
-    void refrectAggregation();
+    void reflectAggregation();
 
     void getPosts();
     void getFeedGenerators();
@@ -295,6 +305,7 @@ private:
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
     bool m_aggregateReactions;
+    bool m_visibleSubscribedPost;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

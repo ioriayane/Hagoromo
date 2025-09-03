@@ -82,6 +82,10 @@ public:
     Q_INVOKABLE void updateQuoteEnabled(const QString &uri, bool enabled);
     Q_INVOKABLE void updateDetachedStatusOfQuote(bool detached, QString target_uri,
                                                  QString detach_uri);
+    Q_INVOKABLE void updateActivitySubscription(const QString &did, bool post, bool reply);
+
+    Q_INVOKABLE void updateNotificationDeclaration(const QString &declaration);
+    Q_INVOKABLE void requestNotificationDeclaration();
 
     Q_INVOKABLE void requestPostGate(const QString &uri);
 
@@ -95,6 +99,7 @@ signals:
     void errorOccured(const QString &code, const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
     void finishedRequestPostGate(bool success, const bool quote_enabled, const QStringList &uris);
+    void finishedRequestNotificationDeclaration(bool success, const QString &declaration);
     void runningChanged();
 
     void progressMessageChanged();

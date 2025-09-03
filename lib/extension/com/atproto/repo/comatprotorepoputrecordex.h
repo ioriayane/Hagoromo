@@ -19,6 +19,7 @@ public:
     void postGate(const QString &uri,
                   const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
                   const QStringList &detached_uris);
+    void notificationDeclaration(const QString &declaration);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

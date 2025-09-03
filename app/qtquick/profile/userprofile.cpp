@@ -32,7 +32,10 @@ UserProfile::UserProfile(QObject *parent)
       m_blocking(false),
       m_userFilterMatched(false),
       m_verificationState("none"),
-      m_liveIsActive(false)
+      m_liveIsActive(false),
+      m_allowSubscriptions(false),
+      m_activitySubscriptionPost(false),
+      m_activitySubscriptionReply(false)
 {
     QPointer<UserProfile> alive = this;
     connect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
@@ -153,6 +156,21 @@ void UserProfile::getProfile(const QString &did)
                 setLiveLinkThumb(detail.status.embed_AppBskyEmbedExternal_View.external.thumb);
                 setLiveExpiresAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
                         detail.status.expiresAt, true));
+
+                if (detail.did == m_account.did) {
+                    setAllowSubscriptions(false);
+                } else if (detail.associated.activitySubscription.allowSubscriptions == "mutuals") {
+                    // 相互
+                    setAllowSubscriptions(following() && followedBy());
+                } else if (detail.associated.activitySubscription.allowSubscriptions
+                           == "followers") {
+                    // プロフィールの主をフォローしている
+                    setAllowSubscriptions(followedBy());
+                } else {
+                    setAllowSubscriptions(false);
+                }
+                setActivitySubscriptionPost(detail.viewer.activitySubscription.post);
+                setActivitySubscriptionReply(detail.viewer.activitySubscription.reply);
 
                 // 追加情報読み込み
                 getRawProfile();
@@ -849,4 +867,43 @@ void UserProfile::setLiveExpiresAt(const QString &newLiveExpiresAt)
         return;
     m_liveExpiresAt = newLiveExpiresAt;
     emit liveExpiresAtChanged();
+}
+
+bool UserProfile::allowSubscriptions() const
+{
+    return m_allowSubscriptions;
+}
+
+void UserProfile::setAllowSubscriptions(bool newAllowSubscriptions)
+{
+    if (m_allowSubscriptions == newAllowSubscriptions)
+        return;
+    m_allowSubscriptions = newAllowSubscriptions;
+    emit allowSubscriptionsChanged();
+}
+
+bool UserProfile::activitySubscriptionPost() const
+{
+    return m_activitySubscriptionPost;
+}
+
+void UserProfile::setActivitySubscriptionPost(bool newActivitySubscriptionPost)
+{
+    if (m_activitySubscriptionPost == newActivitySubscriptionPost)
+        return;
+    m_activitySubscriptionPost = newActivitySubscriptionPost;
+    emit activitySubscriptionPostChanged();
+}
+
+bool UserProfile::activitySubscriptionReply() const
+{
+    return m_activitySubscriptionReply;
+}
+
+void UserProfile::setActivitySubscriptionReply(bool newActivitySubscriptionReply)
+{
+    if (m_activitySubscriptionReply == newActivitySubscriptionReply)
+        return;
+    m_activitySubscriptionReply = newActivitySubscriptionReply;
+    emit activitySubscriptionReplyChanged();
 }

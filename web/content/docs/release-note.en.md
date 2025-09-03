@@ -8,6 +8,15 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.53.0 - 2025/9/3
+
+- Add
+  - Support for post subscription feature
+- Update
+  - Change text wrapping settings
+- Fix
+  - Modify the contents of the distribution package for Ubuntu
+
 ### v0.52.0 - 2025/7/12
 
 - Add

@@ -23,7 +23,7 @@ ColumnLayout {
         Layout.topMargin: 5
         visible: text.length > 0
         textFormat: Text.StyledText
-        wrapMode: Text.WrapAnywhere
+        wrapMode: Text.Wrap
         font.pointSize: AdjustedValues.f10
         lineHeight: 1.3
     }

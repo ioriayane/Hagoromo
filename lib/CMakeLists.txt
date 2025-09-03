@@ -119,6 +119,8 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h
+    atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.cpp
+    atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.cpp
     atprotocol/app/bsky/notification/appbskynotificationputpreferences.h
     atprotocol/app/bsky/notification/appbskynotificationputpreferencesv2.cpp

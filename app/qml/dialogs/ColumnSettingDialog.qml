@@ -31,6 +31,7 @@ Dialog {
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
     property alias visibleLikeViaRepostCheckBox: visibleLikeViaRepostCheckBox
     property alias visibleRepostViaRepostCheckBox: visibleRepostViaRepostCheckBox
+    property alias visibleSubscribedPostCheckBox: visibleSubscribedPostCheckBox
     property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
     property alias visibleRepostOfOwnCheckBox: visibleRepostOfOwnCheckBox
     property alias visibleRepostOfFollowingUsersCheckBox: visibleRepostOfFollowingUsersCheckBox
@@ -69,6 +70,7 @@ Dialog {
                 PropertyChanges { target: visibleQuoteCheckBox; visible: true }
                 PropertyChanges { target: visibleLikeViaRepostCheckBox; visible: true }
                 PropertyChanges { target: visibleRepostViaRepostCheckBox; visible: true }
+                PropertyChanges { target: visibleSubscribedPostCheckBox; visible: true }
                 PropertyChanges { target: aggregateReactionsCheckBox; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
@@ -292,6 +294,14 @@ Dialog {
                         visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Repost via repost")
+                    }
+                    CheckBox {
+                        id: visibleSubscribedPostCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Subscribed post")
                     }
 
                     CheckBox {

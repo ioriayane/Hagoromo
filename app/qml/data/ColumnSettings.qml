@@ -16,6 +16,7 @@ QtObject {
     property bool visibleQuote: true
     property bool visibleLikeViaRepost: true
     property bool visibleRepostViaRepost: true
+    property bool visibleSubscribedPost: true
 
     property bool visibleReplyToUnfollowedUsers: true
     property bool visibleRepostOfOwn: true

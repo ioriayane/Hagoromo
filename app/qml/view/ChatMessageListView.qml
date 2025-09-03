@@ -411,7 +411,7 @@ Item {
                     id: messageTextArea
                     Layout.fillWidth: parent
                     enabled: !rootListView.model.runSending
-                    wrapMode: Text.WrapAnywhere
+                    wrapMode: Text.Wrap
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     placeholderText: qsTr("Write a message")
