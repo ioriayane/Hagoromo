@@ -345,5 +345,5 @@ void FeedTypeListModel::getLists()
         lists->deleteLater();
     });
     lists->setAccount(account());
-    lists->getLists(account().did, 0, QString());
+    lists->getLists(account().did, 0, QString(), QStringList());
 }
