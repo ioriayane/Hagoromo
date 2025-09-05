@@ -1069,8 +1069,8 @@ void RecordOperator::updateActivitySubscription(const QString &did, bool post, b
             new AppBskyNotificationPutActivitySubscription(this);
     connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
         if (success) {
-            qDebug().noquote() << "Activity subscription updated for" << did << "post:"
-                               << post << "reply:" << reply;
+            qDebug().noquote() << "Activity subscription updated for" << did << "post:" << post
+                               << "reply:" << reply;
         } else {
             emit errorOccured(subscription->errorCode(), subscription->errorMessage());
         }

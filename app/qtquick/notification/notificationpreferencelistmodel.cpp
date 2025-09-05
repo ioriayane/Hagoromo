@@ -7,9 +7,7 @@
 #include <QJsonObject>
 
 NotificationPreferenceListModel::NotificationPreferenceListModel(QObject *parent)
-    : QAbstractListModel(parent)
-    , m_running(false)
-    , m_modified(false)
+    : QAbstractListModel(parent), m_running(false), m_modified(false)
 {
     setupPreferenceItems();
 }
@@ -128,7 +126,7 @@ void NotificationPreferenceListModel::loadPreferences()
 
     setRunning(true);
 
-    AtProtocolInterface::AppBskyNotificationGetPreferences *getPreferences = 
+    AtProtocolInterface::AppBskyNotificationGetPreferences *getPreferences =
             new AtProtocolInterface::AppBskyNotificationGetPreferences(this);
     connect(getPreferences, &AtProtocolInterface::AppBskyNotificationGetPreferences::finished,
             [=](bool success) {
@@ -142,11 +140,11 @@ void NotificationPreferenceListModel::loadPreferences()
 
                 const auto &prefs = getPreferences->preferences();
                 updateFromAtProtocolPreferences(prefs);
-                setModified(false);  // ロード完了後はmodifiedをfalseに
+                setModified(false); // ロード完了後はmodifiedをfalseに
                 emit preferencesUpdated();
                 getPreferences->deleteLater();
             });
-    
+
     auto accountData = getAccountData();
     getPreferences->setAccount(accountData);
 
@@ -166,7 +164,7 @@ void NotificationPreferenceListModel::savePreferences()
 
     setRunning(true);
 
-    AtProtocolInterface::AppBskyNotificationPutPreferencesV2 *putPreferences = 
+    AtProtocolInterface::AppBskyNotificationPutPreferencesV2 *putPreferences =
             new AtProtocolInterface::AppBskyNotificationPutPreferencesV2(this);
     connect(putPreferences, &AtProtocolInterface::AppBskyNotificationPutPreferencesV2::finished,
             [=](bool success) {
@@ -178,11 +176,11 @@ void NotificationPreferenceListModel::savePreferences()
                     return;
                 }
 
-                setModified(false);  // 保存完了後はmodifiedをfalseに
+                setModified(false); // 保存完了後はmodifiedをfalseに
                 emit preferencesUpdated();
                 putPreferences->deleteLater();
             });
-    
+
     auto accountData = getAccountData();
     putPreferences->setAccount(accountData);
 
@@ -192,7 +190,7 @@ void NotificationPreferenceListModel::savePreferences()
 
     for (const auto &item : m_preferenceItems) {
         QJsonObject json = createPreferenceJson(item);
-        
+
         switch (item.type) {
         case ChatType:
             chat = json;
@@ -236,9 +234,9 @@ void NotificationPreferenceListModel::savePreferences()
         }
     }
 
-    putPreferences->putPreferencesV2(chat, follow, like, likeViaRepost, mention, quote,
-                                     reply, repost, repostViaRepost, starterpackJoined,
-                                     subscribedPost, unverified, verified);
+    putPreferences->putPreferencesV2(chat, follow, like, likeViaRepost, mention, quote, reply,
+                                     repost, repostViaRepost, starterpackJoined, subscribedPost,
+                                     unverified, verified);
 }
 
 QString NotificationPreferenceListModel::getIncludeDisplayName(const QString &include) const
@@ -256,7 +254,7 @@ QString NotificationPreferenceListModel::getIncludeDisplayName(const QString &in
 QStringList NotificationPreferenceListModel::getAvailableIncludeOptions(int type) const
 {
     PreferenceType prefType = static_cast<PreferenceType>(type);
-    
+
     // 対応するPreferenceItemを見つける
     for (const auto &item : m_preferenceItems) {
         if (item.type == prefType) {
@@ -267,12 +265,12 @@ QStringList NotificationPreferenceListModel::getAvailableIncludeOptions(int type
                 return { "all", "follows" };
             case NoInclude:
             default:
-                return {};  // include設定なし
+                return {}; // include設定なし
             }
         }
     }
-    
-    return {};  // 見つからない場合は空のリスト
+
+    return {}; // 見つからない場合は空のリスト
 }
 
 void NotificationPreferenceListModel::setRunning(bool running)
@@ -297,165 +295,99 @@ void NotificationPreferenceListModel::setupPreferenceItems()
 {
     m_preferenceItems.clear();
 
-
     // ソーシャルカテゴリ
     m_preferenceItems.append({
-        FollowType,
-        tr("Follow"),
-        "all",
-        true,
-        true,
-        SocialCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            FollowType, tr("Follow"), "all", true, true, SocialCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        LikeType,
-        tr("Like"),
-        "all",
-        true,
-        true,
-        SocialCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            LikeType, tr("Like"), "all", true, true, SocialCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        RepostType,
-        tr("Repost"),
-        "all",
-        true,
-        true,
-        SocialCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            RepostType, tr("Repost"), "all", true, true, SocialCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        LikeViaRepostType,
-        tr("Like via Repost"),
-        "all",
-        true,
-        true,
-        SocialCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            LikeViaRepostType, tr("Like via Repost"), "all", true, true, SocialCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        RepostViaRepostType,
-        tr("Repost via Repost"),
-        "all",
-        true,
-        true,
-        SocialCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            RepostViaRepostType, tr("Repost via Repost"), "all", true, true, SocialCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     // インタラクションカテゴリ
     m_preferenceItems.append({
-        ChatType,
-        tr("Chat"),
-        "all",
-        false,
-        false,
-        InteractionCategory, 
-        AcceptedInclude,  // accepted/allの選択
-        true,  // enabled
-        false  // showList (Chatのみfalse)
+            ChatType, tr("Chat"), "all", false, false, InteractionCategory,
+            AcceptedInclude, // accepted/allの選択
+            true, // enabled
+            false // showList (Chatのみfalse)
     });
 
     m_preferenceItems.append({
-        ReplyType,
-        tr("Reply"),
-        "all",
-        true,
-        true,
-        InteractionCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            ReplyType, tr("Reply"), "all", true, true, InteractionCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        MentionType,
-        tr("Mention"),
-        "all",
-        true,
-        true,
-        InteractionCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            MentionType, tr("Mention"), "all", true, true, InteractionCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        QuoteType,
-        tr("Quote"),
-        "all",
-        true,
-        true,
-        InteractionCategory,
-        FollowsInclude,  // follows/allの選択
-        true,  // enabled
-        true   // showList
+            QuoteType, tr("Quote"), "all", true, true, InteractionCategory,
+            FollowsInclude, // follows/allの選択
+            true, // enabled
+            true // showList
     });
 
     // アクティビティカテゴリ
     m_preferenceItems.append({
-        StarterpackJoinedType,
-        tr("Starterpack Joined"),
-        "",
-        true,
-        true,
-        ActivityCategory,
-        NoInclude,  // include設定なし
-        true,  // enabled
-        true   // showList
+            StarterpackJoinedType, tr("Starterpack Joined"), "", true, true, ActivityCategory,
+            NoInclude, // include設定なし
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        SubscribedPostType,
-        tr("Subscribed Post"),
-        "",
-        true,
-        true,
-        ActivityCategory,
-        NoInclude,  // include設定なし
-        true,  // enabled
-        true   // showList
+            SubscribedPostType, tr("Subscribed Post"), "", true, true, ActivityCategory,
+            NoInclude, // include設定なし
+            true, // enabled
+            true // showList
     });
 
     // システムカテゴリ
     m_preferenceItems.append({
-        UnverifiedType,
-        tr("Unverified"),
-        "",
-        true,
-        true,
-        SystemCategory,
-        NoInclude,  // include設定なし
-        true,  // enabled
-        true   // showList
+            UnverifiedType, tr("Unverified"), "", true, true, SystemCategory,
+            NoInclude, // include設定なし
+            true, // enabled
+            true // showList
     });
 
     m_preferenceItems.append({
-        VerifiedType,
-        tr("Verified"),
-        "",
-        true,
-        true,
-        SystemCategory,
-        NoInclude,  // include設定なし
-        true,  // enabled
-        true   // showList
+            VerifiedType, tr("Verified"), "", true, true, SystemCategory,
+            NoInclude, // include設定なし
+            true, // enabled
+            true // showList
     });
 }
 
@@ -535,22 +467,23 @@ void NotificationPreferenceListModel::updateFromAtProtocolPreferences(
 QJsonObject NotificationPreferenceListModel::createPreferenceJson(const PreferenceItem &item) const
 {
     QJsonObject json;
-    
+
     if (item.includeType != NoInclude) {
         json["include"] = item.include;
     }
-    
+
     // chatPreferenceにはlistフィールドがない
     if (item.type != ChatType) {
         json["list"] = item.list;
     }
-    
+
     json["push"] = item.push;
-    
+
     return json;
 }
 
-bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool NotificationPreferenceListModel::setData(const QModelIndex &index, const QVariant &value,
+                                              int role)
 {
     if (!index.isValid() || index.row() < 0 || index.row() >= m_preferenceItems.size()) {
         return false;

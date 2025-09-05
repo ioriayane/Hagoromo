@@ -98,8 +98,8 @@ void ComAtprotoRepoPutRecordEx::notificationDeclaration(const QString &declarati
     json_record.insert("allowSubscriptions", declaration);
     json_record.insert("$type", "app.bsky.notification.declaration");
 
-    putRecord(this->did(), QStringLiteral("app.bsky.notification.declaration"), QStringLiteral("self"),
-                 true, json_record, QString(), QString());
+    putRecord(this->did(), QStringLiteral("app.bsky.notification.declaration"),
+              QStringLiteral("self"), true, json_record, QString(), QString());
 }
 
 bool ComAtprotoRepoPutRecordEx::parseJson(bool success, const QString reply_json)

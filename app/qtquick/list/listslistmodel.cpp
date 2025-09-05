@@ -310,7 +310,7 @@ bool ListsListModel::getLatest()
         lists->deleteLater();
     });
     lists->setAccount(account());
-    lists->getLists(actor(), 0, QString());
+    lists->getLists(actor(), 0, QString(), QList<QString>());
 
     return true;
 }
@@ -338,7 +338,7 @@ bool ListsListModel::getNext()
         lists->deleteLater();
     });
     lists->setAccount(account());
-    lists->getLists(actor(), 0, m_cursor);
+    lists->getLists(actor(), 0, m_cursor, QList<QString>());
 
     return true;
 }
