@@ -57,6 +57,7 @@ public:
         RepostCountRole,
         QuoteCountRole,
         LikeCountRole,
+        BookmarkCountRole,
         ReplyDisabledRole,
         QuoteDisabledRole,
         IndexedAtRole,
@@ -68,6 +69,7 @@ public:
 
         IsRepostedRole,
         IsLikedRole,
+        IsBookmarkedRole,
         PinnedRole,
         PinnedByMeRole,
         ThreadMutedRole,
@@ -76,6 +78,7 @@ public:
 
         RunningRepostRole,
         RunningLikeRole,
+        RunningBookmarkRole,
         RunningdeletePostRole,
         RunningPostPinningRole,
         RunningOtherPrcessingRole,
@@ -242,6 +245,8 @@ private:
     void setRunningRepost(int row, bool running);
     bool runningLike(int row) const;
     void setRunningLike(int row, bool running);
+    bool runningBookmark(int row) const;
+    void setRunningBookmark(int row, bool running);
     bool runningdeletePost(int row) const;
     void setRunningdeletePost(int row, bool running);
     bool runningPostPinning(int row) const;
@@ -272,6 +277,7 @@ private:
     bool m_visibleRepostByMe;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    QString m_runningBookmarkCid;
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
     QString m_runningOtherProcessingCid;

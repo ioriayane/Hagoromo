@@ -505,7 +505,7 @@ bool RecordOperator::bookmark(const QString &cid, const QString &uri)
         book_mark->deleteLater();
     });
     book_mark->setAccount(account());
-    book_mark->createBookmark(cid, uri);
+    book_mark->createBookmark(uri, cid);
 
     return true;
 }

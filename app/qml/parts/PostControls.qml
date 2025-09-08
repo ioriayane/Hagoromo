@@ -17,6 +17,7 @@ RowLayout {
     property bool threadMuted: false
     property bool quoteDetached: false
     property bool quoteIsMine: false
+    property bool isBookmarked: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -29,6 +30,7 @@ RowLayout {
     property alias repostMenuItem: repostMenuItem
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
+    property alias bookmarkButton: bookmarkButton
     property alias pinnedImage: pinnedImage
     property alias moreButton: moreButton
 
@@ -100,6 +102,18 @@ RowLayout {
             iconSource: "../images/like.png"
             iconSize: AdjustedValues.i16
             foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
+            flat: true
+            BusyIndicator {
+                anchors.fill: parent
+                visible: !parent.enabled
+            }
+        }
+        IconButton {
+            id: bookmarkButton
+            Layout.preferredHeight: AdjustedValues.b24
+            iconSource: "../images/bookmark.png"
+            iconSize: AdjustedValues.i16
+            foreground: isBookmarked ? Material.color(Material.Pink) : Material.color(Material.Grey)
             flat: true
             BusyIndicator {
                 anchors.fill: parent

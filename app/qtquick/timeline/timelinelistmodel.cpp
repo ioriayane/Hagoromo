@@ -181,6 +181,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.quoteCount;
     else if (role == LikeCountRole)
         return current.post.likeCount;
+    else if (role == BookmarkCountRole)
+        return current.post.bookmarkCount;
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
     else if (role == QuoteDisabledRole)
@@ -204,6 +206,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.viewer.repost.contains(account().did);
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
+    else if (role == IsBookmarkedRole)
+        return current.post.viewer.bookmarked;
     else if (role == PinnedRole)
         return isPinnedPost(current.post.cid) && row == 0;
     else if (role == PinnedByMeRole)
@@ -219,6 +223,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningRepostCid);
     else if (role == RunningLikeRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
+    else if (role == RunningBookmarkRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningBookmarkCid);
     else if (role == RunningdeletePostRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
     else if (role == RunningPostPinningRole)
@@ -420,6 +426,11 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         current.post.viewer.like = value.toString();
         emit dataChanged(index(row), index(row), QVector<int>() << role << IsLikedRole);
 
+    } else if (role == IsBookmarkedRole) {
+        qDebug() << "update BOOKMARK" << value.toString();
+        current.post.viewer.bookmarked = value.toBool();
+        emit dataChanged(index(row), index(row), QVector<int>() << role << IsBookmarkedRole);
+
     } else if (role == RepostCountRole) {
         if (value.toBool()) {
             current.post.repostCount++;
@@ -438,6 +449,16 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         }
         if (current.post.likeCount < 0) {
             current.post.likeCount = 0;
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == BookmarkCountRole) {
+        if (value.toBool()) {
+            current.post.bookmarkCount++;
+        } else {
+            current.post.bookmarkCount--;
+        }
+        if (current.post.bookmarkCount < 0) {
+            current.post.bookmarkCount = 0;
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
 
@@ -463,6 +484,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningLikeCid = current.post.cid;
         } else {
             m_runningLikeCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == RunningBookmarkRole) {
+        if (value.toBool()) {
+            m_runningBookmarkCid = current.post.cid;
+        } else {
+            m_runningBookmarkCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (role == RunningdeletePostRole) {
@@ -874,7 +902,46 @@ bool TimelineListModel::detachQuote(int row)
 
 bool TimelineListModel::bookmark(int row)
 {
+    if (row < 0 || row >= m_cidList.count())
+        return false;
 
+    bool current = item(row, IsBookmarkedRole).toBool();
+
+    if (runningBookmark(row))
+        return true;
+    setRunningBookmark(row, true);
+
+    const QString target_cid = item(row, CidRole).toString();
+    const QString target_uri = item(row, UriRole).toString();
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished, this,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+
+                const QList<int> rows = indexsOf(target_cid);
+                if (success) {
+                    for (const auto &r : rows) {
+                        update(r, IsBookmarkedRole, !current);
+                        update(r, BookmarkCountRole, !current);
+                        emit dataChanged(index(r), index(r),
+                                         QVector<int>() << IsBookmarkedRole << BookmarkCountRole);
+                    }
+                }
+                for (const auto &r : rows) {
+                    setRunningBookmark(r, false);
+                }
+
+                ope->deleteLater();
+            });
+    ope->setAccount(account().uuid);
+    if (current) {
+        ope->deleteBookmark(target_uri);
+    } else {
+        ope->bookmark(target_cid, target_uri);
+    }
     return true;
 }
 
@@ -900,6 +967,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
+    roles[BookmarkCountRole] = "bookmarkCount";
     roles[ReplyDisabledRole] = "replyDisabled";
     roles[QuoteDisabledRole] = "quoteDisabled";
     roles[IndexedAtRole] = "indexedAt";
@@ -911,6 +979,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[IsBookmarkedRole] = "isBookmarked";
     roles[PinnedRole] = "pinned";
     roles[PinnedByMeRole] = "pinnedByMe";
     roles[ThreadMutedRole] = "threadMuted";
@@ -918,6 +987,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
+    roles[RunningBookmarkRole] = "runningBookmark";
     roles[RunningdeletePostRole] = "runningdeletePost";
     roles[RunningPostPinningRole] = "runningPostPinning";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
@@ -1299,6 +1369,16 @@ bool TimelineListModel::runningLike(int row) const
 void TimelineListModel::setRunningLike(int row, bool running)
 {
     update(row, RunningLikeRole, running);
+}
+
+bool TimelineListModel::runningBookmark(int row) const
+{
+    return item(row, RunningBookmarkRole).toBool();
+}
+
+void TimelineListModel::setRunningBookmark(int row, bool running)
+{
+    update(row, RunningBookmarkRole, running);
 }
 
 bool TimelineListModel::runningdeletePost(int row) const
