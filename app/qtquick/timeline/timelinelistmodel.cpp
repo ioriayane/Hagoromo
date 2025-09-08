@@ -872,6 +872,12 @@ bool TimelineListModel::detachQuote(int row)
     return true;
 }
 
+bool TimelineListModel::bookmark(int row)
+{
+
+    return true;
+}
+
 QHash<int, QByteArray> TimelineListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;

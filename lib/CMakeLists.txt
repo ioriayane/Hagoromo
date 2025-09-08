@@ -49,6 +49,12 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/actor/appbskyactorsearchactors.h
     atprotocol/app/bsky/actor/appbskyactorsearchactorstypeahead.cpp
     atprotocol/app/bsky/actor/appbskyactorsearchactorstypeahead.h
+    atprotocol/app/bsky/bookmark/appbskybookmarkcreatebookmark.cpp
+    atprotocol/app/bsky/bookmark/appbskybookmarkcreatebookmark.h
+    atprotocol/app/bsky/bookmark/appbskybookmarkdeletebookmark.cpp
+    atprotocol/app/bsky/bookmark/appbskybookmarkdeletebookmark.h
+    atprotocol/app/bsky/bookmark/appbskybookmarkgetbookmarks.cpp
+    atprotocol/app/bsky/bookmark/appbskybookmarkgetbookmarks.h
     atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.cpp
     atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.h
     atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.cpp

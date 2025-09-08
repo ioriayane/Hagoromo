@@ -189,6 +189,7 @@ public:
     Q_INVOKABLE bool pin(int row);
     Q_INVOKABLE bool muteThread(int row);
     Q_INVOKABLE bool detachQuote(int row);
+    Q_INVOKABLE bool bookmark(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
