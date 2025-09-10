@@ -492,7 +492,7 @@ bool RecordOperator::bookmark(const QString &cid, const QString &uri)
         return false;
     setRunning(true);
 
-    setProgressMessage(tr("Create bookmark ..."));
+    setProgressMessage(tr("Saving post ..."));
 
     AppBskyBookmarkCreateBookmark *book_mark = new AppBskyBookmarkCreateBookmark(this);
     connect(book_mark, &AppBskyBookmarkCreateBookmark::finished, [=](bool success) {
@@ -767,7 +767,7 @@ bool RecordOperator::deleteBookmark(const QString &uri)
         return false;
     setRunning(true);
 
-    setProgressMessage(tr("Delete bookmark ..."));
+    setProgressMessage(tr("Delete saved post ..."));
 
     AppBskyBookmarkDeleteBookmark *book_mark = new AppBskyBookmarkDeleteBookmark(this);
     connect(book_mark, &AppBskyBookmarkDeleteBookmark::finished, [=](bool success) {
