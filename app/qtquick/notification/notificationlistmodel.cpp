@@ -247,6 +247,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like.contains(account().did);
         else
             return QString();
+    } else if (role == IsBookmarkedRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.bookmarked;
+        else
+            return false;
     } else if (role == ThreadMutedRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].viewer.threadMuted;
@@ -551,6 +556,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].likeCount++;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == IsBookmarkedRole) {
+        if (m_postHash.contains(current.cid)) {
+            qDebug() << "update BOOKMARK" << value.toString();
+            m_postHash[current.cid].viewer.bookmarked = value.toBool();
+            emit dataChanged(index(row), index(row), QVector<int>() << role);
+        }
+
     } else if (role == ThreadMutedRole) {
         if (m_postHash.contains(current.cid)) {
             qDebug().noquote() << "update Thread Mute" << row
@@ -560,6 +572,18 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].viewer.threadMuted = value.toBool();
                 emit dataChanged(index(row), index(row), QVector<int>() << role);
             }
+        }
+    } else if (role == BookmarkCountRole) {
+        if (m_postHash.contains(current.cid)) {
+            if (value.toBool()) {
+                m_postHash[current.cid].bookmarkCount++;
+            } else {
+                m_postHash[current.cid].bookmarkCount--;
+            }
+            if (m_postHash[current.cid].bookmarkCount < 0) {
+                m_postHash[current.cid].bookmarkCount = 0;
+            }
+            emit dataChanged(index(row), index(row), QVector<int>() << role);
         }
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {

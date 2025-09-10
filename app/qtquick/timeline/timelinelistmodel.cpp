@@ -429,7 +429,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     } else if (role == IsBookmarkedRole) {
         qDebug() << "update BOOKMARK" << value.toString();
         current.post.viewer.bookmarked = value.toBool();
-        emit dataChanged(index(row), index(row), QVector<int>() << role << IsBookmarkedRole);
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
 
     } else if (role == RepostCountRole) {
         if (value.toBool()) {
