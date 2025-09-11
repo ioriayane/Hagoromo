@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Support for saved post
+
 ### v0.53.0 - 2025/9/3
 
 - Add

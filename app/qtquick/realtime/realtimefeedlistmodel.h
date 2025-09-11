@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE bool getNext();
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
+    Q_INVOKABLE bool bookmark(int row);
 
     QString selectorJson() const;
     void setSelectorJson(const QString &newSelectorJson);

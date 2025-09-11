@@ -55,6 +55,7 @@ public:
         RepostCountRole,
         QuoteCountRole,
         LikeCountRole,
+        BookmarkCountRole,
         ReplyDisabledRole,
         IndexedAtRole,
         EmbedImagesRole,
@@ -64,12 +65,14 @@ public:
 
         IsRepostedRole,
         IsLikedRole,
+        IsBookmarkedRole,
         ThreadMutedRole,
         RepostedUriRole,
         LikedUriRole,
 
         RunningRepostRole,
         RunningLikeRole,
+        RunningBookmarkRole,
         RunningOtherPrcessingRole,
         RunningSkyblurPostTextRole,
 
@@ -179,6 +182,7 @@ public:
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool muteThread(int row);
     Q_INVOKABLE bool detachQuote(int row);
+    Q_INVOKABLE bool bookmark(int row);
 
     bool visibleLike() const;
     void setVisibleLike(bool newVisibleLike);
@@ -286,6 +290,8 @@ private:
     void setRunningRepost(int row, bool running);
     bool runningLike(int row) const;
     void setRunningLike(int row, bool running);
+    bool runningBookmark(int row) const;
+    void setRunningBookmark(int row, bool running);
     bool runningOtherPrcessing(int row) const;
     void setRunningOtherPrcessing(int row, bool running);
     virtual bool runningSkyblurPostText(int row) const;
@@ -302,6 +308,7 @@ private:
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    QString m_runningBookmarkCid;
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
     bool m_aggregateReactions;

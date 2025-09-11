@@ -43,7 +43,7 @@ Dialog {
             var item = repeater.itemAt(i)
             item.visible = (i === index)
             if(i === index){
-                if(item.model.rowCount() === 8){
+                if(item.model.rowCount() === 9){
                     item.model.setAccount(accountModel.item(index, AccountListModel.UuidRole))
                     item.model.getLatest()
                 }

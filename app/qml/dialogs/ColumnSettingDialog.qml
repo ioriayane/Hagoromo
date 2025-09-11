@@ -124,6 +124,13 @@ Dialog {
                 PropertyChanges { target: autoLoadingIntervalLayout; visible: false }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State { // Bookmark
+                when: columnSettingDialog.componentType === 10
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
             }
         ]
 

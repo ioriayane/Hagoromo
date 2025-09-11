@@ -95,7 +95,7 @@ void FeedTypeListModel::clear()
     // デフォルトで追加した状態にするアイテムを増減させるときは
     // AddColumnDialog.qmlのchangeColumnTypeView()を
     // 修正しないとカスタムフィードなどが読み込まれない
-    beginInsertRows(QModelIndex(), 0, 7);
+    beginInsertRows(QModelIndex(), 0, 8);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -156,6 +156,13 @@ void FeedTypeListModel::clear()
         item.group = tr("Chat");
         item.type = FeedComponentType::ChatList;
         item.generator.displayName = tr("Chat list");
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Saved");
+        item.type = FeedComponentType::Bookmark;
+        item.generator.displayName = tr("Saved posts");
         m_feedTypeItemList.append(item);
     }
     endInsertRows();
