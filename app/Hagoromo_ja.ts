@@ -2415,73 +2415,73 @@ Please recreate AppPassword in the official application.</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="173"/>
-        <location filename="qml/parts/PostControls.qml" line="242"/>
+        <location filename="qml/parts/PostControls.qml" line="175"/>
+        <location filename="qml/parts/PostControls.qml" line="244"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="178"/>
-        <location filename="qml/parts/PostControls.qml" line="247"/>
+        <location filename="qml/parts/PostControls.qml" line="180"/>
+        <location filename="qml/parts/PostControls.qml" line="249"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="182"/>
-        <location filename="qml/parts/PostControls.qml" line="251"/>
+        <location filename="qml/parts/PostControls.qml" line="184"/>
+        <location filename="qml/parts/PostControls.qml" line="253"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="187"/>
-        <location filename="qml/parts/PostControls.qml" line="256"/>
+        <location filename="qml/parts/PostControls.qml" line="189"/>
+        <location filename="qml/parts/PostControls.qml" line="258"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="194"/>
-        <location filename="qml/parts/PostControls.qml" line="263"/>
+        <location filename="qml/parts/PostControls.qml" line="196"/>
+        <location filename="qml/parts/PostControls.qml" line="265"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="200"/>
-        <location filename="qml/parts/PostControls.qml" line="269"/>
+        <location filename="qml/parts/PostControls.qml" line="202"/>
+        <location filename="qml/parts/PostControls.qml" line="271"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="206"/>
-        <location filename="qml/parts/PostControls.qml" line="275"/>
+        <location filename="qml/parts/PostControls.qml" line="208"/>
+        <location filename="qml/parts/PostControls.qml" line="277"/>
         <source>Quotes</source>
         <translation>引用したポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="213"/>
-        <location filename="qml/parts/PostControls.qml" line="282"/>
+        <location filename="qml/parts/PostControls.qml" line="215"/>
+        <location filename="qml/parts/PostControls.qml" line="284"/>
         <source>Unpin this post</source>
         <translation>固定ポストを解除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="213"/>
-        <location filename="qml/parts/PostControls.qml" line="282"/>
+        <location filename="qml/parts/PostControls.qml" line="215"/>
+        <location filename="qml/parts/PostControls.qml" line="284"/>
         <source>Pin this post</source>
         <translation>固定ポストにする</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="219"/>
-        <location filename="qml/parts/PostControls.qml" line="288"/>
+        <location filename="qml/parts/PostControls.qml" line="221"/>
+        <location filename="qml/parts/PostControls.qml" line="290"/>
         <source>Unmute thread</source>
         <translation>スレッドミュートの解除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="219"/>
-        <location filename="qml/parts/PostControls.qml" line="288"/>
+        <location filename="qml/parts/PostControls.qml" line="221"/>
+        <location filename="qml/parts/PostControls.qml" line="290"/>
         <source>Mute thread</source>
         <translation>スレッドをミュート</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="224"/>
+        <location filename="qml/parts/PostControls.qml" line="226"/>
         <source>Edit interaction settings</source>
         <translation>投稿への反応の設定</translation>
     </message>
@@ -2490,22 +2490,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="231"/>
+        <location filename="qml/parts/PostControls.qml" line="233"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="293"/>
+        <location filename="qml/parts/PostControls.qml" line="295"/>
         <source>Re-attach quote</source>
         <translation>引用を再接続</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="293"/>
+        <location filename="qml/parts/PostControls.qml" line="295"/>
         <source>Detach quote</source>
         <translation>引用を切断</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="300"/>
+        <location filename="qml/parts/PostControls.qml" line="302"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
