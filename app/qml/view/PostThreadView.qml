@@ -220,9 +220,11 @@ ColumnLayout {
                 postControls.quoteCount: model.quoteCount
                 postControls.replyButton.iconText: model.replyCount
                 postControls.likeButton.iconText: model.likeCount
+                postControls.bookmarkButton.iconText: model.bookmarkCount
                 postControls.replyButton.enabled: !model.replyDisabled
                 postControls.repostButton.enabled: !model.runningRepost
                 postControls.likeButton.enabled: !model.runningLike
+                postControls.bookmarkButton.enabled: !model.runningBookmark
                 postControls.pinnedImage.enabled: !model.runningPostPinning
                 postControls.moreButton.enabled: !model.runningOtherPrcessing
                 postControls.quoteMenuItem.enabled: !model.quoteDisabled
@@ -233,9 +235,11 @@ ColumnLayout {
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                      model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: rootListView.model.like(model.index)
+                postControls.bookmarkButton.onClicked: rootListView.model.bookmark(model.index)
                 postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+                postControls.isBookmarked: model.isBookmarked
                 postControls.pinned: model.pinnedByMe
                 postControls.threadMuted: model.threadMuted
                 postControls.quoteDetached: model.quoteRecordDetatched

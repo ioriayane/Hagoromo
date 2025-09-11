@@ -113,7 +113,7 @@ Dialog {
             }
             Button {
                 id: applyButton
-                enabled: !recordOperator.running && 
+                enabled: !recordOperator.running &&
                     notificationDeclarationItemGroup.checkedButton &&
                     notificationDeclarationItemGroup.checkedButton.value !== notificationDeclarationDialog.defaultValue
                 font.pointSize: AdjustedValues.f10

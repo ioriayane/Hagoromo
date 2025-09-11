@@ -227,6 +227,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].likeCount;
         else
             return 0;
+    } else if (role == BookmarkCountRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].bookmarkCount;
+        else
+            return 0;
     } else if (role == ReplyDisabledRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].viewer.replyDisabled;
@@ -242,6 +247,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like.contains(account().did);
         else
             return QString();
+    } else if (role == IsBookmarkedRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.bookmarked;
+        else
+            return false;
     } else if (role == ThreadMutedRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].viewer.threadMuted;
@@ -261,6 +271,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return !current.cid.isEmpty() && (current.cid == m_runningRepostCid);
     } else if (role == RunningLikeRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningLikeCid);
+    } else if (role == RunningBookmarkRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningBookmarkCid);
     } else if (role == RunningOtherPrcessingRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningOtherProcessingCid);
     } else if (role == RunningSkyblurPostTextRole) {
@@ -544,6 +556,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].likeCount++;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == IsBookmarkedRole) {
+        if (m_postHash.contains(current.cid)) {
+            qDebug() << "update BOOKMARK" << value.toString();
+            m_postHash[current.cid].viewer.bookmarked = value.toBool();
+            emit dataChanged(index(row), index(row), QVector<int>() << role);
+        }
+
     } else if (role == ThreadMutedRole) {
         if (m_postHash.contains(current.cid)) {
             qDebug().noquote() << "update Thread Mute" << row
@@ -553,6 +572,18 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].viewer.threadMuted = value.toBool();
                 emit dataChanged(index(row), index(row), QVector<int>() << role);
             }
+        }
+    } else if (role == BookmarkCountRole) {
+        if (m_postHash.contains(current.cid)) {
+            if (value.toBool()) {
+                m_postHash[current.cid].bookmarkCount++;
+            } else {
+                m_postHash[current.cid].bookmarkCount--;
+            }
+            if (m_postHash[current.cid].bookmarkCount < 0) {
+                m_postHash[current.cid].bookmarkCount = 0;
+            }
+            emit dataChanged(index(row), index(row), QVector<int>() << role);
         }
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {
@@ -566,6 +597,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
             m_runningLikeCid = current.cid;
         } else {
             m_runningLikeCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QList<int>() << role);
+    } else if (role == RunningBookmarkRole) {
+        if (value.toBool()) {
+            m_runningBookmarkCid = current.cid;
+        } else {
+            m_runningBookmarkCid.clear();
         }
         emit dataChanged(index(row), index(row), QList<int>() << role);
     } else if (role == RunningOtherPrcessingRole) {
@@ -976,6 +1014,40 @@ bool NotificationListModel::detachQuote(int row)
     return true;
 }
 
+bool NotificationListModel::bookmark(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return false;
+
+    bool current = item(row, IsBookmarkedRole).toBool();
+
+    if (runningBookmark(row))
+        return false;
+    setRunningBookmark(row, true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(cid)
+                if (success) {
+                    update(row, IsBookmarkedRole, !current);
+                    update(row, BookmarkCountRole, !current);
+                    emit dataChanged(index(row), index(row),
+                                     QVector<int>() << IsBookmarkedRole << BookmarkCountRole);
+                }
+                setRunningBookmark(row, false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().uuid);
+    if (!current)
+        ope->bookmark(item(row, CidRole).toString(), item(row, UriRole).toString());
+    else
+        ope->deleteBookmark(item(row, UriRole).toString());
+
+    return true;
+}
+
 QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -995,6 +1067,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
+    roles[BookmarkCountRole] = "bookmarkCount";
     roles[ReplyDisabledRole] = "replyDisabled";
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
@@ -1004,11 +1077,13 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[IsBookmarkedRole] = "isBookmarked";
     roles[ThreadMutedRole] = "threadMuted";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
+    roles[RunningBookmarkRole] = "runningBookmark";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
     roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
 
@@ -1643,6 +1718,16 @@ bool NotificationListModel::runningLike(int row) const
 void NotificationListModel::setRunningLike(int row, bool running)
 {
     update(row, RunningLikeRole, running);
+}
+
+bool NotificationListModel::runningBookmark(int row) const
+{
+    return item(row, RunningBookmarkRole).toBool();
+}
+
+void NotificationListModel::setRunningBookmark(int row, bool running)
+{
+    update(row, RunningBookmarkRole, running);
 }
 
 bool NotificationListModel::runningOtherPrcessing(int row) const

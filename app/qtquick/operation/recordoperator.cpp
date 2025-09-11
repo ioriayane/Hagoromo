@@ -1,6 +1,8 @@
 #include "operation/recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
+#include "atprotocol/app/bsky/bookmark/appbskybookmarkcreatebookmark.h"
+#include "atprotocol/app/bsky/bookmark/appbskybookmarkdeletebookmark.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
@@ -14,6 +16,8 @@
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
+using AtProtocolInterface::AppBskyBookmarkCreateBookmark;
+using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
@@ -482,6 +486,30 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
     return true;
 }
 
+bool RecordOperator::bookmark(const QString &cid, const QString &uri)
+{
+    if (running())
+        return false;
+    setRunning(true);
+
+    setProgressMessage(tr("Saving post ..."));
+
+    AppBskyBookmarkCreateBookmark *book_mark = new AppBskyBookmarkCreateBookmark(this);
+    connect(book_mark, &AppBskyBookmarkCreateBookmark::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(book_mark->errorCode(), book_mark->errorMessage());
+        }
+        setProgressMessage(QString());
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        book_mark->deleteLater();
+    });
+    book_mark->setAccount(account());
+    book_mark->createBookmark(uri, cid);
+
+    return true;
+}
+
 void RecordOperator::deletePost(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
@@ -730,6 +758,30 @@ bool RecordOperator::deleteListItem(const QString &uri)
     });
     delete_record->setAccount(account());
     delete_record->deleteListItem(r_key);
+    return true;
+}
+
+bool RecordOperator::deleteBookmark(const QString &uri)
+{
+    if (running())
+        return false;
+    setRunning(true);
+
+    setProgressMessage(tr("Delete saved post ..."));
+
+    AppBskyBookmarkDeleteBookmark *book_mark = new AppBskyBookmarkDeleteBookmark(this);
+    connect(book_mark, &AppBskyBookmarkDeleteBookmark::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(book_mark->errorCode(), book_mark->errorMessage());
+        }
+        setProgressMessage(QString());
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        book_mark->deleteLater();
+    });
+    book_mark->setAccount(account());
+    book_mark->deleteBookmark(uri);
+
     return true;
 }
 
@@ -1069,8 +1121,8 @@ void RecordOperator::updateActivitySubscription(const QString &did, bool post, b
             new AppBskyNotificationPutActivitySubscription(this);
     connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
         if (success) {
-            qDebug().noquote() << "Activity subscription updated for" << did << "post:"
-                               << post << "reply:" << reply;
+            qDebug().noquote() << "Activity subscription updated for" << did << "post:" << post
+                               << "reply:" << reply;
         } else {
             emit errorOccured(subscription->errorCode(), subscription->errorMessage());
         }

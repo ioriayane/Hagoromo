@@ -16,6 +16,7 @@
 #include "qtquick/timeline/anyfeedlistmodel.h"
 #include "qtquick/timeline/actorlikelistmodel.h"
 #include "qtquick/timeline/quotedpostlistmodel.h"
+#include "qtquick/timeline/bookmarkpostlistmodel.h"
 #include "qtquick/profile/followslistmodel.h"
 #include "qtquick/profile/followerslistmodel.h"
 #include "qtquick/profile/knownfollowerslistmodel.h"
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.53.0"));
+    app.setApplicationVersion(QStringLiteral("0.54.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -129,6 +130,8 @@ int main(int argc, char *argv[])
                                                  1, 0, "ActorFeedGeneratorListModel");
     qmlRegisterType<QuotedPostListModel>("tech.relog.hagoromo.quotedpostlistmodel", 1, 0,
                                          "QuotedPostListModel");
+    qmlRegisterType<BookmarkPostListModel>("tech.relog.hagoromo.bookmarkpostlistmodel", 1, 0,
+                                           "BookmarkPostListModel");
     qmlRegisterType<ContentFilterSettingListModel>(
             "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
             "ContentFilterSettingListModel");
