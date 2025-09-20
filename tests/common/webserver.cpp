@@ -51,41 +51,51 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
             MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     } else {
-        QString path = WebServer::convertResoucePath(request.url());
-        if (path.endsWith("xrpc/app.bsky.graph.getList")) {
-            if (request.query().hasQueryItem("list")) {
-                path += "_"
-                        + request.query()
-                                  .queryItemValue("list", QUrl::FullyDecoded)
-                                  .split("/")
-                                  .last();
+        bool result = true;
+        QString json = "{}";
+        QHttpServerResponder::StatusCode status_code = QHttpServerResponder::StatusCode::Ok;
+        emit receivedGet(request, result, json, status_code);
+
+        if (result) {
+            QString path = WebServer::convertResoucePath(request.url());
+            if (path.endsWith("xrpc/app.bsky.graph.getList")) {
+                if (request.query().hasQueryItem("list")) {
+                    path += "_"
+                            + request.query()
+                                      .queryItemValue("list", QUrl::FullyDecoded)
+                                      .split("/")
+                                      .last();
+                }
+            } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus")) {
+                if (m_videoGetJobStatus > 0) {
+                    path += "_" + QString::number(m_videoGetJobStatus);
+                }
+                m_videoGetJobStatus++;
             }
-        } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus")) {
-            if (m_videoGetJobStatus > 0) {
-                path += "_" + QString::number(m_videoGetJobStatus);
+            if (request.query().hasQueryItem("cursor")) {
+                path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
             }
-            m_videoGetJobStatus++;
-        }
-        if (request.query().hasQueryItem("cursor")) {
-            path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
-        }
-        qDebug().noquote() << "SERVER PATH=" << path;
-        if (!QFile::exists(path)) {
-            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
-        } else {
-            QFileInfo file_info(request.url().path());
-            QByteArray data;
-            QString mime_type = "application/json";
-            if (path.endsWith("/xrpc/com.atproto.sync.getRepo")) {
-                mime_type = "application/vnd.ipld.car";
-            }
-            if (WebServer::readFile(path, data)) {
-                data.replace("{{SERVER_PORT_NO}}", QString::number(request.localPort()).toUtf8());
-                MAKE_RESPONDER.write(data, mime_type.toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+            qDebug().noquote() << "SERVER PATH=" << path;
+            if (!QFile::exists(path)) {
+                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
             } else {
-                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+                QFileInfo file_info(request.url().path());
+                QByteArray data;
+                QString mime_type = "application/json";
+                if (path.endsWith("/xrpc/com.atproto.sync.getRepo")) {
+                    mime_type = "application/vnd.ipld.car";
+                }
+                if (WebServer::readFile(path, data)) {
+
+                    data.replace("{{SERVER_PORT_NO}}",
+                                 QString::number(request.localPort()).toUtf8());
+                    MAKE_RESPONDER.write(data, mime_type.toUtf8(), status_code);
+                } else {
+                    MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+                }
             }
+        } else {
+            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     }
     return true;

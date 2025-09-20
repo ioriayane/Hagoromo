@@ -81,6 +81,24 @@ video_teset::video_teset()
                          << ", json:" << json;
                 qDebug() << "  " << WebServer::convertResoucePath(request.url());
             });
+
+    connect(&m_mockServer, &WebServer::receivedGet,
+            [=](const QHttpServerRequest &request, bool &result, QString &json,
+                QHttpServerResponder::StatusCode &status_code) {
+                qDebug() << "receive Get" << request.url().path();
+
+                if (request.url().toString().endsWith(
+                            "limit/5/xrpc/com.atproto.server.getServiceAuth")) {
+                    QVERIFY2(("did:web:" + request.url().host())
+                                     == request.url().query().arg("aud"),
+                             (request.url().host() + "<>" + request.url().query().arg("aud"))
+                                     .toLocal8Bit());
+                }
+
+                qDebug() << "  result:" << result << ", status_code:" << status_code
+                         << ", json:" << json;
+                qDebug() << "  " << WebServer::convertResoucePath(request.url());
+            });
 }
 
 video_teset::~video_teset() { }

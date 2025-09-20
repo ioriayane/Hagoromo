@@ -8,9 +8,15 @@ namespace AtProtocolInterface {
 
 AppBskyVideoUploadVideo::AppBskyVideoUploadVideo(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyVideoUploadVideo::uploadVideo(const QString &path)
+void AppBskyVideoUploadVideo::uploadVideo(const QString &path, const QString &name)
 {
-    postWithImage(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), path);
+    QUrlQuery url_query;
+    url_query.addQueryItem(QStringLiteral("did"), account().did);
+    if (!name.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("name"), name);
+    }
+
+    postWithImage(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), path, url_query);
 }
 
 const AtProtocolType::AppBskyVideoDefs::JobStatus &AppBskyVideoUploadVideo::jobStatus() const

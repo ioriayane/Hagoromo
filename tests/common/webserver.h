@@ -24,6 +24,8 @@ public:
 signals:
     void receivedPost(const QHttpServerRequest &request, bool &result, QString &json,
                       QHttpServerResponder::StatusCode &status_code);
+    void receivedGet(const QHttpServerRequest &request, bool &result, QString &json,
+                     QHttpServerResponder::StatusCode &status_code);
 
 private:
     QMimeDatabase m_MimeDb;

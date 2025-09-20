@@ -58,7 +58,7 @@ void AppBskyVideoUploadVideoEx::uploadVideo(const QString &path)
             a.accessJwt = token;
             a.service_endpoint = m_endpoint;
             upload->setAccount(a);
-            upload->uploadVideo(path);
+            upload->uploadVideo(path, info.baseName());
         }
     });
 }
@@ -74,8 +74,15 @@ void AppBskyVideoUploadVideoEx::getServiceAuth(std::function<void(const QString 
         callback(token);
         auth->deleteLater();
     });
+
+    QUrl account_endpoint =
+            account().service_endpoint.isEmpty() ? account().service : account().service_endpoint;
+    QString aud = "did:web:" + account_endpoint.host();
+
+    qDebug().noquote() << "aud=" << aud;
+
     auth->setAccount(account());
-    auth->getServiceAuth("did:web:video.bsky.app", 0, "com.atproto.repo.uploadBlob");
+    auth->getServiceAuth(aud, 0, "com.atproto.repo.uploadBlob");
 }
 
 void AppBskyVideoUploadVideoEx::setEndpoint(const QString &newEndpoint)

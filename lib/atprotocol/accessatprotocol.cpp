@@ -265,7 +265,8 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     return;
 }
 
-void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
+void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path,
+                                     const QUrlQuery &query)
 {
     if (accessJwt().isEmpty()) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
@@ -281,10 +282,14 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     }
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint
                        << path;
+    qDebug().noquote() << LOG_DATETIME << "   " << query.toString();
+
+    QUrl url = QString("%1/%2").arg(service(), endpoint);
+    url.setQuery(query);
 
     QMimeDatabase mime;
     QFileInfo info(path);
-    QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
