@@ -59,7 +59,7 @@ ColumnLayout {
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
     signal requestAddMutedWord(string text)
-    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description)
+    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
     signal requestSubscribeToPosts(string did, bool post, bool reply)
 
     signal errorOccured(string code, string message)
@@ -82,7 +82,9 @@ ColumnLayout {
                                                    userProfile.avatar,
                                                    userProfile.banner,
                                                    userProfile.displayName,
-                                                   userProfile.description)
+                                                   userProfile.description,
+                                                   userProfile.pronouns,
+                                                   userProfile.website)
                 } }
         },
         State {
@@ -208,12 +210,14 @@ ColumnLayout {
             }
             if(top){
                 bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
+                websiteLabel.Layout.preferredHeight = websiteLabel.contentHeight
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
                 serviceEndpointLayout.visible = true
                 registrationDateLayout.visible = true
                 knownFollowersInfo.visible = (profileView.userDid !== profileView.accountDid) // true
             }else{
                 bannerImage.Layout.preferredHeight = 0
+                websiteLabel.Layout.preferredHeight = 0
                 descriptionLabel.Layout.preferredHeight = 0
                 serviceEndpointLayout.visible = false
                 registrationDateLayout.visible = false
@@ -436,6 +440,15 @@ ColumnLayout {
             iconSources: userProfile.labelIcons
         }
         Label {
+            id: websiteLabel
+            Layout.topMargin: 5
+            Layout.preferredWidth: profileView.width
+            Layout.preferredHeight: 0
+            font.pointSize: AdjustedValues.f8
+            visible: userProfile.website.length > 0
+            text: visible ? "<a>" + userProfile.website + "</a>" : ""
+        }
+        Label {
             id: descriptionLabel
             Layout.topMargin: 5
             Layout.preferredWidth: profileView.width
@@ -557,6 +570,7 @@ ColumnLayout {
                     }
                 }
             }
+
         }
 
         KnownFollowersInfo {

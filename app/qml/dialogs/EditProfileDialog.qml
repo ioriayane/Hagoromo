@@ -25,6 +25,8 @@ Dialog {
     property string banner: ""
     property string displayName: ""
     property string description: ""
+    property string pronouns: ""
+    property string website: ""
 
     property alias account: account
     Account {
@@ -41,8 +43,12 @@ Dialog {
         bannerImage.source = editProfileDialog.banner
         displayNameText.text = editProfileDialog.displayName
         descriptionText.text = editProfileDialog.description
+        pronounsText.text = editProfileDialog.pronouns
+        websiteText.text = editProfileDialog.website
     }
     onClosed: {
+        websiteText.clear()
+        pronounsText.clear()
         displayNameText.clear()
         descriptionText.clear()
         avatarImage.source = ""
@@ -190,6 +196,36 @@ Dialog {
             text: 256 - descriptionText.realTextLength
         }
 
+        Label {
+            Layout.fillWidth: true
+            Layout.topMargin: 5
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Pronouns")
+        }
+        TextField  {
+            id: pronounsText
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            enabled: !recordOperator.running
+            selectByMouse: true
+            font.pointSize: AdjustedValues.f10
+            property int realTextLength: systemTool.countText(text)
+        }
+
+        Label {
+            Layout.fillWidth: true
+            Layout.topMargin: 5
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Website")
+        }
+        TextField  {
+            id: websiteText
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            enabled: !recordOperator.running
+            selectByMouse: true
+            font.pointSize: AdjustedValues.f10
+            property int realTextLength: systemTool.countText(text)
+        }
+
         RowLayout {
             Button {
                 Layout.alignment: Qt.AlignLeft
@@ -211,7 +247,8 @@ Dialog {
                 onClicked: {
                     recordOperator.clear()
                     recordOperator.updateProfile(avatarImage.source, bannerImage.source,
-                                                 descriptionText.text, displayNameText.text)
+                                                 descriptionText.text, displayNameText.text,
+                                                 pronounsText.text, websiteText.text)
                 }
                 BusyIndicator {
                     anchors.fill: parent

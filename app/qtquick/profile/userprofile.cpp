@@ -76,6 +76,8 @@ void UserProfile::getProfile(const QString &did)
                 setDescription(detail.description);
                 setAvatar(detail.avatar);
                 setBanner(detail.banner);
+                setPronouns(detail.pronouns);
+                setWebsite(detail.website);
                 setFollowersCount(detail.followersCount);
                 setFollowsCount(detail.followsCount);
                 setPostsCount(detail.postsCount);
@@ -906,4 +908,30 @@ void UserProfile::setActivitySubscriptionReply(bool newActivitySubscriptionReply
         return;
     m_activitySubscriptionReply = newActivitySubscriptionReply;
     emit activitySubscriptionReplyChanged();
+}
+
+QString UserProfile::website() const
+{
+    return m_website;
+}
+
+void UserProfile::setWebsite(const QString &newWebsite)
+{
+    if (m_website == newWebsite)
+        return;
+    m_website = newWebsite;
+    emit websiteChanged();
+}
+
+QString UserProfile::pronouns() const
+{
+    return m_pronouns;
+}
+
+void UserProfile::setPronouns(const QString &newPronouns)
+{
+    if (m_pronouns == newPronouns)
+        return;
+    m_pronouns = newPronouns;
+    emit pronounsChanged();
 }

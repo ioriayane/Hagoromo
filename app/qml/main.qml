@@ -659,12 +659,14 @@ ApplicationWindow {
                 }
             }
 
-            onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description) => {
+            onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description, pronouns, website) => {
                 if(editProfileDialog.account.set(accountListModel, account_uuid)){
                     editProfileDialog.avatar = avatar
                     editProfileDialog.banner = banner
                     editProfileDialog.displayName = display_name
                     editProfileDialog.description = description
+                    editProfileDialog.pronouns = pronouns
+                    editProfileDialog.website = website
                     editProfileDialog.open()
                 }
             }
