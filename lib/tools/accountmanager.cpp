@@ -89,6 +89,10 @@ QJsonObject AccountManager::Private::save() const
     account_item["identifier"] = m_account.identifier;
     account_item["password"] = m_encryption.encrypt(m_account.password);
     account_item["refresh_jwt"] = m_encryption.encrypt(m_account.refreshJwt);
+    account_item["use_oauth"] = m_account.use_oauth;
+    account_item["oauth_token"] = m_encryption.encrypt(m_account.oauth_token);
+    account_item["oauth_refresh_token"] = m_encryption.encrypt(m_account.oauth_refresh_token);
+    // account_item["oauth_dpop_nonce"] = m_encryption.encrypt(m_account.oauth_dpop_nonce);
 
     if (!m_account.post_languages.isEmpty()) {
         QJsonArray post_langs;
@@ -131,14 +135,25 @@ QJsonObject AccountManager::Private::save() const
 void AccountManager::Private::load(const QJsonObject &object)
 {
 
-    QString temp_refresh = object.value("refresh_jwt").toString();
+    QString temp_refresh;
+    m_account.use_oauth = object.value("use_oauth").toBool();
+    m_account.oauth_refresh_token.clear();
+    m_account.refreshJwt.clear();
+    m_account.password.clear();
+    if (m_account.use_oauth) {
+        temp_refresh = object.value("oauth_refresh_token").toString();
+        m_account.oauth_refresh_token = m_encryption.decrypt(temp_refresh);
+        m_account.oauth_token = m_encryption.decrypt(object.value("oauth_token").toString());
+    } else {
+        temp_refresh = object.value("refresh_jwt").toString();
+        m_account.refreshJwt = m_encryption.decrypt(temp_refresh);
+        m_account.password = m_encryption.decrypt(object.value("password").toString());
+    }
     m_account.uuid = object.value("uuid").toString();
     m_account.is_main = object.value("is_main").toBool();
     m_account.service = object.value("service").toString();
     m_account.service_endpoint = m_account.service;
     m_account.identifier = object.value("identifier").toString();
-    m_account.password = m_encryption.decrypt(object.value("password").toString());
-    m_account.refreshJwt = m_encryption.decrypt(temp_refresh);
     m_account.handle = m_account.identifier;
     for (const auto &value : object.value("post_languages").toArray()) {
         m_account.post_languages.append(value.toString());
@@ -164,10 +179,14 @@ void AccountManager::Private::load(const QJsonObject &object)
         }
     }
 
-    if (temp_refresh.isEmpty()) {
-        createSession();
+    if (m_account.use_oauth) {
+
     } else {
-        refreshSession(true);
+        if (temp_refresh.isEmpty()) {
+            createSession();
+        } else {
+            refreshSession(true);
+        }
     }
 }
 

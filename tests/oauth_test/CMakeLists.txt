@@ -28,6 +28,7 @@ get_filename_component(folder_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 add_executable(${PROJECT_NAME}
     tst_${folder_name}.cpp
     ${folder_name}.qrc
+    ../../lib/lib.qrc
     # for openSSL
     $<$<BOOL:${WIN32}>:${CMAKE_SOURCE_DIR}/3rdparty/openssl/ms/applink.c>
 )

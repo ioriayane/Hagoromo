@@ -42,6 +42,11 @@ struct AccountData
     QString accessJwt;
     QString refreshJwt;
 
+    bool use_oauth = false;
+    QString oauth_token;
+    QString oauth_refresh_token;
+    QString oauth_dpop_nonce;
+
     QString displayName;
     QString description;
     QString avatar;
