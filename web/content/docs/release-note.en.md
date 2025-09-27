@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Update
+  - Support for the Website field in profiles (display and updates)
+
 ### v0.54.0 - 2025/9/11
 
 - Add
