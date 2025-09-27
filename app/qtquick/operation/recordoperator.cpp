@@ -889,7 +889,7 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
             pinned_post.cid = post_cid;
             new_profile->setAccount(account());
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
-                                 old_record.pronouns, old_record.website, old_record.displayName,
+                                 old_record.displayName, old_record.pronouns, old_record.website,
                                  pinned_post, old_cid);
         } else {
             setProgressMessage(QString());
