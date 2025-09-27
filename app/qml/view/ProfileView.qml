@@ -211,14 +211,18 @@ ColumnLayout {
             if(top){
                 bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
                 websiteLabel.Layout.preferredHeight = websiteLabel.contentHeight
+                websiteLabel.Layout.topMargin = 5
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+                descriptionLabel.Layout.topMargin = 5
                 serviceEndpointLayout.visible = true
                 registrationDateLayout.visible = true
                 knownFollowersInfo.visible = (profileView.userDid !== profileView.accountDid) // true
             }else{
                 bannerImage.Layout.preferredHeight = 0
                 websiteLabel.Layout.preferredHeight = 0
+                websiteLabel.Layout.topMargin = 0
                 descriptionLabel.Layout.preferredHeight = 0
+                descriptionLabel.Layout.topMargin = 0
                 serviceEndpointLayout.visible = false
                 registrationDateLayout.visible = false
                 knownFollowersInfo.visible = false
@@ -444,9 +448,14 @@ ColumnLayout {
             Layout.topMargin: 5
             Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 0
+            leftPadding: 5
+            rightPadding: 5
             font.pointSize: AdjustedValues.f8
             visible: userProfile.website.length > 0
-            text: visible ? "<a>" + userProfile.website + "</a>" : ""
+            text: visible ? "<a href='" + userProfile.website + "'>" + userProfile.website + "</a>" : ""
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
+            onContentHeightChanged: Layout.preferredHeight = websiteLabel.contentHeight
         }
         Label {
             id: descriptionLabel
