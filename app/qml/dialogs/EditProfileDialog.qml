@@ -201,6 +201,7 @@ Dialog {
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
             text: qsTr("Pronouns")
+            visible: false          // Temporary
         }
         TextField  {
             id: pronounsText
@@ -209,6 +210,7 @@ Dialog {
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             property int realTextLength: systemTool.countText(text)
+            visible: false          // Temporary
         }
 
         Label {

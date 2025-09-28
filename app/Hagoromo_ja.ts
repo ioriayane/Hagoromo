@@ -856,22 +856,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="218"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="220"/>
         <source>Website</source>
         <translation>ウェブサイト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="234"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="236"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="246"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="248"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="264"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="266"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
