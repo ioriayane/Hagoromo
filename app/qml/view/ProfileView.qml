@@ -448,8 +448,10 @@ ColumnLayout {
             Layout.topMargin: 5
             Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 0
+            Layout.maximumWidth: profileView.width
             leftPadding: 5
             rightPadding: 5
+            elide: Text.ElideRight
             font.pointSize: AdjustedValues.f8
             visible: userProfile.website.length > 0
             text: visible ? "<a href='" + userProfile.website + "'>" + userProfile.website + "</a>" : ""
