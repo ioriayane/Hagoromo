@@ -454,7 +454,7 @@ ColumnLayout {
             elide: Text.ElideRight
             font.pointSize: AdjustedValues.f8
             visible: userProfile.website.length > 0
-            text: visible ? "<a href='" + userProfile.website + "'>" + userProfile.website + "</a>" : ""
+            text: visible ? "Web : <a href='" + userProfile.website + "'>" + userProfile.website + "</a>" : ""
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
             onContentHeightChanged: Layout.preferredHeight = websiteLabel.contentHeight
