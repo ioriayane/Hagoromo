@@ -422,6 +422,7 @@ struct ProfileViewBasic
     QString did; // did
     QString handle; // handle
     QString displayName;
+    QString pronouns;
     QString avatar; // uri
     ProfileAssociated associated;
     ViewerState viewer;
@@ -435,6 +436,7 @@ struct ProfileView
     QString did; // did
     QString handle; // handle
     QString displayName;
+    QString pronouns;
     QString description;
     QString avatar; // uri
     ProfileAssociated associated;
@@ -451,6 +453,8 @@ struct ProfileViewDetailed
     QString handle; // handle
     QString displayName;
     QString description;
+    QString pronouns;
+    QString website; // uri
     QString avatar; // uri
     QString banner; // uri
     int followersCount = 0;
@@ -652,6 +656,8 @@ struct Main
 {
     QString displayName;
     QString description; // Free-form profile description text.
+    QString pronouns; // Free-form pronouns text.
+    QString website; // uri
     Blob avatar; // Small image to be displayed next to posts from account. AKA, 'profile picture'
     Blob banner; // Larger horizontal image to display behind profile view.
     // union start : labels
@@ -2278,6 +2284,7 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_RevokeAccountCredentialsEvent,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -2325,6 +2332,7 @@ enum class ModEventViewEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_RevokeAccountCredentialsEvent,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -2461,6 +2469,10 @@ struct AgeAssuranceOverrideEvent
                     // value the user had previously. Use reset to default to original state.
     QString comment; // Comment describing the reason for the override.
 };
+struct RevokeAccountCredentialsEvent
+{
+    QString comment; // Comment describing the reason for the revocation.
+};
 struct ModTool
 {
     QString name; // Name/identifier of the source (e.g., 'automod', 'ozone/workspace')
@@ -2492,6 +2504,7 @@ struct ModEventView
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -2671,6 +2684,7 @@ struct ModEventViewDetail
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;

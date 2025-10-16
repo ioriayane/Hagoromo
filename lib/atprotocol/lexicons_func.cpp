@@ -107,6 +107,7 @@ void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewB
         dest.did = src.value("did").toString();
         dest.handle = src.value("handle").toString();
         dest.displayName = src.value("displayName").toString();
+        dest.pronouns = src.value("pronouns").toString();
         dest.avatar = src.value("avatar").toString();
         copyProfileAssociated(src.value("associated").toObject(), dest.associated);
         copyViewerState(src.value("viewer").toObject(), dest.viewer);
@@ -126,6 +127,7 @@ void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest
         dest.did = src.value("did").toString();
         dest.handle = src.value("handle").toString();
         dest.displayName = src.value("displayName").toString();
+        dest.pronouns = src.value("pronouns").toString();
         dest.description = src.value("description").toString();
         dest.avatar = src.value("avatar").toString();
         copyProfileAssociated(src.value("associated").toObject(), dest.associated);
@@ -148,6 +150,8 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         dest.handle = src.value("handle").toString();
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
+        dest.pronouns = src.value("pronouns").toString();
+        dest.website = src.value("website").toString();
         dest.avatar = src.value("avatar").toString();
         dest.banner = src.value("banner").toString();
         dest.followersCount = src.value("followersCount").toInt();
@@ -877,6 +881,8 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
     if (!src.isEmpty()) {
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
+        dest.pronouns = src.value("pronouns").toString();
+        dest.website = src.value("website").toString();
         LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
         LexiconsTypeUnknown::copyBlob(src.value("banner").toObject(), dest.banner);
         QString labels_type = src.value("labels").toObject().value("$type").toString();
@@ -3219,6 +3225,13 @@ void copyAgeAssuranceOverrideEvent(const QJsonObject &src,
         dest.comment = src.value("comment").toString();
     }
 }
+void copyRevokeAccountCredentialsEvent(
+        const QJsonObject &src, ToolsOzoneModerationDefs::RevokeAccountCredentialsEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
 void copyModTool(const QJsonObject &src, ToolsOzoneModerationDefs::ModTool &dest)
 {
     if (!src.isEmpty()) {
@@ -3346,6 +3359,13 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
                     event_AgeAssuranceOverrideEvent;
             ToolsOzoneModerationDefs::copyAgeAssuranceOverrideEvent(
                     src.value("event").toObject(), dest.event_AgeAssuranceOverrideEvent);
+        }
+        if (event_type
+            == QStringLiteral("tools.ozone.moderation.defs#revokeAccountCredentialsEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::
+                    event_RevokeAccountCredentialsEvent;
+            ToolsOzoneModerationDefs::copyRevokeAccountCredentialsEvent(
+                    src.value("event").toObject(), dest.event_RevokeAccountCredentialsEvent);
         }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
@@ -3707,6 +3727,13 @@ void copyModEventViewDetail(const QJsonObject &src,
                     event_AgeAssuranceOverrideEvent;
             ToolsOzoneModerationDefs::copyAgeAssuranceOverrideEvent(
                     src.value("event").toObject(), dest.event_AgeAssuranceOverrideEvent);
+        }
+        if (event_type
+            == QStringLiteral("tools.ozone.moderation.defs#revokeAccountCredentialsEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_RevokeAccountCredentialsEvent;
+            ToolsOzoneModerationDefs::copyRevokeAccountCredentialsEvent(
+                    src.value("event").toObject(), dest.event_RevokeAccountCredentialsEvent);
         }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {
