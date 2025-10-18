@@ -135,7 +135,7 @@ Rectangle {
             }
         }
         function setAndOpen(alt){
-            altText = alt
+            altMessageFrame.altText = alt
             altMessageScrollView.ScrollBar.vertical.position = 0
             open()
         }
