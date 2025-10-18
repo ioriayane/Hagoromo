@@ -118,6 +118,8 @@ Rectangle {
         property string altText: ""
         ScrollView {
             id: altMessageScrollView
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             width: imageFullView.width * (imageFullView.width > imageFullView.height ? 0.3 : 0.7)
             height: altMessageFullLabel.contentHeight < (imageFullView.height * 0.7) ?
                         altMessageFullLabel.contentHeight : (imageFullView.height * 0.7)
@@ -125,13 +127,16 @@ Rectangle {
             implicitHeight: height
             Label {
                 id: altMessageFullLabel
-                width: altMessageScrollView.width
-                // height: contentHeight
+                width: altMessageScrollView.width - altMessageScrollView.ScrollBar.vertical.width
+                font.pointSize: AdjustedValues.f10
+                wrapMode: Text.Wrap
+                lineHeight: 1.3
                 text: altMessageFrame.altText
             }
         }
         function setAndOpen(alt){
             altText = alt
+            altMessageScrollView.ScrollBar.vertical.position = 0
             open()
         }
     }
