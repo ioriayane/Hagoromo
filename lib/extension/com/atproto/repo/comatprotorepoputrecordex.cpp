@@ -10,8 +10,9 @@ ComAtprotoRepoPutRecordEx::ComAtprotoRepoPutRecordEx(QObject *parent)
 
 void ComAtprotoRepoPutRecordEx::profile(
         const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
-        const QString &description, const QString &display_name,
-        const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post, const QString &cid)
+        const QString &description, const QString &display_name, const QString &pronouns,
+        const QString &website, const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post,
+        const QString &cid)
 {
     QString type = QStringLiteral("app.bsky.actor.profile");
     QJsonObject json_record;
@@ -21,6 +22,12 @@ void ComAtprotoRepoPutRecordEx::profile(
     }
     if (!display_name.isEmpty()) {
         json_record.insert("displayName", display_name);
+    }
+    if (!pronouns.isEmpty()) {
+        json_record.insert("pronouns", pronouns);
+    }
+    if (!website.isEmpty()) {
+        json_record.insert("website", website);
     }
     if (!avatar.cid.isEmpty()) {
         QJsonObject json_avatar;

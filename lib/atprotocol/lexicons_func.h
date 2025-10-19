@@ -507,6 +507,8 @@ void copyAgeAssuranceEvent(const QJsonObject &src,
                            ToolsOzoneModerationDefs::AgeAssuranceEvent &dest);
 void copyAgeAssuranceOverrideEvent(const QJsonObject &src,
                                    ToolsOzoneModerationDefs::AgeAssuranceOverrideEvent &dest);
+void copyRevokeAccountCredentialsEvent(
+        const QJsonObject &src, ToolsOzoneModerationDefs::RevokeAccountCredentialsEvent &dest);
 void copyModTool(const QJsonObject &src, ToolsOzoneModerationDefs::ModTool &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
 void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::AccountHosting &dest);

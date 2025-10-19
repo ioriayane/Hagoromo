@@ -162,7 +162,7 @@ void hagoromo_test::test_RecordOperator_profile()
     ope.setAccount(uuid);
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
-        ope.updateProfile("", "", "description", "display_name");
+        ope.updateProfile("", "", "description", "display_name", "", "");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 

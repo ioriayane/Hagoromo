@@ -11,7 +11,8 @@ public:
     explicit ComAtprotoRepoPutRecordEx(QObject *parent = nullptr);
 
     void profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
-                 const QString &description, const QString &display_name,
+                 const QString &description, const QString &display_name, const QString &pronouns,
+                 const QString &website,
                  const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post,
                  const QString &cid);
     void list(const AtProtocolType::Blob &avatar, const QString &purpose,

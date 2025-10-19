@@ -786,7 +786,8 @@ bool RecordOperator::deleteBookmark(const QString &uri)
 }
 
 void RecordOperator::updateProfile(const QString &avatar_url, const QString &banner_url,
-                                   const QString &description, const QString &display_name)
+                                   const QString &description, const QString &display_name,
+                                   const QString &pronouns, const QString &website)
 {
     if (running())
         return;
@@ -838,8 +839,8 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         new_profile->deleteLater();
                     });
                     new_profile->setAccount(account());
-                    new_profile->profile(avatar, banner, description, display_name,
-                                         old_record.pinnedPost, old_cid);
+                    new_profile->profile(avatar, banner, description, display_name, pronouns,
+                                         website, old_record.pinnedPost, old_cid);
                 } else {
                     setProgressMessage(QString());
                     emit finished(false, QString(), QString());
@@ -888,7 +889,8 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
             pinned_post.cid = post_cid;
             new_profile->setAccount(account());
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
-                                 old_record.displayName, pinned_post, old_cid);
+                                 old_record.displayName, old_record.pronouns, old_record.website,
+                                 pinned_post, old_cid);
         } else {
             setProgressMessage(QString());
             emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
