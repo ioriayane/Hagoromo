@@ -81,21 +81,63 @@ Rectangle {
             Label {
                 id: altMessage
                 Layout.preferredWidth: image.paintedWidth
+                Layout.maximumWidth: image.paintedWidth
                 Layout.alignment: Qt.AlignHCenter
                 topPadding: 5
                 leftPadding: 5
                 rightPadding: 5
                 bottomPadding: 5
                 visible: text.length > 0
-                wrapMode: Text.Wrap
+                // wrapMode: Text.Wrap
+                elide: Text.ElideRight
                 font.pointSize: AdjustedValues.f10
-                text: model.index < imageFullView.alts.length ? imageFullView.alts[model.index] : ""
+                text: altText.replace(/\r?\n/g, " ")
                 background: Rectangle {
                     width: altMessage.width
                     height: altMessage.height
                     color: Material.backgroundColor
                 }
+                property string altText: model.index < imageFullView.alts.length ? imageFullView.alts[model.index] : ""
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: (mouse) => altMessageFrame.setAndOpen(altMessage.altText)
+                }
             }
+        }
+    }
+
+    Popup {
+        id: altMessageFrame
+        x: (parent.width - width) * 0.5
+        y: (parent.height - height) * 0.5
+        contentWidth: altMessageScrollView.implicitWidth
+        contentHeight: altMessageScrollView.implicitHeight
+        visible: false
+        modal: true
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+        property string altText: ""
+        ScrollView {
+            id: altMessageScrollView
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            width: imageFullView.width * (imageFullView.width > imageFullView.height ? 0.3 : 0.7)
+            height: altMessageFullLabel.contentHeight < (imageFullView.height * 0.7) ?
+                        altMessageFullLabel.contentHeight : (imageFullView.height * 0.7)
+            implicitWidth: width
+            implicitHeight: height
+            Label {
+                id: altMessageFullLabel
+                width: altMessageScrollView.width - altMessageScrollView.ScrollBar.vertical.width
+                font.pointSize: AdjustedValues.f10
+                wrapMode: Text.Wrap
+                lineHeight: 1.3
+                text: altMessageFrame.altText
+            }
+        }
+        function setAndOpen(alt){
+            altMessageFrame.altText = alt
+            altMessageScrollView.ScrollBar.vertical.position = 0
+            open()
         }
     }
 
