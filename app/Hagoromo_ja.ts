@@ -841,37 +841,37 @@ Please recreate AppPassword in the official application.</source>
         <translation>プロフィールの編集</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="162"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="160"/>
         <source>Display Name</source>
         <translation>表示名</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="177"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="176"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="203"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="198"/>
         <source>Pronouns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="220"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="219"/>
         <source>Website</source>
         <translation>ウェブサイト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="236"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="235"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="248"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="247"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="266"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="265"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -4125,7 +4125,7 @@ Who do you want to enable this for?</source>
     </message>
     <message>
         <location filename="qml/main.qml" line="131"/>
-        <location filename="qml/main.qml" line="614"/>
+        <location filename="qml/main.qml" line="615"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -4149,28 +4149,28 @@ Who do you want to enable this for?</source>
         <translation>いくつかのアカウントでログインが必要です。</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="382"/>
-        <location filename="qml/main.qml" line="387"/>
+        <location filename="qml/main.qml" line="383"/>
+        <location filename="qml/main.qml" line="388"/>
         <source>Updating &apos;Edit interaction settings&apos; ...</source>
         <translation>投稿への反応の設定を更新中 ...</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="547"/>
+        <location filename="qml/main.qml" line="548"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="594"/>
+        <location filename="qml/main.qml" line="595"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1118"/>
+        <location filename="qml/main.qml" line="1119"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1279"/>
+        <location filename="qml/main.qml" line="1280"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
