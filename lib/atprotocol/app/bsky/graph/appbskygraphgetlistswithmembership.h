@@ -10,7 +10,7 @@ class AppBskyGraphGetListsWithMembership : public AccessAtProtocol
 public:
     explicit AppBskyGraphGetListsWithMembership(QObject *parent = nullptr);
 
-    void getListsWithMembership(const QString &actor, const int limit, const QString &cursor,
+    void getListsWithMembership(const QString &actor, const qint64 limit, const QString &cursor,
                                 const QList<QString> &purposes);
 
     const QList<AtProtocolType::AppBskyGraphGetListsWithMembership::ListWithMembership> &

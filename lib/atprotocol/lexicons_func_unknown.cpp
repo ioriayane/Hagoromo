@@ -113,9 +113,9 @@ void copyBool(const QJsonValue &src, bool &dest)
     dest = src.toBool(false);
 }
 
-void copyInt(const QJsonValue &src, int &dest)
+void copyInt(const QJsonValue &src, qint64 &dest)
 {
-    dest = src.toInt(0);
+    dest = src.toInteger(0);
 }
 
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)

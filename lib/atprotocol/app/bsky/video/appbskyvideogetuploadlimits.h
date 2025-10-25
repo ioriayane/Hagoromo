@@ -13,17 +13,18 @@ public:
     void getUploadLimits();
 
     const bool &canUpload() const;
-    const int &remainingDailyVideos() const;
-    const int &remainingDailyBytes() const;
+    const qint64 &remainingDailyVideos() const;
+    const qint64 &remainingDailyBytes() const;
     const QString &message() const;
     const QString &error() const;
 
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
+private:
     bool m_canUpload;
-    int m_remainingDailyVideos;
-    int m_remainingDailyBytes;
+    qint64 m_remainingDailyVideos;
+    qint64 m_remainingDailyBytes;
     QString m_message;
     QString m_error;
 };

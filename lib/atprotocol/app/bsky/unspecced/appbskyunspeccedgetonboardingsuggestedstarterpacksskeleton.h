@@ -10,7 +10,7 @@ class AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton : public Access
 public:
     explicit AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton(QObject *parent = nullptr);
 
-    void getOnboardingSuggestedStarterPacksSkeleton(const QString &viewer, const int limit);
+    void getOnboardingSuggestedStarterPacksSkeleton(const QString &viewer, const qint64 limit);
 
     const QStringList &starterPacksList() const;
 

@@ -10,7 +10,7 @@ class AppBskyUnspeccedGetOnboardingSuggestedStarterPacks : public AccessAtProtoc
 public:
     explicit AppBskyUnspeccedGetOnboardingSuggestedStarterPacks(QObject *parent = nullptr);
 
-    void getOnboardingSuggestedStarterPacks(const int limit);
+    void getOnboardingSuggestedStarterPacks(const qint64 limit);
 
     const QList<AtProtocolType::AppBskyGraphDefs::StarterPackView> &starterPacksList() const;
 

@@ -138,6 +138,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
                                 QByteArray::fromStdString(header.second));
         }
         reply->setRecvData(QByteArray::fromStdString(res->body));
+        reply->setStatusCode(res->status);
         if (res->status >= 200 && res->status <= 299) {
             reply->setError(HttpReply::Success);
             result = true;
@@ -149,6 +150,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
         qDebug().noquote() << LOG_DATETIME
                            << "HTTP error: " << QString::fromStdString(httplib::to_string(err));
         reply->setError(errorFrom(err));
+        reply->setStatusCode(-1);
     }
 
     return result;

@@ -17,7 +17,7 @@ void AppBskyVideoGetJobStatus::getJobStatus(const QString &jobId)
         url_query.addQueryItem(QStringLiteral("jobId"), jobId);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.video.getJobStatus"), url_query);
+    get(QStringLiteral("xrpc/app.bsky.video.getJobStatus"), url_query, false);
 }
 
 const AtProtocolType::AppBskyVideoDefs::JobStatus &AppBskyVideoGetJobStatus::jobStatus() const

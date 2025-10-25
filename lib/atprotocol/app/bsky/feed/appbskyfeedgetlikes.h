@@ -10,7 +10,8 @@ class AppBskyFeedGetLikes : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetLikes(QObject *parent = nullptr);
 
-    void getLikes(const QString &uri, const QString &cid, const int limit, const QString &cursor);
+    void getLikes(const QString &uri, const QString &cid, const qint64 limit,
+                  const QString &cursor);
 
     const QString &uri() const;
     const QString &cid() const;

@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/example01.mp4</file>
+        <file>response/limit/1/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/2/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/3/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/4/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/5/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/1/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/2/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/3/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/4/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/5/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/5/xrpc/app.bsky.video.getJobStatus</file>
+        <file>response/limit/5/xrpc/app.bsky.video.uploadVideo</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getJobStatus</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getJobStatus_1</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getJobStatus_2</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getJobStatus_3</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getJobStatus_4</file>
+        <file>response/limit/6/xrpc/app.bsky.video.getUploadLimits</file>
+        <file>response/limit/6/xrpc/app.bsky.video.uploadVideo</file>
+        <file>response/limit/6/xrpc/com.atproto.server.getServiceAuth</file>
+        <file>response/limit/6/xrpc/com.atproto.repo.createRecord</file>
+        <file>response/limit/5/xrpc/com.atproto.repo.createRecord</file>
+    </qresource>
+</RCC>

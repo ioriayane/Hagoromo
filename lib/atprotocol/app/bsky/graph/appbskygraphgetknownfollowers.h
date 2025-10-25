@@ -10,7 +10,7 @@ class AppBskyGraphGetKnownFollowers : public AppBskyGraphGetFollows
 public:
     explicit AppBskyGraphGetKnownFollowers(QObject *parent = nullptr);
 
-    void getKnownFollowers(const QString &actor, const int limit, const QString &cursor);
+    void getKnownFollowers(const QString &actor, const qint64 limit, const QString &cursor);
 };
 
 }

@@ -10,7 +10,7 @@ AppBskyNotificationListActivitySubscriptions::AppBskyNotificationListActivitySub
     m_listKey = QStringLiteral("subscriptions");
 }
 
-void AppBskyNotificationListActivitySubscriptions::listActivitySubscriptions(const int limit,
+void AppBskyNotificationListActivitySubscriptions::listActivitySubscriptions(const qint64 limit,
                                                                              const QString &cursor)
 {
     QUrlQuery url_query;

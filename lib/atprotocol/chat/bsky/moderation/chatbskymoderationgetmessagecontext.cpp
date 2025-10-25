@@ -14,7 +14,7 @@ ChatBskyModerationGetMessageContext::ChatBskyModerationGetMessageContext(QObject
 
 void ChatBskyModerationGetMessageContext::getMessageContext(const QString &convoId,
                                                             const QString &messageId,
-                                                            const int before, const int after)
+                                                            const qint64 before, const qint64 after)
 {
     QUrlQuery url_query;
     if (!convoId.isEmpty()) {

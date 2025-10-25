@@ -12,7 +12,7 @@ public:
 
     void createReport(const QString &reasonType, const QString &reason, const QJsonObject &subject);
 
-    const int &id() const;
+    const qint64 &id() const;
     const AtProtocolType::ComAtprotoModerationDefs::ReasonType &reasonType() const;
     const QString &reason() const;
     const AtProtocolType::ComAtprotoAdminDefs::RepoRef &repoRef() const;
@@ -24,7 +24,7 @@ protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
 private:
-    int m_id;
+    qint64 m_id;
     AtProtocolType::ComAtprotoModerationDefs::ReasonType m_reasonType;
     QString m_reason;
     AtProtocolType::ComAtprotoAdminDefs::RepoRef m_repoRef;

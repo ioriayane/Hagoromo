@@ -12,12 +12,12 @@ public:
 
     void updateAllRead(const QString &status);
 
-    const int &updatedCount() const;
+    const qint64 &updatedCount() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    int m_updatedCount;
+    qint64 m_updatedCount;
 };
 
 }

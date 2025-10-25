@@ -10,7 +10,7 @@ class ChatBskyConvoGetMessages : public AccessAtProtocol
 public:
     explicit ChatBskyConvoGetMessages(QObject *parent = nullptr);
 
-    void getMessages(const QString &convoId, const int limit, const QString &cursor);
+    void getMessages(const QString &convoId, const qint64 limit, const QString &cursor);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messagesMessageViewList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &

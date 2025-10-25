@@ -25,7 +25,7 @@ void ChatBskyConvoUpdateAllRead::updateAllRead(const QString &status)
          json_doc.toJson(QJsonDocument::Compact));
 }
 
-const int &ChatBskyConvoUpdateAllRead::updatedCount() const
+const qint64 &ChatBskyConvoUpdateAllRead::updatedCount() const
 {
     return m_updatedCount;
 }

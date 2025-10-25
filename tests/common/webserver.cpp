@@ -1,6 +1,6 @@
 #include "webserver.h"
 
-WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
+WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent), m_videoGetJobStatus(0) { }
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
@@ -17,7 +17,8 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
     } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
-        emit receivedPost(request, result, json);
+        QHttpServerResponder::StatusCode status_code = QHttpServerResponder::StatusCode::Ok;
+        emit receivedPost(request, result, json, status_code);
         if (result) {
             if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -38,51 +39,63 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                 headers.append("ratelimit-policy", "30;w=300");
 #endif
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Unauthorized);
-                } else {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Ok);
+                    status_code = QHttpServerResponder::StatusCode::Unauthorized;
                 }
+                MAKE_RESPONDER.write(json.toUtf8(), headers, status_code);
             } else {
                 MAKE_RESPONDER.write(json.toUtf8(),
                                      m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+                                     status_code);
             }
         } else {
             MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     } else {
-        QString path = WebServer::convertResoucePath(request.url());
-        if (path.endsWith("xrpc/app.bsky.graph.getList")) {
-            if (request.query().hasQueryItem("list")) {
-                path += "_"
-                        + request.query()
-                                  .queryItemValue("list", QUrl::FullyDecoded)
-                                  .split("/")
-                                  .last();
+        bool result = true;
+        QString json = "{}";
+        QHttpServerResponder::StatusCode status_code = QHttpServerResponder::StatusCode::Ok;
+        emit receivedGet(request, result, json, status_code);
+
+        if (result) {
+            QString path = WebServer::convertResoucePath(request.url());
+            if (path.endsWith("xrpc/app.bsky.graph.getList")) {
+                if (request.query().hasQueryItem("list")) {
+                    path += "_"
+                            + request.query()
+                                      .queryItemValue("list", QUrl::FullyDecoded)
+                                      .split("/")
+                                      .last();
+                }
+            } else if (path.endsWith("xrpc/app.bsky.video.getJobStatus")) {
+                if (m_videoGetJobStatus > 0) {
+                    path += "_" + QString::number(m_videoGetJobStatus);
+                }
+                m_videoGetJobStatus++;
             }
-        }
-        if (request.query().hasQueryItem("cursor")) {
-            path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
-        }
-        qDebug().noquote() << "SERVER PATH=" << path;
-        if (!QFile::exists(path)) {
-            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
-        } else {
-            QFileInfo file_info(request.url().path());
-            QByteArray data;
-            QString mime_type = "application/json";
-            if (path.endsWith("/xrpc/com.atproto.sync.getRepo")) {
-                mime_type = "application/vnd.ipld.car";
+            if (request.query().hasQueryItem("cursor")) {
+                path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
             }
-            if (WebServer::readFile(path, data)) {
-                data.replace("{{SERVER_PORT_NO}}", QString::number(request.localPort()).toUtf8());
-                MAKE_RESPONDER.write(data, mime_type.toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+            qDebug().noquote() << "SERVER PATH=" << path;
+            if (!QFile::exists(path)) {
+                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
             } else {
-                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+                QFileInfo file_info(request.url().path());
+                QByteArray data;
+                QString mime_type = "application/json";
+                if (path.endsWith("/xrpc/com.atproto.sync.getRepo")) {
+                    mime_type = "application/vnd.ipld.car";
+                }
+                if (WebServer::readFile(path, data)) {
+
+                    data.replace("{{SERVER_PORT_NO}}",
+                                 QString::number(request.localPort()).toUtf8());
+                    MAKE_RESPONDER.write(data, mime_type.toUtf8(), status_code);
+                } else {
+                    MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+                }
             }
+        } else {
+            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     }
     return true;
@@ -104,6 +117,11 @@ quint16 WebServer::listen(const QHostAddress &address, quint16 port)
         return 0;
     }
     return tcpserver->serverPort();
+}
+
+void WebServer::reset()
+{
+    m_videoGetJobStatus = 0;
 }
 #endif
 

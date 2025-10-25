@@ -8,9 +8,15 @@ namespace AtProtocolInterface {
 
 AppBskyVideoUploadVideo::AppBskyVideoUploadVideo(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyVideoUploadVideo::uploadVideo()
+void AppBskyVideoUploadVideo::uploadVideo(const QString &path, const QString &name)
 {
-    post(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), QByteArray());
+    QUrlQuery url_query;
+    url_query.addQueryItem(QStringLiteral("did"), account().did);
+    if (!name.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("name"), name);
+    }
+
+    postWithImage(QStringLiteral("xrpc/app.bsky.video.uploadVideo"), path, url_query);
 }
 
 const AtProtocolType::AppBskyVideoDefs::JobStatus &AppBskyVideoUploadVideo::jobStatus() const
@@ -26,6 +32,10 @@ bool AppBskyVideoUploadVideo::parseJson(bool success, const QString reply_json)
     } else {
         AtProtocolType::AppBskyVideoDefs::copyJobStatus(
                 json_doc.object().value("jobStatus").toObject(), m_jobStatus);
+        if (m_jobStatus.state.isEmpty()) {
+            // lexiconどおりのレスポンスがこないので暫定処理
+            AtProtocolType::AppBskyVideoDefs::copyJobStatus(json_doc.object(), m_jobStatus);
+        }
     }
 
     return success;

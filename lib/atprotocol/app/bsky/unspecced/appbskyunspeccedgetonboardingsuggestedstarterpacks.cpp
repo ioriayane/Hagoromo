@@ -14,7 +14,7 @@ AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::
 }
 
 void AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::getOnboardingSuggestedStarterPacks(
-        const int limit)
+        const qint64 limit)
 {
     QUrlQuery url_query;
     if (limit > 0) {

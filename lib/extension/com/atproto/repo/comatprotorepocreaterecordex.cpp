@@ -80,24 +80,38 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
         json_embed_images.insert("record", json_generator);
 
     } else if (!m_embedImageBlobs.isEmpty()) {
-        QJsonArray json_blobs;
-        for (const auto &blob : std::as_const(m_embedImageBlobs)) {
-            QJsonObject json_blob;
-            QJsonObject json_image;
+        bool is_image = !(m_embedImageBlobs.first().mimeType.startsWith("video/"));
+        if (is_image) {
+            QJsonArray json_blobs;
+            for (const auto &blob : std::as_const(m_embedImageBlobs)) {
+                QJsonObject json_blob;
+                QJsonObject json_image;
+                QJsonObject json_aspect_ratio;
+                setJsonAspectRatio(blob.aspect_ratio, json_aspect_ratio);
+                if (!json_aspect_ratio.isEmpty()) {
+                    json_blob.insert("aspectRatio", json_aspect_ratio);
+                }
+                setJsonBlob(blob, json_image);
+                json_blob.insert("image", json_image);
+                json_blob.insert("alt", blob.alt);
+
+                json_blobs.append(json_blob);
+            }
+            json_embed_images.insert("$type", "app.bsky.embed.images");
+            json_embed_images.insert("images", json_blobs);
+        } else {
+            const auto &blob = m_embedImageBlobs.first();
+            QJsonObject json_video;
             QJsonObject json_aspect_ratio;
             setJsonAspectRatio(blob.aspect_ratio, json_aspect_ratio);
             if (!json_aspect_ratio.isEmpty()) {
-                json_blob.insert("aspectRatio", json_aspect_ratio);
+                json_embed_images.insert("aspectRatio", json_aspect_ratio);
             }
-            setJsonBlob(blob, json_image);
-            json_blob.insert("image", json_image);
-            json_blob.insert("alt", blob.alt);
+            setJsonBlob(blob, json_video);
 
-            json_blobs.append(json_blob);
+            json_embed_images.insert("$type", "app.bsky.embed.video");
+            json_embed_images.insert("video", json_video);
         }
-
-        json_embed_images.insert("$type", "app.bsky.embed.images");
-        json_embed_images.insert("images", json_blobs);
     }
 
     if (!m_embedQuote.cid.isEmpty() && !m_embedQuote.uri.isEmpty()) {

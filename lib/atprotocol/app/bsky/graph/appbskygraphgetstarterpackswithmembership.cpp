@@ -14,7 +14,7 @@ AppBskyGraphGetStarterPacksWithMembership::AppBskyGraphGetStarterPacksWithMember
 }
 
 void AppBskyGraphGetStarterPacksWithMembership::getStarterPacksWithMembership(const QString &actor,
-                                                                              const int limit,
+                                                                              const qint64 limit,
                                                                               const QString &cursor)
 {
     QUrlQuery url_query;

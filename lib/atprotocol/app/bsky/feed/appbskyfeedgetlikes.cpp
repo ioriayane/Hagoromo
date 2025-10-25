@@ -10,7 +10,7 @@ namespace AtProtocolInterface {
 
 AppBskyFeedGetLikes::AppBskyFeedGetLikes(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyFeedGetLikes::getLikes(const QString &uri, const QString &cid, const int limit,
+void AppBskyFeedGetLikes::getLikes(const QString &uri, const QString &cid, const qint64 limit,
                                    const QString &cursor)
 {
     QUrlQuery url_query;

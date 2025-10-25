@@ -8,7 +8,7 @@ AppBskyFeedGetListFeed::AppBskyFeedGetListFeed(QObject *parent) : AppBskyFeedGet
     m_listKey = QStringLiteral("feed");
 }
 
-void AppBskyFeedGetListFeed::getListFeed(const QString &list, const int limit,
+void AppBskyFeedGetListFeed::getListFeed(const QString &list, const qint64 limit,
                                          const QString &cursor)
 {
     QUrlQuery url_query;

@@ -12,7 +12,7 @@ AppBskyGraphGetLists::AppBskyGraphGetLists(QObject *parent)
 {
 }
 
-void AppBskyGraphGetLists::getLists(const QString &actor, const int limit, const QString &cursor,
+void AppBskyGraphGetLists::getLists(const QString &actor, const qint64 limit, const QString &cursor,
                                     const QList<QString> &purposes)
 {
     QUrlQuery url_query;

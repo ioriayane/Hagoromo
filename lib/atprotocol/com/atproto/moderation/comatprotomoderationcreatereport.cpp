@@ -33,7 +33,7 @@ void ComAtprotoModerationCreateReport::createReport(const QString &reasonType,
          json_doc.toJson(QJsonDocument::Compact));
 }
 
-const int &ComAtprotoModerationCreateReport::id() const
+const qint64 &ComAtprotoModerationCreateReport::id() const
 {
     return m_id;
 }

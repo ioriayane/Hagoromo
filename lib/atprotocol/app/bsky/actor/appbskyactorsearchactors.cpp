@@ -9,7 +9,7 @@ AppBskyActorSearchActors::AppBskyActorSearchActors(QObject *parent)
     m_listKey = QStringLiteral("actors");
 }
 
-void AppBskyActorSearchActors::searchActors(const QString &q, const int limit,
+void AppBskyActorSearchActors::searchActors(const QString &q, const qint64 limit,
                                             const QString &cursor)
 {
     QUrlQuery url_query;

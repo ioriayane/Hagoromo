@@ -1,0 +1,16 @@
+{
+    "jobStatus": {
+        "blob": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreiagvx5lgvrkqkzkujcxv5222hrirw4ytdnz2qjr7ha3e5qzqk"
+            },
+            "mimeType": "video/mp4",
+            "size": 672950
+        },
+        "did": "did:plc:ipj5qejfoqu6eukvt72uhyit_5",
+        "jobId": "d0rglpcqkvks710t7b1g",
+        "message": "Video processed successfully",
+        "state": "JOB_STATE_COMPLETED"
+    }
+}

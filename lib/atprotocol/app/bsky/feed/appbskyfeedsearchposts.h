@@ -13,7 +13,7 @@ public:
     void searchPosts(const QString &q, const QString &sort, const QString &since,
                      const QString &until, const QString &mentions, const QString &author,
                      const QString &lang, const QString &domain, const QString &url,
-                     const QList<QString> &tag, const int limit, const QString &cursor);
+                     const QList<QString> &tag, const qint64 limit, const QString &cursor);
 };
 
 }

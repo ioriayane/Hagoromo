@@ -10,7 +10,7 @@ class AppBskyFeedGetActorLikes : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetActorLikes(QObject *parent = nullptr);
 
-    void getActorLikes(const QString &actor, const int limit, const QString &cursor);
+    void getActorLikes(const QString &actor, const qint64 limit, const QString &cursor);
 };
 
 }

@@ -17,14 +17,19 @@ public:
     quint16 listen(const QHostAddress &address = QHostAddress::Any, quint16 port = 0);
 #endif
 
+    void reset();
+
     static QString convertResoucePath(const QUrl &url);
     static bool readFile(const QString &path, QByteArray &data);
 signals:
-    void receivedPost(const QHttpServerRequest &request, bool &result, QString &json);
+    void receivedPost(const QHttpServerRequest &request, bool &result, QString &json,
+                      QHttpServerResponder::StatusCode &status_code);
+    void receivedGet(const QHttpServerRequest &request, bool &result, QString &json,
+                     QHttpServerResponder::StatusCode &status_code);
 
 private:
     QMimeDatabase m_MimeDb;
-
+    int m_videoGetJobStatus;
     bool verifyHttpHeader(const QHttpServerRequest &request) const;
 };
 

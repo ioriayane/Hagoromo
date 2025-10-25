@@ -10,7 +10,7 @@ class AppBskyGraphGetStarterPacksWithMembership : public AccessAtProtocol
 public:
     explicit AppBskyGraphGetStarterPacksWithMembership(QObject *parent = nullptr);
 
-    void getStarterPacksWithMembership(const QString &actor, const int limit,
+    void getStarterPacksWithMembership(const QString &actor, const qint64 limit,
                                        const QString &cursor);
 
     const QList<

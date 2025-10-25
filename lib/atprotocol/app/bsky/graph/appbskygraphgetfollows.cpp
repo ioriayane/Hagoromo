@@ -12,7 +12,7 @@ AppBskyGraphGetFollows::AppBskyGraphGetFollows(QObject *parent)
 {
 }
 
-void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
+void AppBskyGraphGetFollows::getFollows(const QString &actor, const qint64 limit,
                                         const QString &cursor)
 {
     QUrlQuery url_query;

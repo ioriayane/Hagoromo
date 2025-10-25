@@ -10,7 +10,7 @@ class AppBskyGraphGetMutes : public AppBskyGraphGetFollows
 public:
     explicit AppBskyGraphGetMutes(QObject *parent = nullptr);
 
-    void getMutes(const int limit, const QString &cursor);
+    void getMutes(const qint64 limit, const QString &cursor);
 };
 
 }

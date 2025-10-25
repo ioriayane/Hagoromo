@@ -9,7 +9,7 @@ AppBskyUnspeccedGetPopularFeedGenerators::AppBskyUnspeccedGetPopularFeedGenerato
     m_listKey = QStringLiteral("feeds");
 }
 
-void AppBskyUnspeccedGetPopularFeedGenerators::getPopularFeedGenerators(const int limit,
+void AppBskyUnspeccedGetPopularFeedGenerators::getPopularFeedGenerators(const qint64 limit,
                                                                         const QString &cursor,
                                                                         const QString &query)
 {

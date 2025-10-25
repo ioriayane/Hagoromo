@@ -11,8 +11,11 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "extension/app/bsky/video/appbskyvideogetuploadlimitsex.h"
+#include "extension/app/bsky/video/appbskyvideouploadvideoex.h"
 #include "tools/accountmanager.h"
 
+#include <QFileInfo>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -21,6 +24,8 @@ using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
+using AtProtocolInterface::AppBskyVideoGetUploadLimitsEx;
+using AtProtocolInterface::AppBskyVideoUploadVideoEx;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -34,6 +39,7 @@ RecordOperator::RecordOperator(QObject *parent)
       m_sequentialPostsTotal(0),
       m_sequentialPostsCurrent(0),
       m_embedImagesTotal(0),
+      m_threadGateType("everybody"),
       m_running(false)
 {
 }
@@ -82,6 +88,16 @@ void RecordOperator::setImages(const QStringList &images, const QStringList &alt
             e.alt = alts.at(i);
         }
         m_embedImages.append(e);
+    }
+}
+
+void RecordOperator::setVideo(const QString &video)
+{
+    QUrl url(video);
+    if (url.isValid() && url.isLocalFile()) {
+        m_embedVideo = url.toLocalFile();
+    } else {
+        m_embedVideo = video;
     }
 }
 
@@ -280,6 +296,38 @@ void RecordOperator::postWithImages()
             setRunning(false);
         }
     });
+}
+
+void RecordOperator::postWithVideo()
+{
+    setRunning(true);
+
+    setProgressMessage(tr("Uploading video ..."));
+
+    AppBskyVideoGetUploadLimitsEx *limit = new AppBskyVideoGetUploadLimitsEx(this);
+    connect(limit, &AppBskyVideoGetUploadLimitsEx::finished, [=](bool success_of_limit) {
+        if (success_of_limit) {
+            uploadVideoBlob([=](bool success_of_upload) {
+                if (success_of_upload) {
+                    post();
+                } else {
+                    setProgressMessage(QString());
+                    emit finished(success_of_upload, QString(), QString()); // for Debug
+                    setRunning(false);
+                }
+            });
+        } else {
+            setProgressMessage(QString());
+            emit finished(success_of_limit, QString(), QString());
+            setRunning(false);
+        }
+        limit->deleteLater();
+    });
+#ifdef QT_DEBUG
+    limit->setEndpoint(m_videoEndpoint);
+#endif
+    limit->setAccount(account());
+    limit->canUpload(m_embedVideo);
 }
 
 void RecordOperator::repost(const QString &cid, const QString &uri, const QString &via_cid,
@@ -1267,6 +1315,34 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
     upload_blob->uploadBlob(path);
 }
 
+void RecordOperator::uploadVideoBlob(std::function<void(bool)> callback)
+{
+    AppBskyVideoUploadVideoEx *upload = new AppBskyVideoUploadVideoEx(this);
+    connect(upload, &AppBskyVideoUploadVideoEx::finished, [=](bool success) {
+        if (success) {
+            qDebug().noquote() << "Uploaded video blob" << upload->cid() << upload->mimeType()
+                               << upload->size();
+
+            AtProtocolType::Blob blob;
+            blob.cid = upload->cid();
+            blob.mimeType = upload->mimeType();
+            blob.size = upload->size();
+            blob.aspect_ratio = upload->aspectRatio();
+            m_embedImageBlobs.append(blob);
+
+        } else {
+            emit errorOccured(upload->errorCode(), upload->errorMessage());
+        }
+        callback(success);
+        upload->deleteLater();
+    });
+#ifdef QT_DEBUG
+    upload->setEndpoint(m_videoEndpoint);
+#endif
+    upload->setAccount(account());
+    upload->uploadVideo(m_embedVideo);
+}
+
 bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)
 {
     // 使う前にm_listItemsをクリアすること！
@@ -1421,6 +1497,13 @@ void RecordOperator::postGate(const QString &uri,
     create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
+
+#ifdef QT_DEBUG
+void RecordOperator::setVideoEndpoint(const QString &newVideoEndpoint)
+{
+    m_videoEndpoint = newVideoEndpoint;
+}
+#endif
 
 QString RecordOperator::progressMessage() const
 {

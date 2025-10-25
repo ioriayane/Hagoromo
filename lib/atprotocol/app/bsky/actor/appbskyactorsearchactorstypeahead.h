@@ -10,7 +10,7 @@ class AppBskyActorSearchActorsTypeahead : public AppBskyGraphGetFollows
 public:
     explicit AppBskyActorSearchActorsTypeahead(QObject *parent = nullptr);
 
-    void searchActorsTypeahead(const QString &q, const int limit);
+    void searchActorsTypeahead(const QString &q, const qint64 limit);
 };
 
 }

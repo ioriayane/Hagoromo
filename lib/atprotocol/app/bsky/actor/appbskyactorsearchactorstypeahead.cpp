@@ -9,7 +9,7 @@ AppBskyActorSearchActorsTypeahead::AppBskyActorSearchActorsTypeahead(QObject *pa
     m_listKey = QStringLiteral("actors");
 }
 
-void AppBskyActorSearchActorsTypeahead::searchActorsTypeahead(const QString &q, const int limit)
+void AppBskyActorSearchActorsTypeahead::searchActorsTypeahead(const QString &q, const qint64 limit)
 {
     QUrlQuery url_query;
     if (!q.isEmpty()) {

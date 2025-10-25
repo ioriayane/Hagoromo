@@ -10,7 +10,7 @@ class AppBskyUnspeccedGetPopularFeedGenerators : public AppBskyFeedGetFeedGenera
 public:
     explicit AppBskyUnspeccedGetPopularFeedGenerators(QObject *parent = nullptr);
 
-    void getPopularFeedGenerators(const int limit, const QString &cursor, const QString &query);
+    void getPopularFeedGenerators(const qint64 limit, const QString &cursor, const QString &query);
 };
 
 }

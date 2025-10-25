@@ -12,7 +12,7 @@ AppBskyBookmarkGetBookmarks::AppBskyBookmarkGetBookmarks(QObject *parent)
 {
 }
 
-void AppBskyBookmarkGetBookmarks::getBookmarks(const int limit, const QString &cursor)
+void AppBskyBookmarkGetBookmarks::getBookmarks(const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (limit > 0) {

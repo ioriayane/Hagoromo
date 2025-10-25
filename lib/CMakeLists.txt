@@ -205,6 +205,8 @@ add_library(HagoromoLib STATIC
     atprotocol/com/atproto/repo/comatprotorepouploadblob.h
     atprotocol/com/atproto/server/comatprotoservercreatesession.cpp
     atprotocol/com/atproto/server/comatprotoservercreatesession.h
+    atprotocol/com/atproto/server/comatprotoservergetserviceauth.cpp
+    atprotocol/com/atproto/server/comatprotoservergetserviceauth.h
     atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp
     atprotocol/com/atproto/server/comatprotoserverrefreshsession.h
     atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp
@@ -219,6 +221,10 @@ add_library(HagoromoLib STATIC
     common.h
     extension/app/bsky/actor/appbskyactorputpreferencesex.cpp
     extension/app/bsky/actor/appbskyactorputpreferencesex.h
+    extension/app/bsky/video/appbskyvideogetuploadlimitsex.cpp
+    extension/app/bsky/video/appbskyvideogetuploadlimitsex.h
+    extension/app/bsky/video/appbskyvideouploadvideoex.cpp
+    extension/app/bsky/video/appbskyvideouploadvideoex.h
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.h
     extension/com/atproto/repo/comatprotorepocreaterecordex.cpp

@@ -9,7 +9,7 @@ AppBskyGraphGetFollowers::AppBskyGraphGetFollowers(QObject *parent)
     m_listKey = QStringLiteral("followers");
 }
 
-void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limit,
+void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const qint64 limit,
                                             const QString &cursor)
 {
     QUrlQuery url_query;

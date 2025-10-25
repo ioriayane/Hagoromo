@@ -8,7 +8,7 @@ AppBskyFeedGetFeed::AppBskyFeedGetFeed(QObject *parent) : AppBskyFeedGetTimeline
     m_listKey = QStringLiteral("feed");
 }
 
-void AppBskyFeedGetFeed::getFeed(const QString &feed, const int limit, const QString &cursor)
+void AppBskyFeedGetFeed::getFeed(const QString &feed, const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (!feed.isEmpty()) {
