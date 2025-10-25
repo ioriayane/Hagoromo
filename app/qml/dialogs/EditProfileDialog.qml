@@ -33,6 +33,7 @@ Dialog {
         id: account
     }
     signal errorOccured(string account_uuid, string code, string message)
+    signal updatedProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -71,6 +72,10 @@ Dialog {
         onFinished: (success) => {
                         if(success){
                             editProfileDialog.accept()
+                            editProfileDialog.updatedProfile(
+                                account.did, avatarImage.source, bannerImage.source, displayNameText.text,
+                                descriptionText.text, pronounsText.text, websiteText.text
+                                )
                         }
                     }
         onErrorOccured: (code, message) => editProfileDialog.errorOccured(account.uuid, code, message)
