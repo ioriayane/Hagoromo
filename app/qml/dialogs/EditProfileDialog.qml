@@ -221,7 +221,8 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: qsTr("Website")
+            text: qsTr("Website") + (websiteText.isValid ? "" : qsTr(" : Please things that start with 'https://'"))
+            color: websiteText.isValid ? Material.foreground : Material.color(Material.Red)
         }
         TextField  {
             id: websiteText
@@ -230,6 +231,9 @@ Dialog {
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             property int realTextLength: systemTool.countText(text)
+            property bool isValid: text.length === 0 ||
+                                   text.startsWith("https://") ||
+                                   text.startsWith("http://")
         }
 
         RowLayout {
@@ -248,7 +252,10 @@ Dialog {
                 id: addButton
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
-                enabled: displayNameText.realTextLength <= 64 && descriptionText.realTextLength <= 256 && !recordOperator.running
+                enabled: displayNameText.realTextLength <= 64 &&
+                         descriptionText.realTextLength <= 256 &&
+                         websiteText.isValid &&
+                         !recordOperator.running
                 text: qsTr("Update")
                 onClicked: {
                     recordOperator.clear()
