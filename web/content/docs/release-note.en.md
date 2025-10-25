@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.55.0 - 2025/10/19
+
 - Update
   - Support for the Website field in profiles (display and updates)
   - Change the Alt text for image previews to display only one line, with the full text shown upon clicking
