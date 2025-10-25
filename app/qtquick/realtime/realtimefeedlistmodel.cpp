@@ -164,6 +164,11 @@ bool RealtimeFeedListModel::like(int row)
     return TimelineListModel::like(row, false);
 }
 
+bool RealtimeFeedListModel::bookmark(int row)
+{
+    return TimelineListModel::bookmark(row);
+}
+
 QString RealtimeFeedListModel::selectorJson() const
 {
     return m_selectorJson;

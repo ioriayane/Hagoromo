@@ -32,7 +32,7 @@
     },
     {
       "name": "release",
-      "displayName": "Release Build", 
+      "displayName": "Release Build",
       "configurePreset": "release"
     }
   ],
@@ -54,7 +54,7 @@
     },
     {
       "name": "base-verbose",
-      "displayName": "Base Verbose Test Configuration", 
+      "displayName": "Base Verbose Test Configuration",
       "description": "Common configuration for verbose tests",
       "configurePreset": "default",
       "execution": {

@@ -183,7 +183,7 @@ Item {
                             color: Material.color(Material.Grey)
                             text: model.lastMessageText
                             textFormat: Text.StyledText
-                            wrapMode: Text.WrapAnywhere
+                            wrapMode: Text.Wrap
 
                             Rectangle {
                                 anchors.right: parent.right
@@ -297,7 +297,7 @@ Item {
                     Layout.fillWidth: parent
                     Layout.leftMargin: 5
                     Layout.rightMargin: 5
-                    wrapMode: Text.WrapAnywhere
+                    wrapMode: Text.Wrap
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     placeholderText: qsTr("Search")

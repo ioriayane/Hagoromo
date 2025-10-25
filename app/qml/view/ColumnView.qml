@@ -15,6 +15,7 @@ import tech.relog.hagoromo.knownfollowerslistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
 import tech.relog.hagoromo.postthreadlistmodel 1.0
 import tech.relog.hagoromo.quotedpostlistmodel 1.0
+import tech.relog.hagoromo.bookmarkpostlistmodel 1.0
 import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.chatmessagelistmodel 1.0
 import tech.relog.hagoromo.realtime.realtimefeedlistmodel 1.0
@@ -57,7 +58,7 @@ ColumnLayout {
     signal requestReportMessage(string account_uuid, string did, string convo_id, string message_id)
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestAddMutedWord(string account_uuid, string text)
-    signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
+    signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
     signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestSubscribeToPosts(string account_uuid, string did, bool post, bool reply)
@@ -317,8 +318,8 @@ ColumnLayout {
             onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
-            onRequestEditProfile: (did, avatar, banner, display_name, description) => {
-                                      columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description)
+            onRequestEditProfile: (did, avatar, banner, display_name, description, pronouns, website) => {
+                                      columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description, pronouns, website)
                                   }
             onRequestSubscribeToPosts: (did, post, reply) => columnView.requestSubscribeToPosts(account.uuid, did, post, reply)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -670,6 +671,46 @@ ColumnLayout {
         }
     }
 
+    Component {
+        id: bookmarkPostComponent
+        TimelineView {
+            model: BookmarkPostListModel {
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
+
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
+            accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(columnView.account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
+                                 }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
+
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
+
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
@@ -702,6 +743,9 @@ ColumnLayout {
         }else if(componentType === 9){
             columnStackView.push(realtimeFeedComponent)
             componentTypeLabel.addText = " : " + settings.columnName
+        }else if(componentType === 10){
+            columnStackView.push(bookmarkPostComponent)
+            //componentTypeLabel.addText = " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.addText = ""
@@ -777,6 +821,7 @@ ColumnLayout {
                         qsTr("Chat"),
                         qsTr("Chat"),
                         qsTr("Realtime"),
+                        qsTr("Saved posts"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""

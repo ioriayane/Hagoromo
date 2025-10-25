@@ -31,6 +31,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString banner READ banner WRITE setBanner NOTIFY bannerChanged)
     Q_PROPERTY(QString serviceEndpoint READ serviceEndpoint WRITE setServiceEndpoint NOTIFY
                        serviceEndpointChanged)
+    Q_PROPERTY(QString website READ website WRITE setWebsite NOTIFY websiteChanged FINAL)
+    Q_PROPERTY(QString pronouns READ pronouns WRITE setPronouns NOTIFY pronounsChanged FINAL)
 
     Q_PROPERTY(int followersCount READ followersCount WRITE setFollowersCount NOTIFY
                        followersCountChanged)
@@ -85,8 +87,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString liveExpiresAt READ liveExpiresAt WRITE setLiveExpiresAt NOTIFY
                        liveExpiresAtChanged FINAL)
 
-    Q_PROPERTY(bool allowSubscriptions READ allowSubscriptions WRITE
-                       setAllowSubscriptions NOTIFY allowSubscriptionsChanged FINAL)
+    Q_PROPERTY(bool allowSubscriptions READ allowSubscriptions WRITE setAllowSubscriptions NOTIFY
+                       allowSubscriptionsChanged FINAL)
     Q_PROPERTY(bool activitySubscriptionPost READ activitySubscriptionPost WRITE
                        setActivitySubscriptionPost NOTIFY activitySubscriptionPostChanged FINAL)
     Q_PROPERTY(bool activitySubscriptionReply READ activitySubscriptionReply WRITE
@@ -188,6 +190,12 @@ public:
     bool activitySubscriptionReply() const;
     void setActivitySubscriptionReply(bool newActivitySubscriptionReply);
 
+    QString website() const;
+    void setWebsite(const QString &newWebsite);
+
+    QString pronouns() const;
+    void setPronouns(const QString &newPronouns);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -237,6 +245,10 @@ signals:
     void allowSubscriptionsChanged();
     void activitySubscriptionPostChanged();
     void activitySubscriptionReplyChanged();
+    void websiteChanged();
+
+    void pronounsChanged();
+
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
     void finishedConnector(const QString &labeler_did);
@@ -305,6 +317,8 @@ private:
     bool m_allowSubscriptions;
     bool m_activitySubscriptionPost;
     bool m_activitySubscriptionReply;
+    QString m_website;
+    QString m_pronouns;
 };
 
 #endif // USERPROFILE_H

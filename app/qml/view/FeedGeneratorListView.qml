@@ -109,7 +109,7 @@ ScrollView {
                     Layout.leftMargin: 10
                     Layout.rightMargin: 20
                     Layout.preferredWidth: generatorListView.width - 30
-                    wrapMode: Text.WrapAnywhere
+                    wrapMode: Text.Wrap
                     font.pointSize: AdjustedValues.f10
                     text: model.description
                 }

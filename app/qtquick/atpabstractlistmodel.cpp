@@ -420,19 +420,18 @@ QString AtpAbstractListModel::getContentFilterMessage(
 bool AtpAbstractListModel::getQuoteFilterMatched(
         const AtProtocolType::AppBskyFeedDefs::PostView &post) const
 {
-    if (!post.embed_AppBskyEmbedRecord_View.isNull()
-        && post.embed_AppBskyEmbedRecord_View->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord) {
-        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.viewer.muted)
+    if (post.embed_AppBskyEmbedRecord_View.record_type
+        == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord) {
+        if (post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.viewer.muted)
             return true;
 
-        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
+        if (post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.did != account().did) {
             // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View.record_ViewRecord.labels,
                                        false)
                 == ConfigurableLabelStatus::Warning)
                 return true;
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View.record_ViewRecord.labels,
                                        true)
                 == ConfigurableLabelStatus::Warning)
                 return true;
@@ -513,14 +512,15 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
 QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                             const QuoteRecordRoles role) const
 {
-    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+    bool has_record =
+            (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View);
     bool has_with_image = !post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull();
 
     if (role == HasQuoteRecordRole) {
         if (has_record)
             return post.embed_type
                     == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && post.embed_AppBskyEmbedRecord_View->record_type
+                    && post.embed_AppBskyEmbedRecord_View.record_type
                     == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
         else if (has_with_image)
             return post.embed_type
@@ -531,13 +531,13 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             return false;
     } else if (role == QuoteRecordIsMineRole) {
         if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
+            if (post.embed_AppBskyEmbedRecord_View.record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached) {
                 // デタッチされている場合はauthorがないので。
-                return post.embed_AppBskyEmbedRecord_View->record_ViewDetached.uri.contains(
+                return post.embed_AppBskyEmbedRecord_View.record_ViewDetached.uri.contains(
                         account().did);
             } else {
-                return (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did
+                return (post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.did
                         == account().did);
             }
         } else if (has_with_image) {
@@ -556,19 +556,19 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         }
     } else if (role == QuoteRecordCidRole) {
         if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord.cid;
         else if (has_with_image)
             return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid;
         else
             return QString();
     } else if (role == QuoteRecordUriRole) {
         if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
+            if (post.embed_AppBskyEmbedRecord_View.record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached) {
-                return post.embed_AppBskyEmbedRecord_View->record_ViewDetached.uri;
+                return post.embed_AppBskyEmbedRecord_View.record_ViewDetached.uri;
             } else {
 
-                return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.uri;
+                return post.embed_AppBskyEmbedRecord_View.record_ViewRecord.uri;
             }
         } else if (has_with_image) {
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
@@ -582,7 +582,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         }
     } else if (role == QuoteRecordDisplayNameRole) {
         if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.displayName;
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.displayName;
         else if (has_with_image)
             return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
                     .displayName;
@@ -590,7 +590,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             return QString();
     } else if (role == QuoteRecordHandleRole) {
         if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.handle;
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.handle;
         else if (has_with_image)
             return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
                     .handle;
@@ -598,7 +598,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             return QString();
     } else if (role == QuoteRecordAvatarRole) {
         if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.avatar;
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
         else if (has_with_image)
             return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
                     .avatar;
@@ -607,7 +607,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
     } else if (role == QuoteRecordRecordTextRole) {
         if (has_record)
             return LexiconsTypeUnknown::copyRecordText(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord.value);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyRecordText(
                     post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
@@ -616,7 +616,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
     } else if (role == QuoteRecordIndexedAtRole) {
         if (has_record)
             return LexiconsTypeUnknown::formatDateTime(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
         else if (has_with_image)
             return LexiconsTypeUnknown::formatDateTime(
                     post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
@@ -627,7 +627,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         // unionの配列で読み込んでない
         if (has_record)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord,
                     LexiconsTypeUnknown::CopyImageType::Thumb);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyImagesFromRecord(
@@ -639,7 +639,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         // unionの配列で読み込んでない
         if (has_record)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord,
                     LexiconsTypeUnknown::CopyImageType::FullSize);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyImagesFromRecord(
@@ -650,7 +650,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
     } else if (role == QuoteRecordEmbedImagesAltRole) {
         if (has_record)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord,
                     LexiconsTypeUnknown::CopyImageType::Alt);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyImagesFromRecord(
@@ -660,7 +660,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             return QStringList();
     } else if (role == QuoteRecordDetatchedRole) {
         if (has_record) {
-            return (post.embed_AppBskyEmbedRecord_View->record_type
+            return (post.embed_AppBskyEmbedRecord_View.record_type
                     == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached);
         } else if (has_with_image) {
             return (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
@@ -671,20 +671,20 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         // 引用しているポストがブロックしているユーザーのモノか
         // 付与されているラベルがHide設定の場合block表示をする
         if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
+            if (post.embed_AppBskyEmbedRecord_View.record_type
                         == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked
-                || post.embed_AppBskyEmbedRecord_View->record_type
+                || post.embed_AppBskyEmbedRecord_View.record_type
                         == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
                 return true;
 
-            if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
+            if (post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.did != account().did) {
                 // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
                 if (getContentFilterStatus(
-                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, false)
+                            post.embed_AppBskyEmbedRecord_View.record_ViewRecord.labels, false)
                     == ConfigurableLabelStatus::Hide)
                     return true;
                 if (getContentFilterStatus(
-                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, true)
+                            post.embed_AppBskyEmbedRecord_View.record_ViewRecord.labels, true)
                     == ConfigurableLabelStatus::Hide)
                     return true;
             }
@@ -712,10 +712,10 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         return false;
     } else if (role == QuoteRecordBlockedStatusRole) {
         if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
+            if (post.embed_AppBskyEmbedRecord_View.record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
                 return tr("Blocked");
-            else if (post.embed_AppBskyEmbedRecord_View->record_type
+            else if (post.embed_AppBskyEmbedRecord_View.record_type
                      == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
                 return tr("Detached by author");
         } else if (has_with_image) {
@@ -730,7 +730,7 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
 
     } else if (role == QuoteRecordHasVideoRole) {
         if (has_record) {
-            return !post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+            return !post.embed_AppBskyEmbedRecord_View.record_ViewRecord
                             .embeds_AppBskyEmbedVideo_View.isEmpty();
         } else if (has_with_image) {
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
@@ -748,9 +748,9 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         }
     } else if (role == QuoteRecordVideoPlaylistRole) {
         if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+            && !post.embed_AppBskyEmbedRecord_View.record_ViewRecord.embeds_AppBskyEmbedVideo_View
                         .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord
                     .embeds_AppBskyEmbedVideo_View.first()
                     .playlist;
         } else if (has_with_image) {
@@ -772,10 +772,10 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         }
     } else if (role == QuoteRecordVideoThumbRole) {
         if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+            && !post.embed_AppBskyEmbedRecord_View.record_ViewRecord.embeds_AppBskyEmbedVideo_View
                         .isEmpty()) {
             return AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                    post.embed_AppBskyEmbedRecord_View.record_ViewRecord
                             .embeds_AppBskyEmbedVideo_View.first()
                             .thumbnail);
         } else if (has_with_image) {
@@ -797,9 +797,9 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
         }
     } else if (role == QuoteRecordVideoAltRole) {
         if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+            && !post.embed_AppBskyEmbedRecord_View.record_ViewRecord.embeds_AppBskyEmbedVideo_View
                         .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+            return post.embed_AppBskyEmbedRecord_View.record_ViewRecord
                     .embeds_AppBskyEmbedVideo_View.first()
                     .alt;
         } else if (has_with_image) {
@@ -911,42 +911,35 @@ QVariant
 AtpAbstractListModel::getFeedGeneratorItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                            const FeedGeneratorRoles role) const
 {
-    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+    const auto view = post.embed_AppBskyEmbedRecord_View.record_AppBskyFeedDefs_GeneratorView;
 
     if (role == HasFeedGeneratorRole) {
-        if (has_record)
-            return post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && post.embed_AppBskyEmbedRecord_View->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
-        else
-            return false;
+        return post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                && post.embed_AppBskyEmbedRecord_View.record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
     } else if (role == FeedGeneratorUriRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
+        if (view)
+            return view->uri;
         else
             return QString();
     } else if (role == FeedGeneratorCreatorHandleRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
-                    .handle;
+        if (view)
+            return view->creator.handle;
         else
             return QString();
     } else if (role == FeedGeneratorDisplayNameRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .displayName;
+        if (view)
+            return view->displayName;
         else
             return QString();
     } else if (role == FeedGeneratorLikeCountRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .likeCount;
+        if (view)
+            return view->likeCount;
         else
             return QString();
     } else if (role == FeedGeneratorAvatarRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
+        if (view)
+            return view->avatar;
         else
             return QString();
     }
@@ -957,45 +950,25 @@ QVariant
 AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                       const ListLinkRoles role) const
 {
-    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
-
     if (role == HasListLinkRole) {
-        if (has_record)
-            return post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && post.embed_AppBskyEmbedRecord_View->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyGraphDefs_ListView;
-        else
-            return false;
+        return post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                && post.embed_AppBskyEmbedRecord_View.record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_AppBskyGraphDefs_ListView;
     } else if (role == ListLinkUriRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.uri;
-        else
-            return QString();
+        return post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.uri;
     } else if (role == ListLinkCreatorHandleRole) {
-        if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.creator
-                        .isNull())
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.creator
+        if (!post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.creator.isNull())
+            return post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.creator
                     ->handle;
         else
             return QString();
     } else if (role == ListLinkDisplayNameRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.name;
-        else
-            return QString();
+        return post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.name;
     } else if (role == ListLinkDescriptionRole) {
-        if (has_record)
-            return Common::truncateTo3lines(post.embed_AppBskyEmbedRecord_View
-                                                    ->record_AppBskyGraphDefs_ListView.description);
-        else
-            return QString();
+        return Common::truncateTo3lines(
+                post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.description);
     } else if (role == ListLinkAvatarRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.avatar;
-        else
-            return QString();
+        return post.embed_AppBskyEmbedRecord_View.record_AppBskyGraphDefs_ListView.avatar;
     }
     return QVariant();
 }

@@ -12,7 +12,8 @@ AppBskyGraphGetLists::AppBskyGraphGetLists(QObject *parent)
 {
 }
 
-void AppBskyGraphGetLists::getLists(const QString &actor, const qint64 limit, const QString &cursor)
+void AppBskyGraphGetLists::getLists(const QString &actor, const int limit, const QString &cursor,
+                                    const QList<QString> &purposes)
 {
     QUrlQuery url_query;
     if (!actor.isEmpty()) {
@@ -23,6 +24,9 @@ void AppBskyGraphGetLists::getLists(const QString &actor, const qint64 limit, co
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    for (const auto &value : purposes) {
+        url_query.addQueryItem(QStringLiteral("purposes"), value);
     }
 
     get(QStringLiteral("xrpc/app.bsky.graph.getLists"), url_query);

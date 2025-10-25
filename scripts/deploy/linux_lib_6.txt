@@ -56,6 +56,8 @@ libQt6WebSockets.so.6
 libQt6WebSockets.so.6.8.1
 libQt6Widgets.so.6
 libQt6Widgets.so.6.8.1
+libQt6XcbQpa.so.6
+libQt6XcbQpa.so.6.8.1
 libQt6Xml.so.6
 libQt6Xml.so.6.8.1
 libicudata.so.73

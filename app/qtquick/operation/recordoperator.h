@@ -63,6 +63,7 @@ public:
     Q_INVOKABLE bool list(const QString &name, const ListPurpose purpose,
                           const QString &description);
     Q_INVOKABLE bool listItem(const QString &uri, const QString &did);
+    Q_INVOKABLE bool bookmark(const QString &cid, const QString &uri);
 
     Q_INVOKABLE void deletePost(const QString &uri);
     Q_INVOKABLE void deleteLike(const QString &uri);
@@ -73,9 +74,11 @@ public:
     Q_INVOKABLE void deleteBlockList(const QString &uri);
     Q_INVOKABLE bool deleteList(const QString &uri);
     Q_INVOKABLE bool deleteListItem(const QString &uri);
+    Q_INVOKABLE bool deleteBookmark(const QString &uri);
 
     Q_INVOKABLE void updateProfile(const QString &avatar_url, const QString &banner_url,
-                                   const QString &description, const QString &display_name);
+                                   const QString &description, const QString &display_name,
+                                   const QString &pronouns, const QString &website);
     Q_INVOKABLE void updatePostPinning(const QString &post_uri, const QString &post_cid);
     Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url,
                                 const QString &description, const QString &name);

@@ -455,157 +455,157 @@ Please recreate AppPassword in the official application.</source>
         <translation>カラム設定</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="140"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="147"/>
         <source>Auto loading</source>
         <translation>自動更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="147"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="154"/>
         <source>Interval</source>
         <translation>間隔</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="154"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="161"/>
         <source>1 min.</source>
         <translation>1分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="155"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="162"/>
         <source>3 min.</source>
         <translation>3分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="156"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="163"/>
         <source>5 min.</source>
         <translation>5分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="157"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="164"/>
         <source>10 min.</source>
         <translation>10分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="158"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="165"/>
         <source>15 min.</source>
         <translation>15分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="159"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="166"/>
         <source>20 min.</source>
         <translation>20分</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="168"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="175"/>
         <source>Column width</source>
         <translation>カラムの幅</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="191"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="198"/>
         <source>Image layout</source>
         <translation>画像のレイアウト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="199"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="206"/>
         <source>Compact</source>
         <translation>コンパクト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="200"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="207"/>
         <source>Normal</source>
         <translation>ふつう</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="201"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="208"/>
         <source>When one is whole</source>
         <translation>1枚のときは全体</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="202"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="209"/>
         <source>All whole</source>
         <translation>すべて全体</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="230"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="237"/>
         <source>Display</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="239"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="246"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="247"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="254"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="255"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="262"/>
         <source>Follow</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="263"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="270"/>
         <source>Mention</source>
         <translation>メンション</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="271"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="278"/>
         <source>Reply</source>
         <translation>リプライ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="279"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="286"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="288"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="295"/>
         <source>Like via repost</source>
         <translation>リポストのいいね</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="296"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="303"/>
         <source>Repost via repost</source>
         <translation>リポストのリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="304"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="311"/>
         <source>Subscribed post</source>
         <translation>投稿の購読</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="313"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="320"/>
         <source>Reply to unfollowed users</source>
         <translation>フォローしていないユーザーへの返信</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="321"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="328"/>
         <source>Reposts by the user</source>
         <translation>本人によるリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="329"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="336"/>
         <source>Reposts of users followed</source>
         <translation>フォローしているユーザーのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="337"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="344"/>
         <source>Reposts of users you do not follow</source>
         <translation>フォローしていないユーザーのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="345"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="352"/>
         <source>Reposts of your posts</source>
         <translation>カラムのアカウントのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="353"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="360"/>
         <source>Reposts by you</source>
         <translation>カラムのアカウントによるリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="361"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="368"/>
         <source>Aggregate reactions</source>
         <translation>リアクションを集約する</translation>
     </message>
@@ -622,12 +622,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">フォローしていないユーザーのリポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="372"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="379"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="382"/>
+        <location filename="qml/dialogs/ColumnSettingDialog.qml" line="389"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -635,104 +635,109 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="203"/>
+        <location filename="qml/view/ColumnView.qml" line="204"/>
         <source>Post thread</source>
         <translation>ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="249"/>
+        <location filename="qml/view/ColumnView.qml" line="250"/>
         <source>Quotes</source>
         <translation>引用ポスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="770"/>
+        <location filename="qml/view/ColumnView.qml" line="814"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="771"/>
+        <location filename="qml/view/ColumnView.qml" line="815"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="772"/>
+        <location filename="qml/view/ColumnView.qml" line="816"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="773"/>
+        <location filename="qml/view/ColumnView.qml" line="817"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="774"/>
-        <location filename="qml/view/ColumnView.qml" line="837"/>
+        <location filename="qml/view/ColumnView.qml" line="818"/>
+        <location filename="qml/view/ColumnView.qml" line="882"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="775"/>
+        <location filename="qml/view/ColumnView.qml" line="819"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="776"/>
+        <location filename="qml/view/ColumnView.qml" line="820"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="777"/>
-        <location filename="qml/view/ColumnView.qml" line="778"/>
+        <location filename="qml/view/ColumnView.qml" line="821"/>
+        <location filename="qml/view/ColumnView.qml" line="822"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="779"/>
+        <location filename="qml/view/ColumnView.qml" line="823"/>
         <source>Realtime</source>
         <translation>リアルタイム</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="780"/>
+        <location filename="qml/view/ColumnView.qml" line="824"/>
+        <source>Saved posts</source>
+        <translation>ブックマーク</translation>
+    </message>
+    <message>
+        <location filename="qml/view/ColumnView.qml" line="825"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="821"/>
+        <location filename="qml/view/ColumnView.qml" line="866"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="826"/>
+        <location filename="qml/view/ColumnView.qml" line="871"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="831"/>
+        <location filename="qml/view/ColumnView.qml" line="876"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="841"/>
+        <location filename="qml/view/ColumnView.qml" line="886"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="850"/>
+        <location filename="qml/view/ColumnView.qml" line="895"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="861"/>
+        <location filename="qml/view/ColumnView.qml" line="906"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="861"/>
+        <location filename="qml/view/ColumnView.qml" line="906"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="879"/>
+        <location filename="qml/view/ColumnView.qml" line="924"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -836,27 +841,37 @@ Please recreate AppPassword in the official application.</source>
         <translation>プロフィールの編集</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="156"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="162"/>
         <source>Display Name</source>
         <translation>表示名</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="171"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="177"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="198"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="203"/>
+        <source>Pronouns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="220"/>
+        <source>Website</source>
+        <translation>ウェブサイト</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="236"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="210"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="248"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="227"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="266"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -894,7 +909,7 @@ Please recreate AppPassword in the official application.</source>
         <location filename="qtquick/column/feedtypelistmodel.cpp" line="131"/>
         <location filename="qtquick/column/feedtypelistmodel.cpp" line="140"/>
         <location filename="qtquick/column/feedtypelistmodel.cpp" line="148"/>
-        <location filename="qtquick/column/feedtypelistmodel.cpp" line="219"/>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="226"/>
         <source>Realtime Feeds</source>
         <translation>リアルタイムフィード</translation>
     </message>
@@ -929,18 +944,28 @@ Please recreate AppPassword in the official application.</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qtquick/column/feedtypelistmodel.cpp" line="271"/>
-        <location filename="qtquick/column/feedtypelistmodel.cpp" line="300"/>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="163"/>
+        <source>Saved</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="165"/>
+        <source>Saved posts</source>
+        <translation>ブックマーク</translation>
+    </message>
+    <message>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="278"/>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="307"/>
         <source>My Feeds</source>
         <translation>カスタムフィード</translation>
     </message>
     <message>
-        <location filename="qtquick/column/feedtypelistmodel.cpp" line="273"/>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="280"/>
         <source>Discover Feeds</source>
         <translation>カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="qtquick/column/feedtypelistmodel.cpp" line="333"/>
+        <location filename="qtquick/column/feedtypelistmodel.cpp" line="340"/>
         <source>My Lists</source>
         <translation>リスト</translation>
     </message>
@@ -2196,7 +2221,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="295"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="307"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2204,128 +2229,128 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationPreferenceListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="50"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="48"/>
         <source>Social</source>
         <translation>ソーシャル</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="52"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="50"/>
         <source>Interaction</source>
         <translation>交流</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="54"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="52"/>
         <source>System</source>
         <translation>システム</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="56"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="54"/>
         <source>Activity</source>
         <translation>活動</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="58"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="56"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="63"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="61"/>
         <source>Configure notification settings for %1</source>
         <translation>%1の通知設定をします。</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="125"/>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="163"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="123"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="161"/>
         <source>Account must be set</source>
         <translation>アカウントを設定する必要があります。</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="138"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="136"/>
         <source>Failed to load notification preferences</source>
         <translation>通知設定の読み込みに失敗しました</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="176"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="174"/>
         <source>Failed to save notification preferences</source>
         <translation>通知設定の保存に失敗しました</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="247"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="245"/>
         <source>All</source>
         <translation>すべて</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="249"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="247"/>
         <source>Follows only</source>
         <translation>フォロー中の人</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="251"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="249"/>
         <source>Accepted only</source>
         <translation>許可済みの人</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="304"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="300"/>
         <source>Follow</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="316"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="307"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="328"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="314"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="340"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="321"/>
         <source>Like via Repost</source>
         <translation>リポストのいいね</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="352"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="328"/>
         <source>Repost via Repost</source>
         <translation>リポストのリポスト</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="365"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="336"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="377"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="343"/>
         <source>Reply</source>
         <translation>リプライ</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="389"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="350"/>
         <source>Mention</source>
         <translation>メンション</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="401"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="357"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="414"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="365"/>
         <source>Starterpack Joined</source>
         <translation>スターターパックによる登録</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="426"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="372"/>
         <source>Subscribed Post</source>
         <translation>投稿の購読</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="439"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="380"/>
         <source>Unverified</source>
         <translation>認証解除</translation>
     </message>
     <message>
-        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="451"/>
+        <location filename="qtquick/notification/notificationpreferencelistmodel.cpp" line="387"/>
         <source>Verified</source>
         <translation>認証</translation>
     </message>
@@ -2390,83 +2415,83 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="84"/>
+        <location filename="qml/parts/PostControls.qml" line="86"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="89"/>
+        <location filename="qml/parts/PostControls.qml" line="91"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="159"/>
-        <location filename="qml/parts/PostControls.qml" line="228"/>
+        <location filename="qml/parts/PostControls.qml" line="175"/>
+        <location filename="qml/parts/PostControls.qml" line="244"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="164"/>
-        <location filename="qml/parts/PostControls.qml" line="233"/>
+        <location filename="qml/parts/PostControls.qml" line="180"/>
+        <location filename="qml/parts/PostControls.qml" line="249"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="168"/>
-        <location filename="qml/parts/PostControls.qml" line="237"/>
+        <location filename="qml/parts/PostControls.qml" line="184"/>
+        <location filename="qml/parts/PostControls.qml" line="253"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="173"/>
-        <location filename="qml/parts/PostControls.qml" line="242"/>
+        <location filename="qml/parts/PostControls.qml" line="189"/>
+        <location filename="qml/parts/PostControls.qml" line="258"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="180"/>
-        <location filename="qml/parts/PostControls.qml" line="249"/>
+        <location filename="qml/parts/PostControls.qml" line="196"/>
+        <location filename="qml/parts/PostControls.qml" line="265"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="186"/>
-        <location filename="qml/parts/PostControls.qml" line="255"/>
+        <location filename="qml/parts/PostControls.qml" line="202"/>
+        <location filename="qml/parts/PostControls.qml" line="271"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="192"/>
-        <location filename="qml/parts/PostControls.qml" line="261"/>
+        <location filename="qml/parts/PostControls.qml" line="208"/>
+        <location filename="qml/parts/PostControls.qml" line="277"/>
         <source>Quotes</source>
         <translation>引用したポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="199"/>
-        <location filename="qml/parts/PostControls.qml" line="268"/>
+        <location filename="qml/parts/PostControls.qml" line="215"/>
+        <location filename="qml/parts/PostControls.qml" line="284"/>
         <source>Unpin this post</source>
         <translation>固定ポストを解除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="199"/>
-        <location filename="qml/parts/PostControls.qml" line="268"/>
+        <location filename="qml/parts/PostControls.qml" line="215"/>
+        <location filename="qml/parts/PostControls.qml" line="284"/>
         <source>Pin this post</source>
         <translation>固定ポストにする</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="205"/>
-        <location filename="qml/parts/PostControls.qml" line="274"/>
+        <location filename="qml/parts/PostControls.qml" line="221"/>
+        <location filename="qml/parts/PostControls.qml" line="290"/>
         <source>Unmute thread</source>
         <translation>スレッドミュートの解除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="205"/>
-        <location filename="qml/parts/PostControls.qml" line="274"/>
+        <location filename="qml/parts/PostControls.qml" line="221"/>
+        <location filename="qml/parts/PostControls.qml" line="290"/>
         <source>Mute thread</source>
         <translation>スレッドをミュート</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="210"/>
+        <location filename="qml/parts/PostControls.qml" line="226"/>
         <source>Edit interaction settings</source>
         <translation>投稿への反応の設定</translation>
     </message>
@@ -2475,22 +2500,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="217"/>
+        <location filename="qml/parts/PostControls.qml" line="233"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="279"/>
+        <location filename="qml/parts/PostControls.qml" line="295"/>
         <source>Re-attach quote</source>
         <translation>引用を再接続</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="279"/>
+        <location filename="qml/parts/PostControls.qml" line="295"/>
         <source>Detach quote</source>
         <translation>引用を切断</translation>
     </message>
     <message>
-        <location filename="qml/parts/PostControls.qml" line="286"/>
+        <location filename="qml/parts/PostControls.qml" line="302"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -2625,122 +2650,122 @@ Please recreate AppPassword in the official application.</source>
         <translation>プロフィールを編集</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="91"/>
+        <location filename="qml/view/ProfileView.qml" line="93"/>
         <source>Following</source>
         <translation>フォロー中</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="101"/>
+        <location filename="qml/view/ProfileView.qml" line="103"/>
         <source>Follow</source>
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="186"/>
+        <location filename="qml/view/ProfileView.qml" line="188"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="244"/>
+        <location filename="qml/view/ProfileView.qml" line="252"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="345"/>
+        <location filename="qml/view/ProfileView.qml" line="353"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="356"/>
+        <location filename="qml/view/ProfileView.qml" line="364"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="367"/>
+        <location filename="qml/view/ProfileView.qml" line="375"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="405"/>
+        <location filename="qml/view/ProfileView.qml" line="413"/>
         <source>Regisitration date:</source>
         <translation>登録日 :</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="471"/>
+        <location filename="qml/view/ProfileView.qml" line="495"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="477"/>
+        <location filename="qml/view/ProfileView.qml" line="501"/>
         <source>Send message</source>
         <translation>メッセージを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="483"/>
+        <location filename="qml/view/ProfileView.qml" line="507"/>
         <source>Subscribe to posts</source>
         <translation>投稿を購読</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="490"/>
+        <location filename="qml/view/ProfileView.qml" line="514"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="496"/>
+        <location filename="qml/view/ProfileView.qml" line="520"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="502"/>
+        <location filename="qml/view/ProfileView.qml" line="526"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="509"/>
+        <location filename="qml/view/ProfileView.qml" line="533"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="515"/>
+        <location filename="qml/view/ProfileView.qml" line="539"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="522"/>
+        <location filename="qml/view/ProfileView.qml" line="546"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="529"/>
+        <location filename="qml/view/ProfileView.qml" line="553"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="529"/>
+        <location filename="qml/view/ProfileView.qml" line="553"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="541"/>
+        <location filename="qml/view/ProfileView.qml" line="565"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="541"/>
+        <location filename="qml/view/ProfileView.qml" line="565"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="553"/>
+        <location filename="qml/view/ProfileView.qml" line="577"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="585"/>
+        <location filename="qml/view/ProfileView.qml" line="610"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="596"/>
+        <location filename="qml/view/ProfileView.qml" line="621"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
@@ -2749,7 +2774,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="609"/>
+        <location filename="qml/view/ProfileView.qml" line="634"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2887,139 +2912,145 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>RecordOperator</name>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="188"/>
-        <location filename="qtquick/operation/recordoperator.cpp" line="193"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="176"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="181"/>
         <source>Posting ... %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="195"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="183"/>
         <source>Posting ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="301"/>
-        <source>Uploading video ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="336"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="292"/>
         <source>Repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="361"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="317"/>
         <source>Like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="385"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="341"/>
         <source>Follow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="407"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="363"/>
         <source>Mute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="430"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="386"/>
         <source>Block ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="452"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="408"/>
         <source>Block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="476"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="432"/>
         <source>Create list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="516"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="472"/>
         <source>Add to list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="541"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="495"/>
+        <source>Saving post ...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/recordoperator.cpp" line="521"/>
         <source>Delete post ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="565"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="545"/>
         <source>Delete like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="589"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="569"/>
         <source>Delete repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="613"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="593"/>
         <source>Unfollow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="635"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="615"/>
         <source>Unmute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="660"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="640"/>
         <source>Unblock ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="684"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="664"/>
         <source>Unblock block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="705"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="685"/>
         <source>Delete list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="767"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="747"/>
         <source>Delete list item ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="791"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="770"/>
+        <source>Delete saved post ...</source>
+        <oldsource>Delete bookmark ...</oldsource>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/recordoperator.cpp" line="796"/>
         <source>Update profile ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="863"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="868"/>
         <source>Update post pinning ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="909"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="915"/>
         <source>Update list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="972"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="978"/>
         <source>Update who can reply ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1012"/>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1056"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1018"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1062"/>
         <source>Update quote status ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1228"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1234"/>
         <source>Uploading images ... (%1/%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1344"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1322"/>
         <source>Delete list item ... (%1)</source>
         <translation></translation>
     </message>
@@ -3972,7 +4003,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="314"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="320"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -4134,12 +4165,12 @@ Who do you want to enable this for?</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1116"/>
+        <location filename="qml/main.qml" line="1118"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1277"/>
+        <location filename="qml/main.qml" line="1279"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

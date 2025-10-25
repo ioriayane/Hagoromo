@@ -1,6 +1,8 @@
 #include "operation/recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
+#include "atprotocol/app/bsky/bookmark/appbskybookmarkcreatebookmark.h"
+#include "atprotocol/app/bsky/bookmark/appbskybookmarkdeletebookmark.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
@@ -17,6 +19,8 @@
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
+using AtProtocolInterface::AppBskyBookmarkCreateBookmark;
+using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
@@ -530,6 +534,30 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
     return true;
 }
 
+bool RecordOperator::bookmark(const QString &cid, const QString &uri)
+{
+    if (running())
+        return false;
+    setRunning(true);
+
+    setProgressMessage(tr("Saving post ..."));
+
+    AppBskyBookmarkCreateBookmark *book_mark = new AppBskyBookmarkCreateBookmark(this);
+    connect(book_mark, &AppBskyBookmarkCreateBookmark::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(book_mark->errorCode(), book_mark->errorMessage());
+        }
+        setProgressMessage(QString());
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        book_mark->deleteLater();
+    });
+    book_mark->setAccount(account());
+    book_mark->createBookmark(uri, cid);
+
+    return true;
+}
+
 void RecordOperator::deletePost(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
@@ -781,8 +809,33 @@ bool RecordOperator::deleteListItem(const QString &uri)
     return true;
 }
 
+bool RecordOperator::deleteBookmark(const QString &uri)
+{
+    if (running())
+        return false;
+    setRunning(true);
+
+    setProgressMessage(tr("Delete saved post ..."));
+
+    AppBskyBookmarkDeleteBookmark *book_mark = new AppBskyBookmarkDeleteBookmark(this);
+    connect(book_mark, &AppBskyBookmarkDeleteBookmark::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(book_mark->errorCode(), book_mark->errorMessage());
+        }
+        setProgressMessage(QString());
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        book_mark->deleteLater();
+    });
+    book_mark->setAccount(account());
+    book_mark->deleteBookmark(uri);
+
+    return true;
+}
+
 void RecordOperator::updateProfile(const QString &avatar_url, const QString &banner_url,
-                                   const QString &description, const QString &display_name)
+                                   const QString &description, const QString &display_name,
+                                   const QString &pronouns, const QString &website)
 {
     if (running())
         return;
@@ -834,8 +887,8 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         new_profile->deleteLater();
                     });
                     new_profile->setAccount(account());
-                    new_profile->profile(avatar, banner, description, display_name,
-                                         old_record.pinnedPost, old_cid);
+                    new_profile->profile(avatar, banner, description, display_name, pronouns,
+                                         website, old_record.pinnedPost, old_cid);
                 } else {
                     setProgressMessage(QString());
                     emit finished(false, QString(), QString());
@@ -884,7 +937,8 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
             pinned_post.cid = post_cid;
             new_profile->setAccount(account());
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
-                                 old_record.displayName, pinned_post, old_cid);
+                                 old_record.displayName, old_record.pronouns, old_record.website,
+                                 pinned_post, old_cid);
         } else {
             setProgressMessage(QString());
             emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());

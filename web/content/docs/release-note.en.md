@@ -8,8 +8,25 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Update
+  - Support for the Website field in profiles (display and updates)
+  - Change the Alt text for image previews to display only one line, with the full text shown upon clicking
+- Fix
+  - Fix an issue where excessive alt text during image previews caused slow performance in Hagoromo
+
+### v0.54.0 - 2025/9/11
+
+- Add
+  - Support for saved post
+
+### v0.53.0 - 2025/9/3
+
 - Add
   - Support for post subscription feature
+- Update
+  - Change text wrapping settings
+- Fix
+  - Modify the contents of the distribution package for Ubuntu
 
 ### v0.52.0 - 2025/7/12
 

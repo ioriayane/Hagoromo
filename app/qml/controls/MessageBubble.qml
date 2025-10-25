@@ -8,7 +8,7 @@ Label {
     id: label
 
     textFormat: Text.StyledText
-    wrapMode: Text.WrapAnywhere
+    wrapMode: Text.Wrap
 
     topPadding: 5
     leftPadding: 5

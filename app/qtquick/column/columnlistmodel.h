@@ -16,6 +16,7 @@ enum class FeedComponentType : int {
     ChatList = 7,
     ChatMessageList = 8,
     RealtimeFeed = 9,
+    Bookmark = 10,
 
     PostThread = 100,
     DiscoverFeeds = 101,

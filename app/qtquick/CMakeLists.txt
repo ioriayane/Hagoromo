@@ -132,6 +132,8 @@ add_library(HagoromoGuiLib STATIC
     timeline/anyfeedlistmodel.h
     timeline/authorfeedlistmodel.cpp
     timeline/authorfeedlistmodel.h
+    timeline/bookmarkpostlistmodel.cpp
+    timeline/bookmarkpostlistmodel.h
     timeline/customfeedlistmodel.cpp
     timeline/customfeedlistmodel.h
     timeline/postthreadlistmodel.cpp
