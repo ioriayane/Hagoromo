@@ -13,7 +13,7 @@ AppBskyGraphGetListsWithMembership::AppBskyGraphGetListsWithMembership(QObject *
 }
 
 void AppBskyGraphGetListsWithMembership::getListsWithMembership(const QString &actor,
-                                                                const int limit,
+                                                                const qint64 limit,
                                                                 const QString &cursor,
                                                                 const QList<QString> &purposes)
 {

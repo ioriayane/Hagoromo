@@ -810,7 +810,7 @@ struct LabelerView
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView creator;
-    int likeCount = 0;
+    qint64 likeCount = 0;
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -826,7 +826,7 @@ struct LabelerViewDetailed
     QString cid; // cid
     AppBskyActorDefs::ProfileView creator;
     AppBskyLabelerDefs::LabelerPolicies policies;
-    int likeCount = 0;
+    qint64 likeCount = 0;
     LabelerViewerState viewer;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -866,10 +866,10 @@ struct ViewRecord
     AppBskyActorDefs::ProfileViewBasic author;
     QVariant value; // The record data itself.
     QList<ComAtprotoLabelDefs::Label> labels;
-    int replyCount = 0;
-    int repostCount = 0;
-    int likeCount = 0;
-    int quoteCount = 0;
+    qint64 replyCount = 0;
+    qint64 repostCount = 0;
+    qint64 likeCount = 0;
+    qint64 quoteCount = 0;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
@@ -1067,11 +1067,11 @@ struct PostView
     AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     AppBskyEmbedRecordWithMedia::View embed_AppBskyEmbedRecordWithMedia_View;
     // union end : embed
-    int bookmarkCount = 0;
-    int replyCount = 0;
-    int repostCount = 0;
-    int likeCount = 0;
-    int quoteCount = 0;
+    qint64 bookmarkCount = 0;
+    qint64 replyCount = 0;
+    qint64 repostCount = 0;
+    qint64 likeCount = 0;
+    qint64 quoteCount = 0;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -2764,7 +2764,7 @@ struct TimelineItemSummary
 {
     QString eventSubjectType;
     QString eventType;
-    int count = 0;
+    qint64 count = 0;
 };
 struct TimelineItem
 {
@@ -2786,7 +2786,7 @@ typedef QString ActionType;
 typedef QString ReasonType;
 struct Event
 {
-    int id = 0; // Auto-incrementing row ID
+    qint64 id = 0; // Auto-incrementing row ID
     EventType eventType;
     QString url; // The URL that this rule applies to
     PatternType pattern;

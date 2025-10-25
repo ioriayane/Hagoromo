@@ -1067,11 +1067,11 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
             AppBskyEmbedRecordWithMedia::copyView(src.value("embed").toObject(),
                                                   dest.embed_AppBskyEmbedRecordWithMedia_View);
         }
-        dest.bookmarkCount = src.value("bookmarkCount").toInt();
-        dest.replyCount = src.value("replyCount").toInt();
-        dest.repostCount = src.value("repostCount").toInt();
-        dest.likeCount = src.value("likeCount").toInt();
-        dest.quoteCount = src.value("quoteCount").toInt();
+        dest.bookmarkCount = src.value("bookmarkCount").toInteger();
+        dest.replyCount = src.value("replyCount").toInteger();
+        dest.repostCount = src.value("repostCount").toInteger();
+        dest.likeCount = src.value("likeCount").toInteger();
+        dest.quoteCount = src.value("quoteCount").toInteger();
         dest.indexedAt = src.value("indexedAt").toString();
         copyViewerState(src.value("viewer").toObject(), dest.viewer);
         for (const auto &s : src.value("labels").toArray()) {
@@ -1259,8 +1259,8 @@ namespace AppBskyEmbedDefs {
 void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest)
 {
     if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
+        dest.width = src.value("width").toInteger();
+        dest.height = src.value("height").toInteger();
     }
 }
 }
@@ -1408,10 +1408,10 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
-        dest.replyCount = src.value("replyCount").toInt();
-        dest.repostCount = src.value("repostCount").toInt();
-        dest.likeCount = src.value("likeCount").toInt();
-        dest.quoteCount = src.value("quoteCount").toInt();
+        dest.replyCount = src.value("replyCount").toInteger();
+        dest.repostCount = src.value("repostCount").toInteger();
+        dest.likeCount = src.value("likeCount").toInteger();
+        dest.quoteCount = src.value("quoteCount").toInteger();
         // array<union> embeds
         if (src.contains("embeds")) {
             dest.embeds_type =
@@ -3861,7 +3861,7 @@ void copyTimelineItemSummary(const QJsonObject &src,
     if (!src.isEmpty()) {
         dest.eventSubjectType = src.value("eventSubjectType").toString();
         dest.eventType = src.value("eventType").toString();
-        dest.count = src.value("count").toInt();
+        dest.count = src.value("count").toInteger();
     }
 }
 void copyTimelineItem(const QJsonObject &src,
@@ -3905,7 +3905,7 @@ void copyReasonType(const QJsonValue &src, ToolsOzoneSafelinkDefs::ReasonType &d
 void copyEvent(const QJsonObject &src, ToolsOzoneSafelinkDefs::Event &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
+        dest.id = src.value("id").toInteger();
         copyEventType(src.value("eventType"), dest.eventType);
         dest.url = src.value("url").toString();
         copyPatternType(src.value("pattern"), dest.pattern);

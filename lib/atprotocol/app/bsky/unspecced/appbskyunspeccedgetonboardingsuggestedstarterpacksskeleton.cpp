@@ -15,7 +15,7 @@ AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::
 }
 
 void AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::
-        getOnboardingSuggestedStarterPacksSkeleton(const QString &viewer, const int limit)
+        getOnboardingSuggestedStarterPacksSkeleton(const QString &viewer, const qint64 limit)
 {
     QUrlQuery url_query;
     if (!viewer.isEmpty()) {
