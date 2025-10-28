@@ -284,6 +284,14 @@ ColumnLayout {
                     visible: !profileView.autoHideDetailMode
                     onClicked: userProfileColumnLayout.viewChange(!serviceEndpointLayout.visible, true)
                 }
+                Label {
+                    id: pronounsLabel
+                    Layout.alignment: Qt.AlignRight
+                    elide: Text.ElideRight
+                    font.pointSize: AdjustedValues.f8
+                    text: userProfile.pronouns
+                    visible: userProfile.pronouns.length > 0
+                }
             }
         }
         RowLayout {
