@@ -221,7 +221,7 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: qsTr("Website") + (websiteText.isValid ? "" : qsTr(" : Please things that start with 'https://'"))
+            text: qsTr("Website") + (websiteText.isValid ? "" : qsTr(": Please enter a URL that starts with 'https://'"))
             color: websiteText.isValid ? Material.foreground : Material.color(Material.Red)
         }
         TextField  {
