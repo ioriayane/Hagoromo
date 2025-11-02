@@ -862,8 +862,12 @@ Please recreate AppPassword in the official application.</source>
     </message>
     <message>
         <location filename="qml/dialogs/EditProfileDialog.qml" line="224"/>
+        <source>: Please enter a URL that starts with &apos;https://&apos;</source>
+        <translation>: &apos;https://&apos;で始めてください</translation>
+    </message>
+    <message>
         <source> : Please things that start with &apos;https://&apos;</source>
-        <translation> : &apos;https://&apos;で始めてください</translation>
+        <translation type="vanished"> : &apos;https://&apos;で始めてください</translation>
     </message>
     <message>
         <location filename="qml/dialogs/EditProfileDialog.qml" line="244"/>
