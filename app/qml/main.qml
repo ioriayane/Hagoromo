@@ -318,8 +318,15 @@ ApplicationWindow {
     }
     EditProfileDialog {
         id: editProfileDialog
+        property var callback
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
+        onUpdatedProfile: (did, avatar, banner, display_name, description, pronouns, website) => {
+            if(editProfileDialog.callback){
+                editProfileDialog.callback(did, avatar, banner, display_name, description, pronouns, website)
+            }
+        }
+
     }
     UpdateActivitySubscriptionDialog {
         id: updateActivitySubscriptionDialog
@@ -659,7 +666,8 @@ ApplicationWindow {
                 }
             }
 
-            onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description, pronouns, website) => {
+            onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description
+                                   , pronouns, website, callback) => {
                 if(editProfileDialog.account.set(accountListModel, account_uuid)){
                     editProfileDialog.avatar = avatar
                     editProfileDialog.banner = banner
@@ -667,6 +675,7 @@ ApplicationWindow {
                     editProfileDialog.description = description
                     editProfileDialog.pronouns = pronouns
                     editProfileDialog.website = website
+                    editProfileDialog.callback = callback
                     editProfileDialog.open()
                 }
             }

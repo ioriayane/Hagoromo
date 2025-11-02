@@ -8,6 +8,12 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Support for profile “nickname” (display and update)
+- Update
+  - Modified to reflect changes immediately upon profile update
+  - Modified to check website content during profile editing (whether it starts with “https://”)
+
 ### v0.55.0 - 2025/10/19
 
 - Update
