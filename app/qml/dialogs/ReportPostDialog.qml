@@ -127,6 +127,7 @@ Dialog {
         ColumnLayout {
             id: reasonViolenceLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -180,6 +181,7 @@ Dialog {
         ColumnLayout{
             id: reasonSexualLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -226,6 +228,7 @@ Dialog {
         ColumnLayout{
             id: reasonChildSafetyLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -265,6 +268,7 @@ Dialog {
         ColumnLayout{
             id: reasonHarassmentLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -304,6 +308,7 @@ Dialog {
         ColumnLayout{
             id: reasonMisleadingLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -350,6 +355,7 @@ Dialog {
         ColumnLayout{
             id: reasonRuleLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -382,6 +388,7 @@ Dialog {
         ColumnLayout{
             id: reasonSelfHarmLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
@@ -421,6 +428,7 @@ Dialog {
         ColumnLayout {
             id: reasonOtherLayout
             visible: false
+            spacing: 0
             RadioButton {
                 Layout.rightMargin: 30
                 font.pointSize: AdjustedValues.f10
