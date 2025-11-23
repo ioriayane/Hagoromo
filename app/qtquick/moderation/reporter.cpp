@@ -57,6 +57,32 @@ Reporter::Reporter(QObject *parent) : QObject { parent }, m_running(false)
     m_reasonHash[ReasonSelfHarmStunts] = "tools.ozone.report.defs#reasonSelfHarmStunts";
     m_reasonHash[ReasonSelfHarmSubstances] = "tools.ozone.report.defs#reasonSelfHarmSubstances";
     m_reasonHash[ReasonSelfHarmOther] = "tools.ozone.report.defs#reasonSelfHarmOther";
+
+    m_reasonGroupNameList.append(tr("Violence"));
+    m_reasonGroupNameList.append(tr("Adult content"));
+    m_reasonGroupNameList.append(tr("Child safety"));
+    m_reasonGroupNameList.append(tr("Harassment or hate"));
+    m_reasonGroupNameList.append(tr("Misleading"));
+    m_reasonGroupNameList.append(tr("Breaking site rules"));
+    m_reasonGroupNameList.append(tr("Self-harm or dangerous behaviors"));
+    m_reasonGroupNameList.append(tr("Other"));
+
+    m_reasonGroupHash[tr("Violence")] =
+            ReportReasonGroup("Violence", tr("Violent or threatening content"));
+    m_reasonGroupHash[tr("Adult content")] =
+            ReportReasonGroup("Sexual", tr("Unlabeled, abusive, or non-consensual adult content"));
+    m_reasonGroupHash[tr("Child safety")] =
+            ReportReasonGroup("ChildSafety", tr("Harming or endangering minors"));
+    m_reasonGroupHash[tr("Harassment or hate")] =
+            ReportReasonGroup("Harassment", tr("Abusive or discriminatory behavior"));
+    m_reasonGroupHash[tr("Misleading")] =
+            ReportReasonGroup("Misleading", tr("Spam or other inauthentic behavior or deception"));
+    m_reasonGroupHash[tr("Breaking site rules")] =
+            ReportReasonGroup("Rule", tr("Banned activities or security violations"));
+    m_reasonGroupHash[tr("Self-harm or dangerous behaviors")] =
+            ReportReasonGroup("SelfHarm", tr("Harmful or high-risk activities"));
+    m_reasonGroupHash[tr("Other")] =
+            ReportReasonGroup("Other", tr("An issue not included in these options"));
 }
 
 AtProtocolInterface::AccountData Reporter::account() const
@@ -137,6 +163,26 @@ void Reporter::reportMessage(const QString &did, const QString &convo_id, const 
     });
     report->setAccount(account());
     report->reportMessage(did, convo_id, message_id, text, m_reasonHash[reason]);
+}
+
+QStringList Reporter::getReasonGroupNameList() const
+{
+    return m_reasonGroupNameList;
+}
+
+QString Reporter::getReasonGroupDescription(const QString &key) const
+{
+    return m_reasonGroupHash.value(key).description;
+}
+
+QString Reporter::getReasonGroupName(const QString &key) const
+{
+    return m_reasonGroupHash.value(key).name;
+}
+
+bool Reporter::equalReasonGroupName(const QString &key, const QString &name) const
+{
+    return m_reasonGroupHash.value(key).name == name;
 }
 
 bool Reporter::running() const

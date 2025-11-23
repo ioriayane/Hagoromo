@@ -3219,79 +3219,347 @@ Why should this message be reviewed?</source>
         <translation>ポストの通報</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="62"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="89"/>
         <source>Why should this post be reviewed?</source>
         <translation>なぜこのポストをレビューする必要がありますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="69"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="133"/>
+        <source>Animal welfare</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="140"/>
+        <source>Threats or incitement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="147"/>
+        <source>Graphic violent content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="154"/>
+        <source>Glorification of violence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="161"/>
+        <source>Extremist content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="168"/>
+        <source>Human trafficking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="175"/>
+        <source>Other violent content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="186"/>
+        <source>Adult sexual abuse content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="193"/>
+        <source>Non-consensual intimate imagery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="200"/>
+        <source>Deepfake adult content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="207"/>
+        <source>Animal sexual abuse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="214"/>
+        <source>Unlabeled adult content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="221"/>
+        <source>Other sexual violence content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="232"/>
+        <source>Child Sexual Abuse Material (CSAM)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="239"/>
+        <source>Grooming or predatory behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="246"/>
+        <source>Privacy violation of a minor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="253"/>
+        <source>Minor harassment or bullying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="260"/>
+        <source>Other child safety issue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="271"/>
+        <source>Trolling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="278"/>
+        <source>Targeted harassment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="285"/>
+        <source>Hate speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="292"/>
+        <source>Doxxing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="299"/>
+        <source>Other harassing or hateful content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="310"/>
+        <source>Fake account or bot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="317"/>
+        <source>Impersonation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="324"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="70"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="331"/>
+        <source>Scam</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="338"/>
+        <source>False information about elections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="345"/>
+        <source>Other misleading content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="356"/>
+        <source>Hacking or system attacks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="363"/>
+        <source>Promoting or selling prohibited items or services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="370"/>
+        <source>Banned user returning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="377"/>
+        <source>Other network rule-breaking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="388"/>
+        <source>Content promoting or depicting self-harm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="395"/>
+        <source>Eating disorders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="402"/>
+        <source>Dangerous challenges or activities</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="409"/>
+        <source>Dangerous substances or drug abuse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="416"/>
+        <source>Other dangerous content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Excessive mentions or replies</source>
-        <translation>過剰なメンションややリプライ</translation>
+        <translation type="vanished">過剰なメンションややリプライ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="77"/>
         <source>Unwanted Sexual Content</source>
-        <translation>望まれない性的コンテンツ</translation>
+        <translation type="vanished">望まれない性的コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="78"/>
         <source>Nudity or pornography not labeled as such</source>
-        <translation>ヌードまたはポルノと表示（ラベリング）されていない</translation>
+        <translation type="vanished">ヌードまたはポルノと表示（ラベリング）されていない</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="85"/>
         <source>Anti-Social Behavior</source>
-        <translation>反社会的な行為</translation>
+        <translation type="vanished">反社会的な行為</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="86"/>
         <source>Harassment, trolling, or intolerance</source>
-        <translation>嫌がらせ、荒らし、不寛容</translation>
+        <translation type="vanished">嫌がらせ、荒らし、不寛容</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="93"/>
         <source>Illegal and Urgent</source>
-        <translation>違法かつ執拗</translation>
+        <translation type="vanished">違法かつ執拗</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="94"/>
         <source>Glaring violations of law or terms of service</source>
-        <translation>法律または利用規約への明白な違反</translation>
+        <translation type="vanished">法律または利用規約への明白な違反</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="101"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="427"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="102"/>
         <source>An issue not included in these options</source>
-        <translation>以上のオプションに含まれていない問題</translation>
+        <translation type="vanished">以上のオプションに含まれていない問題</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="112"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="436"/>
         <source>Select the moderation service to report to</source>
         <translation>報告先のモデレーションサービスを選択してください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="133"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="457"/>
         <source>Optionally provide additional information below:</source>
         <translation>オプションとして以下に追加情報を記入してください：</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="157"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="481"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportPostDialog.qml" line="170"/>
+        <location filename="qml/dialogs/ReportPostDialog.qml" line="494"/>
         <source>Send report</source>
         <translation>通報</translation>
+    </message>
+</context>
+<context>
+    <name>Reporter</name>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="61"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="70"/>
+        <source>Violence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="71"/>
+        <source>Violent or threatening content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="62"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="72"/>
+        <source>Adult content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="73"/>
+        <source>Unlabeled, abusive, or non-consensual adult content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="63"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="74"/>
+        <source>Child safety</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="75"/>
+        <source>Harming or endangering minors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="64"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="76"/>
+        <source>Harassment or hate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="77"/>
+        <source>Abusive or discriminatory behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="65"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="78"/>
+        <source>Misleading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="79"/>
+        <source>Spam or other inauthentic behavior or deception</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="66"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="80"/>
+        <source>Breaking site rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="81"/>
+        <source>Banned activities or security violations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="67"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="82"/>
+        <source>Self-harm or dangerous behaviors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="83"/>
+        <source>Harmful or high-risk activities</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="68"/>
+        <location filename="qtquick/moderation/reporter.cpp" line="84"/>
+        <source>Other</source>
+        <translation type="unfinished">その他</translation>
+    </message>
+    <message>
+        <location filename="qtquick/moderation/reporter.cpp" line="85"/>
+        <source>An issue not included in these options</source>
+        <translation type="unfinished">以上のオプションに含まれていない問題</translation>
     </message>
 </context>
 <context>
