@@ -3226,127 +3226,127 @@ Why should this message be reviewed?</source>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="133"/>
         <source>Animal welfare</source>
-        <translation type="unfinished"></translation>
+        <translation>動物の福祉</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="140"/>
         <source>Threats or incitement</source>
-        <translation type="unfinished"></translation>
+        <translation>脅迫または扇動</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="147"/>
         <source>Graphic violent content</source>
-        <translation type="unfinished"></translation>
+        <translation>露骨な暴力的コンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="154"/>
         <source>Glorification of violence</source>
-        <translation type="unfinished"></translation>
+        <translation>暴力の賛美</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="161"/>
         <source>Extremist content</source>
-        <translation type="unfinished"></translation>
+        <translation>過激主義的コンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="168"/>
         <source>Human trafficking</source>
-        <translation type="unfinished"></translation>
+        <translation>人身売買</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="175"/>
         <source>Other violent content</source>
-        <translation type="unfinished"></translation>
+        <translation>その他の暴力的コンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="186"/>
         <source>Adult sexual abuse content</source>
-        <translation type="unfinished"></translation>
+        <translation>成人向けの性的虐待コンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="193"/>
         <source>Non-consensual intimate imagery</source>
-        <translation type="unfinished"></translation>
+        <translation>同意のない親密画像（NCII）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="200"/>
         <source>Deepfake adult content</source>
-        <translation type="unfinished"></translation>
+        <translation>ディープフェイクによる成人向けコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="207"/>
         <source>Animal sexual abuse</source>
-        <translation type="unfinished"></translation>
+        <translation>動物の性的虐待</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="214"/>
         <source>Unlabeled adult content</source>
-        <translation type="unfinished"></translation>
+        <translation>ラベルのない成人向けコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="221"/>
         <source>Other sexual violence content</source>
-        <translation type="unfinished"></translation>
+        <translation>その他の性的暴力に関するコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="232"/>
         <source>Child Sexual Abuse Material (CSAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>児童性的虐待コンテンツ（CSAM）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="239"/>
         <source>Grooming or predatory behavior</source>
-        <translation type="unfinished"></translation>
+        <translation>グルーミングまたは捕食的行為（性的搾取目的の接近）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="246"/>
         <source>Privacy violation of a minor</source>
-        <translation type="unfinished"></translation>
+        <translation>未成年者のプライバシー侵害</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="253"/>
         <source>Minor harassment or bullying</source>
-        <translation type="unfinished"></translation>
+        <translation>未成年者への嫌がらせまたはいじめ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="260"/>
         <source>Other child safety issue</source>
-        <translation type="unfinished"></translation>
+        <translation>その他の児童の安全に関する問題</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="271"/>
         <source>Trolling</source>
-        <translation type="unfinished"></translation>
+        <translation>トローリング（荒らし）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="278"/>
         <source>Targeted harassment</source>
-        <translation type="unfinished"></translation>
+        <translation>特定個人への執拗な嫌がらせ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="285"/>
         <source>Hate speech</source>
-        <translation type="unfinished"></translation>
+        <translation>ヘイトスピーチ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="292"/>
         <source>Doxxing</source>
-        <translation type="unfinished"></translation>
+        <translation>ドクシング（個人情報晒し）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="299"/>
         <source>Other harassing or hateful content</source>
-        <translation type="unfinished"></translation>
+        <translation>その他嫌がらせや憎悪的なコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="310"/>
         <source>Fake account or bot</source>
-        <translation type="unfinished"></translation>
+        <translation>偽のアカウントまたはボット</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="317"/>
         <source>Impersonation</source>
-        <translation type="unfinished"></translation>
+        <translation>なりすまし</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="324"/>
@@ -3356,62 +3356,62 @@ Why should this message be reviewed?</source>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="331"/>
         <source>Scam</source>
-        <translation type="unfinished"></translation>
+        <translation>詐欺</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="338"/>
         <source>False information about elections</source>
-        <translation type="unfinished"></translation>
+        <translation>選挙に関する誤った情報</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="345"/>
         <source>Other misleading content</source>
-        <translation type="unfinished"></translation>
+        <translation>その他の誤解を招くコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="356"/>
         <source>Hacking or system attacks</source>
-        <translation type="unfinished"></translation>
+        <translation>ハッキングまたはシステム攻撃</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="363"/>
         <source>Promoting or selling prohibited items or services</source>
-        <translation type="unfinished"></translation>
+        <translation>禁止品目・サービスの宣伝または販売</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="370"/>
         <source>Banned user returning</source>
-        <translation type="unfinished"></translation>
+        <translation>BANされたユーザーの帰還</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="377"/>
         <source>Other network rule-breaking</source>
-        <translation type="unfinished"></translation>
+        <translation>その他のネットワーク規約違反</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="388"/>
         <source>Content promoting or depicting self-harm</source>
-        <translation type="unfinished"></translation>
+        <translation>自傷行為を助長または描写するコンテンツ</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="395"/>
         <source>Eating disorders</source>
-        <translation type="unfinished"></translation>
+        <translation>摂食障害</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="402"/>
         <source>Dangerous challenges or activities</source>
-        <translation type="unfinished"></translation>
+        <translation>危険なチャレンジまたは活動</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="409"/>
         <source>Dangerous substances or drug abuse</source>
-        <translation type="unfinished"></translation>
+        <translation>危険物質または薬物の乱用</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportPostDialog.qml" line="416"/>
         <source>Other dangerous content</source>
-        <translation type="unfinished"></translation>
+        <translation>その他の危険なコンテンツ</translation>
     </message>
     <message>
         <source>Excessive mentions or replies</source>
@@ -3477,89 +3477,89 @@ Why should this message be reviewed?</source>
         <location filename="qtquick/moderation/reporter.cpp" line="61"/>
         <location filename="qtquick/moderation/reporter.cpp" line="70"/>
         <source>Violence</source>
-        <translation type="unfinished"></translation>
+        <translation>暴力行為（暴力）</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="71"/>
         <source>Violent or threatening content</source>
-        <translation type="unfinished"></translation>
+        <translation>暴力的または脅迫的なコンテンツ</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="62"/>
         <location filename="qtquick/moderation/reporter.cpp" line="72"/>
         <source>Adult content</source>
-        <translation type="unfinished"></translation>
+        <translation>成人向けコンテンツ</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="73"/>
         <source>Unlabeled, abusive, or non-consensual adult content</source>
-        <translation type="unfinished"></translation>
+        <translation>ラベルなし、虐待的、または合意のない成人向けコンテンツ</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="63"/>
         <location filename="qtquick/moderation/reporter.cpp" line="74"/>
         <source>Child safety</source>
-        <translation type="unfinished"></translation>
+        <translation>児童の安全</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="75"/>
         <source>Harming or endangering minors</source>
-        <translation type="unfinished"></translation>
+        <translation>未成年者への危害または危険行為</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="64"/>
         <location filename="qtquick/moderation/reporter.cpp" line="76"/>
         <source>Harassment or hate</source>
-        <translation type="unfinished"></translation>
+        <translation>嫌がらせまたはヘイト</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="77"/>
         <source>Abusive or discriminatory behavior</source>
-        <translation type="unfinished"></translation>
+        <translation>虐待または差別的な行動</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="65"/>
         <location filename="qtquick/moderation/reporter.cpp" line="78"/>
         <source>Misleading</source>
-        <translation type="unfinished"></translation>
+        <translation>誤解を招くこと</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="79"/>
         <source>Spam or other inauthentic behavior or deception</source>
-        <translation type="unfinished"></translation>
+        <translation>スパム、その他の不正・欺瞞的行為</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="66"/>
         <location filename="qtquick/moderation/reporter.cpp" line="80"/>
         <source>Breaking site rules</source>
-        <translation type="unfinished"></translation>
+        <translation>サイト規約違反</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="81"/>
         <source>Banned activities or security violations</source>
-        <translation type="unfinished"></translation>
+        <translation>禁止されたアクティビティまたはセキュリティ侵害</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="67"/>
         <location filename="qtquick/moderation/reporter.cpp" line="82"/>
         <source>Self-harm or dangerous behaviors</source>
-        <translation type="unfinished"></translation>
+        <translation>自傷または危険行為</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="83"/>
         <source>Harmful or high-risk activities</source>
-        <translation type="unfinished"></translation>
+        <translation>有害または高リスクの活動</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="68"/>
         <location filename="qtquick/moderation/reporter.cpp" line="84"/>
         <source>Other</source>
-        <translation type="unfinished">その他</translation>
+        <translation>その他</translation>
     </message>
     <message>
         <location filename="qtquick/moderation/reporter.cpp" line="85"/>
         <source>An issue not included in these options</source>
-        <translation type="unfinished">以上のオプションに含まれていない問題</translation>
+        <translation>以上のオプションに含まれていない問題</translation>
     </message>
 </context>
 <context>
