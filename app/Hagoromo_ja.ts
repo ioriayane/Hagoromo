@@ -3072,57 +3072,48 @@ Please recreate AppPassword in the official application.</source>
         <translation>アカウントを通報</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="50"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="41"/>
         <source>Why should this user be reviewed?</source>
         <translation>なぜこのユーザーをレビューする必要がありますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="57"/>
         <source>Misleading Account</source>
-        <translation>誤解を招くアカウント</translation>
+        <translation type="vanished">誤解を招くアカウント</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="58"/>
         <source>Impersonation or false claims about identity or affiliation</source>
-        <translation>なりすましや身元や所属に関する虚偽の主張をしている</translation>
+        <translation type="vanished">なりすましや身元や所属に関する虚偽の主張をしている</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="65"/>
         <source>Frequently Posts Unwanted Content</source>
-        <translation>望まれないコンテンツを頻繁に投稿するアカウント</translation>
+        <translation type="vanished">望まれないコンテンツを頻繁に投稿するアカウント</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="66"/>
         <source>Spam; excessive mentions or replies</source>
-        <translation>スパム；過剰なメンションややリプライなどをしている</translation>
+        <translation type="vanished">スパム；過剰なメンションややリプライなどをしている</translation>
     </message>
     <message>
         <location filename="qml/dialogs/ReportAccountDialog.qml" line="73"/>
-        <source>Name or Description Violates Community Standards</source>
+        <source>Optionally provide additional information below:</source>
+        <oldsource>Name or Description Violates Community Standards</oldsource>
         <translation>名前または説明がコミュニティ基準違反</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="74"/>
         <source>Terms used violate community standards</source>
-        <translation>使用されている用語がコミュニティ基準に違反している</translation>
+        <translation type="vanished">使用されている用語がコミュニティ基準に違反している</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="82"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="54"/>
         <source>Select the moderation service to report to</source>
         <translation>報告先のモデレーションサービスを選択してください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="101"/>
-        <source>Optionally provide additional information below:</source>
-        <translation>オプションとして以下に追加情報を記入してください：</translation>
-    </message>
-    <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="125"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="97"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="138"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="110"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>
@@ -3141,72 +3132,62 @@ Why should this message be reviewed?</source>
 なぜこのメッセージをレビューする必要がありますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="65"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="46"/>
         <source>Why should this message be reviewed?</source>
         <translation>なぜこのメッセージをレビューする必要がありますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="72"/>
         <source>Spam</source>
-        <translation>スパム</translation>
+        <translation type="vanished">スパム</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="73"/>
         <source>Excessive or unwanted messages</source>
-        <translation>多すぎる、または不要なメッセージ</translation>
+        <translation type="vanished">多すぎる、または不要なメッセージ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="80"/>
         <source>Unwanted Sexual Content</source>
-        <translation>望まれない性的コンテンツ</translation>
+        <translation type="vanished">望まれない性的コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="81"/>
         <source>Inappropriate messages or explicit links</source>
-        <translation>不適切なメッセージ、または露骨なコンテンツへのリンク</translation>
+        <translation type="vanished">不適切なメッセージ、または露骨なコンテンツへのリンク</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="88"/>
         <source>Anti-Social Behavior</source>
-        <translation>反社会的な行為</translation>
+        <translation type="vanished">反社会的な行為</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="89"/>
         <source>Harassment, trolling, or intolerance</source>
-        <translation>嫌がらせ、荒らし、不寛容</translation>
+        <translation type="vanished">嫌がらせ、荒らし、不寛容</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="96"/>
         <source>Illegal and Urgent</source>
-        <translation>違法かつ執拗</translation>
+        <translation type="vanished">違法かつ執拗</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="97"/>
         <source>Glaring violations of law or terms of service</source>
-        <translation>法律または利用規約への明白な違反</translation>
+        <translation type="vanished">法律または利用規約への明白な違反</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="104"/>
         <source>Other</source>
-        <translation>その他</translation>
+        <translation type="vanished">その他</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="105"/>
         <source>An issue not included in these options</source>
-        <translation>以上のオプションに含まれていない問題</translation>
+        <translation type="vanished">以上のオプションに含まれていない問題</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="113"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="59"/>
         <source>Optionally provide additional information below:</source>
         <translation>オプションとして以下に追加情報を記入してください：</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="137"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="83"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="150"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="96"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>
@@ -3526,197 +3507,197 @@ Why should this message be reviewed?</source>
 <context>
     <name>ReportingOptions</name>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="107"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="110"/>
         <source>Animal welfare</source>
         <translation>動物の福祉</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="114"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="117"/>
         <source>Threats or incitement</source>
         <translation>脅迫または扇動</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="121"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="124"/>
         <source>Graphic violent content</source>
         <translation>露骨な暴力的コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="128"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="131"/>
         <source>Glorification of violence</source>
         <translation>暴力の賛美</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="135"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="138"/>
         <source>Extremist content</source>
         <translation>過激主義的コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="142"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="145"/>
         <source>Human trafficking</source>
         <translation>人身売買</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="149"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="152"/>
         <source>Other violent content</source>
         <translation>その他の暴力的コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="161"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="164"/>
         <source>Adult sexual abuse content</source>
         <translation>成人向けの性的虐待コンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="168"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="171"/>
         <source>Non-consensual intimate imagery</source>
         <translation>同意のない親密画像（NCII）</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="175"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="178"/>
         <source>Deepfake adult content</source>
         <translation>ディープフェイクによる成人向けコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="182"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="185"/>
         <source>Animal sexual abuse</source>
         <translation>動物の性的虐待</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="189"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="192"/>
         <source>Unlabeled adult content</source>
         <translation>ラベルのない成人向けコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="196"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="199"/>
         <source>Other sexual violence content</source>
         <translation>その他の性的暴力に関するコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="208"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="211"/>
         <source>Child Sexual Abuse Material (CSAM)</source>
         <translation>児童性的虐待コンテンツ（CSAM）</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="215"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="218"/>
         <source>Grooming or predatory behavior</source>
         <translation>グルーミングまたは捕食的行為（性的搾取目的の接近）</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="222"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="225"/>
         <source>Privacy violation of a minor</source>
         <translation>未成年者のプライバシー侵害</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="229"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="232"/>
         <source>Minor harassment or bullying</source>
         <translation>未成年者への嫌がらせまたはいじめ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="236"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="239"/>
         <source>Other child safety issue</source>
         <translation>その他の児童の安全に関する問題</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="248"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="251"/>
         <source>Trolling</source>
         <translation>トローリング（荒らし）</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="255"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="258"/>
         <source>Targeted harassment</source>
         <translation>特定個人への執拗な嫌がらせ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="262"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="265"/>
         <source>Hate speech</source>
         <translation>ヘイトスピーチ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="269"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="272"/>
         <source>Doxxing</source>
         <translation>ドクシング（個人情報晒し）</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="276"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="279"/>
         <source>Other harassing or hateful content</source>
         <translation>その他嫌がらせや憎悪的なコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="288"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="291"/>
         <source>Fake account or bot</source>
         <translation>偽のアカウントまたはボット</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="295"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="298"/>
         <source>Impersonation</source>
         <translation>なりすまし</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="302"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="305"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="309"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="312"/>
         <source>Scam</source>
         <translation>詐欺</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="316"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="319"/>
         <source>False information about elections</source>
         <translation>選挙に関する誤った情報</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="323"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="326"/>
         <source>Other misleading content</source>
         <translation>その他の誤解を招くコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="335"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="338"/>
         <source>Hacking or system attacks</source>
         <translation>ハッキングまたはシステム攻撃</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="342"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="345"/>
         <source>Promoting or selling prohibited items or services</source>
         <translation>禁止品目・サービスの宣伝または販売</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="349"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="352"/>
         <source>Banned user returning</source>
         <translation>BANされたユーザーの帰還</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="356"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="359"/>
         <source>Other network rule-breaking</source>
         <translation>その他のネットワーク規約違反</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="368"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="371"/>
         <source>Content promoting or depicting self-harm</source>
         <translation>自傷行為を助長または描写するコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="375"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="378"/>
         <source>Eating disorders</source>
         <translation>摂食障害</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="382"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="385"/>
         <source>Dangerous challenges or activities</source>
         <translation>危険なチャレンジまたは活動</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="389"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="392"/>
         <source>Dangerous substances or drug abuse</source>
         <translation>危険物質または薬物の乱用</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="396"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="399"/>
         <source>Other dangerous content</source>
         <translation>その他の危険なコンテンツ</translation>
     </message>
     <message>
-        <location filename="qml/parts/ReportingOptions.qml" line="408"/>
+        <location filename="qml/parts/ReportingOptions.qml" line="411"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>

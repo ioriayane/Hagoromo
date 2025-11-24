@@ -26,7 +26,7 @@ Dialog {
     onOpened: labelerDidComboBox.load()
     onClosed: {
         reportTextArea.text = ""
-        reportingOptions.reportTypeButtonGroup.checkState = Qt.Unchecked
+        reportingOptions.reset()
     }
 
     Account {

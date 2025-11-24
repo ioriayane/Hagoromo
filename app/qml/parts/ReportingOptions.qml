@@ -15,10 +15,13 @@ ColumnLayout {
     property alias reporter: reporter
     property alias reportTypeButtonGroup: reportTypeButtonGroup
 
+    function reset() {
+        reasonGroupComboBox.currentIndex = 0
+        reportTypeButtonGroup.checkState = Qt.Unchecked
+    }
+
     Reporter {
         id: reporter
-        // onFinished: (success) => reportDialog.accept()
-        // onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
     }
 
     ButtonGroup {
