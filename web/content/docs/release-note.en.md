@@ -13,7 +13,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Modified to reflect changes immediately upon profile update
   - Modified to check website content during profile editing (whether it starts with “https://”)
-  - Changes to officially require reasons when reporting posts
+  - Updated report reasons to follow official specifications
 
 ### v0.55.0 - 2025/10/19
 
