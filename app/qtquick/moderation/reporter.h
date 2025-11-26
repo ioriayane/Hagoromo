@@ -33,7 +33,7 @@ public:
         ReasonOther,
         ReasonMisleading,
         // new spec
-        ReasonAppeal,
+        // ReasonAppeal,
         ReasonViolenceAnimal,
         ReasonViolenceThreats,
         ReasonViolenceGraphicContent,
