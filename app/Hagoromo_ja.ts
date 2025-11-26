@@ -3096,7 +3096,7 @@ Please recreate AppPassword in the official application.</source>
         <location filename="qml/dialogs/ReportAccountDialog.qml" line="73"/>
         <source>Optionally provide additional information below:</source>
         <oldsource>Name or Description Violates Community Standards</oldsource>
-        <translation>名前または説明がコミュニティ基準違反</translation>
+        <translation>オプションとして以下に追加情報を記入してください：</translation>
     </message>
     <message>
         <source>Terms used violate community standards</source>
