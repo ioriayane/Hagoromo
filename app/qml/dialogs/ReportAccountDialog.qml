@@ -37,6 +37,7 @@ Dialog {
         spacing: 0
 
         Label {
+            Layout.minimumWidth: 400 * AdjustedValues.ratio
             font.pointSize: AdjustedValues.f10
             text: qsTr("Why should this user be reviewed?")
         }
