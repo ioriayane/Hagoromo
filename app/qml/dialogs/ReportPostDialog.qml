@@ -26,85 +26,29 @@ Dialog {
     onOpened: labelerDidComboBox.load()
     onClosed: {
         reportTextArea.text = ""
-        reportTypeButtonGroup.checkState = Qt.Unchecked
+        reportingOptions.reset()
     }
 
     Account {
         id: account
-    }
-    Reporter {
-        id: reporter
-        onFinished: (success) => reportDialog.accept()
-        onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
-    }
-
-    ButtonGroup {
-        id: reportTypeButtonGroup
     }
 
     ColumnLayout {
         id: reportTypeLayout
         Layout.rightMargin: 10
         spacing: 0
-        //        RowLayout {
-        //            AvatarImage {
-        //                Layout.preferredWidth: 24
-        //                Layout.preferredHeight: 24
-        //                source: account.avatar
-        //            }
-        //            Label {
-        //                text: account.handle
-        //            }
-        //        }
-
         Label {
+            Layout.minimumWidth: 400 * AdjustedValues.ratio
             font.pointSize: AdjustedValues.f10
             text: qsTr("Why should this post be reviewed?")
         }
 
-        RadioButtonEx {
-            Layout.topMargin: 5
-            Layout.rightMargin: 20
-            font.pointSize: AdjustedValues.f10
-            mainText: qsTr("Spam")
-            description: qsTr("Excessive mentions or replies")
-            property int reason: Reporter.ReasonSpam
-            ButtonGroup.group: reportTypeButtonGroup
+        ReportingOptions {
+            id: reportingOptions
+            Layout.fillWidth: true
+            reporter.onFinished: (success) => reportDialog.accept()
+            reporter.onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
         }
-        RadioButtonEx {
-            Layout.rightMargin: 20
-            font.pointSize: AdjustedValues.f10
-            mainText: qsTr("Unwanted Sexual Content")
-            description: qsTr("Nudity or pornography not labeled as such")
-            property int reason: Reporter.ReasonSexual
-            ButtonGroup.group: reportTypeButtonGroup
-        }
-        RadioButtonEx {
-            Layout.rightMargin: 20
-            font.pointSize: AdjustedValues.f10
-            mainText: qsTr("Anti-Social Behavior")
-            description: qsTr("Harassment, trolling, or intolerance")
-            property int reason: Reporter.ReasonRude
-            ButtonGroup.group: reportTypeButtonGroup
-        }
-        RadioButtonEx {
-            Layout.rightMargin: 20
-            font.pointSize: AdjustedValues.f10
-            mainText: qsTr("Illegal and Urgent")
-            description: qsTr("Glaring violations of law or terms of service")
-            property int reason: Reporter.ReasonViolation
-            ButtonGroup.group: reportTypeButtonGroup
-        }
-        RadioButtonEx {
-            Layout.rightMargin: 20
-            font.pointSize: AdjustedValues.f10
-            mainText: qsTr("Other")
-            description: qsTr("An issue not included in these options")
-            property int reason: Reporter.ReasonOther
-            ButtonGroup.group: reportTypeButtonGroup
-        }
-
-
 
         Label {
             Layout.topMargin: 5
@@ -163,20 +107,20 @@ Dialog {
             }
             Button {
                 Layout.alignment: Qt.AlignRight
-                enabled: reportTypeButtonGroup.checkState === Qt.PartiallyChecked &&
-                         !reporter.running &&
+                enabled: reportingOptions.reportTypeButtonGroup.checkState === Qt.PartiallyChecked &&
+                         !reportingOptions.reporter.running &&
                          reportTextArea.realLength <= 300
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Send report")
                 onClicked: {
-                    reporter.setAccount(account.uuid)
-                    reporter.reportPost(targetUri, targetCid, reportTextArea.text,
+                    reportingOptions.reporter.setAccount(account.uuid)
+                    reportingOptions.reporter.reportPost(targetUri, targetCid, reportTextArea.text,
                                         [labelerDidComboBox.currentValue],
-                                        reportTypeButtonGroup.checkedButton.reason)
+                                        reportingOptions.reportTypeButtonGroup.checkedButton.reason)
                 }
                 BusyIndicator {
                     anchors.fill: parent
-                    visible: reporter.running
+                    visible: reportingOptions.reporter.running
                 }
             }
         }

@@ -7,12 +7,82 @@ using AtProtocolInterface::ComAtprotoModerationCreateReportEx;
 
 Reporter::Reporter(QObject *parent) : QObject { parent }, m_running(false)
 {
-    m_reasonHash[ReasonSpam] = "reasonSpam";
-    m_reasonHash[ReasonSexual] = "reasonSexual";
-    m_reasonHash[ReasonRude] = "reasonRude";
-    m_reasonHash[ReasonViolation] = "reasonViolation";
-    m_reasonHash[ReasonOther] = "reasonOther";
-    m_reasonHash[ReasonMisleading] = "reasonMisleading";
+    m_reasonHash[ReasonSpam] = "com.atproto.moderation.defs#reasonSpam";
+    m_reasonHash[ReasonSexual] = "com.atproto.moderation.defs#reasonSexual";
+    m_reasonHash[ReasonRude] = "com.atproto.moderation.defs#reasonRude";
+    m_reasonHash[ReasonViolation] = "com.atproto.moderation.defs#reasonViolation";
+    m_reasonHash[ReasonOther] = "com.atproto.moderation.defs#reasonOther";
+    m_reasonHash[ReasonMisleading] = "com.atproto.moderation.defs#reasonMisleading";
+    // new spec
+    m_reasonHash[ReasonViolenceAnimal] = "tools.ozone.report.defs#reasonViolenceAnimal";
+    m_reasonHash[ReasonViolenceThreats] = "tools.ozone.report.defs#reasonViolenceThreats";
+    m_reasonHash[ReasonViolenceGraphicContent] =
+            "tools.ozone.report.defs#reasonViolenceGraphicContent";
+    m_reasonHash[ReasonViolenceGlorification] =
+            "tools.ozone.report.defs#reasonViolenceGlorification";
+    m_reasonHash[ReasonViolenceExtremistContent] =
+            "tools.ozone.report.defs#reasonViolenceExtremistContent";
+    m_reasonHash[ReasonViolenceTrafficking] = "tools.ozone.report.defs#reasonViolenceTrafficking";
+    m_reasonHash[ReasonViolenceOther] = "tools.ozone.report.defs#reasonViolenceOther";
+    m_reasonHash[ReasonSexualAbuseContent] = "tools.ozone.report.defs#reasonSexualAbuseContent";
+    m_reasonHash[ReasonSexualNCII] = "tools.ozone.report.defs#reasonSexualNCII";
+    m_reasonHash[ReasonSexualDeepfake] = "tools.ozone.report.defs#reasonSexualDeepfake";
+    m_reasonHash[ReasonSexualAnimal] = "tools.ozone.report.defs#reasonSexualAnimal";
+    m_reasonHash[ReasonSexualUnlabeled] = "tools.ozone.report.defs#reasonSexualUnlabeled";
+    m_reasonHash[ReasonSexualOther] = "tools.ozone.report.defs#reasonSexualOther";
+    m_reasonHash[ReasonChildSafetyCSAM] = "tools.ozone.report.defs#reasonChildSafetyCSAM";
+    m_reasonHash[ReasonChildSafetyGroom] = "tools.ozone.report.defs#reasonChildSafetyGroom";
+    m_reasonHash[ReasonChildSafetyPrivacy] = "tools.ozone.report.defs#reasonChildSafetyPrivacy";
+    m_reasonHash[ReasonChildSafetyHarassment] =
+            "tools.ozone.report.defs#reasonChildSafetyHarassment";
+    m_reasonHash[ReasonChildSafetyOther] = "tools.ozone.report.defs#reasonChildSafetyOther";
+    m_reasonHash[ReasonHarassmentTroll] = "tools.ozone.report.defs#reasonHarassmentTroll";
+    m_reasonHash[ReasonHarassmentTargeted] = "tools.ozone.report.defs#reasonHarassmentTargeted";
+    m_reasonHash[ReasonHarassmentHateSpeech] = "tools.ozone.report.defs#reasonHarassmentHateSpeech";
+    m_reasonHash[ReasonHarassmentDoxxing] = "tools.ozone.report.defs#reasonHarassmentDoxxing";
+    m_reasonHash[ReasonHarassmentOther] = "tools.ozone.report.defs#reasonHarassmentOther";
+    m_reasonHash[ReasonMisleadingBot] = "tools.ozone.report.defs#reasonMisleadingBot";
+    m_reasonHash[ReasonMisleadingImpersonation] =
+            "tools.ozone.report.defs#reasonMisleadingImpersonation";
+    m_reasonHash[ReasonMisleadingSpam] = "tools.ozone.report.defs#reasonMisleadingSpam";
+    m_reasonHash[ReasonMisleadingScam] = "tools.ozone.report.defs#reasonMisleadingScam";
+    m_reasonHash[ReasonMisleadingElections] = "tools.ozone.report.defs#reasonMisleadingElections";
+    m_reasonHash[ReasonMisleadingOther] = "tools.ozone.report.defs#reasonMisleadingOther";
+    m_reasonHash[ReasonRuleSiteSecurity] = "tools.ozone.report.defs#reasonRuleSiteSecurity";
+    m_reasonHash[ReasonRuleProhibitedSales] = "tools.ozone.report.defs#reasonRuleProhibitedSales";
+    m_reasonHash[ReasonRuleBanEvasion] = "tools.ozone.report.defs#reasonRuleBanEvasion";
+    m_reasonHash[ReasonRuleOther] = "tools.ozone.report.defs#reasonRuleOther";
+    m_reasonHash[ReasonSelfHarmContent] = "tools.ozone.report.defs#reasonSelfHarmContent";
+    m_reasonHash[ReasonSelfHarmED] = "tools.ozone.report.defs#reasonSelfHarmED";
+    m_reasonHash[ReasonSelfHarmStunts] = "tools.ozone.report.defs#reasonSelfHarmStunts";
+    m_reasonHash[ReasonSelfHarmSubstances] = "tools.ozone.report.defs#reasonSelfHarmSubstances";
+    m_reasonHash[ReasonSelfHarmOther] = "tools.ozone.report.defs#reasonSelfHarmOther";
+
+    m_reasonGroupNameList.append(tr("Violence"));
+    m_reasonGroupNameList.append(tr("Adult content"));
+    m_reasonGroupNameList.append(tr("Child safety"));
+    m_reasonGroupNameList.append(tr("Harassment or hate"));
+    m_reasonGroupNameList.append(tr("Misleading"));
+    m_reasonGroupNameList.append(tr("Breaking site rules"));
+    m_reasonGroupNameList.append(tr("Self-harm or dangerous behaviors"));
+    m_reasonGroupNameList.append(tr("Other"));
+
+    m_reasonGroupHash[tr("Violence")] =
+            ReportReasonGroup("Violence", tr("Violent or threatening content"));
+    m_reasonGroupHash[tr("Adult content")] =
+            ReportReasonGroup("Sexual", tr("Unlabeled, abusive, or non-consensual adult content"));
+    m_reasonGroupHash[tr("Child safety")] =
+            ReportReasonGroup("ChildSafety", tr("Harming or endangering minors"));
+    m_reasonGroupHash[tr("Harassment or hate")] =
+            ReportReasonGroup("Harassment", tr("Abusive or discriminatory behavior"));
+    m_reasonGroupHash[tr("Misleading")] =
+            ReportReasonGroup("Misleading", tr("Spam or other inauthentic behavior or deception"));
+    m_reasonGroupHash[tr("Breaking site rules")] =
+            ReportReasonGroup("Rule", tr("Banned activities or security violations"));
+    m_reasonGroupHash[tr("Self-harm or dangerous behaviors")] =
+            ReportReasonGroup("SelfHarm", tr("Harmful or high-risk activities"));
+    m_reasonGroupHash[tr("Other")] =
+            ReportReasonGroup("Other", tr("An issue not included in these options"));
 }
 
 AtProtocolInterface::AccountData Reporter::account() const
@@ -93,6 +163,26 @@ void Reporter::reportMessage(const QString &did, const QString &convo_id, const 
     });
     report->setAccount(account());
     report->reportMessage(did, convo_id, message_id, text, m_reasonHash[reason]);
+}
+
+QStringList Reporter::getReasonGroupNameList() const
+{
+    return m_reasonGroupNameList;
+}
+
+QString Reporter::getReasonGroupDescription(const QString &key) const
+{
+    return m_reasonGroupHash.value(key).description;
+}
+
+QString Reporter::getReasonGroupName(const QString &key) const
+{
+    return m_reasonGroupHash.value(key).name;
+}
+
+bool Reporter::equalReasonGroupName(const QString &key, const QString &name) const
+{
+    return m_reasonGroupHash.value(key).name == name;
 }
 
 bool Reporter::running() const
