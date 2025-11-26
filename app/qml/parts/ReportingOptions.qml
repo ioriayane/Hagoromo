@@ -154,7 +154,7 @@ ColumnLayout {
             ButtonGroup.group: reportTypeButtonGroup
         }
     }
-    ColumnLayout{
+    ColumnLayout {
         id: reasonSexualLayout
         visible: false
         spacing: 0
