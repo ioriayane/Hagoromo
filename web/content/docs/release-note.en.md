@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.56.0 - 2025/11/26
+
 - Add
   - Support for profile “nickname” (display and update)
 - Update
