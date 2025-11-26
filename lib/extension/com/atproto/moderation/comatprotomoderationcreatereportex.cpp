@@ -15,7 +15,7 @@ void ComAtprotoModerationCreateReportEx::reportPost(const QString &uri, const QS
     json_subject.insert("cid", cid);
     json_subject.insert("uri", uri);
 
-    createReport("com.atproto.moderation.defs#" + reason, text, json_subject);
+    createReport(reason, text, json_subject);
 }
 
 void ComAtprotoModerationCreateReportEx::reportAccount(const QString &did, const QString &text,
@@ -25,7 +25,7 @@ void ComAtprotoModerationCreateReportEx::reportAccount(const QString &did, const
     json_subject.insert("$type", "com.atproto.admin.defs#repoRef");
     json_subject.insert("did", did);
 
-    createReport("com.atproto.moderation.defs#" + reason, text, json_subject);
+    createReport(reason, text, json_subject);
 }
 
 void ComAtprotoModerationCreateReportEx::reportMessage(const QString &did, const QString &convo_id,
@@ -38,7 +38,7 @@ void ComAtprotoModerationCreateReportEx::reportMessage(const QString &did, const
     json_subject.insert("convoId", convo_id);
     json_subject.insert("messageId", message_id);
 
-    createReport("com.atproto.moderation.defs#" + reason, text, json_subject);
+    createReport(reason, text, json_subject);
 }
 
 bool ComAtprotoModerationCreateReportEx::parseJson(bool success, const QString reply_json)

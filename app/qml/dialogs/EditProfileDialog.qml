@@ -33,6 +33,7 @@ Dialog {
         id: account
     }
     signal errorOccured(string account_uuid, string code, string message)
+    signal updatedProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -71,27 +72,26 @@ Dialog {
         onFinished: (success) => {
                         if(success){
                             editProfileDialog.accept()
+                            editProfileDialog.updatedProfile(
+                                account.did, avatarImage.source, bannerImage.source, displayNameText.text,
+                                descriptionText.text, pronounsText.text, websiteText.text
+                                )
                         }
                     }
         onErrorOccured: (code, message) => editProfileDialog.errorOccured(account.uuid, code, message)
     }
 
     ColumnLayout {
-        spacing: 5
-        RowLayout {
-            Label {
-                font.pointSize: AdjustedValues.f10
-                text: account.handle
-                elide: Text.ElideRight
-            }
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-            }
+        spacing: 0
+        Label {
+            Layout.fillWidth: true
+            font.pointSize: AdjustedValues.f10
+            text: account.handle
+            elide: Text.ElideRight
         }
 
         Rectangle {
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.preferredWidth: 500 * AdjustedValues.ratio
             Layout.preferredHeight: 80
             color: Material.frameColor
             ImageWithIndicator {
@@ -124,52 +124,56 @@ Dialog {
                 }
             }
         }
-        Rectangle {
-            Layout.preferredWidth: AdjustedValues.i48
-            Layout.preferredHeight: AdjustedValues.i48
-            color: Material.frameColor
-            radius: width / 2
-            AvatarImage {
-                id: avatarImage
-                anchors.fill: parent
-                onClicked: (mouse) => {
-                               imageClipDialog.target = "avatar"
-                               imageClipDialog.squareMode = true
-                               fileDialog.open()
-                           }
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 2
-                    width: AdjustedValues.i18
-                    height: AdjustedValues.i18
-                    radius: width / 2
-                    border.color: "black"
-                    border.width: 1
-                    Image {
-                        anchors.fill: parent
-                        anchors.margins: 3
-                        source: "../images/edit.png"
+        RowLayout {
+            spacing: 10 * AdjustedValues.ratio
+            Rectangle {
+                Layout.preferredWidth: AdjustedValues.i48
+                Layout.preferredHeight: AdjustedValues.i48
+                color: Material.frameColor
+                radius: width / 2
+                AvatarImage {
+                    id: avatarImage
+                    anchors.fill: parent
+                    onClicked: (mouse) => {
+                                   imageClipDialog.target = "avatar"
+                                   imageClipDialog.squareMode = true
+                                   fileDialog.open()
+                               }
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 2
+                        width: AdjustedValues.i18
+                        height: AdjustedValues.i18
+                        radius: width / 2
+                        border.color: "black"
+                        border.width: 1
+                        Image {
+                            anchors.fill: parent
+                            anchors.margins: 3
+                            source: "../images/edit.png"
+                        }
                     }
                 }
             }
+            ColumnLayout {
+                spacing: 0
+                Label {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 5
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Display Name")
+                }
+                TextField  {
+                    id: displayNameText
+                    Layout.fillWidth: true
+                    enabled: !recordOperator.running
+                    selectByMouse: true
+                    font.pointSize: AdjustedValues.f10
+                    property int realTextLength: systemTool.countText(text)
+                }
+            }
         }
-
-        Label {
-            Layout.fillWidth: true
-            Layout.topMargin: 5
-            font.pointSize: AdjustedValues.f10
-            text: qsTr("Display Name")
-        }
-        TextField  {
-            id: displayNameText
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
-            enabled: !recordOperator.running
-            selectByMouse: true
-            font.pointSize: AdjustedValues.f10
-            property int realTextLength: systemTool.countText(text)
-        }
-
         Label {
             Layout.fillWidth: true
             Layout.topMargin: 5
@@ -177,11 +181,13 @@ Dialog {
             text: qsTr("Description")
         }
         ScrollView {
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.fillWidth: true
             Layout.preferredHeight: 120 * AdjustedValues.ratio
+            Layout.topMargin: 0
             TextArea {
                 id: descriptionText
                 verticalAlignment: TextInput.AlignTop
+                topInset: 0
                 enabled: !recordOperator.running
                 wrapMode: TextInput.WordWrap
                 selectByMouse: true
@@ -189,43 +195,45 @@ Dialog {
                 property int realTextLength: systemTool.countText(text)
             }
         }
-
-        Label {
-            Layout.alignment: Qt.AlignRight
-            font.pointSize: AdjustedValues.f8
-            text: 256 - descriptionText.realTextLength
-        }
-
-        Label {
-            Layout.fillWidth: true
-            Layout.topMargin: 5
-            font.pointSize: AdjustedValues.f10
-            text: qsTr("Pronouns")
-            visible: false          // Temporary
+        RowLayout {
+            Label {
+                Layout.fillWidth: true
+                Layout.topMargin: 5
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Pronouns")
+            }
+            Label {
+                Layout.alignment: Qt.AlignTop
+                font.pointSize: AdjustedValues.f8
+                text: 256 - descriptionText.realTextLength
+            }
         }
         TextField  {
             id: pronounsText
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.fillWidth: true
             enabled: !recordOperator.running
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             property int realTextLength: systemTool.countText(text)
-            visible: false          // Temporary
         }
 
         Label {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: qsTr("Website")
+            text: qsTr("Website") + (websiteText.isValid ? "" : qsTr(": Please enter a URL that starts with 'https://'"))
+            color: websiteText.isValid ? Material.foreground : Material.color(Material.Red)
         }
         TextField  {
             id: websiteText
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.fillWidth: true
             enabled: !recordOperator.running
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             property int realTextLength: systemTool.countText(text)
+            property bool isValid: text.length === 0 ||
+                                   text.startsWith("https://") ||
+                                   text.startsWith("http://")
         }
 
         RowLayout {
@@ -244,7 +252,10 @@ Dialog {
                 id: addButton
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
-                enabled: displayNameText.realTextLength <= 64 && descriptionText.realTextLength <= 256 && !recordOperator.running
+                enabled: displayNameText.realTextLength <= 64 &&
+                         descriptionText.realTextLength <= 256 &&
+                         websiteText.isValid &&
+                         !recordOperator.running
                 text: qsTr("Update")
                 onClicked: {
                     recordOperator.clear()

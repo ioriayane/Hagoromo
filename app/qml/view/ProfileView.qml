@@ -59,7 +59,7 @@ ColumnLayout {
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
     signal requestAddMutedWord(string text)
-    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
+    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var callback)
     signal requestSubscribeToPosts(string did, bool post, bool reply)
 
     signal errorOccured(string code, string message)
@@ -84,7 +84,20 @@ ColumnLayout {
                                                    userProfile.displayName,
                                                    userProfile.description,
                                                    userProfile.pronouns,
-                                                   userProfile.website)
+                                                   userProfile.website, function(did, avatar, banner, display_name, description, pronouns, website){
+                                                       // 編集完了後のコールバック
+                                                       if(userProfile.did !== did){
+                                                           console.log("Unmatch a did. " + userProfile.did + "!=" + did)
+                                                           return
+                                                       }
+                                                       userProfile.avatar = avatar
+                                                       userProfile.banner = banner
+                                                       userProfile.displayName = display_name
+                                                       userProfile.description = description
+                                                       userProfile.pronouns = pronouns
+                                                       userProfile.website = website
+                                                   }
+                                                   )
                 } }
         },
         State {
@@ -270,6 +283,14 @@ ColumnLayout {
                     iconText: ""
                     visible: !profileView.autoHideDetailMode
                     onClicked: userProfileColumnLayout.viewChange(!serviceEndpointLayout.visible, true)
+                }
+                Label {
+                    id: pronounsLabel
+                    Layout.alignment: Qt.AlignRight
+                    elide: Text.ElideRight
+                    font.pointSize: AdjustedValues.f8
+                    text: userProfile.pronouns
+                    visible: userProfile.pronouns.length > 0
                 }
             }
         }

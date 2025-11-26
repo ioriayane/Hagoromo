@@ -92,6 +92,7 @@ qt_add_qml_module(Hagoromo
         qml/parts/ProfileTabBar.qml
         qml/parts/SideBar.qml
         qml/parts/ReactionAuthor.qml
+        qml/parts/ReportingOptions.qml
         qml/parts/TagLabelLayout.qml
         qml/parts/MentionSuggestionView.qml
         qml/parts/AccountLayout.qml
