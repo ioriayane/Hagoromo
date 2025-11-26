@@ -33,7 +33,6 @@ public:
         ReasonOther,
         ReasonMisleading,
         // new spec
-        // ReasonAppeal,
         ReasonViolenceAnimal,
         ReasonViolenceThreats,
         ReasonViolenceGraphicContent,
@@ -101,7 +100,6 @@ private:
     AtProtocolInterface::AccountData m_account;
     QHash<Reporter::ReportReason, QString> m_reasonHash;
     QStringList m_reasonGroupNameList;
-    // QHash<QString, QString> m_reasonGroupHash; // QHash<group_name, description>
     QHash<QString, ReportReasonGroup> m_reasonGroupHash; // QHash<group_name, description>
 
     bool m_running;
