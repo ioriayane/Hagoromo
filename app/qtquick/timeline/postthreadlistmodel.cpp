@@ -29,7 +29,7 @@ bool PostThreadListModel::getLatest()
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {
                 m_postThreadCid = thread->threadViewPost().post.cid;
-                copyFrom(&thread->threadViewPost(), 0);
+                copyFrom(&thread->threadViewPost());
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -48,23 +48,39 @@ void PostThreadListModel::finishedDisplayingQueuedPosts()
     setRunning(false);
 }
 
-// type
-// 0 : 基準になっているポスト
-// 1 : 親方向のポスト
-// 2 : リプライ方向のポスト
-void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread_view_post,
-                                   const int type)
+void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread_view_post)
 {
     if (thread_view_post == nullptr)
         return;
 
+    const AppBskyFeedDefs::ThreadViewPost *origin = thread_view_post;
+    const AppBskyFeedDefs::ThreadViewPost *current = thread_view_post;
+    QList<const AppBskyFeedDefs::ThreadViewPost *> list;
+
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
-    bool has_parent = false;
-    if (thread_view_post->parent_type
-        == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
-        copyFrom(thread_view_post->parent_ThreadViewPost.get(), 1);
-        has_parent = true;
+    while (current->parent_type == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost
+           && current != nullptr) {
+        current = current->parent_ThreadViewPost.get();
+        list.push_front(current);
     }
+    for (auto post : list) {
+        // 親方向の投稿登録（2番目以降は必ず親がいる）
+        copyFromMain(post, 1, reference_time, post != list.first());
+    }
+
+    copyFromMain(origin, 0, reference_time, !list.isEmpty());
+}
+
+// type
+// 0 : 基準になっているポスト
+// 1 : 親方向のポスト
+// 2 : リプライ方向のポスト
+void PostThreadListModel::copyFromMain(
+        const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post, const int type,
+        QDateTime reference_time, bool has_parent)
+{
+    if (thread_view_post == nullptr)
+        return;
 
     PostCueItem post;
     post.cid = thread_view_post->post.cid;
@@ -111,7 +127,7 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
         m_threadConnectorHash[view_post->post.cid] = connector;
 
         for (const auto &reply_view_post : view_post->replies_ThreadViewPost) {
-            copyFrom(reply_view_post.get(), 2);
+            copyFromMain(reply_view_post.get(), 2, reference_time, true);
         }
     }
 
