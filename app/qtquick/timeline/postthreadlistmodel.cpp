@@ -58,10 +58,14 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
     QList<const AppBskyFeedDefs::ThreadViewPost *> list;
 
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
-    while (current->parent_type == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost
-           && current != nullptr) {
+    while (current != nullptr
+           && current->parent_type == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
         current = current->parent_ThreadViewPost.get();
-        list.push_front(current);
+        if (current != nullptr) {
+            list.push_front(current);
+        } else {
+            break;
+        }
     }
     for (auto post : list) {
         // 親方向の投稿登録（2番目以降は必ず親がいる）
