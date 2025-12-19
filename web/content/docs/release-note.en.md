@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Fix
+  - Fix an issue where the application might crash when displaying post threads
+
 ### v0.56.0 - 2025/11/26
 
 - Add
