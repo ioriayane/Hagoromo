@@ -97,6 +97,8 @@ add_library(HagoromoGuiLib STATIC
     operation/recordoperator.h
     operation/skybluroperator.cpp
     operation/skybluroperator.h
+    operation/tokimekipolloperator.cpp
+    operation/tokimekipolloperator.h
     operation/translator.cpp
     operation/translator.h
     profile/anyprofilelistmodel.cpp

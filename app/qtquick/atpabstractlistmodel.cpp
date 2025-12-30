@@ -5,6 +5,7 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "operation/skybluroperator.h"
+#include "operation/tokimekipolloperator.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 #include "tools/labelprovider.h"
@@ -1259,6 +1260,26 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
             appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
         }
     }
+}
+
+void AtpAbstractListModel::appendTokimekiPollToCue(const QString &cid,
+                                                   const AppBskyEmbedExternal::View &view)
+{
+    auto ope = new TokimekiPollOperator(this);
+    QString uri = ope->convertUrlToUri(view.external.uri);
+    if (uri.isEmpty()) {
+        ope->deleteLater();
+        return;
+    }
+
+    connect(ope, &TokimekiPollOperator::finished, this, [=](bool success, const QString &cid) {
+        qDebug() << "TokimekiPollOperator::finished" << cid;
+        if (success) {
+            // updateTokimekiPollData(cid, path);
+        }
+        ope->deleteLater();
+    });
+    ope->getPoll(cid, uri, account().did);
 }
 
 QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const

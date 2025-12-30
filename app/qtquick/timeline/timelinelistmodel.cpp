@@ -1227,6 +1227,8 @@ void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &fee
 
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
+        // Tokimekiの投票の取得のキューに入れる
+        appendTokimekiPollToCue(item->post.cid, item->post.embed_AppBskyEmbedExternal_View);
     }
     // embed画像を取得
     getExtendMediaFiles();
@@ -1249,6 +1251,8 @@ void TimelineListModel::copyFromNext(
 
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
+        // Tokimekiの投票の取得のキューに入れる
+        appendTokimekiPollToCue(item->post.cid, item->post.embed_AppBskyEmbedExternal_View);
     }
     // embed画像を取得
     getExtendMediaFiles();

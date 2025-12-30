@@ -20,6 +20,7 @@
 #include "tools/labelerprovider.h"
 #include "controls/calendartablemodel.h"
 #include "tools/accountmanager.h"
+#include "operation/tokimekipolloperator.h"
 
 class hagoromo_test : public QObject
 {
@@ -66,6 +67,9 @@ private slots:
     void test_SearchPostListModel_text();
     void test_ContentFilterSettingListModel();
     void test_CalendarTableModel();
+
+    void test_TokimekiPollOperator_convertUrlToUri();
+    void test_TokimekiPollOperator_getPoll();
 
 private:
     WebServer m_mockServer;
@@ -3508,6 +3512,53 @@ void hagoromo_test::test_CalendarTableModel()
     model.setEnableUntil(true);
     QVERIFY(model.sinceUtc() == "2024-05-30T15:00:00Z");
     QVERIFY(model.untilUtc() == "2024-05-31T14:59:59Z");
+}
+
+void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
+{
+    TokimekiPollOperator operatorUnderTest;
+
+    const QString validUrl =
+            QStringLiteral("https://poll.tokimeki.tech/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                           "3mb6j6si7qc2u?options=2");
+    const QString expectedUri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    verifyStr(expectedUri, operatorUnderTest.convertUrlToUri(validUrl));
+
+    const QStringList invalidUrls = {
+        QStringLiteral("https://poll.tokimeki.tech/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5"),
+        QStringLiteral("https://poll.tokimeki.tech/p/not-a-did/3mb6j6si7qc2u"),
+        QStringLiteral(
+                "https://poll.tokimeki.tech/x/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/3mb6j6si7qc2u"),
+        QStringLiteral("https://example.com/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/3mb6j6si7qc2u"),
+        QStringLiteral("not a url")
+    };
+
+    for (const QString &invalidUrl : invalidUrls) {
+        QCOMPARE(operatorUnderTest.convertUrlToUri(invalidUrl), QString());
+    }
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getPoll()
+{
+    TokimekiPollOperator operatorUnderTest;
+    operatorUnderTest.setServiceUrl(m_service + "/tokimeki");
+
+    QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    const QString cid = QStringLiteral("test-cid");
+    const QString uri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    const QString viewer = QStringLiteral("did:plc:viewerexample0000000000000000000");
+
+    operatorUnderTest.getPoll(cid, uri, viewer);
+
+    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QCOMPARE(spy.count(), 1);
+
+    const QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+    QCOMPARE(arguments.at(1).toString(), cid);
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

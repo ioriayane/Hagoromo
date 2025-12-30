@@ -78,5 +78,6 @@
         <file>response/timeline/pinned/3/xrpc/app.bsky.feed.getPosts</file>
         <file>response/timeline/pinned/3/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/timeline/pinned/3/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/tokimeki/xrpc/tech.tokimeki.poll.getPoll</file>
     </qresource>
 </RCC>

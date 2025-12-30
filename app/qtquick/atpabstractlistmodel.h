@@ -35,6 +35,14 @@ struct BlobCueItem
     QString parent_cid;
 };
 
+struct TokimekiPollChueItem
+{
+    TokimekiPollChueItem() {};
+    QString cid; // URI of the post that has poll
+    QString viewer; // did
+    QString uri; // poll's at-uri : at://<auther did>/tech.tokimeki.poll.poll/<rkey>
+};
+
 class AtpAbstractListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -265,6 +273,9 @@ protected:
                            const AtProtocolType::LexiconsTypeUnknown::CopyImageType type) const;
     void copyImagesFromPostViewToCue(const AtProtocolType::AppBskyFeedDefs::PostView &post);
 
+    void appendTokimekiPollToCue(const QString &cid,
+                                 const AtProtocolType::AppBskyEmbedExternal::View &view);
+
     QString atUriToOfficialUrl(const QString &uri, const QString &name) const;
 
     QStringList labelerDids() const;
@@ -294,6 +305,7 @@ protected:
     QHash<QString, QString> m_pinnedUriCid; // QHash<uri, cid> ピンとして扱ったURIのCIDの記録
 
     QList<BlobCueItem> m_cueExtendMedia;
+    QList<TokimekiPollChueItem> m_cueTokimekiPoll;
 
 private:
     QTimer m_timer;
