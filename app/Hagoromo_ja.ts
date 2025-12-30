@@ -3072,7 +3072,7 @@ Please recreate AppPassword in the official application.</source>
         <translation>アカウントを通報</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="41"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="42"/>
         <source>Why should this user be reviewed?</source>
         <translation>なぜこのユーザーをレビューする必要がありますか？</translation>
     </message>
@@ -3093,7 +3093,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">スパム；過剰なメンションややリプライなどをしている</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="73"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="74"/>
         <source>Optionally provide additional information below:</source>
         <oldsource>Name or Description Violates Community Standards</oldsource>
         <translation>オプションとして以下に追加情報を記入してください：</translation>
@@ -3103,17 +3103,17 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">使用されている用語がコミュニティ基準に違反している</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="54"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="55"/>
         <source>Select the moderation service to report to</source>
         <translation>報告先のモデレーションサービスを選択してください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="97"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="98"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportAccountDialog.qml" line="110"/>
+        <location filename="qml/dialogs/ReportAccountDialog.qml" line="111"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>
@@ -3132,7 +3132,7 @@ Why should this message be reviewed?</source>
 なぜこのメッセージをレビューする必要がありますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="46"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="47"/>
         <source>Why should this message be reviewed?</source>
         <translation>なぜこのメッセージをレビューする必要がありますか？</translation>
     </message>
@@ -3177,17 +3177,17 @@ Why should this message be reviewed?</source>
         <translation type="vanished">以上のオプションに含まれていない問題</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="59"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="60"/>
         <source>Optionally provide additional information below:</source>
         <translation>オプションとして以下に追加情報を記入してください：</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="83"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="84"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ReportMessageDialog.qml" line="96"/>
+        <location filename="qml/dialogs/ReportMessageDialog.qml" line="97"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>

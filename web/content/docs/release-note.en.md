@@ -8,10 +8,15 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.56.1 - 2025/12/30
+
+- Fix
+  - Fix an issue where the application might crash when displaying post threads
+
 ### v0.56.0 - 2025/11/26
 
 - Add
-  - Support for profile “nickname” (display and update)
+  - Support for profile “pronouns” (display and update)
 - Update
   - Modified to reflect changes immediately upon profile update
   - Modified to check website content during profile editing (whether it starts with “https://”)

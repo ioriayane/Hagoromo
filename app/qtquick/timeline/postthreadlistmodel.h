@@ -35,8 +35,9 @@ private:
     QString m_postThreadUri;
     LabelConnector m_labelConnector;
 
-    void copyFrom(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post,
-                  const int type);
+    void copyFrom(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post);
+    void copyFromMain(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post,
+                      const int type, QDateTime reference_time, bool has_parent);
 };
 
 #endif // POSTTHREADLISTMODEL_H
