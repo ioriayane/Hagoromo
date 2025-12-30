@@ -641,6 +641,12 @@ void copyPushedAuthorizationResponse(const QJsonObject &src,
                                      OauthDefs::PushedAuthorizationResponse &dest);
 void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest);
 }
+// tech.tokimeki.poll.defs
+namespace TechTokimekiPollDefs {
+void copyPollRecordView(const QJsonObject &src, TechTokimekiPollDefs::PollRecordView &dest);
+void copyPollOptionTally(const QJsonObject &src, TechTokimekiPollDefs::PollOptionTally &dest);
+void copyPollViewDetailed(const QJsonObject &src, TechTokimekiPollDefs::PollViewDetailed &dest);
+}
 // uk.skyblur.post
 namespace UkSkyblurPost {
 void copyMain(const QJsonObject &src, UkSkyblurPost::Main &dest);

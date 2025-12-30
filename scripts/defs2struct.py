@@ -231,7 +231,8 @@ class Defs2Struct:
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
             'com.atproto.repo.describeRepo',
-            'com.atproto.repo.listRecords'
+            'com.atproto.repo.listRecords',
+            'tech.tokimeki.poll.getPoll'
         ]
         self.need_extension = [
             'app.bsky.actor.putPreferences',

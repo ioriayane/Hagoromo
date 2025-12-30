@@ -3120,6 +3120,35 @@ struct TokenResponse
 };
 }
 
+// tech.tokimeki.poll.defs
+namespace TechTokimekiPollDefs {
+struct PollRecordView
+{
+    QString uri; // at-uri , AT URI pointing at the poll record.
+    QString cid; // cid , Content identifier of the poll record.
+    QString authorDid; // did , DID of the poll author.
+    ComAtprotoRepoStrongRef::Main subject;
+    QList<QString> options; // Option labels as authored in the poll record order.
+    QString createdAt; // datetime
+    QString endsAt; // datetime
+};
+struct PollOptionTally
+{
+    int index = 0; // Zero-based index pointing at the option in the poll record.
+    QString text; // Option label resolved for the viewer.
+    int count = 0; // Total votes counted for the option.
+};
+struct PollViewDetailed
+{
+    PollRecordView poll;
+    QList<PollOptionTally> options;
+    int totalVotes = 0; // Sum of all option counts.
+    bool isEnded = false; // Whether the poll is already closed for new votes.
+    int myVote = 0; // Option index chosen by the current viewer, if any.
+    QString myVoteUri; // at-uri , Viewer's vote record URI when a vote exists.
+};
+}
+
 // uk.skyblur.post
 namespace UkSkyblurPost {
 struct Main

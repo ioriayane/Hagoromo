@@ -4331,6 +4331,46 @@ void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
     }
 }
 }
+// tech.tokimeki.poll.defs
+namespace TechTokimekiPollDefs {
+void copyPollRecordView(const QJsonObject &src, TechTokimekiPollDefs::PollRecordView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        dest.authorDid = src.value("authorDid").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
+        for (const auto &value : src.value("options").toArray()) {
+            dest.options.append(value.toString());
+        }
+        dest.createdAt = src.value("createdAt").toString();
+        dest.endsAt = src.value("endsAt").toString();
+    }
+}
+void copyPollOptionTally(const QJsonObject &src, TechTokimekiPollDefs::PollOptionTally &dest)
+{
+    if (!src.isEmpty()) {
+        dest.index = src.value("index").toInt();
+        dest.text = src.value("text").toString();
+        dest.count = src.value("count").toInt();
+    }
+}
+void copyPollViewDetailed(const QJsonObject &src, TechTokimekiPollDefs::PollViewDetailed &dest)
+{
+    if (!src.isEmpty()) {
+        copyPollRecordView(src.value("poll").toObject(), dest.poll);
+        for (const auto &s : src.value("options").toArray()) {
+            PollOptionTally child;
+            copyPollOptionTally(s.toObject(), child);
+            dest.options.append(child);
+        }
+        dest.totalVotes = src.value("totalVotes").toInt();
+        dest.isEnded = src.value("isEnded").toBool();
+        dest.myVote = src.value("myVote").toInt();
+        dest.myVoteUri = src.value("myVoteUri").toString();
+    }
+}
+}
 // uk.skyblur.post
 namespace UkSkyblurPost {
 void copyMain(const QJsonObject &src, UkSkyblurPost::Main &dest)
