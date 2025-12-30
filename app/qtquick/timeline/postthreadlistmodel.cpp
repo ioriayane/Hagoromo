@@ -59,7 +59,8 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
 
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
     while (current != nullptr
-           && current->parent_type == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
+           && current->parent_type
+                   == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
         current = current->parent_ThreadViewPost.get();
         if (current != nullptr) {
             list.push_front(current);
