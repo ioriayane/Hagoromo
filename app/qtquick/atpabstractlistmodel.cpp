@@ -45,6 +45,8 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator,
         connect(skyblur, &SkyblurOperator::finished, this,
                 &AtpAbstractListModel::finishedRestoreBluredText);
     }
+    connect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
+            &AtpAbstractListModel::finishedTokimekiPoll);
 }
 
 AtpAbstractListModel::~AtpAbstractListModel()
@@ -61,6 +63,8 @@ AtpAbstractListModel::~AtpAbstractListModel()
         disconnect(skyblur, &SkyblurOperator::finished, this,
                    &AtpAbstractListModel::finishedRestoreBluredText);
     }
+    disconnect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
+               &AtpAbstractListModel::finishedTokimekiPoll);
 }
 
 void AtpAbstractListModel::clear()
@@ -184,6 +188,20 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
     for (const auto row : rows) {
         setRunningSkyblurPostText(row, false);
         if (row >= 0 && success) {
+            emit dataChanged(index(row), index(row));
+        }
+    }
+}
+
+void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid)
+{
+    qDebug().noquote() << "finishedTokimekiPoll" << this << success << cid;
+    if (!success)
+        return;
+
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        if (row >= 0) {
             emit dataChanged(index(row), index(row));
         }
     }
@@ -975,6 +993,31 @@ AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::Pos
 }
 
 QVariant
+AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                          const TokimekiPollRoles role) const
+{
+    // m_tokimekiPoll
+    QString uri = m_tokimekiPoll.convertUrlToUri(post.embed_AppBskyEmbedExternal_View.external.uri);
+
+    if (role == HasPollRole) {
+        return !uri.isEmpty();
+    } else if (role == PollOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollOptionsRole);
+    } else if (role == PollCountOfOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCountOfOptionsRole);
+    } else if (role == PollMyVoteRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollMyVoteRole);
+    } else if (role == PollTotalVotesRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollTotalVotesRole);
+    } else if (role == PollIsEndedRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollIsEndedRole);
+    } else if (role == PollRemainTimeRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollRemainTimeRole);
+    }
+    return QVariant();
+}
+
+QVariant
 AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                         const ThreadGateRoles role) const
 {
@@ -1265,21 +1308,10 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
 void AtpAbstractListModel::appendTokimekiPollToCue(const QString &cid,
                                                    const AppBskyEmbedExternal::View &view)
 {
-    auto ope = new TokimekiPollOperator(this);
-    QString uri = ope->convertUrlToUri(view.external.uri);
-    if (uri.isEmpty()) {
-        ope->deleteLater();
+    QString uri = m_tokimekiPoll.convertUrlToUri(view.external.uri);
+    if (uri.isEmpty())
         return;
-    }
-
-    connect(ope, &TokimekiPollOperator::finished, this, [=](bool success, const QString &cid) {
-        qDebug() << "TokimekiPollOperator::finished" << cid;
-        if (success) {
-            // updateTokimekiPollData(cid, path);
-        }
-        ope->deleteLater();
-    });
-    ope->getPoll(cid, uri, account().did);
+    m_tokimekiPoll.getPoll(cid, uri, account().did);
 }
 
 QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const

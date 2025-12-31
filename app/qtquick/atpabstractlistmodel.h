@@ -4,6 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "operation/tokimekipolloperator.h"
 #include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
@@ -137,6 +138,15 @@ public:
         ThreadGateTypeRole,
         ThreadGateRulesRole,
     };
+    enum TokimekiPollRoles {
+        HasPollRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
+    };
 
     enum QuoteRecordBlockedStatusType {
         QuoteRecordNonBlocked,
@@ -210,6 +220,7 @@ public slots:
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
     void finishedRestoreBluredText(bool success, const QString &cid, const QString text);
+    void finishedTokimekiPoll(bool success, const QString &cid);
 
 protected:
     void displayQueuedPosts();
@@ -245,6 +256,8 @@ protected:
                                   const AtpAbstractListModel::FeedGeneratorRoles role) const;
     QVariant getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                              const AtpAbstractListModel::ListLinkRoles role) const;
+    QVariant getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                 const AtpAbstractListModel::TokimekiPollRoles role) const;
     QVariant getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                const AtpAbstractListModel::ThreadGateRoles role) const;
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
@@ -310,6 +323,7 @@ protected:
 private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
+    TokimekiPollOperator m_tokimekiPoll;
     int m_contentFilterRefreshCounter;
     bool m_useTranslator;
     bool m_useSkyblur;

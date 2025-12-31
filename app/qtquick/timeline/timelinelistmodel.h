@@ -138,6 +138,14 @@ public:
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
 
+        HasPollRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
+
         UserFilterMatchedRole,
         UserFilterMessageRole,
         ContentFilterMatchedRole,
@@ -268,6 +276,8 @@ private:
             m_toListLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ThreadGateRoles>
             m_toThreadGateRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::TokimekiPollRoles>
+            m_toTokimekiPollRoles;
 
     bool m_visibleReplyToUnfollowedUsers;
     bool m_visibleRepostOfOwn;

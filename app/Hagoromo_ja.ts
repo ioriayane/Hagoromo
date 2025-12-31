@@ -302,14 +302,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="718"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="725"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="736"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="743"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="721"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="728"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="739"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="746"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -2422,6 +2422,39 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>PollLayout</name>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="63"/>
+        <source>Voted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="89"/>
+        <source>%s votes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="94"/>
+        <source>Finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="94"/>
+        <source>%s hours left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="103"/>
+        <source>Remove vote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/parts/PollLayout.qml" line="103"/>
+        <source>Vote</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PostControls</name>
     <message>
         <location filename="qml/parts/PostControls.qml" line="86"/>
@@ -4420,7 +4453,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="320"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="336"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>

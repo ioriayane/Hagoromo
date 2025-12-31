@@ -1,5 +1,6 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QDir>
 #include <QFile>
@@ -3559,6 +3560,53 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
     const QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
     QCOMPARE(arguments.at(1).toString(), cid);
+
+    const QVariant optionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
+    QVERIFY(optionsVariant.isValid());
+    QCOMPARE(optionsVariant.toStringList(),
+             QStringList() << "awake"
+                           << "sleeping");
+
+    const QVariant countOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollCountOfOptionsRole);
+    QVERIFY(countOfOptionsVariant.isValid());
+    QCOMPARE(countOfOptionsVariant.toStringList(),
+             QStringList() << "1"
+                           << "0");
+
+    const QVariant myVoteVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(myVoteVariant.isValid());
+    QCOMPARE(myVoteVariant.toInt(), 1);
+
+    const QVariant totalVotesVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+    QVERIFY(totalVotesVariant.isValid());
+    QCOMPARE(totalVotesVariant.toInt(), 2);
+
+    const QVariant isEndedVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIsEndedRole);
+    QVERIFY(isEndedVariant.isValid());
+    QCOMPARE(isEndedVariant.toBool(), false);
+
+    const QVariant remainTimeVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollRemainTimeRole);
+    QVERIFY(remainTimeVariant.isValid());
+
+    const double actualRemainHours = remainTimeVariant.toDouble();
+    const QDateTime endsAt =
+            QDateTime::fromString(QStringLiteral("2025-12-31T04:28:13.299Z"), Qt::ISODateWithMs);
+    QVERIFY(endsAt.isValid());
+    const double expectedRemainHours =
+            static_cast<double>(QDateTime::currentDateTimeUtc().msecsTo(endsAt))
+            / (1000.0 * 60.0 * 60.0);
+    const double toleranceHours = 0.01; // 約36秒
+    QVERIFY2(qAbs(actualRemainHours - expectedRemainHours) < toleranceHours,
+             QStringLiteral("remainHours actual=%1 expected=%2")
+                     .arg(actualRemainHours)
+                     .arg(expectedRemainHours)
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include <QString>
-#include "atprotocol/lexicons.h"
+
+#include <atprotocol/lexicons.h>
 
 class TokimekiPollOperator : public QObject
 {
@@ -11,7 +12,18 @@ class TokimekiPollOperator : public QObject
 public:
     explicit TokimekiPollOperator(QObject *parent = nullptr);
 
+    enum Roles {
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
+    };
+
     QString convertUrlToUri(const QString &url) const;
+
+    QVariant item(const QString &uri, TokimekiPollOperator::Roles role) const;
 
     void setServiceUrl(const QString &url);
     QString serviceUrl() const;
@@ -23,6 +35,9 @@ signals:
 
 private:
     QString m_serviceUrl;
+
+    QHash<QString, AtProtocolType::TechTokimekiPollDefs::PollViewDetailed>
+            m_pollViewDetailHash; // QHash<uri, view>
 };
 
 #endif // TOKIMEKIPOLLOPERATOR_H

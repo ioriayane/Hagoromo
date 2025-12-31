@@ -111,6 +111,19 @@ TimelineListModel::TimelineListModel(QObject *parent)
     m_toThreadGateRoles[ThreadGateRulesRole] =
             AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
 
+    m_toTokimekiPollRoles[HasPollRole] = AtpAbstractListModel::TokimekiPollRoles::HasPollRole;
+    m_toTokimekiPollRoles[PollOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollOptionsRole;
+    m_toTokimekiPollRoles[PollCountOfOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollCountOfOptionsRole;
+    m_toTokimekiPollRoles[PollMyVoteRole] = AtpAbstractListModel::TokimekiPollRoles::PollMyVoteRole;
+    m_toTokimekiPollRoles[PollTotalVotesRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollTotalVotesRole;
+    m_toTokimekiPollRoles[PollIsEndedRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollIsEndedRole;
+    m_toTokimekiPollRoles[PollRemainTimeRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollRemainTimeRole;
+
     connect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
             &TimelineListModel::updatedPin);
 }
@@ -260,6 +273,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
     else if (m_toListLinkRoles.contains(role))
         return getListLinkItem(current.post, m_toListLinkRoles[role]);
+
+    else if (m_toTokimekiPollRoles.contains(role))
+        return getTokimekiPollItem(current.post, m_toTokimekiPollRoles[role]);
 
     else if (role == HasReplyRole) {
         if (isPinnedPost(current.post.cid) && row == 0)
@@ -1046,6 +1062,14 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";
+
+    roles[HasPollRole] = "hasPoll";
+    roles[PollOptionsRole] = "pollOptions";
+    roles[PollCountOfOptionsRole] = "pollCountOfOptions";
+    roles[PollMyVoteRole] = "pollMyVote";
+    roles[PollTotalVotesRole] = "pollTotalVotes";
+    roles[PollIsEndedRole] = "pollIsEnded";
+    roles[PollRemainTimeRole] = "pollRemainTime";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
