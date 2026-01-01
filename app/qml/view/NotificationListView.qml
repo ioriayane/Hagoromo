@@ -94,7 +94,7 @@ ScrollView {
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
 
-            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+            externalLinkFrame.visible: model.hasExternalLink && !model.hasPoll && contentMediaFilterFrame.showContent
             feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
 
@@ -123,6 +123,14 @@ ScrollView {
             skyblurContent.getPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)
             skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
             skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
+
+            pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
+            pollContent.options: model.pollOptions
+            pollContent.countOfOptions: model.pollCountOfOptions
+            pollContent.myVote: model.pollMyVote
+            pollContent.totalVotes: model.pollTotalVotes
+            pollContent.isEnded: model.pollIsEnded
+            pollContent.remainTime: model.pollRemainTime
 
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage

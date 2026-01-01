@@ -149,6 +149,14 @@ ColumnLayout {
                 skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
                 skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
 
+                pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
+                pollContent.options: model.pollOptions
+                pollContent.countOfOptions: model.pollCountOfOptions
+                pollContent.myVote: model.pollMyVote
+                pollContent.totalVotes: model.pollTotalVotes
+                pollContent.isEnded: model.pollIsEnded
+                pollContent.remainTime: model.pollRemainTime
+
                 contentFilterFrame.visible: model.contentFilterMatched
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
@@ -186,7 +194,7 @@ ColumnLayout {
                 embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
                 embedVideoFrame.thumbImageSource: model.videoThumbUri
 
-                externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+                externalLinkFrame.visible: model.hasExternalLink && !model.hasPoll && contentMediaFilterFrame.showContent
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
                 externalLinkFrame.thumbImage.source: model.externalLinkThumb
                 externalLinkFrame.titleLabel.text: model.externalLinkTitle

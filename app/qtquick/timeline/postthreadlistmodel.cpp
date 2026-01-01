@@ -93,6 +93,10 @@ void PostThreadListModel::copyFromMain(
     post.reference_time = reference_time;
     m_cuePost.insert(0, post);
 
+    // Tokimekiの投票の取得のキューに入れる
+    appendTokimekiPollToCue(thread_view_post->post.cid,
+                            thread_view_post->post.embed_AppBskyEmbedExternal_View);
+
     AppBskyFeedDefs::FeedViewPost feed_view_post;
     feed_view_post.post = thread_view_post->post;
     m_viewPostHash[thread_view_post->post.cid] = feed_view_post;
@@ -152,6 +156,8 @@ void PostThreadListModel::copyFromMain(
         if (!labelers.isEmpty()) {
             LabelProvider::getInstance()->update(labelers, account(), &m_labelConnector);
         }
+        // Tokimekiの投票を取得
+        getTokimekiPoll();
     }
 }
 

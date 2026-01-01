@@ -41,7 +41,9 @@ QString TokimekiPollOperator::convertUrlToUri(const QString &url) const
 QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
 {
     if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri)) {
-        if (role == PollOptionsRole) {
+        if (role == HasPollRole) {
+            return HasPollRole;
+        } else if (role == PollOptionsRole) {
             return QStringList();
         } else if (role == PollCountOfOptionsRole) {
             return QStringList();
@@ -58,7 +60,9 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
 
     auto view = m_pollViewDetailHash.value(uri);
 
-    if (role == PollOptionsRole) {
+    if (role == HasPollRole) {
+        return true;
+    } else if (role == PollOptionsRole) {
         QStringList options;
         for (const auto option : view.options) {
             options.append(option.text);

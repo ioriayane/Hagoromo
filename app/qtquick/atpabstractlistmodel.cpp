@@ -196,15 +196,15 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
 void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid)
 {
     qDebug().noquote() << "finishedTokimekiPoll" << this << success << cid;
-    if (!success)
-        return;
-
-    const auto rows = indexsOf(cid);
-    for (const auto row : rows) {
-        if (row >= 0) {
-            emit dataChanged(index(row), index(row));
+    if (success) {
+        const auto rows = indexsOf(cid);
+        for (const auto row : rows) {
+            if (row >= 0) {
+                emit dataChanged(index(row), index(row));
+            }
         }
     }
+    QTimer::singleShot(0, this, &AtpAbstractListModel::getTokimekiPoll);
 }
 
 void AtpAbstractListModel::reflectVisibility()
@@ -996,11 +996,10 @@ QVariant
 AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                           const TokimekiPollRoles role) const
 {
-    // m_tokimekiPoll
     QString uri = m_tokimekiPoll.convertUrlToUri(post.embed_AppBskyEmbedExternal_View.external.uri);
 
     if (role == HasPollRole) {
-        return !uri.isEmpty();
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::HasPollRole);
     } else if (role == PollOptionsRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollOptionsRole);
     } else if (role == PollCountOfOptionsRole) {
@@ -1309,9 +1308,24 @@ void AtpAbstractListModel::appendTokimekiPollToCue(const QString &cid,
                                                    const AppBskyEmbedExternal::View &view)
 {
     QString uri = m_tokimekiPoll.convertUrlToUri(view.external.uri);
-    if (uri.isEmpty())
+    if (cid.isEmpty() || uri.isEmpty())
         return;
-    m_tokimekiPoll.getPoll(cid, uri, account().did);
+    m_cueTokimekiPoll.append(TokimekiPollChueItem(cid, uri, account().did));
+}
+
+void AtpAbstractListModel::getTokimekiPoll()
+{
+    TokimekiPollChueItem poll_item;
+
+    if (m_cueTokimekiPoll.isEmpty()) {
+        return;
+    } else {
+        poll_item = m_cueTokimekiPoll.front();
+        m_cueTokimekiPoll.pop_front();
+    }
+
+    m_tokimekiPoll.getPoll(poll_item.cid, poll_item.uri, poll_item.viewer);
+    // 完了はfinishedTokimekiPoll()にて。
 }
 
 QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const

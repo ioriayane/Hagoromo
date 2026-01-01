@@ -39,9 +39,15 @@ struct BlobCueItem
 struct TokimekiPollChueItem
 {
     TokimekiPollChueItem() {};
+    TokimekiPollChueItem(const QString &cid, const QString &uri, const QString &viewer)
+    {
+        this->cid = cid;
+        this->uri = uri;
+        this->viewer = viewer;
+    }
     QString cid; // URI of the post that has poll
-    QString viewer; // did
     QString uri; // poll's at-uri : at://<auther did>/tech.tokimeki.poll.poll/<rkey>
+    QString viewer; // did
 };
 
 class AtpAbstractListModel : public QAbstractListModel
@@ -288,6 +294,7 @@ protected:
 
     void appendTokimekiPollToCue(const QString &cid,
                                  const AtProtocolType::AppBskyEmbedExternal::View &view);
+    void getTokimekiPoll();
 
     QString atUriToOfficialUrl(const QString &uri, const QString &name) const;
 

@@ -1256,6 +1256,8 @@ void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &fee
     }
     // embed画像を取得
     getExtendMediaFiles();
+    // Tokimekiの投票を取得
+    getTokimekiPoll();
 }
 
 void TimelineListModel::copyFromNext(
@@ -1280,6 +1282,8 @@ void TimelineListModel::copyFromNext(
     }
     // embed画像を取得
     getExtendMediaFiles();
+    // Tokimekiの投票を取得
+    getTokimekiPoll();
 }
 
 QString

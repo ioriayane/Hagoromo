@@ -134,6 +134,14 @@ public:
         ReplyRootCidRole,
         ReplyRootUriRole,
 
+        HasPollRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
+
         UserFilterMatchedRole,
         UserFilterMessageRole,
         ContentFilterMatchedRole,
@@ -261,6 +269,9 @@ private:
             m_toFeedGeneratorRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::ListLinkRoles>
             m_toListLinkRoles;
+    QHash<NotificationListModel::NotificationListModelRoles,
+          AtpAbstractListModel::TokimekiPollRoles>
+            m_toTokimekiPollRoles;
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();

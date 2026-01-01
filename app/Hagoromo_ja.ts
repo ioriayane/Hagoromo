@@ -2207,22 +2207,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="153"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="154"/>
         <source>Your repost has been liked.</source>
         <translation>あなたのリポストがいいねされました。</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="167"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="168"/>
         <source>Your repost has been reposted.</source>
         <translation>あなたのリポストがリポストされました。</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="202"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="203"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="189"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="190"/>
         <source>signed up with your starter pack</source>
         <translation>あなたのスターターパックで登録しました</translation>
     </message>
@@ -2230,7 +2230,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="307"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="320"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2641,12 +2641,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="164"/>
+        <location filename="qml/view/PostThreadView.qml" line="172"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="215"/>
+        <location filename="qml/view/PostThreadView.qml" line="223"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -4461,7 +4461,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="177"/>
+        <location filename="qml/view/TimelineView.qml" line="176"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

@@ -13,6 +13,7 @@ public:
     explicit TokimekiPollOperator(QObject *parent = nullptr);
 
     enum Roles {
+        HasPollRole,
         PollOptionsRole,
         PollCountOfOptionsRole,
         PollMyVoteRole,
