@@ -336,6 +336,58 @@ class Defs2Struct:
             comment += description
         return comment
 
+    def escape_qstring_literal(self, value) -> str:
+        if value is None:
+            value = ''
+        if not isinstance(value, str):
+            value = str(value)
+        return (value
+                .replace("\\", "\\\\")
+                .replace('"', '\\"')
+                .replace('\n', '\\n')
+                .replace('\r', '\\r')
+                .replace('\t', '\\t'))
+
+    def get_default_expression(self, p_type: str, properties: dict):
+        if 'default' not in properties:
+            return None
+
+        default_value = properties.get('default')
+
+        if p_type == 'integer':
+            try:
+                value = int(default_value)
+            except (TypeError, ValueError):
+                value = 0
+            return str(value)
+
+        if p_type == 'boolean':
+            if isinstance(default_value, bool):
+                value = default_value
+            else:
+                value = str(default_value).strip().lower() in ('1', 'true', 'yes')
+            return 'true' if value else 'false'
+
+        if p_type == 'string':
+            escaped = self.escape_qstring_literal(default_value)
+            return f'QStringLiteral("{escaped}")'
+
+        return None
+
+    def make_default_initializer(self, p_type: str, properties: dict) -> str:
+        default_expr = self.get_default_expression(p_type, properties)
+
+        if default_expr is not None:
+            return f' = {default_expr}'
+
+        if p_type == 'integer':
+            return ' = 0'
+
+        if p_type == 'boolean':
+            return ' = false'
+
+        return ''
+
     def check_deprecated(self, properties: dict) -> bool:
         return ('deprecated' in properties.get('description', '').strip().lower())
 
@@ -557,11 +609,14 @@ class Defs2Struct:
                 elif p_type == 'unknown':
                     self.output_text[namespace].append('    QVariant %s;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'integer':
-                    self.output_text[namespace].append('    int %s = 0;%s' % (self.to_property_style(property_name), p_comment, ))
+                    initializer = self.make_default_initializer('integer', properties[property_name])
+                    self.output_text[namespace].append('    int %s%s;%s' % (self.to_property_style(property_name), initializer, p_comment, ))
                 elif p_type == 'boolean':
-                    self.output_text[namespace].append('    bool %s = false;%s' % (self.to_property_style(property_name), p_comment, ))
+                    initializer = self.make_default_initializer('boolean', properties[property_name])
+                    self.output_text[namespace].append('    bool %s%s;%s' % (self.to_property_style(property_name), initializer, p_comment, ))
                 elif p_type == 'string':
-                    self.output_text[namespace].append('    QString %s;%s' % (self.to_property_style(property_name), p_comment, ))
+                    initializer = self.make_default_initializer('string', properties[property_name])
+                    self.output_text[namespace].append('    QString %s%s;%s' % (self.to_property_style(property_name), initializer, p_comment, ))
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
@@ -764,13 +819,25 @@ class Defs2Struct:
                         self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
 
                     elif p_type == 'integer':
-                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
+                        default_expr = self.get_default_expression('integer', properties[property_name])
+                        if default_expr is None:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
+                        else:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt(%s);' % (self.to_property_style(property_name), property_name, default_expr))
 
                     elif p_type == 'boolean':
-                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
+                        default_expr = self.get_default_expression('boolean', properties[property_name])
+                        if default_expr is None:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
+                        else:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool(%s);' % (self.to_property_style(property_name), property_name, default_expr))
 
                     elif p_type == 'string':
-                        self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (self.to_property_style(property_name), property_name, ))
+                        default_expr = self.get_default_expression('string', properties[property_name])
+                        if default_expr is None:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (self.to_property_style(property_name), property_name, ))
+                        else:
+                            self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString(%s);' % (self.to_property_style(property_name), property_name, default_expr))
 
                     elif p_type == 'array':
                         items_type = properties[property_name].get('items', {}).get('type', '')

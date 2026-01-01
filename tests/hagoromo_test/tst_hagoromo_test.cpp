@@ -3614,10 +3614,10 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
 
 void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
 {
-        TokimekiPollOperator operatorUnderTest;
+    TokimekiPollOperator operatorUnderTest;
 
-        const QString unknownUri = QStringLiteral(
-                        "at://did:plc:unknown/tech.tokimeki.poll.poll/not-exists");
+    const QString unknownUri =
+            QStringLiteral("at://did:plc:unknown/tech.tokimeki.poll.poll/not-exists");
 
     const QVariant optionsVariant =
             operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollOptionsRole);
