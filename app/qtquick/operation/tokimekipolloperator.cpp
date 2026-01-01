@@ -40,8 +40,21 @@ QString TokimekiPollOperator::convertUrlToUri(const QString &url) const
 
 QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
 {
-    if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri))
-        return QVariant();
+    if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri)) {
+        if (role == PollOptionsRole) {
+            return QStringList();
+        } else if (role == PollCountOfOptionsRole) {
+            return QStringList();
+        } else if (role == PollMyVoteRole) {
+            return -1;
+        } else if (role == PollTotalVotesRole) {
+            return 0;
+        } else if (role == PollIsEndedRole) {
+            return 1;
+        } else if (role == PollRemainTimeRole) {
+            return 0;
+        }
+    }
 
     auto view = m_pollViewDetailHash.value(uri);
 
@@ -50,11 +63,13 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
         for (const auto option : view.options) {
             options.append(option.text);
         }
+        return options;
     } else if (role == PollCountOfOptionsRole) {
         QStringList options;
         for (const auto option : view.options) {
             options.append(QString::number(option.count));
         }
+        return options;
     } else if (role == PollMyVoteRole) {
         return view.myVote;
     } else if (role == PollTotalVotesRole) {

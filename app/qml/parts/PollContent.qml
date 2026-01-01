@@ -11,7 +11,7 @@ Frame {
     property var options: []
     property var countOfOptions: []
     property int myVote: -1
-    property int totalVotes: 0
+    property int totalVotes: 1
     property bool isEnded: false
     property int remainTime: 0
 

@@ -2422,34 +2422,34 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
-    <name>PollLayout</name>
+    <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="63"/>
+        <location filename="qml/parts/PollContent.qml" line="63"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="89"/>
+        <location filename="qml/parts/PollContent.qml" line="89"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="94"/>
+        <location filename="qml/parts/PollContent.qml" line="94"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="94"/>
+        <location filename="qml/parts/PollContent.qml" line="94"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="103"/>
+        <location filename="qml/parts/PollContent.qml" line="103"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollLayout.qml" line="103"/>
+        <location filename="qml/parts/PollContent.qml" line="103"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2565,7 +2565,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="qml/parts/PostDelegate.qml" line="107"/>
+        <location filename="qml/parts/PostDelegate.qml" line="108"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -4461,7 +4461,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="169"/>
+        <location filename="qml/view/TimelineView.qml" line="177"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

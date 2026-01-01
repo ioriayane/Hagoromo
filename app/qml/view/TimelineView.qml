@@ -158,6 +158,14 @@ ScrollView {
             skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
             skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
 
+            pollContent.visible: model.hasPoll
+            pollContent.options: model.pollOptions
+            pollContent.countOfOptions: model.pollCountOfOptions
+            pollContent.myVote: model.pollMyVote
+            pollContent.totalVotes: model.pollTotalVotes
+            pollContent.isEnded: model.pollIsEnded
+            pollContent.remainTime: model.pollRemainTime
+
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
             postImagePreview.layoutType: timelineView.imageLayoutType
