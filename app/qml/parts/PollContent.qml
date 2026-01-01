@@ -11,7 +11,7 @@ Frame {
     property var options: []
     property var countOfOptions: []
     property int myVote: -1
-    property int totalVotes: 1
+    property int totalVotes: 0
     property bool isEnded: false
     property int remainTime: 0
 
@@ -68,7 +68,7 @@ Frame {
                         Layout.fillWidth: true
                     }
                     Label {
-                        text: (100 * pollLayout.countOfOptions[model.index] / pollLayout.totalVotes).toFixed(0) + "%"
+                        text: pollLayout.totalVotes === 0 ? "0%" : (100 * pollLayout.countOfOptions[model.index] / pollLayout.totalVotes).toFixed(0) + "%"
                     }
                 }
                 background: Rectangle {
