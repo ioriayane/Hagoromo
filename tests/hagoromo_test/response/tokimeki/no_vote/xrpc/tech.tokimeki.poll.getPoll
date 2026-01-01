@@ -1,0 +1,31 @@
+{
+    "poll": {
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u",
+        "cid": "bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe",
+        "authorDid": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+        "subject": {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3mb6j6uvkds2u",
+            "cid": ""
+        },
+        "options": [
+            "awake",
+            "sleeping"
+        ],
+        "createdAt": "2025-12-30T04:28:13.299Z",
+        "endsAt": "2025-12-31T04:28:13.299Z"
+    },
+    "options": [
+        {
+            "index": 0,
+            "text": "awake",
+            "count": 1
+        },
+        {
+            "index": 1,
+            "text": "sleeping",
+            "count": 1
+        }
+    ],
+    "totalVotes": 2,
+    "isEnded": false
+}

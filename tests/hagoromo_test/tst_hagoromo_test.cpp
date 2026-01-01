@@ -71,6 +71,7 @@ private slots:
 
     void test_TokimekiPollOperator_convertUrlToUri();
     void test_TokimekiPollOperator_getPoll();
+    void test_TokimekiPollOperator_getPoll_noVote();
     void test_TokimekiPollOperator_getPoll_noHit();
 
 private:
@@ -3544,7 +3545,7 @@ void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
 void hagoromo_test::test_TokimekiPollOperator_getPoll()
 {
     TokimekiPollOperator operatorUnderTest;
-    operatorUnderTest.setServiceUrl(m_service + "/tokimeki");
+        operatorUnderTest.setServiceUrl(m_service + "/tokimeki/with_vote");
 
     QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
 
@@ -3610,6 +3611,43 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
                      .arg(actualRemainHours)
                      .arg(expectedRemainHours)
                      .toLocal8Bit());
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
+{
+    TokimekiPollOperator operatorUnderTest;
+        operatorUnderTest.setServiceUrl(m_service + "/tokimeki/no_vote");
+
+    QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    const QString cid = QStringLiteral("test-cid-novote");
+    const QString uri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    const QString viewer = QStringLiteral("did:plc:viewerexample-no-vote000000000000");
+
+    operatorUnderTest.getPoll(cid, uri, viewer);
+
+    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QCOMPARE(spy.count(), 1);
+
+    const QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+    QCOMPARE(arguments.at(1).toString(), cid);
+
+    const QVariant myVoteVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(myVoteVariant.isValid());
+    QCOMPARE(myVoteVariant.toInt(), -1);
+
+    const QVariant optionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
+    QVERIFY(optionsVariant.isValid());
+    QCOMPARE(optionsVariant.toStringList(), QStringList() << "awake" << "sleeping");
+
+    const QVariant totalVotesVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+    QVERIFY(totalVotesVariant.isValid());
+    QCOMPARE(totalVotesVariant.toInt(), 2);
 }
 
 void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
