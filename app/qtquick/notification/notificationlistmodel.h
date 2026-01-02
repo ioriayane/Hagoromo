@@ -135,6 +135,8 @@ public:
         ReplyRootUriRole,
 
         HasPollRole,
+        PollUriRole,
+        PollCidRole,
         PollOptionsRole,
         PollCountOfOptionsRole,
         PollIndexOfOptionsRole,

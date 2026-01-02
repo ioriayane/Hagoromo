@@ -139,6 +139,8 @@ public:
         RepostedByHandleRole,
 
         HasPollRole,
+        PollUriRole,
+        PollCidRole,
         PollOptionsRole,
         PollCountOfOptionsRole,
         PollIndexOfOptionsRole,

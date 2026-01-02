@@ -43,6 +43,10 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
     if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri)) {
         if (role == HasPollRole) {
             return HasPollRole;
+        } else if (role == PollUriRole) {
+            return QString();
+        } else if (role == PollCidRole) {
+            return QString();
         } else if (role == PollOptionsRole) {
             return QStringList();
         } else if (role == PollCountOfOptionsRole) {
@@ -64,6 +68,10 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
 
     if (role == HasPollRole) {
         return true;
+    } else if (role == PollUriRole) {
+        return view.poll.uri;
+    } else if (role == PollCidRole) {
+        return view.poll.cid;
     } else if (role == PollOptionsRole) {
         QStringList options;
         for (const auto option : view.options) {

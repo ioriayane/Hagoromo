@@ -112,6 +112,8 @@ TimelineListModel::TimelineListModel(QObject *parent)
             AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
 
     m_toTokimekiPollRoles[HasPollRole] = AtpAbstractListModel::TokimekiPollRoles::HasPollRole;
+    m_toTokimekiPollRoles[PollUriRole] = AtpAbstractListModel::TokimekiPollRoles::PollUriRole;
+    m_toTokimekiPollRoles[PollCidRole] = AtpAbstractListModel::TokimekiPollRoles::PollCidRole;
     m_toTokimekiPollRoles[PollOptionsRole] =
             AtpAbstractListModel::TokimekiPollRoles::PollOptionsRole;
     m_toTokimekiPollRoles[PollCountOfOptionsRole] =
@@ -1066,6 +1068,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     roles[HasPollRole] = "hasPoll";
+    roles[PollUriRole] = "pollUri";
+    roles[PollCidRole] = "pollCid";
     roles[PollOptionsRole] = "pollOptions";
     roles[PollCountOfOptionsRole] = "pollCountOfOptions";
     roles[PollIndexOfOptionsRole] = "pollIndexOfOptions";

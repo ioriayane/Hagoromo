@@ -3563,6 +3563,18 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
     QVERIFY(arguments.at(0).toBool());
     QCOMPARE(arguments.at(1).toString(), cid);
 
+    const QVariant uriVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollUriRole);
+    QVERIFY(uriVariant.isValid());
+    QCOMPARE(
+            uriVariant.toInt(),
+            QStringLiteral(
+                    "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u"));
+
+    const QVariant cidVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollCidRole);
+    QVERIFY(cidVariant.isValid());
+    QCOMPARE(cidVariant.toInt(),
+             QStringLiteral("bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe"));
+
     const QVariant optionsVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
     QVERIFY(optionsVariant.isValid());

@@ -166,6 +166,13 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
     skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
 }
 
+void AtpAbstractListModel::voteToPoll(const QString &post_cid, const QString &poll_uri,
+                                      const QString &poll_cid, const QString &vote_index)
+{
+    // m_tokimekiPoll
+    qDebug() << "voteToPoll" << post_cid << poll_uri << poll_cid << vote_index;
+}
+
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
 {
     qDebug().noquote() << "finishedTransration" << this << cid << text;
@@ -1000,6 +1007,10 @@ AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs:
 
     if (role == HasPollRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::HasPollRole);
+    } else if (role == PollUriRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollUriRole);
+    } else if (role == PollCidRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCidRole);
     } else if (role == PollOptionsRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollOptionsRole);
     } else if (role == PollCountOfOptionsRole) {

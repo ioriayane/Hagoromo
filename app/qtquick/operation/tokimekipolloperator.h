@@ -14,6 +14,8 @@ public:
 
     enum Roles {
         HasPollRole,
+        PollUriRole,
+        PollCidRole,
         PollOptionsRole,
         PollCountOfOptionsRole,
         PollIndexOfOptionsRole,

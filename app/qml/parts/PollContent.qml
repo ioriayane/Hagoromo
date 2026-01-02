@@ -16,7 +16,7 @@ Frame {
     property bool isEnded: false
     property int remainTime: 0
 
-    signal clicked(int index)
+    signal clicked(string vote_index)
 
     ButtonGroup {
         id: radioGroup
@@ -42,7 +42,7 @@ Frame {
                 checked: false
                 text: modelData
                 ButtonGroup.group: radioGroup
-                property int value: pollLayout.indexOfOptions[model.index]
+                property string value: pollLayout.indexOfOptions[model.index]
 
                 contentItem: RowLayout {
                     Label {
