@@ -16,13 +16,13 @@
     },
     "options": [
         {
-            "index": 0,
-            "text": "awake",
+            "index": 1,
+            "text": "sleeping",
             "count": 1
         },
         {
-            "index": 1,
-            "text": "sleeping",
+            "index": 0,
+            "text": "awake",
             "count": 1
         }
     ],

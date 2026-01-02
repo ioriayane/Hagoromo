@@ -1004,6 +1004,8 @@ AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs:
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollOptionsRole);
     } else if (role == PollCountOfOptionsRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCountOfOptionsRole);
+    } else if (role == PollIndexOfOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollIndexOfOptionsRole);
     } else if (role == PollMyVoteRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollMyVoteRole);
     } else if (role == PollTotalVotesRole) {

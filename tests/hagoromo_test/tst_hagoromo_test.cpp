@@ -3545,7 +3545,7 @@ void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
 void hagoromo_test::test_TokimekiPollOperator_getPoll()
 {
     TokimekiPollOperator operatorUnderTest;
-        operatorUnderTest.setServiceUrl(m_service + "/tokimeki/with_vote");
+    operatorUnderTest.setServiceUrl(m_service + "/tokimeki/with_vote");
 
     QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
 
@@ -3579,10 +3579,17 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
                            << "1");
     qDebug() << countOfOptionsVariant.toStringList();
 
+    const QVariant indexOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexOfOptionsVariant.isValid());
+    QCOMPARE(indexOfOptionsVariant.toStringList(),
+             QStringList() << "0"
+                           << "1");
+
     const QVariant myVoteVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(myVoteVariant.isValid());
-    QCOMPARE(myVoteVariant.toInt(), 1);
+    QCOMPARE(myVoteVariant.toInt(), QStringLiteral("1"));
 
     const QVariant totalVotesVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
@@ -3616,7 +3623,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
 void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
 {
     TokimekiPollOperator operatorUnderTest;
-        operatorUnderTest.setServiceUrl(m_service + "/tokimeki/no_vote");
+    operatorUnderTest.setServiceUrl(m_service + "/tokimeki/no_vote");
 
     QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
 
@@ -3637,12 +3644,21 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
     const QVariant myVoteVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(myVoteVariant.isValid());
-    QCOMPARE(myVoteVariant.toInt(), -1);
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("-1"));
 
     const QVariant optionsVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
     QVERIFY(optionsVariant.isValid());
-    QCOMPARE(optionsVariant.toStringList(), QStringList() << "awake" << "sleeping");
+    QCOMPARE(optionsVariant.toStringList(),
+             QStringList() << "sleeping"
+                           << "awake");
+
+    const QVariant indexOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexOfOptionsVariant.isValid());
+    QCOMPARE(indexOfOptionsVariant.toStringList(),
+             QStringList() << "1"
+                           << "0");
 
     const QVariant totalVotesVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
@@ -3667,10 +3683,15 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
     QVERIFY(countVariant.isValid());
     QCOMPARE(countVariant.toStringList(), QStringList());
 
+    const QVariant indexVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexVariant.isValid());
+    QCOMPARE(indexVariant.toStringList(), QStringList());
+
     const QVariant myVoteVariant =
             operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(myVoteVariant.isValid());
-    QCOMPARE(myVoteVariant.toInt(), -1);
+    QCOMPARE(myVoteVariant.toInt(), QStringLiteral("-1"));
 
     const QVariant totalVotesVariant =
             operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollTotalVotesRole);
@@ -3691,7 +3712,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
     const QVariant emptyUriMyVote =
             operatorUnderTest.item(QString(), TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(emptyUriMyVote.isValid());
-    QCOMPARE(emptyUriMyVote.toInt(), -1);
+    QCOMPARE(emptyUriMyVote.toInt(), QStringLiteral("-1"));
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

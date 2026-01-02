@@ -8,9 +8,10 @@ import tech.relog.hagoromo.singleton 1.0
 Frame {
     id: pollLayout
 
-    property var options: []
-    property var countOfOptions: []
-    property int myVote: -1
+    property var options: [] // str[]
+    property var countOfOptions: [] // str[]
+    property var indexOfOptions: [] // str[]
+    property string myVote: "-1"
     property int totalVotes: 0
     property bool isEnded: false
     property int remainTime: 0
@@ -41,7 +42,7 @@ Frame {
                 checked: false
                 text: modelData
                 ButtonGroup.group: radioGroup
-                property int value: model.index
+                property int value: pollLayout.indexOfOptions[model.index]
 
                 contentItem: RowLayout {
                     Label {
@@ -53,7 +54,7 @@ Frame {
                     Rectangle {
                         width: votedLabel.contentWidth + height
                         height: votedLabel.height
-                        visible: model.index === pollLayout.myVote
+                        visible: pollLayout.indexOfOptions[model.index] === pollLayout.myVote
                         color: Material.accentColor
                         radius: height * 0.5
                         Label {
@@ -73,7 +74,7 @@ Frame {
                 }
                 background: Rectangle {
                     color: Material.backgroundColor
-                    border.color: model.index === pollLayout.myVote ? Material.accentColor : choicesLayout.borderColorNormal
+                    border.color: pollLayout.indexOfOptions[model.index] === pollLayout.myVote ? Material.accentColor : choicesLayout.borderColorNormal
                     border.width: 1
                     radius: 2
                 }

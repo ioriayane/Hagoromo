@@ -127,6 +127,7 @@ ScrollView {
             pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
             pollContent.options: model.pollOptions
             pollContent.countOfOptions: model.pollCountOfOptions
+            pollContent.indexOfOptions: model.pollIndexOfOptions
             pollContent.myVote: model.pollMyVote
             pollContent.totalVotes: model.pollTotalVotes
             pollContent.isEnded: model.pollIsEnded

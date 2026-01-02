@@ -47,8 +47,10 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
             return QStringList();
         } else if (role == PollCountOfOptionsRole) {
             return QStringList();
+        } else if (role == PollIndexOfOptionsRole) {
+            return QStringList();
         } else if (role == PollMyVoteRole) {
-            return -1;
+            return QStringLiteral("-1");
         } else if (role == PollTotalVotesRole) {
             return 0;
         } else if (role == PollIsEndedRole) {
@@ -69,13 +71,20 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
         }
         return options;
     } else if (role == PollCountOfOptionsRole) {
-        QStringList options;
+        QStringList count;
         for (const auto option : view.options) {
-            options.append(QString::number(option.count));
+            count.append(QString::number(option.count));
         }
-        return options;
+        return count;
+    } else if (role == PollIndexOfOptionsRole) {
+        QStringList indexes;
+        for (const auto option : view.options) {
+            indexes.append(QString::number(option.index));
+        }
+        return indexes;
     } else if (role == PollMyVoteRole) {
-        return view.myVote;
+        // QMLに対してindexOfOptionsをQStringListでしか渡せないのでこちらも文字列にする
+        return QString::number(view.myVote);
     } else if (role == PollTotalVotesRole) {
         return view.totalVotes;
     } else if (role == PollIsEndedRole) {
