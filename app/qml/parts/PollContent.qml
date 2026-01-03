@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.15
 import tech.relog.hagoromo.singleton 1.0
 
 Frame {
-    id: pollLayout
+    id: pollContent
 
     property var options: [] // str[]
     property var countOfOptions: [] // str[]
@@ -15,6 +15,7 @@ Frame {
     property int totalVotes: 0
     property bool isEnded: false
     property int remainTime: 0
+    property bool running: false
 
     signal clicked(string vote_index)
 
@@ -24,85 +25,114 @@ Frame {
 
     ColumnLayout {
         id: choicesLayout
-        width: pollLayout.width - pollLayout.padding * 2
+        width: pollContent.width - pollContent.padding * 2
 
         property color borderColorNormal: Material.color(Material.Grey, Material.theme === Material.Dark ?
                                                              Material.Shade600 : Material.Shade400)
-        property color borderColorSelected: Material.color(Material.Grey, Material.theme === Material.Dark ?
-                                                               Material.Shade600 : Material.Shade400)
+        property color colorSelected: Material.color(Material.accent, Material.theme === Material.Dark ?
+                                                         Material.ShadeA100 : Material.Shade400)
 
         Repeater {
-            model: pollLayout.options
+            model: pollContent.options
             // model: ["item1", "item2"]
             delegate: RadioButton {
                 id: control
                 Layout.fillWidth: true
-                // enabled: pollLayout.myVote < 0
-                indicator.visible: (pollLayout.myVote < 0 && !pollLayout.isEnded)
+                indicator.visible: (pollContent.myVote === "-1" && !pollContent.isEnded)
                 checked: false
                 text: modelData
                 ButtonGroup.group: radioGroup
-                property string value: pollLayout.indexOfOptions[model.index]
+                property string value: pollContent.indexOfOptions[model.index]
+                property bool isVoted: pollContent.indexOfOptions[model.index] === pollContent.myVote
 
                 contentItem: RowLayout {
+                    width: control.width
                     Label {
                         Layout.leftMargin: control.indicator.x + control.indicator.width
+                        Layout.fillWidth: true
                         font.pointSize: AdjustedValues.f10
                         text: control.text
                         enabled: true
-                    }
-                    Rectangle {
-                        width: votedLabel.contentWidth + height
-                        height: votedLabel.height
-                        visible: pollLayout.indexOfOptions[model.index] === pollLayout.myVote
-                        color: Material.accentColor
-                        radius: height * 0.5
-                        Label {
-                            id: votedLabel
-                            anchors.centerIn: parent
-                            font.pointSize: AdjustedValues.f8
-                            text: qsTr("Voted")
+                        elide: Text.ElideRight
+
+                        Rectangle {
+                            anchors.right: parent.right
+                            width: votedLabel.contentWidth + height
+                            height: votedLabel.height
+                            visible: control.isVoted
+                            color: Material.accentColor
+                            radius: height * 0.5
+                            Label {
+                                id: votedLabel
+                                anchors.centerIn: parent
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Voted")
+                            }
                         }
                     }
-                    Control {
-                        font.pointSize: AdjustedValues.f8
-                        Layout.fillWidth: true
-                    }
                     Label {
-                        text: pollLayout.totalVotes === 0 ? "0%" : (100 * pollLayout.countOfOptions[model.index] / pollLayout.totalVotes).toFixed(0) + "%"
+                        text: pollContent.totalVotes === 0 ? "0%" : (100 * pollContent.countOfOptions[model.index] / pollContent.totalVotes).toFixed(0) + "%"
                     }
                 }
                 background: Rectangle {
                     color: Material.backgroundColor
-                    border.color: pollLayout.indexOfOptions[model.index] === pollLayout.myVote ? Material.accentColor : choicesLayout.borderColorNormal
+                    border.color: control.isVoted ? Material.accentColor : choicesLayout.borderColorNormal
                     border.width: 1
                     radius: 2
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: parent.width * pollContent.countOfOptions[model.index] / pollContent.totalVotes
+                        color: Material.color(Material.accent)
+                        opacity: 0.4
+                        Behavior on width {
+                            NumberAnimation { duration: 300; easing.type: Easing.OutBounce }
+                        }
+                    }
                 }
             }
         }
 
         RowLayout {
+            Layout.topMargin: AdjustedValues.s5
             Layout.leftMargin: AdjustedValues.s10
             spacing: AdjustedValues.s10
             Label {
                 color: Material.color(Material.Grey)
                 font.pointSize: AdjustedValues.f8
-                text: qsTr("%s votes").replace("%s", pollLayout.totalVotes)
+                text: qsTr("%s votes").replace("%s", pollContent.totalVotes)
             }
             Label {
+                Layout.fillWidth: true
                 color: Material.color(Material.Grey)
                 font.pointSize: AdjustedValues.f8
-                text: pollLayout.isEnded ? qsTr("Finished") : qsTr("%s hours left").replace("%s", pollLayout.remainTime)
-            }
+                text: pollContent.isEnded ? qsTr("Finished") : qsTr("%s hours left").replace("%s", pollContent.remainTime)
 
-            Control {
-                Layout.fillWidth: true
-            }
-
-            Button {
-                enabled: !pollLayout.isEnded && radioGroup.checkState !== Qt.Unchecked
-                text: pollLayout.myVote >= 0 ? qsTr("Remove vote") : qsTr("Vote")
-                onClicked: pollLayout.clicked(radioGroup.checkedButton.value)
+                Button {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: AdjustedValues.b36
+                    visible: !pollContent.isEnded
+                    enabled: !pollContent.running &&
+                             (
+                                 pollContent.myVote !== "-1" ||
+                                 radioGroup.checkState !== Qt.Unchecked
+                              )
+                    text: pollContent.myVote !== "-1" ? qsTr("Remove vote") : qsTr("Vote")
+                    onClicked: {
+                        if(pollContent.myVote === "-1"){
+                            pollContent.clicked(radioGroup.checkedButton.value)
+                        }else{
+                            pollContent.clicked(pollContent.myVote)
+                        }
+                    }
+                    BusyIndicator {
+                        anchors.fill: parent
+                        anchors.margins: 3
+                        visible: pollContent.running
+                    }
+                }
             }
         }
     }

@@ -152,25 +152,48 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
         emit finished(false, cid);
         return;
     }
+    int option_index_num = option_index.toInt();
 
-    QJsonObject json_poll;
-    json_poll.insert("cid", cid);
-    json_poll.insert("uri", uri);
-    QJsonObject json_record;
-    json_record.insert("poll", json_poll);
-    json_record.insert("optionIndex", option_index.toInt());
-    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
-    json_record.insert("$type", "tech.tokimeki.poll.vote");
+    auto view = m_pollViewDetailHash.value(uri);
 
-    auto record = new ComAtprotoRepoCreateRecord(this);
-    connect(record, &ComAtprotoRepoCreateRecord::finished, this, [=](bool success) {
-        if (success) { }
-        emit finished(success, cid);
-        record->deleteLater();
-    });
-    record->setAccount(account());
-    record->createRecord(account().did, QStringLiteral("tech.tokimeki.poll.vote"), QString(), false,
-                         json_record, QString());
+    if (view.myVote == -1) {
+        QJsonObject json_poll;
+        json_poll.insert("cid", view.poll.cid);
+        json_poll.insert("uri", view.poll.uri);
+        QJsonObject json_record;
+        json_record.insert("poll", json_poll);
+        json_record.insert("optionIndex", option_index_num);
+        json_record.insert("createdAt",
+                           QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+        json_record.insert("$type", "tech.tokimeki.poll.vote");
+
+        auto record = new ComAtprotoRepoCreateRecord(this);
+        connect(record, &ComAtprotoRepoCreateRecord::finished, this, [=](bool success) {
+            if (success) {
+                for (int i = 0; i < m_pollViewDetailHash[uri].options.length(); i++) {
+                    if (m_pollViewDetailHash[uri].options[i].index == option_index_num) {
+                        m_pollViewDetailHash[uri].options[i].count++;
+                        break;
+                    }
+                }
+                m_pollViewDetailHash[uri].totalVotes++;
+                m_pollViewDetailHash[uri].myVote = option_index_num;
+                m_pollViewDetailHash[uri].myVoteUri = record->uri();
+            } else {
+            }
+            emit finished(success, cid);
+            record->deleteLater();
+        });
+        record->setAccount(account());
+        record->createRecord(account().did, QStringLiteral("tech.tokimeki.poll.vote"), QString(),
+                             false, json_record, QString());
+    } else if (!view.myVoteUri.isEmpty()) {
+        qDebug() << "remove vote";
+        emit finished(false, cid);
+    } else {
+        qDebug() << "ERROR: myVoteUri is empty";
+        emit finished(false, cid);
+    }
 }
 
 AtProtocolInterface::AccountData TokimekiPollOperator::account() const

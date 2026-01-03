@@ -2424,32 +2424,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="64"/>
+        <location filename="qml/parts/PollContent.qml" line="69"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="90"/>
+        <location filename="qml/parts/PollContent.qml" line="104"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="95"/>
+        <location filename="qml/parts/PollContent.qml" line="110"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="95"/>
+        <location filename="qml/parts/PollContent.qml" line="110"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="104"/>
+        <location filename="qml/parts/PollContent.qml" line="122"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="104"/>
+        <location filename="qml/parts/PollContent.qml" line="122"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>

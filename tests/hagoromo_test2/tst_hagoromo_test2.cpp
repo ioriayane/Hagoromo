@@ -76,7 +76,7 @@ hagoromo_test::hagoromo_test()
                 } else if (request.url().path()
                            == "/response/tokimeki/xrpc/com.atproto.repo.createRecord") {
                     test_RecordOperatorCreateRecord(request.body());
-                    json = "{\"cid\":\"CID\",\"uri\":\"URI\"}";
+                    json = "{\"cid\":\"CID\",\"uri\":\"at://URI\"}";
                     result = true;
                 } else if (request.url().path()
                                    == "/response/generator/save/xrpc/app.bsky.actor.putPreferences"
@@ -1069,15 +1069,16 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
         QHashIterator<QString, QJsonObject> i(hash);
         while (i.hasNext()) {
             i.next();
-
-            QString uuid = AccountManager::getInstance()->updateAccount(
+            const QString uri = i.value().value("uri").toString();
+            const QString cid = i.value().value("cid").toString();
+            const QString option_index = QString::number(i.value().value("optionIndex").toInt());
+            const QString uuid = AccountManager::getInstance()->updateAccount(
                     QString(), m_service + "/tokimeki", "id", "pass", i.key(), "handle", "email",
                     "accessJwt", "refreshJwt", true);
             ope.setAccount(uuid);
 
             QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &)));
-            ope.vote(i.value().value("cid").toString(), i.value().value("uri").toString(),
-                     QString::number(i.value().value("optionIndex").toInt()));
+            ope.vote(cid, uri, option_index);
             spy.wait();
             QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
@@ -1085,6 +1086,21 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
             QVERIFY(arguments.at(0).toBool());
             QCOMPARE(arguments.at(1).toString(),
                      "bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe");
+
+            QVariant v;
+            v = ope.item(uri, TokimekiPollOperator::PollMyVoteRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toString(), option_index);
+
+            v = ope.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toInt(), 3);
+
+            v = ope.item(uri, TokimekiPollOperator::PollCountOfOptionsRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toStringList(),
+                     QStringList() << "2"
+                                   << "1");
         }
     }
 }
