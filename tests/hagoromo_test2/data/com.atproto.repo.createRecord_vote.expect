@@ -1,0 +1,21 @@
+{
+    "did:plc:vote_0001": {
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u",
+        "cid": "bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe",
+        "optionIndex": 1,
+        "expect": {
+            "repo": "did:plc:vote_0001",
+            "collection": "tech.tokimeki.poll.vote",
+            "record": {
+                "$type": "tech.tokimeki.poll.vote",
+                "poll": {
+                    "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u",
+                    "cid": "bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe"
+                },
+                "optionIndex": 1,
+                "createdAt": "2025-12-30T04:43:49.068Z"
+            },
+            "validate": false
+        }
+    }
+}

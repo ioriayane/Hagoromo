@@ -3566,13 +3566,13 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
     const QVariant uriVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollUriRole);
     QVERIFY(uriVariant.isValid());
     QCOMPARE(
-            uriVariant.toInt(),
+            uriVariant.toString(),
             QStringLiteral(
                     "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u"));
 
     const QVariant cidVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollCidRole);
     QVERIFY(cidVariant.isValid());
-    QCOMPARE(cidVariant.toInt(),
+    QCOMPARE(cidVariant.toString(),
              QStringLiteral("bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe"));
 
     const QVariant optionsVariant =
@@ -3601,7 +3601,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
     const QVariant myVoteVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(myVoteVariant.isValid());
-    QCOMPARE(myVoteVariant.toInt(), QStringLiteral("1"));
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("1"));
 
     const QVariant totalVotesVariant =
             operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
@@ -3703,7 +3703,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
     const QVariant myVoteVariant =
             operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(myVoteVariant.isValid());
-    QCOMPARE(myVoteVariant.toInt(), QStringLiteral("-1"));
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("-1"));
 
     const QVariant totalVotesVariant =
             operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollTotalVotesRole);
@@ -3724,7 +3724,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
     const QVariant emptyUriMyVote =
             operatorUnderTest.item(QString(), TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(emptyUriMyVote.isValid());
-    QCOMPARE(emptyUriMyVote.toInt(), QStringLiteral("-1"));
+    QCOMPARE(emptyUriMyVote.toString(), QStringLiteral("-1"));
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

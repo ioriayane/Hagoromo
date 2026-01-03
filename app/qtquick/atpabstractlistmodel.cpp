@@ -167,10 +167,12 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
 }
 
 void AtpAbstractListModel::voteToPoll(const QString &post_cid, const QString &poll_uri,
-                                      const QString &poll_cid, const QString &vote_index)
+                                      const QString &poll_cid, const QString &option_index)
 {
     // m_tokimekiPoll
-    qDebug() << "voteToPoll" << post_cid << poll_uri << poll_cid << vote_index;
+    qDebug() << "voteToPoll" << post_cid << poll_uri << poll_cid << option_index;
+    m_tokimekiPoll.setAccount(account().uuid);
+    m_tokimekiPoll.vote(post_cid, poll_uri, option_index);
 }
 
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)

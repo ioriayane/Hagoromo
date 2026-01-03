@@ -302,14 +302,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="743"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="750"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="745"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="752"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="746"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="753"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="748"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="755"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>

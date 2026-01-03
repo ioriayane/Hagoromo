@@ -1,10 +1,14 @@
 #include "tokimekipolloperator.h"
 #include "atprotocol/tech/tokimeki/poll/techtokimekipollgetpoll.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "tools/accountmanager.h"
 
 #include <QDateTime>
 #include <QUrl>
 #include <QStringList>
+#include <QJsonObject>
 
+using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::TechTokimekiPollGetPoll;
 
 TokimekiPollOperator::TokimekiPollOperator(QObject *parent)
@@ -110,6 +114,11 @@ QVariant TokimekiPollOperator::item(const QString &uri, Roles role) const
     return QVariant();
 }
 
+void TokimekiPollOperator::setAccount(const QString &uuid)
+{
+    m_uuid = uuid;
+}
+
 void TokimekiPollOperator::setServiceUrl(const QString &url)
 {
     if (url.isEmpty())
@@ -135,4 +144,36 @@ void TokimekiPollOperator::getPoll(const QString &cid, const QString &uri, const
     });
     poll->setService(m_serviceUrl);
     poll->getPoll(uri, viewer);
+}
+
+void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QString &option_index)
+{
+    if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri)) {
+        emit finished(false, cid);
+        return;
+    }
+
+    QJsonObject json_poll;
+    json_poll.insert("cid", cid);
+    json_poll.insert("uri", uri);
+    QJsonObject json_record;
+    json_record.insert("poll", json_poll);
+    json_record.insert("optionIndex", option_index.toInt());
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("$type", "tech.tokimeki.poll.vote");
+
+    auto record = new ComAtprotoRepoCreateRecord(this);
+    connect(record, &ComAtprotoRepoCreateRecord::finished, this, [=](bool success) {
+        if (success) { }
+        emit finished(success, cid);
+        record->deleteLater();
+    });
+    record->setAccount(account());
+    record->createRecord(account().did, QStringLiteral("tech.tokimeki.poll.vote"), QString(), false,
+                         json_record, QString());
+}
+
+AtProtocolInterface::AccountData TokimekiPollOperator::account() const
+{
+    return AccountManager::getInstance()->getAccount(m_uuid);
 }

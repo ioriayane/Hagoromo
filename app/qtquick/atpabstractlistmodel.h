@@ -179,7 +179,7 @@ public:
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void restoreBluredText(const QString &cid);
     Q_INVOKABLE void voteToPoll(const QString &post_cid, const QString &poll_uri,
-                                const QString &poll_cid, const QString &vote_index);
+                                const QString &poll_cid, const QString &option_index);
     Q_INVOKABLE void reflectVisibility();
 
     bool running() const;

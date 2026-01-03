@@ -35,4 +35,13 @@ QHash<QString, QJsonObject> loadPostExpectHash(const QString &path)
     return hash;
 }
 
+QHash<QString, QJsonObject> loadVoteHash(const QString &path)
+{
+    QHash<QString, QJsonObject> hash;
+    QJsonDocument json_doc = loadJson(path);
+    for (const auto &key : json_doc.object().keys()) {
+        hash[key] = json_doc.object().value(key).toObject();
+    }
+    return hash;
+}
 }
