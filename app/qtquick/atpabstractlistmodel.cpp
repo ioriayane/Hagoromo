@@ -202,7 +202,8 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
     }
 }
 
-void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid)
+void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid,
+                                                TokimekiPollOperator::FunctionType type)
 {
     qDebug().noquote() << "finishedTokimekiPoll" << this << success << cid;
     if (success) {
@@ -213,7 +214,9 @@ void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid
             }
         }
     }
-    QTimer::singleShot(0, this, &AtpAbstractListModel::getTokimekiPoll);
+    if (type == TokimekiPollOperator::FunctionType::GetPoll) {
+        QTimer::singleShot(0, this, &AtpAbstractListModel::getTokimekiPoll);
+    }
 }
 
 void AtpAbstractListModel::reflectVisibility()

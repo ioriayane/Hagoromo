@@ -302,14 +302,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="745"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="752"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="748"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="755"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="748"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="755"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="751"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="758"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -2424,32 +2424,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="70"/>
+        <location filename="qml/parts/PollContent.qml" line="74"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="108"/>
+        <location filename="qml/parts/PollContent.qml" line="112"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="114"/>
+        <location filename="qml/parts/PollContent.qml" line="118"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="114"/>
+        <location filename="qml/parts/PollContent.qml" line="118"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="126"/>
+        <location filename="qml/parts/PollContent.qml" line="130"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="126"/>
+        <location filename="qml/parts/PollContent.qml" line="130"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>

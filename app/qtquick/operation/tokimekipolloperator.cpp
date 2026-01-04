@@ -142,7 +142,7 @@ void TokimekiPollOperator::getPoll(const QString &cid, const QString &uri, const
         if (success) {
             m_pollViewDetailHash[uri] = poll->pollViewDetailed();
         }
-        emit finished(success, cid);
+        emit finished(success, cid, FunctionType::GetPoll);
         poll->deleteLater();
     });
     poll->setService(m_serviceUrl);
@@ -152,7 +152,7 @@ void TokimekiPollOperator::getPoll(const QString &cid, const QString &uri, const
 void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QString &option_index)
 {
     if (uri.isEmpty() || !m_pollViewDetailHash.contains(uri)) {
-        emit finished(false, cid);
+        emit finished(false, cid, FunctionType::Vote);
         return;
     }
     int option_index_num = option_index.toInt();
@@ -184,7 +184,7 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
                 m_pollViewDetailHash[uri].myVoteUri = record->uri();
             } else {
             }
-            emit finished(success, cid);
+            emit finished(success, cid, FunctionType::Vote);
             record->deleteLater();
         });
         record->setAccount(account());
@@ -208,7 +208,7 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
                 m_pollViewDetailHash[uri].myVoteUri.clear();
             } else {
             }
-            emit finished(success, cid);
+            emit finished(success, cid, FunctionType::Vote);
             record->deleteLater();
         });
         record->setAccount(account());
@@ -216,7 +216,7 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
                              QString(), QString());
     } else {
         qDebug() << "ERROR: myVoteUri is empty";
-        emit finished(false, cid);
+        emit finished(false, cid, FunctionType::Vote);
     }
 }
 

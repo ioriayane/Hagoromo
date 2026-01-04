@@ -25,6 +25,10 @@ public:
         PollIsEndedRole,
         PollRemainTimeRole,
     };
+    enum FunctionType {
+        GetPoll,
+        Vote,
+    };
 
     QString convertUrlToUri(const QString &url) const;
 
@@ -39,7 +43,7 @@ public:
     void vote(const QString &cid, const QString &uri, const QString &option_index);
 
 signals:
-    void finished(bool success, const QString &cid);
+    void finished(bool success, const QString &cid, FunctionType type);
 
 private:
     AtProtocolInterface::AccountData account() const;

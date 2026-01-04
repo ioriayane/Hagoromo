@@ -232,7 +232,8 @@ public slots:
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
     void finishedRestoreBluredText(bool success, const QString &cid, const QString text);
-    void finishedTokimekiPoll(bool success, const QString &cid);
+    void finishedTokimekiPoll(bool success, const QString &cid,
+                              TokimekiPollOperator::FunctionType type);
 
 protected:
     void displayQueuedPosts();
