@@ -35,10 +35,8 @@ Frame {
 
         Repeater {
             model: pollContent.options
-            // model: ["item1", "item2"]
             delegate: RadioButton {
                 id: control
-                // Layout.preferredHeight: AdjustedValues.b30
                 Layout.fillWidth: true
                 indicator.visible: (pollContent.myVote === "-1" && !pollContent.isEnded)
                 checked: false
