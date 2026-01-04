@@ -83,6 +83,7 @@ public:
         RunningPostPinningRole,
         RunningOtherPrcessingRole,
         RunningSkyblurPostTextRole,
+        RunningVoteToPollRole,
 
         HasQuoteRecordRole,
         QuoteRecordIsMineRole,
@@ -267,6 +268,8 @@ private:
     void setRunningOtherPrcessing(int row, bool running);
     virtual bool runningSkyblurPostText(int row) const;
     virtual void setRunningSkyblurPostText(int row, bool running);
+    virtual bool runningVoteToPoll(int row) const;
+    virtual void setRunningVoteToPoll(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -296,6 +299,7 @@ private:
     QString m_runningPostPinningCid;
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
+    QString m_runningVoteToPollCid;
 };
 
 #endif // TIMELINELISTMODEL_H

@@ -316,6 +316,8 @@ protected:
     bool hasSkyblurLink(const AtProtocolType::AppBskyFeedPost::Main &record) const;
     virtual bool runningSkyblurPostText(int row) const;
     virtual void setRunningSkyblurPostText(int row, bool running);
+    virtual bool runningVoteToPoll(int row) const;
+    virtual void setRunningVoteToPoll(int row, bool running);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

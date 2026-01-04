@@ -295,6 +295,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return !current.cid.isEmpty() && (current.cid == m_runningOtherProcessingCid);
     } else if (role == RunningSkyblurPostTextRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningSkyblurPostTextCid);
+    } else if (role == RunningVoteToPollRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningVoteToPollCid);
 
     } else if (role == AggregatedAvatarsRole || role == AggregatedDisplayNamesRole
                || role == AggregatedDidsRole || role == AggregatedHandlesRole
@@ -639,6 +641,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
             m_runningSkyblurPostTextCid = current.cid;
         } else {
             m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QList<int>() << role);
+    } else if (role == RunningVoteToPollRole) {
+        if (value.toBool()) {
+            m_runningVoteToPollCid = current.cid;
+        } else {
+            m_runningVoteToPollCid.clear();
         }
         emit dataChanged(index(row), index(row), QList<int>() << role);
     }
@@ -1107,6 +1116,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RunningBookmarkRole] = "runningBookmark";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
     roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
+    roles[RunningVoteToPollRole] = "runningVoteToPoll";
 
     roles[AggregatedAvatarsRole] = "aggregatedAvatars";
     roles[AggregatedDisplayNamesRole] = "aggregatedDisplayNames";
@@ -1788,6 +1798,16 @@ bool NotificationListModel::runningSkyblurPostText(int row) const
 void NotificationListModel::setRunningSkyblurPostText(int row, bool running)
 {
     update(row, RunningSkyblurPostTextRole, running);
+}
+
+bool NotificationListModel::runningVoteToPoll(int row) const
+{
+    return item(row, RunningVoteToPollRole).toBool();
+}
+
+void NotificationListModel::setRunningVoteToPoll(int row, bool running)
+{
+    update(row, RunningVoteToPollRole, running);
 }
 
 template<typename T>

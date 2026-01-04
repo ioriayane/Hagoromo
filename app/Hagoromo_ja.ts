@@ -302,14 +302,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="748"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="755"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="761"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="768"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="751"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="758"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="764"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="771"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -2230,7 +2230,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="325"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="327"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2641,12 +2641,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="175"/>
+        <location filename="qml/view/PostThreadView.qml" line="176"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="226"/>
+        <location filename="qml/view/PostThreadView.qml" line="227"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -4453,7 +4453,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="342"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="344"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -4461,7 +4461,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="179"/>
+        <location filename="qml/view/TimelineView.qml" line="180"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

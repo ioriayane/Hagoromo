@@ -252,6 +252,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningOtherProcessingCid);
     else if (role == RunningSkyblurPostTextRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningSkyblurPostTextCid);
+    else if (role == RunningVoteToPollRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningVoteToPollCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
              || role == QuoteRecordCidRole || role == QuoteRecordUriRole
@@ -541,6 +543,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningSkyblurPostTextCid = current.post.cid;
         } else {
             m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == RunningVoteToPollRole) {
+        if (value.toBool()) {
+            m_runningVoteToPollCid = current.post.cid;
+        } else {
+            m_runningVoteToPollCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
 
@@ -1014,6 +1023,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningPostPinningRole] = "runningPostPinning";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
     roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
+    roles[RunningVoteToPollRole] = "runningVoteToPoll";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
@@ -1460,6 +1470,16 @@ bool TimelineListModel::runningSkyblurPostText(int row) const
 void TimelineListModel::setRunningSkyblurPostText(int row, bool running)
 {
     update(row, RunningSkyblurPostTextRole, running);
+}
+
+bool TimelineListModel::runningVoteToPoll(int row) const
+{
+    return item(row, RunningVoteToPollRole).toBool();
+}
+
+void TimelineListModel::setRunningVoteToPoll(int row, bool running)
+{
+    update(row, RunningVoteToPollRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

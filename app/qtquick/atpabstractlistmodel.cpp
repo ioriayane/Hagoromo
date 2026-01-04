@@ -171,6 +171,14 @@ void AtpAbstractListModel::voteToPoll(const QString &post_cid, const QString &po
 {
     // m_tokimekiPoll
     qDebug() << "voteToPoll" << post_cid << poll_uri << poll_cid << option_index;
+    const auto rows = indexsOf(post_cid);
+    for (const auto row : rows) {
+        if (runningVoteToPoll(row))
+            return;
+    }
+    for (const auto row : rows) {
+        setRunningVoteToPoll(row, true);
+    }
     m_tokimekiPoll.setAccount(account().uuid);
     m_tokimekiPoll.vote(post_cid, poll_uri, option_index);
 }
@@ -206,8 +214,13 @@ void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid
                                                 TokimekiPollOperator::FunctionType type)
 {
     qDebug().noquote() << "finishedTokimekiPoll" << this << success << cid;
+    const auto rows = indexsOf(cid);
+    if (type == TokimekiPollOperator::FunctionType::Vote) {
+        for (const auto row : rows) {
+            setRunningVoteToPoll(row, false);
+        }
+    }
     if (success) {
-        const auto rows = indexsOf(cid);
         for (const auto row : rows) {
             if (row >= 0) {
                 emit dataChanged(index(row), index(row));
@@ -1398,6 +1411,18 @@ bool AtpAbstractListModel::runningSkyblurPostText(int row) const
 }
 
 void AtpAbstractListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(running)
+}
+
+bool AtpAbstractListModel::runningVoteToPoll(int row) const
+{
+    Q_UNUSED(row)
+    return false;
+}
+
+void AtpAbstractListModel::setRunningVoteToPoll(int row, bool running)
 {
     Q_UNUSED(row)
     Q_UNUSED(running)

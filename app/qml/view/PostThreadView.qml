@@ -158,6 +158,7 @@ ColumnLayout {
                 pollContent.totalVotes: model.pollTotalVotes
                 pollContent.isEnded: model.pollIsEnded
                 pollContent.remainTime: model.pollRemainTime
+                pollContent.running: model.runningVoteToPoll
                 pollContent.onClicked: (vote_index) => rootListView.model.voteToPoll(model.cid, model.pollUri, model.pollCid, vote_index)
 
                 contentFilterFrame.visible: model.contentFilterMatched
