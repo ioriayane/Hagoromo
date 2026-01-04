@@ -124,6 +124,9 @@ Frame {
                         if(pollContent.myVote === "-1"){
                             pollContent.clicked(radioGroup.checkedButton.value)
                         }else{
+                            if(radioGroup.checkedButton){
+                                radioGroup.checkedButton.checked = false
+                            }
                             pollContent.clicked(pollContent.myVote)
                         }
                     }

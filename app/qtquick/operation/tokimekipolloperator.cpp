@@ -1,6 +1,8 @@
 #include "tokimekipolloperator.h"
 #include "atprotocol/tech/tokimeki/poll/techtokimekipollgetpoll.h"
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
+#include "atprotocol/lexicons_func_unknown.h"
 #include "tools/accountmanager.h"
 
 #include <QDateTime>
@@ -9,6 +11,7 @@
 #include <QJsonObject>
 
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
+using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
 using AtProtocolInterface::TechTokimekiPollGetPoll;
 
 TokimekiPollOperator::TokimekiPollOperator(QObject *parent)
@@ -189,7 +192,28 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
                              false, json_record, QString());
     } else if (!view.myVoteUri.isEmpty()) {
         qDebug() << "remove vote";
-        emit finished(false, cid);
+        QString rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(view.myVoteUri);
+        auto record = new ComAtprotoRepoDeleteRecord(this);
+        connect(record, &ComAtprotoRepoDeleteRecord::finished, this, [=](bool success) {
+            if (success) {
+                for (int i = 0; i < m_pollViewDetailHash[uri].options.length(); i++) {
+                    if (m_pollViewDetailHash[uri].options[i].index
+                        == m_pollViewDetailHash[uri].myVote) {
+                        m_pollViewDetailHash[uri].options[i].count--;
+                        break;
+                    }
+                }
+                m_pollViewDetailHash[uri].totalVotes--;
+                m_pollViewDetailHash[uri].myVote = -1;
+                m_pollViewDetailHash[uri].myVoteUri.clear();
+            } else {
+            }
+            emit finished(success, cid);
+            record->deleteLater();
+        });
+        record->setAccount(account());
+        record->deleteRecord(account().did, QStringLiteral("tech.tokimeki.poll.vote"), rkey,
+                             QString(), QString());
     } else {
         qDebug() << "ERROR: myVoteUri is empty";
         emit finished(false, cid);
