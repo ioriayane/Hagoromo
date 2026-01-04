@@ -1019,6 +1019,10 @@ AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs:
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCountOfOptionsRole);
     } else if (role == PollIndexOfOptionsRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollIndexOfOptionsRole);
+    } else if (role == PollIsMineRole) {
+        const auto tmp =
+                m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollUriRole).toString();
+        return (!tmp.isEmpty() && tmp.split("/").contains(account().did));
     } else if (role == PollMyVoteRole) {
         return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollMyVoteRole);
     } else if (role == PollTotalVotesRole) {

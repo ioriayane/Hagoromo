@@ -153,6 +153,7 @@ ColumnLayout {
                 pollContent.options: model.pollOptions
                 pollContent.countOfOptions: model.pollCountOfOptions
                 pollContent.indexOfOptions: model.pollIndexOfOptions
+                pollContent.myPoll: model.pollIsMine
                 pollContent.myVote: model.pollMyVote
                 pollContent.totalVotes: model.pollTotalVotes
                 pollContent.isEnded: model.pollIsEnded

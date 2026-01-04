@@ -11,6 +11,7 @@ Frame {
     property var options: [] // str[]
     property var countOfOptions: [] // str[]
     property var indexOfOptions: [] // str[]
+    property bool myPoll: false
     property string myVote: "-1"
     property int totalVotes: 0
     property bool isEnded: false
@@ -37,6 +38,7 @@ Frame {
             // model: ["item1", "item2"]
             delegate: RadioButton {
                 id: control
+                // Layout.preferredHeight: AdjustedValues.b30
                 Layout.fillWidth: true
                 indicator.visible: (pollContent.myVote === "-1" && !pollContent.isEnded)
                 checked: false
@@ -44,6 +46,9 @@ Frame {
                 ButtonGroup.group: radioGroup
                 property string value: pollContent.indexOfOptions[model.index]
                 property bool isVoted: pollContent.indexOfOptions[model.index] === pollContent.myVote
+
+                topPadding: AdjustedValues.s10
+                bottomPadding: AdjustedValues.s10
 
                 contentItem: RowLayout {
                     width: control.width
@@ -71,6 +76,8 @@ Frame {
                         }
                     }
                     Label {
+                        visible: pollContent.myPoll || pollContent.myVote !== "-1"
+                        font.pointSize: AdjustedValues.f10
                         text: pollContent.totalVotes === 0 ? "0%" : (100 * pollContent.countOfOptions[model.index] / pollContent.totalVotes).toFixed(0) + "%"
                     }
                 }
@@ -86,6 +93,7 @@ Frame {
                         width: parent.width * pollContent.countOfOptions[model.index] / pollContent.totalVotes
                         color: Material.color(Material.accent)
                         opacity: 0.4
+                        visible: pollContent.myPoll || pollContent.myVote !== "-1"
                         Behavior on width {
                             NumberAnimation { duration: 300; easing.type: Easing.OutBounce }
                         }
@@ -137,6 +145,12 @@ Frame {
                     }
                 }
             }
+        }
+        Label {
+            Layout.leftMargin: AdjustedValues.s10
+            color: Material.color(Material.Grey)
+            font.pointSize: AdjustedValues.f8
+            text: "- Powered by TOKIMEKI -"
         }
     }
 }

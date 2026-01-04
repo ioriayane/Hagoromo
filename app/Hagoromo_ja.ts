@@ -2230,7 +2230,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="324"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="325"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2424,32 +2424,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="69"/>
+        <location filename="qml/parts/PollContent.qml" line="70"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="104"/>
+        <location filename="qml/parts/PollContent.qml" line="108"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="110"/>
+        <location filename="qml/parts/PollContent.qml" line="114"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="110"/>
+        <location filename="qml/parts/PollContent.qml" line="114"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="122"/>
+        <location filename="qml/parts/PollContent.qml" line="126"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="122"/>
+        <location filename="qml/parts/PollContent.qml" line="126"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2641,12 +2641,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="174"/>
+        <location filename="qml/view/PostThreadView.qml" line="175"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="225"/>
+        <location filename="qml/view/PostThreadView.qml" line="226"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -4453,7 +4453,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="340"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="342"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -4461,7 +4461,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="178"/>
+        <location filename="qml/view/TimelineView.qml" line="179"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

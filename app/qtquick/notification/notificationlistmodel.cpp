@@ -135,6 +135,7 @@ NotificationListModel::NotificationListModel(QObject *parent)
             AtpAbstractListModel::TokimekiPollRoles::PollCountOfOptionsRole;
     m_toTokimekiPollRoles[PollIndexOfOptionsRole] =
             AtpAbstractListModel::TokimekiPollRoles::PollIndexOfOptionsRole;
+    m_toTokimekiPollRoles[PollIsMineRole] = AtpAbstractListModel::TokimekiPollRoles::PollIsMineRole;
     m_toTokimekiPollRoles[PollMyVoteRole] = AtpAbstractListModel::TokimekiPollRoles::PollMyVoteRole;
     m_toTokimekiPollRoles[PollTotalVotesRole] =
             AtpAbstractListModel::TokimekiPollRoles::PollTotalVotesRole;
@@ -1171,6 +1172,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[PollOptionsRole] = "pollOptions";
     roles[PollCountOfOptionsRole] = "pollCountOfOptions";
     roles[PollIndexOfOptionsRole] = "pollIndexOfOptions";
+    roles[PollIsMineRole] = "pollIsMine";
     roles[PollMyVoteRole] = "pollMyVote";
     roles[PollTotalVotesRole] = "pollTotalVotes";
     roles[PollIsEndedRole] = "pollIsEnded";

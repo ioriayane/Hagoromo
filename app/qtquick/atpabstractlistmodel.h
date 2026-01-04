@@ -151,6 +151,7 @@ public:
         PollOptionsRole,
         PollCountOfOptionsRole,
         PollIndexOfOptionsRole,
+        PollIsMineRole,
         PollMyVoteRole,
         PollTotalVotesRole,
         PollIsEndedRole,
