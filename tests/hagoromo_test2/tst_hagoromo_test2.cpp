@@ -1077,7 +1077,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
                     "accessJwt", "refreshJwt", true);
             ope.setAccount(uuid);
 
-            QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &)));
+            QSignalSpy spy(&ope, &TokimekiPollOperator::finished);
             ope.vote(cid, uri, option_index);
             spy.wait();
             QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
