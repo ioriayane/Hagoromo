@@ -4,11 +4,19 @@
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/accountmanager.h"
+#include "common.h"
 
 #include <QDateTime>
 #include <QUrl>
 #include <QStringList>
 #include <QJsonObject>
+#include <QColor>
+#include <QFontMetrics>
+#include <QImage>
+#include <QLinearGradient>
+#include <QPainter>
+#include <QtGlobal>
+#include <QUuid>
 
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
@@ -218,6 +226,98 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
         qDebug() << "ERROR: myVoteUri is empty";
         emit finished(false, cid, FunctionType::Vote);
     }
+}
+
+QString TokimekiPollOperator::makePollOgpFile(const QStringList &options) const
+{
+    QStringList normalizedOptions;
+    normalizedOptions.reserve(options.size());
+    for (const QString &option : options) {
+        QString text = option;
+        text.replace(QLatin1Char('\r'), QLatin1Char(' '));
+        text.replace(QLatin1Char('\n'), QLatin1Char(' '));
+        text = text.simplified();
+        normalizedOptions.append(text.isEmpty() ? tr("(No option)") : text);
+    }
+
+    if (normalizedOptions.isEmpty()) {
+        return QString();
+    }
+
+    constexpr int imageWidth = 1000;
+    constexpr int imageHeight = 525;
+    constexpr int maxDisplayableOptions = 6;
+
+    if (normalizedOptions.size() > maxDisplayableOptions) {
+        const int remaining = normalizedOptions.size() - maxDisplayableOptions;
+        normalizedOptions = normalizedOptions.mid(0, maxDisplayableOptions);
+        normalizedOptions.append(tr("+%1 more choices").arg(remaining));
+    }
+
+    QImage image(imageWidth, imageHeight, QImage::Format_ARGB32_Premultiplied);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+
+    QLinearGradient gradient(0, 0, 0, imageHeight);
+    gradient.setColorAt(0.0, QColor(12, 12, 20));
+    gradient.setColorAt(0.5, QColor(6, 6, 12));
+    gradient.setColorAt(1.0, QColor(2, 2, 4));
+    painter.fillRect(image.rect(), gradient);
+
+    const int boxWidth = 920;
+    const int boxHeight = 80;
+    const int horizontalMargin = (imageWidth - boxWidth) / 2;
+    const int titleTop = 40;
+    const int titleHeight = 60;
+    const int optionAreaSpacing = 14;
+    const int optionAreaBottomMargin = 60;
+
+    QFont titleFont = painter.font();
+    titleFont.setBold(true);
+    titleFont.setPointSize(32);
+    painter.setFont(titleFont);
+    painter.setPen(QColor(0xF5, 0xF5, 0xF7));
+    painter.drawText(
+            QRect(horizontalMargin, titleTop, imageWidth - horizontalMargin * 2, titleHeight),
+            Qt::AlignLeft | Qt::AlignVCenter, tr("TOKIMEKI Poll"));
+
+    const int optionAreaTop = titleTop + titleHeight + 24;
+    int boxTop = optionAreaTop;
+
+    QFont optionFont = painter.font();
+    optionFont.setBold(false);
+    optionFont.setPointSize(28);
+    painter.setFont(optionFont);
+    QFontMetrics optionMetrics(optionFont);
+
+    for (const QString &optionText : normalizedOptions) {
+        QRect boxRect(horizontalMargin, boxTop, boxWidth, boxHeight);
+        painter.setPen(QPen(QColor(70, 70, 90, 230), 2));
+        painter.setBrush(QColor(24, 24, 32, 235));
+        painter.drawRoundedRect(boxRect, 20, 20);
+
+        painter.setPen(QColor(0xEF, 0xEF, 0xF2));
+        const QString elidedText =
+                optionMetrics.elidedText(optionText, Qt::ElideRight, boxRect.width() - 64);
+        painter.drawText(boxRect.adjusted(32, 0, -32, 0), Qt::AlignVCenter | Qt::AlignLeft,
+                         elidedText);
+
+        boxTop += boxHeight + optionAreaSpacing;
+    }
+
+    painter.end();
+
+    const QString folder = Common::appTempFolder(QStringLiteral("tokimeki_poll"));
+    const QString filePath = QStringLiteral("%1/poll_ogp_%2.jpg")
+                                     .arg(folder, QUuid::createUuid().toString(QUuid::Id128));
+    if (!image.save(filePath, "JPG", 92)) {
+        return QString();
+    }
+
+    return filePath;
 }
 
 AtProtocolInterface::AccountData TokimekiPollOperator::account() const

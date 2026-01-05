@@ -73,6 +73,7 @@ private slots:
     void test_TokimekiPollOperator_getPoll();
     void test_TokimekiPollOperator_getPoll_noVote();
     void test_TokimekiPollOperator_getPoll_noHit();
+    void test_TokimekiPollOperator_makePollOgpFile();
 
 private:
     WebServer m_mockServer;
@@ -3725,6 +3726,23 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
             operatorUnderTest.item(QString(), TokimekiPollOperator::PollMyVoteRole);
     QVERIFY(emptyUriMyVote.isValid());
     QCOMPARE(emptyUriMyVote.toString(), QStringLiteral("-1"));
+}
+
+void hagoromo_test::test_TokimekiPollOperator_makePollOgpFile()
+{
+
+    TokimekiPollOperator ope;
+
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2"
+                                                  << "item3"
+                                                  << "item4");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2"
+                                                  << "item3");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1");
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

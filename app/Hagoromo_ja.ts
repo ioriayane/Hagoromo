@@ -248,6 +248,89 @@
     </message>
 </context>
 <context>
+    <name>AddPollDialog</name>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="15"/>
+        <source>Add poll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="82"/>
+        <source>Option 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="96"/>
+        <source>Option 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="111"/>
+        <source>Option 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="126"/>
+        <source>Option 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="137"/>
+        <source>+ Add option</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="146"/>
+        <source>Duration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="152"/>
+        <source>5 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="153"/>
+        <source>1 hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="154"/>
+        <source>6 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="155"/>
+        <source>12 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="156"/>
+        <source>1 day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="157"/>
+        <source>3 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="158"/>
+        <source>7 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="176"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="189"/>
+        <source>Apply</source>
+        <translation type="unfinished">適用</translation>
+    </message>
+</context>
+<context>
     <name>AddToListDialog</name>
     <message>
         <location filename="qml/dialogs/AddToListDialog.qml" line="19"/>
@@ -2424,32 +2507,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="74"/>
+        <location filename="qml/parts/PollContent.qml" line="72"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="112"/>
+        <location filename="qml/parts/PollContent.qml" line="110"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="118"/>
+        <location filename="qml/parts/PollContent.qml" line="116"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="118"/>
+        <location filename="qml/parts/PollContent.qml" line="116"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="130"/>
+        <location filename="qml/parts/PollContent.qml" line="128"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="130"/>
+        <location filename="qml/parts/PollContent.qml" line="128"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2601,7 +2684,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="418"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="419"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2614,22 +2697,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="417"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="418"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="615"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="616"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="687"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="703"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="744"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="760"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -4464,6 +4547,24 @@ Why should this message be reviewed?</source>
         <location filename="qml/view/TimelineView.qml" line="180"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
+    </message>
+</context>
+<context>
+    <name>TokimekiPollOperator</name>
+    <message>
+        <location filename="qtquick/operation/tokimekipolloperator.cpp" line="240"/>
+        <source>(No option)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/tokimekipolloperator.cpp" line="254"/>
+        <source>+%1 more choices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/tokimekipolloperator.cpp" line="285"/>
+        <source>TOKIMEKI Poll</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -405,7 +405,8 @@ Item {
 
                     RowLayout {
                         Layout.preferredWidth: postText.width
-                        visible: embedImageListModel.count === 0
+                        visible: embedImageListModel.count === 0 &&
+                                 addPollDialog.appliedOptions.length === 0
                         ScrollView {
                             Layout.fillWidth: true
                             clip: true
@@ -643,7 +644,8 @@ Item {
                             }
                         }
                         IconButton {
-                            enabled: !createRecord.running &&
+                            enabled: addPollDialog.appliedOptions.length === 0 &&
+                                     !createRecord.running &&
                                      !externalLink.valid &&
                                      !feedGeneratorLink.valid &&
                                      !listLink.valid &&
@@ -656,6 +658,20 @@ Item {
                                     fileDialog.folder = fileDialog.prevFolder
                                 }
                                 fileDialog.open()
+                            }
+                        }
+                        IconButton {
+                            enabled: !createRecord.running &&
+                                     !externalLink.valid &&
+                                     !feedGeneratorLink.valid &&
+                                     !listLink.valid &&
+                                     !embedImageListModel.running
+                            iconSource: "../images/chart.png"
+                            iconSize: AdjustedValues.i18
+                            foreground: addPollDialog.appliedOptions.length > 0 ? Material.accent : Material.foreground
+                            flat: true
+                            onClicked: {
+                                addPollDialog.open()
                             }
                         }
 
@@ -780,6 +796,13 @@ Item {
 
             }
             onClosed: postText.forceActiveFocus()
+        }
+
+        AddPollDialog {
+            id: addPollDialog
+            onAccepted: {
+
+            }
         }
     }
 }

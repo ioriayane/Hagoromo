@@ -42,6 +42,8 @@ public:
     void getPoll(const QString &cid, const QString &uri, const QString &viewer);
     void vote(const QString &cid, const QString &uri, const QString &option_index);
 
+    QString makePollOgpFile(const QStringList &options) const;
+
 signals:
     void finished(bool success, const QString &cid, FunctionType type);
 
