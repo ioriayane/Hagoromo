@@ -320,6 +320,11 @@ QString TokimekiPollOperator::makePollOgpFile(const QStringList &options) const
     return filePath;
 }
 
+QString TokimekiPollOperator::makeAltUrl(const QString &did, const QString &rkey) const
+{
+    return QString("https://poll.tokimeki.tech/p/%1/%2").arg(did).arg(rkey);
+}
+
 AtProtocolInterface::AccountData TokimekiPollOperator::account() const
 {
     return AccountManager::getInstance()->getAccount(m_uuid);

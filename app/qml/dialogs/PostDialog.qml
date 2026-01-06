@@ -735,6 +735,9 @@ Item {
                                 }else if(embedImageListModel.count > 0){
                                     createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
                                     createRecord.postWithImages()
+                                }else if(addPollDialog.appliedOptions.length > 0){
+                                    createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
+                                    createRecord.postWithImages()
                                 }else{
                                     createRecord.post()
                                 }

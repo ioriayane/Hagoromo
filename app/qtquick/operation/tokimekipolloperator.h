@@ -44,6 +44,8 @@ public:
 
     QString makePollOgpFile(const QStringList &options) const;
 
+    QString makeAltUrl(const QString &did, const QString &rkey) const;
+
 signals:
     void finished(bool success, const QString &cid, FunctionType type);
 

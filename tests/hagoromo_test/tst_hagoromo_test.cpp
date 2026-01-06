@@ -22,6 +22,7 @@
 #include "controls/calendartablemodel.h"
 #include "tools/accountmanager.h"
 #include "operation/tokimekipolloperator.h"
+#include "tools/tid.h"
 
 class hagoromo_test : public QObject
 {
@@ -74,6 +75,7 @@ private slots:
     void test_TokimekiPollOperator_getPoll_noVote();
     void test_TokimekiPollOperator_getPoll_noHit();
     void test_TokimekiPollOperator_makePollOgpFile();
+    void test_TokimekiPollOperator_makeAltUrl();
 
 private:
     WebServer m_mockServer;
@@ -3743,6 +3745,12 @@ void hagoromo_test::test_TokimekiPollOperator_makePollOgpFile()
     qDebug() << ope.makePollOgpFile(QStringList() << "item1"
                                                   << "item2");
     qDebug() << ope.makePollOgpFile(QStringList() << "item1");
+}
+
+void hagoromo_test::test_TokimekiPollOperator_makeAltUrl()
+{
+    TokimekiPollOperator ope;
+    qDebug() << ope.makeAltUrl("did:plc:hogehoge", Tid::next());
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
