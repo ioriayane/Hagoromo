@@ -17,6 +17,7 @@ Frame {
     property bool isEnded: false
     property int remainTime: 0
     property bool running: false
+    property string originalUrl: ""
 
     signal clicked(string vote_index)
 
@@ -124,7 +125,7 @@ Frame {
                              (
                                  pollContent.myVote !== "-1" ||
                                  radioGroup.checkState !== Qt.Unchecked
-                              )
+                                 )
                     text: pollContent.myVote !== "-1" ? qsTr("Remove vote") : qsTr("Vote")
                     onClicked: {
                         if(pollContent.myVote === "-1"){
@@ -148,7 +149,10 @@ Frame {
             Layout.leftMargin: AdjustedValues.s10
             color: Material.color(Material.Grey)
             font.pointSize: AdjustedValues.f8
-            text: "- Powered by TOKIMEKI -"
+            text: pollContent.originalUrl.length === 0 ?
+                      pollContent.originalUrl :
+                      "- <a href='%1'>Powered by TOKIMEKI</a> -".replace("%1", pollContent.originalUrl)
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
         }
     }
 }

@@ -134,6 +134,7 @@ ScrollView {
             pollContent.isEnded: model.pollIsEnded
             pollContent.remainTime: model.pollRemainTime
             pollContent.running: model.runningVoteToPoll
+            pollContent.originalUrl: model.externalLinkUri
             pollContent.onClicked: (vote_index) => rootListView.model.voteToPoll(model.cid, model.pollUri, model.pollCid, vote_index)
 
             contentFilterFrame.labelText: model.contentFilterMessage

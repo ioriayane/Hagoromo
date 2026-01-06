@@ -2507,32 +2507,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PollContent</name>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="72"/>
+        <location filename="qml/parts/PollContent.qml" line="73"/>
         <source>Voted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="110"/>
+        <location filename="qml/parts/PollContent.qml" line="111"/>
         <source>%s votes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="116"/>
+        <location filename="qml/parts/PollContent.qml" line="117"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="116"/>
+        <location filename="qml/parts/PollContent.qml" line="117"/>
         <source>%s hours left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="128"/>
+        <location filename="qml/parts/PollContent.qml" line="129"/>
         <source>Remove vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/parts/PollContent.qml" line="128"/>
+        <location filename="qml/parts/PollContent.qml" line="129"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2724,12 +2724,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="176"/>
+        <location filename="qml/view/PostThreadView.qml" line="177"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="227"/>
+        <location filename="qml/view/PostThreadView.qml" line="228"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -4549,7 +4549,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="180"/>
+        <location filename="qml/view/TimelineView.qml" line="181"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
