@@ -260,72 +260,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="96"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="97"/>
         <source>Option 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="111"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="113"/>
         <source>Option 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="126"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="129"/>
         <source>Option 4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="137"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="141"/>
         <source>+ Add option</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="146"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="150"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="152"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="156"/>
         <source>5 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="153"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="157"/>
         <source>1 hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="154"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="158"/>
         <source>6 hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="155"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="159"/>
         <source>12 hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="156"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="160"/>
         <source>1 day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="157"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="161"/>
         <source>3 days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="158"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="162"/>
         <source>7 days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="176"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="180"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddPollDialog.qml" line="189"/>
+        <location filename="qml/dialogs/AddPollDialog.qml" line="193"/>
         <source>Apply</source>
         <translation type="unfinished">適用</translation>
     </message>
