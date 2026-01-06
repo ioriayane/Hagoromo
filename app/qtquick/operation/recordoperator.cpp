@@ -15,6 +15,7 @@
 #include "tools/tid.h"
 #include "tokimekipolloperator.h"
 
+#include <QFile>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -145,9 +146,8 @@ void RecordOperator::setPoll(const QStringList &options, const int duration)
     m_pollOptions = options;
     m_pollDuration = duration;
     m_pollRkey = Tid::next();
-
     TokimekiPollOperator poll;
-    QString image_path = poll.makePollOgpFile(m_pollOptions);
+    m_pollOgpImagepath = poll.makePollOgpFile(m_pollOptions);
 
     m_externalLinkUri = poll.makeAltUrl(account().did, m_pollRkey);
     m_externalLinkTitle = tr("Let's poll:"); // tr("投票しよう: 起きてる / 寝てる");
@@ -161,9 +161,9 @@ void RecordOperator::setPoll(const QStringList &options, const int duration)
     }
     m_externalLinkDescription = QLatin1String("\nPowered by TOKIMEKI");
     m_embedImages.clear();
-    if (!image_path.isEmpty()) {
+    if (!m_pollOgpImagepath.isEmpty()) {
         EmbedImage e;
-        e.path = QUrl::fromLocalFile(image_path).toString();
+        e.path = QUrl::fromLocalFile(m_pollOgpImagepath).toString();
         m_embedImages.append(e);
     }
 }
@@ -195,6 +195,7 @@ void RecordOperator::clear()
     m_pollOptions.clear();
     m_pollDuration = 60 * 60;
     m_pollRkey.clear();
+    m_pollOgpImagepath.clear();
 }
 
 void RecordOperator::post()
@@ -1492,9 +1493,14 @@ void RecordOperator::tokimekiPoll(
     create_record->setAccount(account());
     create_record->tokimekiPoll(uri, cid, m_pollOptions, m_pollDuration, m_pollRkey);
 
+    // この時点でblobにアップロード済み
+    if (QFile::remove(m_pollOgpImagepath)) {
+        qDebug() << "Remove uploaded file:" << m_pollOgpImagepath;
+    }
     m_pollOptions.clear();
     m_pollDuration = 0;
     m_pollRkey.clear();
+    m_pollOgpImagepath.clear();
 }
 
 QString RecordOperator::progressMessage() const

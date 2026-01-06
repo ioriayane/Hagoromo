@@ -146,6 +146,7 @@ private:
     QStringList m_pollOptions;
     int m_pollDuration; // sec
     QString m_pollRkey;
+    QString m_pollOgpImagepath;
 
     bool m_running;
     QString m_progressMessage;
