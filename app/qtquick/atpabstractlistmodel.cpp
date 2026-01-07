@@ -1355,8 +1355,8 @@ void AtpAbstractListModel::getTokimekiPoll()
     if (m_cueTokimekiPoll.isEmpty()) {
         return;
     } else {
-        poll_item = m_cueTokimekiPoll.front();
-        m_cueTokimekiPoll.pop_front();
+        poll_item = m_cueTokimekiPoll.back();
+        m_cueTokimekiPoll.pop_back();
     }
 
     m_tokimekiPoll.getPoll(poll_item.cid, poll_item.uri, poll_item.viewer);
