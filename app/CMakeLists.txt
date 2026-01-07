@@ -104,6 +104,7 @@ qt_add_qml_module(Hagoromo
         qml/parts/ExternalLinkCardPopup.qml
         qml/parts/LiveIconCover.qml
         qml/parts/PollContent.qml
+        qml/parts/PollOptions.qml
         qml/dialogs/SelectThreadGateDialog.qml
         qml/dialogs/SearchDialog.qml
         qml/dialogs/AddToListDialog.qml

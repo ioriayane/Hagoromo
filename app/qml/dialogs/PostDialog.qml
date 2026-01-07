@@ -509,6 +509,11 @@ Item {
                         creatorHandleLabel.text: listLink.creatorHandle
                         descriptionLabel.text: listLink.description
                     }
+                    PollOptions {
+                        Layout.preferredWidth: postText.width
+                        visible: addPollDialog.appliedOptions.length > 0
+                        model: addPollDialog.appliedOptions
+                    }
 
                     ScrollView {
                         Layout.preferredWidth: postText.width

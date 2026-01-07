@@ -2538,6 +2538,14 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>PollOptions</name>
+    <message>
+        <location filename="qml/parts/PollOptions.qml" line="16"/>
+        <source>Poll</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PostControls</name>
     <message>
         <location filename="qml/parts/PostControls.qml" line="86"/>
@@ -2702,17 +2710,17 @@ Please recreate AppPassword in the official application.</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="616"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="621"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="703"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="708"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="763"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="768"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
