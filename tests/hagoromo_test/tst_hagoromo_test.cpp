@@ -76,6 +76,7 @@ private slots:
     void test_TokimekiPollOperator_getPoll_noHit();
     void test_TokimekiPollOperator_makePollOgpFile();
     void test_TokimekiPollOperator_makeAltUrl();
+    void test_TokimekiPollOperator_getOgp();
 
 private:
     WebServer m_mockServer;
@@ -3751,6 +3752,26 @@ void hagoromo_test::test_TokimekiPollOperator_makeAltUrl()
 {
     TokimekiPollOperator ope;
     qDebug() << ope.makeAltUrl("did:plc:hogehoge", Tid::next());
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getOgp()
+{
+    // TokimekiPollOperator operatorUnderTest;
+
+    // QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    // const QStringList options = QStringList() << "item1"
+    //                                           << "item2";
+
+    // operatorUnderTest.getOgp(options);
+
+    // QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    // QCOMPARE(spy.count(), 1);
+
+    // const QList<QVariant> arguments = spy.takeFirst();
+    // QVERIFY(arguments.at(0).toBool());
+
+    // qDebug() << arguments.at(1).toString();
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

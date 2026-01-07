@@ -742,7 +742,7 @@ Item {
                                     createRecord.postWithImages()
                                 }else if(addPollDialog.appliedOptions.length > 0){
                                     createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
-                                    createRecord.postWithImages()
+                                    createRecord.postWithPoll()
                                 }else{
                                     createRecord.post()
                                 }

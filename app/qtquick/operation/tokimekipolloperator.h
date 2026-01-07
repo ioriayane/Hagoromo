@@ -28,6 +28,7 @@ public:
     enum FunctionType {
         GetPoll,
         Vote,
+        GetOgp,
     };
 
     QString convertUrlToUri(const QString &url) const;
@@ -41,6 +42,7 @@ public:
 
     void getPoll(const QString &cid, const QString &uri, const QString &viewer);
     void vote(const QString &cid, const QString &uri, const QString &option_index);
+    void getOgp(const QStringList &options);
 
     QString makePollOgpFile(const QStringList &options) const;
 

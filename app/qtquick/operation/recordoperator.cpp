@@ -147,7 +147,7 @@ void RecordOperator::setPoll(const QStringList &options, const int duration)
     m_pollDuration = duration;
     m_pollRkey = Tid::next();
     TokimekiPollOperator poll;
-    m_pollOgpImagepath = poll.makePollOgpFile(m_pollOptions);
+    m_pollOgpImagepath.clear();
 
     m_externalLinkUri = poll.makeAltUrl(account().did, m_pollRkey);
     m_externalLinkTitle = tr("Let's poll:"); // tr("投票しよう: 起きてる / 寝てる");
@@ -160,12 +160,6 @@ void RecordOperator::setPoll(const QStringList &options, const int duration)
         m_externalLinkDescription += QString("%1").arg(m_pollOptions.at(i));
     }
     m_externalLinkDescription = QLatin1String("\nPowered by TOKIMEKI");
-    m_embedImages.clear();
-    if (!m_pollOgpImagepath.isEmpty()) {
-        EmbedImage e;
-        e.path = QUrl::fromLocalFile(m_pollOgpImagepath).toString();
-        m_embedImages.append(e);
-    }
 }
 
 void RecordOperator::clear()
@@ -331,6 +325,40 @@ void RecordOperator::postWithImages()
             setRunning(false);
         }
     });
+}
+
+void RecordOperator::postWithPoll()
+{
+    if (m_pollOptions.isEmpty() || m_pollDuration <= 0 || m_pollRkey.isEmpty()) {
+        post();
+        return;
+    }
+    setRunning(true);
+
+    setProgressMessage(tr("Getting OGP image ..."));
+
+    auto poll = new TokimekiPollOperator(this);
+    connect(poll, &TokimekiPollOperator::finished, this,
+            [=](bool success, const QString &path, TokimekiPollOperator::FunctionType type) {
+                if (success && type == TokimekiPollOperator::FunctionType::GetOgp) {
+                    m_embedImages.clear();
+                    m_pollOgpImagepath = path;
+                    if (!m_pollOgpImagepath.isEmpty()) {
+                        EmbedImage e;
+                        e.path = QUrl::fromLocalFile(m_pollOgpImagepath).toString();
+                        m_embedImages.append(e);
+                    }
+                    postWithImages();
+                } else {
+                    setProgressMessage(QString());
+                    emit errorOccured("FailGetOgpImage",
+                                      QString("Failed to get the OGP image from TOKIMEKI."));
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+                poll->deleteLater();
+            });
+    poll->getOgp(m_pollOptions);
 }
 
 void RecordOperator::repost(const QString &cid, const QString &uri, const QString &via_cid,

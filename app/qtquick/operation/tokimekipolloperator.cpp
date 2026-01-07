@@ -10,6 +10,7 @@
 #include <QUrl>
 #include <QStringList>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QColor>
 #include <QFontMetrics>
 #include <QImage>
@@ -226,6 +227,42 @@ void TokimekiPollOperator::vote(const QString &cid, const QString &uri, const QS
         qDebug() << "ERROR: myVoteUri is empty";
         emit finished(false, cid, FunctionType::Vote);
     }
+}
+
+void TokimekiPollOperator::getOgp(const QStringList &options)
+{
+    QNetworkRequest request((QUrl("https://poll.tokimeki.tech/api/og-preview")));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonDocument json_doc;
+    QJsonObject json_obj;
+    QJsonArray json_options;
+    for (const auto &option : options) {
+        json_options.append(option);
+    }
+    json_obj.insert("options", json_options);
+    json_doc.setObject(json_obj);
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
+        qDebug() << "Get poll's OGP." << reply->error() << reply->url();
+        const bool success = (reply->error() == QNetworkReply::NoError);
+        const QString folder = Common::appTempFolder(QStringLiteral("tokimeki_poll"));
+        const QString file_path = QStringLiteral("%1/poll_ogp_%2.jpg")
+                                          .arg(folder, QUuid::createUuid().toString(QUuid::Id128));
+        if (success) {
+            QFile file(file_path);
+            if (file.open(QFile::WriteOnly)) {
+                file.write(reply->readAll());
+                file.close();
+            }
+        } else {
+        }
+        emit finished(success, file_path, FunctionType::GetOgp);
+        reply->deleteLater();
+        manager->deleteLater();
+    });
+    manager->post(request, json_doc.toJson(QJsonDocument::JsonFormat::Compact));
 }
 
 QString TokimekiPollOperator::makePollOgpFile(const QStringList &options) const
