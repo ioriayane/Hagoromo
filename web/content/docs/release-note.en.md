@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Supports TOKIMEKI Poll
+
 ### v0.56.1 - 2025/12/30
 
 - Fix
