@@ -10,7 +10,7 @@ class AppBskyFeedGetAuthorFeed : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetAuthorFeed(QObject *parent = nullptr);
 
-    void getAuthorFeed(const QString &actor, const int limit, const QString &cursor,
+    void getAuthorFeed(const QString &actor, const qint64 limit, const QString &cursor,
                        const QString &filter, const bool includePins);
 };
 

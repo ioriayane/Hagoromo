@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
+#include <QUrlQuery>
 
 namespace AtProtocolInterface {
 
@@ -114,7 +115,8 @@ public slots:
 protected:
     void get(const QString &endpoint, const QUrlQuery &query, const bool with_auth_header = true);
     void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
-    void postWithImage(const QString &endpoint, const QString &path);
+    void postWithImage(const QString &endpoint, const QString &path,
+                       const QUrlQuery &query = QUrlQuery());
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
     virtual bool recvImage(const QByteArray &data, const QString &content_type);

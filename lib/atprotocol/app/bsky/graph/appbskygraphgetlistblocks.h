@@ -10,7 +10,7 @@ class AppBskyGraphGetListBlocks : public AppBskyGraphGetLists
 public:
     explicit AppBskyGraphGetListBlocks(QObject *parent = nullptr);
 
-    void getListBlocks(const int limit, const QString &cursor);
+    void getListBlocks(const qint64 limit, const QString &cursor);
 };
 
 }

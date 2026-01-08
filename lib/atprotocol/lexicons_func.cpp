@@ -27,9 +27,9 @@ void copyProfileAssociatedActivitySubscription(
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest)
 {
     if (!src.isEmpty()) {
-        dest.lists = src.value("lists").toInt();
-        dest.feedgens = src.value("feedgens").toInt();
-        dest.starterPacks = src.value("starterPacks").toInt();
+        dest.lists = src.value("lists").toInteger();
+        dest.feedgens = src.value("feedgens").toInteger();
+        dest.starterPacks = src.value("starterPacks").toInteger();
         dest.labeler = src.value("labeler").toBool();
         copyProfileAssociatedChat(src.value("chat").toObject(), dest.chat);
         copyProfileAssociatedActivitySubscription(src.value("activitySubscription").toObject(),
@@ -39,7 +39,7 @@ void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAsso
 void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest)
 {
     if (!src.isEmpty()) {
-        dest.count = src.value("count").toInt();
+        dest.count = src.value("count").toInteger();
         for (const auto &s : src.value("followers").toArray()) {
             QSharedPointer<ProfileViewBasic> child =
                     QSharedPointer<ProfileViewBasic>(new ProfileViewBasic());
@@ -154,9 +154,9 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         dest.website = src.value("website").toString();
         dest.avatar = src.value("avatar").toString();
         dest.banner = src.value("banner").toString();
-        dest.followersCount = src.value("followersCount").toInt();
-        dest.followsCount = src.value("followsCount").toInt();
-        dest.postsCount = src.value("postsCount").toInt();
+        dest.followersCount = src.value("followersCount").toInteger();
+        dest.followsCount = src.value("followsCount").toInteger();
+        dest.postsCount = src.value("postsCount").toInteger();
         copyProfileAssociated(src.value("associated").toObject(), dest.associated);
         AppBskyGraphDefs::copyStarterPackViewBasic(src.value("joinedViaStarterPack").toObject(),
                                                    dest.joinedViaStarterPack);
@@ -196,7 +196,7 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
         for (const auto &value : src.value("saved").toArray()) {
             dest.saved.append(value.toString());
         }
-        dest.timelineIndex = src.value("timelineIndex").toInt();
+        dest.timelineIndex = src.value("timelineIndex").toInteger();
     }
 }
 void copySavedFeed(const QJsonObject &src, AppBskyActorDefs::SavedFeed &dest)
@@ -230,7 +230,7 @@ void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &de
         dest.feed = src.value("feed").toString();
         dest.hideReplies = src.value("hideReplies").toBool();
         dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool();
-        dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInt();
+        dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInteger();
         dest.hideReposts = src.value("hideReposts").toBool();
         dest.hideQuotePosts = src.value("hideQuotePosts").toBool();
     }
@@ -484,7 +484,7 @@ void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &
         dest.name = src.value("name").toString();
         copyListPurpose(src.value("purpose"), dest.purpose);
         dest.avatar = src.value("avatar").toString();
-        dest.listItemCount = src.value("listItemCount").toInt();
+        dest.listItemCount = src.value("listItemCount").toInteger();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -504,9 +504,9 @@ void copyStarterPackViewBasic(const QJsonObject &src, AppBskyGraphDefs::StarterP
             dest.creator = QSharedPointer<AppBskyActorDefs::ProfileViewBasic>(
                     new AppBskyActorDefs::ProfileViewBasic());
         AppBskyActorDefs::copyProfileViewBasic(src.value("creator").toObject(), *dest.creator);
-        dest.listItemCount = src.value("listItemCount").toInt();
-        dest.joinedWeekCount = src.value("joinedWeekCount").toInt();
-        dest.joinedAllTimeCount = src.value("joinedAllTimeCount").toInt();
+        dest.listItemCount = src.value("listItemCount").toInteger();
+        dest.joinedWeekCount = src.value("joinedWeekCount").toInteger();
+        dest.joinedAllTimeCount = src.value("joinedAllTimeCount").toInteger();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -534,7 +534,7 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
             dest.descriptionFacets.append(child);
         }
         dest.avatar = src.value("avatar").toString();
-        dest.listItemCount = src.value("listItemCount").toInt();
+        dest.listItemCount = src.value("listItemCount").toInteger();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -577,8 +577,8 @@ void copyStarterPackView(const QJsonObject &src, AppBskyGraphDefs::StarterPackVi
             AppBskyFeedDefs::copyGeneratorView(s.toObject(), *child);
             dest.feeds.append(child);
         }
-        dest.joinedWeekCount = src.value("joinedWeekCount").toInt();
-        dest.joinedAllTimeCount = src.value("joinedAllTimeCount").toInt();
+        dest.joinedWeekCount = src.value("joinedWeekCount").toInteger();
+        dest.joinedAllTimeCount = src.value("joinedAllTimeCount").toInteger();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -608,7 +608,7 @@ namespace ComAtprotoLabelDefs {
 void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
 {
     if (!src.isEmpty()) {
-        dest.ver = src.value("ver").toInt();
+        dest.ver = src.value("ver").toInteger();
         dest.src = src.value("src").toString();
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
@@ -911,7 +911,7 @@ void copyMain(const QJsonObject &src, AppBskyActorStatus::Main &dest)
             AppBskyEmbedExternal::copyMain(src.value("embed").toObject(),
                                            dest.embed_AppBskyEmbedExternal_Main);
         }
-        dest.durationMinutes = src.value("durationMinutes").toInt();
+        dest.durationMinutes = src.value("durationMinutes").toInteger();
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -996,7 +996,7 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
             dest.descriptionFacets.append(child);
         }
         dest.avatar = src.value("avatar").toString();
-        dest.likeCount = src.value("likeCount").toInt();
+        dest.likeCount = src.value("likeCount").toInteger();
         dest.acceptsInteractions = src.value("acceptsInteractions").toBool();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
@@ -1067,11 +1067,11 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
             AppBskyEmbedRecordWithMedia::copyView(src.value("embed").toObject(),
                                                   dest.embed_AppBskyEmbedRecordWithMedia_View);
         }
-        dest.bookmarkCount = src.value("bookmarkCount").toInt();
-        dest.replyCount = src.value("replyCount").toInt();
-        dest.repostCount = src.value("repostCount").toInt();
-        dest.likeCount = src.value("likeCount").toInt();
-        dest.quoteCount = src.value("quoteCount").toInt();
+        dest.bookmarkCount = src.value("bookmarkCount").toInteger();
+        dest.replyCount = src.value("replyCount").toInteger();
+        dest.repostCount = src.value("repostCount").toInteger();
+        dest.likeCount = src.value("likeCount").toInteger();
+        dest.quoteCount = src.value("quoteCount").toInteger();
         dest.indexedAt = src.value("indexedAt").toString();
         copyViewerState(src.value("viewer").toObject(), dest.viewer);
         for (const auto &s : src.value("labels").toArray()) {
@@ -1259,8 +1259,8 @@ namespace AppBskyEmbedDefs {
 void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest)
 {
     if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
+        dest.width = src.value("width").toInteger();
+        dest.height = src.value("height").toInteger();
     }
 }
 }
@@ -1408,10 +1408,10 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
-        dest.replyCount = src.value("replyCount").toInt();
-        dest.repostCount = src.value("repostCount").toInt();
-        dest.likeCount = src.value("likeCount").toInt();
-        dest.quoteCount = src.value("quoteCount").toInt();
+        dest.replyCount = src.value("replyCount").toInteger();
+        dest.repostCount = src.value("repostCount").toInteger();
+        dest.likeCount = src.value("likeCount").toInteger();
+        dest.quoteCount = src.value("quoteCount").toInteger();
         // array<union> embeds
         if (src.contains("embeds")) {
             dest.embeds_type =
@@ -1553,8 +1553,8 @@ namespace AppBskyRichtextFacet {
 void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest)
 {
     if (!src.isEmpty()) {
-        dest.byteStart = src.value("byteStart").toInt();
-        dest.byteEnd = src.value("byteEnd").toInt();
+        dest.byteStart = src.value("byteStart").toInteger();
+        dest.byteEnd = src.value("byteEnd").toInteger();
     }
 }
 void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest)
@@ -1624,7 +1624,7 @@ void copyLabelerView(const QJsonObject &src, AppBskyLabelerDefs::LabelerView &de
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         AppBskyActorDefs::copyProfileView(src.value("creator").toObject(), dest.creator);
-        dest.likeCount = src.value("likeCount").toInt();
+        dest.likeCount = src.value("likeCount").toInteger();
         copyLabelerViewerState(src.value("viewer").toObject(), dest.viewer);
         dest.indexedAt = src.value("indexedAt").toString();
         for (const auto &s : src.value("labels").toArray()) {
@@ -1656,7 +1656,7 @@ void copyLabelerViewDetailed(const QJsonObject &src, AppBskyLabelerDefs::Labeler
         dest.cid = src.value("cid").toString();
         AppBskyActorDefs::copyProfileView(src.value("creator").toObject(), dest.creator);
         AppBskyLabelerDefs::copyLabelerPolicies(src.value("policies").toObject(), dest.policies);
-        dest.likeCount = src.value("likeCount").toInt();
+        dest.likeCount = src.value("likeCount").toInteger();
         copyLabelerViewerState(src.value("viewer").toObject(), dest.viewer);
         dest.indexedAt = src.value("indexedAt").toString();
         for (const auto &s : src.value("labels").toArray()) {
@@ -1750,8 +1750,8 @@ namespace AppBskyFeedPost {
 void copyTextSlice(const QJsonObject &src, AppBskyFeedPost::TextSlice &dest)
 {
     if (!src.isEmpty()) {
-        dest.start = src.value("start").toInt();
-        dest.end = src.value("end").toInt();
+        dest.start = src.value("start").toInteger();
+        dest.end = src.value("end").toInteger();
     }
 }
 void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest)
@@ -2078,7 +2078,7 @@ void copySkeletonTrend(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonTre
         dest.displayName = src.value("displayName").toString();
         dest.link = src.value("link").toString();
         dest.startedAt = src.value("startedAt").toString();
-        dest.postCount = src.value("postCount").toInt();
+        dest.postCount = src.value("postCount").toInteger();
         dest.status = src.value("status").toString();
         dest.category = src.value("category").toString();
         for (const auto &value : src.value("dids").toArray()) {
@@ -2093,7 +2093,7 @@ void copyTrendView(const QJsonObject &src, AppBskyUnspeccedDefs::TrendView &dest
         dest.displayName = src.value("displayName").toString();
         dest.link = src.value("link").toString();
         dest.startedAt = src.value("startedAt").toString();
-        dest.postCount = src.value("postCount").toInt();
+        dest.postCount = src.value("postCount").toInteger();
         dest.status = src.value("status").toString();
         dest.category = src.value("category").toString();
         for (const auto &s : src.value("actors").toArray()) {
@@ -2108,7 +2108,7 @@ void copyThreadItemPost(const QJsonObject &src, AppBskyUnspeccedDefs::ThreadItem
     if (!src.isEmpty()) {
         AppBskyFeedDefs::copyPostView(src.value("post").toObject(), dest.post);
         dest.moreParents = src.value("moreParents").toBool();
-        dest.moreReplies = src.value("moreReplies").toInt();
+        dest.moreReplies = src.value("moreReplies").toInteger();
         dest.opThread = src.value("opThread").toBool();
         dest.hiddenByThreadgate = src.value("hiddenByThreadgate").toBool();
         dest.mutedByViewer = src.value("mutedByViewer").toBool();
@@ -2170,7 +2170,7 @@ void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadOtherV2
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
-        dest.depth = src.value("depth").toInt();
+        dest.depth = src.value("depth").toInteger();
         QString value_type = src.value("value").toObject().value("$type").toString();
         if (value_type == QStringLiteral("app.bsky.unspecced.defs#threadItemPost")) {
             dest.value_type = AppBskyUnspeccedGetPostThreadOtherV2::ThreadItemValueType::
@@ -2187,7 +2187,7 @@ void copyThreadItem(const QJsonObject &src, AppBskyUnspeccedGetPostThreadV2::Thr
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
-        dest.depth = src.value("depth").toInt();
+        dest.depth = src.value("depth").toInteger();
         QString value_type = src.value("value").toObject().value("$type").toString();
         if (value_type == QStringLiteral("app.bsky.unspecced.defs#threadItemPost")) {
             dest.value_type = AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::
@@ -2238,7 +2238,7 @@ void copyJobStatus(const QJsonObject &src, AppBskyVideoDefs::JobStatus &dest)
         dest.jobId = src.value("jobId").toString();
         dest.did = src.value("did").toString();
         dest.state = src.value("state").toString();
-        dest.progress = src.value("progress").toInt();
+        dest.progress = src.value("progress").toInteger();
         LexiconsTypeUnknown::copyBlob(src.value("blob").toObject(), dest.blob);
         dest.error = src.value("error").toString();
         dest.message = src.value("message").toString();
@@ -2401,7 +2401,7 @@ void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest)
         }
         dest.muted = src.value("muted").toBool();
         dest.status = src.value("status").toString();
-        dest.unreadCount = src.value("unreadCount").toInt();
+        dest.unreadCount = src.value("unreadCount").toInteger();
     }
 }
 void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest)
@@ -2553,10 +2553,10 @@ namespace ChatBskyModerationGetActorMetadata {
 void copyMetadata(const QJsonObject &src, ChatBskyModerationGetActorMetadata::Metadata &dest)
 {
     if (!src.isEmpty()) {
-        dest.messagesSent = src.value("messagesSent").toInt();
-        dest.messagesReceived = src.value("messagesReceived").toInt();
-        dest.convos = src.value("convos").toInt();
-        dest.convosStarted = src.value("convosStarted").toInt();
+        dest.messagesSent = src.value("messagesSent").toInteger();
+        dest.messagesReceived = src.value("messagesReceived").toInteger();
+        dest.convos = src.value("convos").toInteger();
+        dest.convosStarted = src.value("convosStarted").toInteger();
     }
 }
 }
@@ -2628,7 +2628,7 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
 {
     if (!src.isEmpty()) {
         dest.code = src.value("code").toString();
-        dest.available = src.value("available").toInt();
+        dest.available = src.value("available").toInteger();
         dest.disabled = src.value("disabled").toBool();
         dest.forAccount = src.value("forAccount").toString();
         dest.createdBy = src.value("createdBy").toString();
@@ -2657,7 +2657,7 @@ namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest)
 {
     if (!src.isEmpty()) {
-        dest.seq = src.value("seq").toInt();
+        dest.seq = src.value("seq").toInteger();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -2678,7 +2678,7 @@ namespace ComAtprotoLexiconSchema {
 void copyMain(const QJsonObject &src, ComAtprotoLexiconSchema::Main &dest)
 {
     if (!src.isEmpty()) {
-        dest.lexicon = src.value("lexicon").toInt();
+        dest.lexicon = src.value("lexicon").toInteger();
     }
 }
 }
@@ -2834,8 +2834,8 @@ void copyHost(const QJsonObject &src, ComAtprotoSyncListHosts::Host &dest)
 {
     if (!src.isEmpty()) {
         dest.hostname = src.value("hostname").toString();
-        dest.seq = src.value("seq").toInt();
-        dest.accountCount = src.value("accountCount").toInt();
+        dest.seq = src.value("seq").toInteger();
+        dest.accountCount = src.value("accountCount").toInteger();
         ComAtprotoSyncDefs::copyHostStatus(src.value("status"), dest.status);
     }
 }
@@ -2874,7 +2874,7 @@ void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &de
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest)
 {
     if (!src.isEmpty()) {
-        dest.seq = src.value("seq").toInt();
+        dest.seq = src.value("seq").toInteger();
         dest.repo = src.value("repo").toString();
         dest.rev = src.value("rev").toString();
         dest.since = src.value("since").toString();
@@ -2889,7 +2889,7 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
 void copySync(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Sync &dest)
 {
     if (!src.isEmpty()) {
-        dest.seq = src.value("seq").toInt();
+        dest.seq = src.value("seq").toInteger();
         dest.did = src.value("did").toString();
         dest.rev = src.value("rev").toString();
         dest.time = src.value("time").toString();
@@ -2898,7 +2898,7 @@ void copySync(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Sync &dest)
 void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest)
 {
     if (!src.isEmpty()) {
-        dest.seq = src.value("seq").toInt();
+        dest.seq = src.value("seq").toInteger();
         dest.did = src.value("did").toString();
         dest.time = src.value("time").toString();
         dest.handle = src.value("handle").toString();
@@ -2907,7 +2907,7 @@ void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity
 void copyAccount(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Account &dest)
 {
     if (!src.isEmpty()) {
-        dest.seq = src.value("seq").toInt();
+        dest.seq = src.value("seq").toInteger();
         dest.did = src.value("did").toString();
         dest.time = src.value("time").toString();
         dest.active = src.value("active").toBool();
@@ -3051,7 +3051,7 @@ void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModE
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
-        dest.durationInHours = src.value("durationInHours").toInt();
+        dest.durationInHours = src.value("durationInHours").toInteger();
         dest.acknowledgeAccountSubjects = src.value("acknowledgeAccountSubjects").toBool();
         for (const auto &value : src.value("policies").toArray()) {
             dest.policies.append(value.toString());
@@ -3090,7 +3090,7 @@ void copyModEventLabel(const QJsonObject &src, ToolsOzoneModerationDefs::ModEven
         for (const auto &value : src.value("negateLabelVals").toArray()) {
             dest.negateLabelVals.append(value.toString());
         }
-        dest.durationInHours = src.value("durationInHours").toInt();
+        dest.durationInHours = src.value("durationInHours").toInteger();
     }
 }
 void copyModEventAcknowledge(const QJsonObject &src,
@@ -3111,7 +3111,7 @@ void copyModEventMute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
-        dest.durationInHours = src.value("durationInHours").toInt();
+        dest.durationInHours = src.value("durationInHours").toInteger();
     }
 }
 void copyModEventUnmute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventUnmute &dest)
@@ -3125,7 +3125,7 @@ void copyModEventMuteReporter(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
-        dest.durationInHours = src.value("durationInHours").toInt();
+        dest.durationInHours = src.value("durationInHours").toInteger();
     }
 }
 void copyModEventUnmuteReporter(const QJsonObject &src,
@@ -3201,7 +3201,7 @@ void copyModEventPriorityScore(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
-        dest.score = src.value("score").toInt();
+        dest.score = src.value("score").toInteger();
     }
 }
 void copyAgeAssuranceEvent(const QJsonObject &src,
@@ -3242,7 +3242,7 @@ void copyModTool(const QJsonObject &src, ToolsOzoneModerationDefs::ModTool &dest
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
+        dest.id = src.value("id").toInteger();
         QString event_type = src.value("event").toObject().value("$type").toString();
         if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTakedown")) {
             dest.event_type =
@@ -3424,31 +3424,31 @@ void copySubjectReviewState(const QJsonValue &src,
 void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest)
 {
     if (!src.isEmpty()) {
-        dest.reportCount = src.value("reportCount").toInt();
-        dest.appealCount = src.value("appealCount").toInt();
-        dest.suspendCount = src.value("suspendCount").toInt();
-        dest.escalateCount = src.value("escalateCount").toInt();
-        dest.takedownCount = src.value("takedownCount").toInt();
+        dest.reportCount = src.value("reportCount").toInteger();
+        dest.appealCount = src.value("appealCount").toInteger();
+        dest.suspendCount = src.value("suspendCount").toInteger();
+        dest.escalateCount = src.value("escalateCount").toInteger();
+        dest.takedownCount = src.value("takedownCount").toInteger();
     }
 }
 void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest)
 {
     if (!src.isEmpty()) {
-        dest.totalReports = src.value("totalReports").toInt();
-        dest.reportedCount = src.value("reportedCount").toInt();
-        dest.escalatedCount = src.value("escalatedCount").toInt();
-        dest.appealedCount = src.value("appealedCount").toInt();
-        dest.subjectCount = src.value("subjectCount").toInt();
-        dest.pendingCount = src.value("pendingCount").toInt();
-        dest.processedCount = src.value("processedCount").toInt();
-        dest.takendownCount = src.value("takendownCount").toInt();
+        dest.totalReports = src.value("totalReports").toInteger();
+        dest.reportedCount = src.value("reportedCount").toInteger();
+        dest.escalatedCount = src.value("escalatedCount").toInteger();
+        dest.appealedCount = src.value("appealedCount").toInteger();
+        dest.subjectCount = src.value("subjectCount").toInteger();
+        dest.pendingCount = src.value("pendingCount").toInteger();
+        dest.processedCount = src.value("processedCount").toInteger();
+        dest.takendownCount = src.value("takendownCount").toInteger();
     }
 }
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
+        dest.id = src.value("id").toInteger();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ToolsOzoneModerationDefs::SubjectStatusViewSubjectType::
@@ -3489,7 +3489,7 @@ void copySubjectStatusView(const QJsonObject &src,
         dest.createdAt = src.value("createdAt").toString();
         copySubjectReviewState(src.value("reviewState"), dest.reviewState);
         dest.comment = src.value("comment").toString();
-        dest.priorityScore = src.value("priorityScore").toInt();
+        dest.priorityScore = src.value("priorityScore").toInteger();
         dest.muteUntil = src.value("muteUntil").toString();
         dest.muteReportingUntil = src.value("muteReportingUntil").toString();
         dest.lastReviewedBy = src.value("lastReviewedBy").toString();
@@ -3563,16 +3563,16 @@ void copyRecordViewNotFound(const QJsonObject &src,
 void copyImageDetails(const QJsonObject &src, ToolsOzoneModerationDefs::ImageDetails &dest)
 {
     if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
+        dest.width = src.value("width").toInteger();
+        dest.height = src.value("height").toInteger();
     }
 }
 void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDetails &dest)
 {
     if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
-        dest.length = src.value("length").toInt();
+        dest.width = src.value("width").toInteger();
+        dest.height = src.value("height").toInteger();
+        dest.length = src.value("length").toInteger();
     }
 }
 void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest)
@@ -3580,7 +3580,7 @@ void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &de
     if (!src.isEmpty()) {
         dest.cid = src.value("cid").toString();
         dest.mimeType = src.value("mimeType").toString();
-        dest.size = src.value("size").toInt();
+        dest.size = src.value("size").toInteger();
         dest.createdAt = src.value("createdAt").toString();
         QString details_type = src.value("details").toObject().value("$type").toString();
         if (details_type == QStringLiteral("tools.ozone.moderation.defs#imageDetails")) {
@@ -3600,7 +3600,7 @@ void copyModEventViewDetail(const QJsonObject &src,
                             ToolsOzoneModerationDefs::ModEventViewDetail &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
+        dest.id = src.value("id").toInteger();
         QString event_type = src.value("event").toObject().value("$type").toString();
         if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTakedown")) {
             dest.event_type =
@@ -3842,14 +3842,14 @@ void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::Reporte
 {
     if (!src.isEmpty()) {
         dest.did = src.value("did").toString();
-        dest.accountReportCount = src.value("accountReportCount").toInt();
-        dest.recordReportCount = src.value("recordReportCount").toInt();
-        dest.reportedAccountCount = src.value("reportedAccountCount").toInt();
-        dest.reportedRecordCount = src.value("reportedRecordCount").toInt();
-        dest.takendownAccountCount = src.value("takendownAccountCount").toInt();
-        dest.takendownRecordCount = src.value("takendownRecordCount").toInt();
-        dest.labeledAccountCount = src.value("labeledAccountCount").toInt();
-        dest.labeledRecordCount = src.value("labeledRecordCount").toInt();
+        dest.accountReportCount = src.value("accountReportCount").toInteger();
+        dest.recordReportCount = src.value("recordReportCount").toInteger();
+        dest.reportedAccountCount = src.value("reportedAccountCount").toInteger();
+        dest.reportedRecordCount = src.value("reportedRecordCount").toInteger();
+        dest.takendownAccountCount = src.value("takendownAccountCount").toInteger();
+        dest.takendownRecordCount = src.value("takendownRecordCount").toInteger();
+        dest.labeledAccountCount = src.value("labeledAccountCount").toInteger();
+        dest.labeledRecordCount = src.value("labeledRecordCount").toInteger();
     }
 }
 }
@@ -3861,7 +3861,7 @@ void copyTimelineItemSummary(const QJsonObject &src,
     if (!src.isEmpty()) {
         dest.eventSubjectType = src.value("eventSubjectType").toString();
         dest.eventType = src.value("eventType").toString();
-        dest.count = src.value("count").toInt();
+        dest.count = src.value("count").toInteger();
     }
 }
 void copyTimelineItem(const QJsonObject &src,
@@ -3905,7 +3905,7 @@ void copyReasonType(const QJsonValue &src, ToolsOzoneSafelinkDefs::ReasonType &d
 void copyEvent(const QJsonObject &src, ToolsOzoneSafelinkDefs::Event &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
+        dest.id = src.value("id").toInteger();
         copyEventType(src.value("eventType"), dest.eventType);
         dest.url = src.value("url").toString();
         copyPatternType(src.value("pattern"), dest.pattern);
@@ -3959,7 +3959,7 @@ void copySetView(const QJsonObject &src, ToolsOzoneSetDefs::SetView &dest)
     if (!src.isEmpty()) {
         dest.name = src.value("name").toString();
         dest.description = src.value("description").toString();
-        dest.setSize = src.value("setSize").toInt();
+        dest.setSize = src.value("setSize").toInteger();
         dest.createdAt = src.value("createdAt").toString();
         dest.updatedAt = src.value("updatedAt").toString();
     }
@@ -4151,8 +4151,8 @@ void copyOgp(const QJsonObject &src, ComWhtwndBlogDefs::Ogp &dest)
 {
     if (!src.isEmpty()) {
         dest.url = src.value("url").toString();
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
+        dest.width = src.value("width").toInteger();
+        dest.height = src.value("height").toInteger();
     }
 }
 void copyBlobMetadata(const QJsonObject &src, ComWhtwndBlogDefs::BlobMetadata &dest)
@@ -4316,7 +4316,7 @@ void copyPushedAuthorizationResponse(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.request_uri = src.value("request_uri").toString();
-        dest.expires_in = src.value("expires_in").toInt();
+        dest.expires_in = src.value("expires_in").toInteger();
     }
 }
 void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
@@ -4327,7 +4327,7 @@ void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
         dest.refresh_token = src.value("refresh_token").toString();
         dest.scope = src.value("scope").toString();
         dest.sub = src.value("sub").toString();
-        dest.expires_in = src.value("expires_in").toInt();
+        dest.expires_in = src.value("expires_in").toInteger();
     }
 }
 }

@@ -38,6 +38,7 @@ public:
                               const QString &root_cid, const QString &root_uri);
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setImages(const QStringList &images, const QStringList &alts);
+    Q_INVOKABLE void setVideo(const QString &video);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
                                      const QString &description, const QString &image_path);
@@ -50,6 +51,7 @@ public:
 
     Q_INVOKABLE void post();
     Q_INVOKABLE void postWithImages();
+    Q_INVOKABLE void postWithVideo();
     Q_INVOKABLE void repost(const QString &cid, const QString &uri,
                             const QString &via_cid = QString(), const QString &via_uri = QString());
     Q_INVOKABLE void like(const QString &cid, const QString &uri,
@@ -92,6 +94,10 @@ public:
 
     Q_INVOKABLE void requestPostGate(const QString &uri);
 
+#ifdef QT_DEBUG
+    void setVideoEndpoint(const QString &newVideoEndpoint);
+#endif
+
     bool running() const;
     void setRunning(bool newRunning);
     QString progressMessage() const;
@@ -109,12 +115,17 @@ signals:
 
 private:
     void uploadBlob(std::function<void(bool)> callback);
+    void uploadVideoBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
     bool threadGate(const QString &uri,
                     std::function<void(bool, const QString &, const QString &)> callback);
     void postGate(const QString &uri,
                   std::function<void(bool, const QString &, const QString &)> callback);
+
+#ifdef QT_DEBUG
+    QString m_videoEndpoint; // for debug
+#endif
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
@@ -126,6 +137,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<EmbedImage> m_embedImages;
+    QString m_embedVideo;
     QList<AtProtocolType::Blob> m_embedImageBlobs;
     QStringList m_postLanguages;
     QString m_externalLinkUri;

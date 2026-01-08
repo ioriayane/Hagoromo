@@ -8,7 +8,7 @@ AppBskyGraphGetBlocks::AppBskyGraphGetBlocks(QObject *parent) : AppBskyGraphGetF
     m_listKey = QStringLiteral("blocks");
 }
 
-void AppBskyGraphGetBlocks::getBlocks(const int limit, const QString &cursor)
+void AppBskyGraphGetBlocks::getBlocks(const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (limit > 0) {

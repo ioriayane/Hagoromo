@@ -8,7 +8,7 @@ AppBskyFeedGetQuotes::AppBskyFeedGetQuotes(QObject *parent) : AppBskyFeedGetPost
     m_listKey = QStringLiteral("posts");
 }
 
-void AppBskyFeedGetQuotes::getQuotes(const QString &uri, const QString &cid, const int limit,
+void AppBskyFeedGetQuotes::getQuotes(const QString &uri, const QString &cid, const qint64 limit,
                                      const QString &cursor)
 {
     QUrlQuery url_query;

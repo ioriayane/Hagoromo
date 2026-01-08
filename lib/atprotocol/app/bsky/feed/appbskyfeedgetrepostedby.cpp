@@ -10,7 +10,7 @@ AppBskyFeedGetRepostedBy::AppBskyFeedGetRepostedBy(QObject *parent)
 }
 
 void AppBskyFeedGetRepostedBy::getRepostedBy(const QString &uri, const QString &cid,
-                                             const int limit, const QString &cursor)
+                                             const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (!uri.isEmpty()) {

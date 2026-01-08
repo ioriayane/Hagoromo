@@ -10,8 +10,8 @@ namespace AtProtocolInterface {
 AppBskyFeedGetPostThread::AppBskyFeedGetPostThread(QObject *parent)
     : AccessAtProtocol { parent } { }
 
-void AppBskyFeedGetPostThread::getPostThread(const QString &uri, const int depth,
-                                             const int parentHeight)
+void AppBskyFeedGetPostThread::getPostThread(const QString &uri, const qint64 depth,
+                                             const qint64 parentHeight)
 {
     QUrlQuery url_query;
     if (!uri.isEmpty()) {

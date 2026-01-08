@@ -10,7 +10,7 @@ class ChatBskyConvoListConvos : public AccessAtProtocol
 public:
     explicit ChatBskyConvoListConvos(QObject *parent = nullptr);
 
-    void listConvos(const int limit, const QString &cursor, const QString &readState,
+    void listConvos(const qint64 limit, const QString &cursor, const QString &readState,
                     const QString &status);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &convosList() const;

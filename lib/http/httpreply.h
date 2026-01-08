@@ -54,6 +54,9 @@ public:
     void setContentType(const QString &newContentType);
     void setContentType(const QByteArray &name, const QByteArray &value);
 
+    int statusCode() const;
+    void setStatusCode(int newStatusCode);
+
 public slots:
 
 signals:
@@ -70,6 +73,7 @@ private:
     QByteArray m_recvData;
     Error m_error;
     QString m_contentType;
+    int m_statusCode;
 };
 
 #endif // HTTPREPLY_H

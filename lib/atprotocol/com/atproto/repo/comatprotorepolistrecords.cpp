@@ -12,7 +12,7 @@ ComAtprotoRepoListRecords::ComAtprotoRepoListRecords(QObject *parent) : AccessAt
 }
 
 void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &collection,
-                                            const int limit, const QString &cursor,
+                                            const qint64 limit, const QString &cursor,
                                             const bool reverse)
 {
     QUrlQuery url_query;

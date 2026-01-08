@@ -10,7 +10,7 @@ class ComAtprotoRepoListRecords : public AccessAtProtocol
 public:
     explicit ComAtprotoRepoListRecords(QObject *parent = nullptr);
 
-    void listRecords(const QString &repo, const QString &collection, const int limit,
+    void listRecords(const QString &repo, const QString &collection, const qint64 limit,
                      const QString &cursor, const bool reverse);
 
     const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &recordsList() const;

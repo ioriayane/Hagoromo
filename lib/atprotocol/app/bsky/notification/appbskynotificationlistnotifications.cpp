@@ -14,7 +14,8 @@ AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObje
 }
 
 void AppBskyNotificationListNotifications::listNotifications(const QList<QString> &reasons,
-                                                             const int limit, const bool priority,
+                                                             const qint64 limit,
+                                                             const bool priority,
                                                              const QString &cursor,
                                                              const QString &seenAt)
 {

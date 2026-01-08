@@ -10,7 +10,7 @@ class AppBskyNotificationListActivitySubscriptions : public AppBskyGraphGetFollo
 public:
     explicit AppBskyNotificationListActivitySubscriptions(QObject *parent = nullptr);
 
-    void listActivitySubscriptions(const int limit, const QString &cursor);
+    void listActivitySubscriptions(const qint64 limit, const QString &cursor);
 };
 
 }

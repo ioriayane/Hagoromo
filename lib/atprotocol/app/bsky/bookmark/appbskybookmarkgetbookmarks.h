@@ -10,7 +10,7 @@ class AppBskyBookmarkGetBookmarks : public AccessAtProtocol
 public:
     explicit AppBskyBookmarkGetBookmarks(QObject *parent = nullptr);
 
-    void getBookmarks(const int limit, const QString &cursor);
+    void getBookmarks(const qint64 limit, const QString &cursor);
 
     const QList<AtProtocolType::AppBskyBookmarkDefs::BookmarkView> &bookmarksList() const;
 

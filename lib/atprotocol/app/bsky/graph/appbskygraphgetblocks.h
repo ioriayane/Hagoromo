@@ -10,7 +10,7 @@ class AppBskyGraphGetBlocks : public AppBskyGraphGetFollows
 public:
     explicit AppBskyGraphGetBlocks(QObject *parent = nullptr);
 
-    void getBlocks(const int limit, const QString &cursor);
+    void getBlocks(const qint64 limit, const QString &cursor);
 };
 
 }

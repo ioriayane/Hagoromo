@@ -8,7 +8,7 @@ AppBskyGraphGetMutes::AppBskyGraphGetMutes(QObject *parent) : AppBskyGraphGetFol
     m_listKey = QStringLiteral("mutes");
 }
 
-void AppBskyGraphGetMutes::getMutes(const int limit, const QString &cursor)
+void AppBskyGraphGetMutes::getMutes(const qint64 limit, const QString &cursor)
 {
     QUrlQuery url_query;
     if (limit > 0) {
