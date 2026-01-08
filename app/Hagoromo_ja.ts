@@ -252,82 +252,82 @@
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="15"/>
         <source>Add poll</source>
-        <translation type="unfinished"></translation>
+        <translation>投票を追加</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="82"/>
         <source>Option 1</source>
-        <translation type="unfinished"></translation>
+        <translation>選択肢 1</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="97"/>
         <source>Option 2</source>
-        <translation type="unfinished"></translation>
+        <translation>選択肢 2</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="113"/>
         <source>Option 3</source>
-        <translation type="unfinished"></translation>
+        <translation>選択肢 3</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="129"/>
         <source>Option 4</source>
-        <translation type="unfinished"></translation>
+        <translation>選択肢 4</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="141"/>
         <source>+ Add option</source>
-        <translation type="unfinished"></translation>
+        <translation>+ 選択肢を追加</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="150"/>
         <source>Duration</source>
-        <translation type="unfinished"></translation>
+        <translation>投票期間</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="156"/>
         <source>5 minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>5分</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="157"/>
         <source>1 hour</source>
-        <translation type="unfinished"></translation>
+        <translation>1時間</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="158"/>
         <source>6 hours</source>
-        <translation type="unfinished"></translation>
+        <translation>6時間</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="159"/>
         <source>12 hours</source>
-        <translation type="unfinished"></translation>
+        <translation>12時間</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="160"/>
         <source>1 day</source>
-        <translation type="unfinished"></translation>
+        <translation>1日</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="161"/>
         <source>3 days</source>
-        <translation type="unfinished"></translation>
+        <translation>3日</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="162"/>
         <source>7 days</source>
-        <translation type="unfinished"></translation>
+        <translation>7日</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="180"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location filename="qml/dialogs/AddPollDialog.qml" line="193"/>
         <source>Apply</source>
-        <translation type="unfinished">適用</translation>
+        <translation>適用</translation>
     </message>
 </context>
 <context>
@@ -2509,32 +2509,32 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qml/parts/PollContent.qml" line="73"/>
         <source>Voted</source>
-        <translation type="unfinished"></translation>
+        <translation>投票済み</translation>
     </message>
     <message>
         <location filename="qml/parts/PollContent.qml" line="111"/>
         <source>%s votes</source>
-        <translation type="unfinished"></translation>
+        <translation>%s票</translation>
     </message>
     <message>
         <location filename="qml/parts/PollContent.qml" line="117"/>
         <source>Finished</source>
-        <translation type="unfinished"></translation>
+        <translation>投票終了</translation>
     </message>
     <message>
         <location filename="qml/parts/PollContent.qml" line="117"/>
         <source>%s hours left</source>
-        <translation type="unfinished"></translation>
+        <translation>%s時間後</translation>
     </message>
     <message>
         <location filename="qml/parts/PollContent.qml" line="129"/>
         <source>Remove vote</source>
-        <translation type="unfinished"></translation>
+        <translation>投票を取り消す</translation>
     </message>
     <message>
         <location filename="qml/parts/PollContent.qml" line="129"/>
         <source>Vote</source>
-        <translation type="unfinished"></translation>
+        <translation>投票する</translation>
     </message>
 </context>
 <context>
@@ -2542,7 +2542,7 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qml/parts/PollOptions.qml" line="16"/>
         <source>Poll</source>
-        <translation type="unfinished"></translation>
+        <translation>投票</translation>
     </message>
 </context>
 <context>
@@ -3047,7 +3047,7 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qtquick/operation/recordoperator.cpp" line="153"/>
         <source>Let&apos;s poll:</source>
-        <translation type="unfinished"></translation>
+        <translation>投票しよう:</translation>
     </message>
     <message>
         <location filename="qtquick/operation/recordoperator.cpp" line="208"/>
@@ -3063,7 +3063,7 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qtquick/operation/recordoperator.cpp" line="338"/>
         <source>Getting OGP image ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtquick/operation/recordoperator.cpp" line="371"/>
@@ -4572,17 +4572,17 @@ Why should this message be reviewed?</source>
     <message>
         <location filename="qtquick/operation/tokimekipolloperator.cpp" line="277"/>
         <source>(No option)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtquick/operation/tokimekipolloperator.cpp" line="291"/>
         <source>+%1 more choices</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtquick/operation/tokimekipolloperator.cpp" line="322"/>
         <source>TOKIMEKI Poll</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
