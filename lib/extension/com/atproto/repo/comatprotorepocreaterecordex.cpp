@@ -299,6 +299,19 @@ void ComAtprotoRepoCreateRecordEx::postGate(
                  makePostGateJsonObject(uri, type, detached_uris), QString());
 }
 
+void ComAtprotoRepoCreateRecordEx::tokimekiPoll(const QString &post_uri, const QString &post_cid,
+                                                const QStringList &options, const int duration,
+                                                const QString &rkey)
+{
+    if (!post_uri.startsWith("at://")) {
+        emit finished(false);
+        return;
+    }
+
+    createRecord(this->did(), QStringLiteral("tech.tokimeki.poll.poll"), rkey, false,
+                 makeTokimekiPollJsonObject(post_uri, post_cid, options, duration), QString());
+}
+
 void ComAtprotoRepoCreateRecordEx::setReply(const QString &parent_cid, const QString &parent_uri,
                                             const QString &root_cid, const QString &root_uri)
 {

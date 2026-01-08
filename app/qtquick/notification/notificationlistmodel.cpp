@@ -125,6 +125,24 @@ NotificationListModel::NotificationListModel(QObject *parent)
     m_toListLinkRoles[ListLinkDescriptionRole] =
             AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
     m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
+
+    m_toTokimekiPollRoles[HasPollRole] = AtpAbstractListModel::TokimekiPollRoles::HasPollRole;
+    m_toTokimekiPollRoles[PollUriRole] = AtpAbstractListModel::TokimekiPollRoles::PollUriRole;
+    m_toTokimekiPollRoles[PollCidRole] = AtpAbstractListModel::TokimekiPollRoles::PollCidRole;
+    m_toTokimekiPollRoles[PollOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollOptionsRole;
+    m_toTokimekiPollRoles[PollCountOfOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollCountOfOptionsRole;
+    m_toTokimekiPollRoles[PollIndexOfOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollIndexOfOptionsRole;
+    m_toTokimekiPollRoles[PollIsMineRole] = AtpAbstractListModel::TokimekiPollRoles::PollIsMineRole;
+    m_toTokimekiPollRoles[PollMyVoteRole] = AtpAbstractListModel::TokimekiPollRoles::PollMyVoteRole;
+    m_toTokimekiPollRoles[PollTotalVotesRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollTotalVotesRole;
+    m_toTokimekiPollRoles[PollIsEndedRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollIsEndedRole;
+    m_toTokimekiPollRoles[PollRemainTimeRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollRemainTimeRole;
 }
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
@@ -277,6 +295,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return !current.cid.isEmpty() && (current.cid == m_runningOtherProcessingCid);
     } else if (role == RunningSkyblurPostTextRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningSkyblurPostTextCid);
+    } else if (role == RunningVoteToPollRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningVoteToPollCid);
 
     } else if (role == AggregatedAvatarsRole || role == AggregatedDisplayNamesRole
                || role == AggregatedDidsRole || role == AggregatedHandlesRole
@@ -359,6 +379,9 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     } else if (m_toListLinkRoles.contains(role)) {
         return getListLinkItem(m_postHash.value(current.cid), m_toListLinkRoles[role]);
+
+    } else if (m_toTokimekiPollRoles.contains(role)) {
+        return getTokimekiPollItem(m_postHash.value(current.cid), m_toTokimekiPollRoles[role]);
 
     } else if ((current.reason == "quote")
                && (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
@@ -618,6 +641,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
             m_runningSkyblurPostTextCid = current.cid;
         } else {
             m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QList<int>() << role);
+    } else if (role == RunningVoteToPollRole) {
+        if (value.toBool()) {
+            m_runningVoteToPollCid = current.cid;
+        } else {
+            m_runningVoteToPollCid.clear();
         }
         emit dataChanged(index(row), index(row), QList<int>() << role);
     }
@@ -1086,6 +1116,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RunningBookmarkRole] = "runningBookmark";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
     roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
+    roles[RunningVoteToPollRole] = "runningVoteToPoll";
 
     roles[AggregatedAvatarsRole] = "aggregatedAvatars";
     roles[AggregatedDisplayNamesRole] = "aggregatedDisplayNames";
@@ -1144,6 +1175,18 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReplyRootCidRole] = "replyRootCid";
     roles[ReplyRootUriRole] = "replyRootUri";
+
+    roles[HasPollRole] = "hasPoll";
+    roles[PollUriRole] = "pollUri";
+    roles[PollCidRole] = "pollCid";
+    roles[PollOptionsRole] = "pollOptions";
+    roles[PollCountOfOptionsRole] = "pollCountOfOptions";
+    roles[PollIndexOfOptionsRole] = "pollIndexOfOptions";
+    roles[PollIsMineRole] = "pollIsMine";
+    roles[PollMyVoteRole] = "pollMyVote";
+    roles[PollTotalVotesRole] = "pollTotalVotes";
+    roles[PollIsEndedRole] = "pollIsEnded";
+    roles[PollRemainTimeRole] = "pollRemainTime";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
@@ -1540,9 +1583,16 @@ void NotificationListModel::getPosts()
                 } else if (item.reason == "reply" || item.reason == "mention") {
                     if (new_cid.contains(m_cidList.at(i))) {
                         emit dataChanged(index(i), index(i));
+
+                        // Tokimekiの投票を取得するキューに入れる
+                        appendTokimekiPollToCue(
+                                m_cidList.at(i),
+                                m_postHash[m_cidList.at(i)].embed_AppBskyEmbedExternal_View);
                     }
                 }
             }
+            // Tokimekiの投票を取得
+            getTokimekiPoll();
         } else {
             emit errorOccured(posts->errorCode(), posts->errorMessage());
         }
@@ -1748,6 +1798,16 @@ bool NotificationListModel::runningSkyblurPostText(int row) const
 void NotificationListModel::setRunningSkyblurPostText(int row, bool running)
 {
     update(row, RunningSkyblurPostTextRole, running);
+}
+
+bool NotificationListModel::runningVoteToPoll(int row) const
+{
+    return item(row, RunningVoteToPollRole).toBool();
+}
+
+void NotificationListModel::setRunningVoteToPoll(int row, bool running)
+{
+    update(row, RunningVoteToPollRole, running);
 }
 
 template<typename T>

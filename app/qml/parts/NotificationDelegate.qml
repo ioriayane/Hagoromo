@@ -42,6 +42,7 @@ ClickableFrame {
     property alias aggregatedAvatarImages: aggregatedAvatarImages
     property alias postAuthor: postAuthor
     property alias skyblurContent: skyblurContent
+    property alias pollContent: pollContent
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
@@ -351,6 +352,13 @@ ClickableFrame {
 
                     SkyblurContent {
                         id: skyblurContent
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                    }
+
+                    PollContent {
+                        id: pollContent
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: false

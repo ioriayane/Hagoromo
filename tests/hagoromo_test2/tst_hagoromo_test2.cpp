@@ -44,6 +44,8 @@ private slots:
     void test_NotificationPreferenceListModel();
     void test_NotificationPreferenceListModel_save();
 
+    void test_TokimekiPollOperator_getPoll_vote();
+
 private:
     WebServer m_mockServer;
     quint16 m_listenPort;
@@ -70,6 +72,11 @@ hagoromo_test::hagoromo_test()
                 if (request.url().path() == "/response/facet/xrpc/com.atproto.repo.createRecord") {
                     test_RecordOperatorCreateRecord(request.body());
                     json = "{\"cid\":\"CID\",\"uri\":\"URI\"}";
+                    result = true;
+                } else if (request.url().path()
+                           == "/response/tokimeki/xrpc/com.atproto.repo.createRecord") {
+                    test_RecordOperatorCreateRecord(request.body());
+                    json = "{\"cid\":\"CID\",\"uri\":\"at://URI\"}";
                     result = true;
                 } else if (request.url().path()
                                    == "/response/generator/save/xrpc/app.bsky.actor.putPreferences"
@@ -1028,6 +1035,76 @@ void hagoromo_test::test_NotificationPreferenceListModel_save()
     qDebug() << "=== savePreferences() test completed successfully ===";
 }
 
+void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/tokimeki", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    TokimekiPollOperator ope;
+    ope.setAccount(uuid);
+    ope.setServiceUrl(m_service + "/tokimeki/no_vote");
+
+    {
+        QSignalSpy spy(&ope, &TokimekiPollOperator::finished);
+
+        const QString cid = QStringLiteral("test-cid-novote");
+        const QString uri = QStringLiteral(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+        const QString viewer = QStringLiteral("did:plc:viewerexample-no-vote000000000000");
+
+        ope.getPoll(cid, uri, viewer);
+
+        QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+        QCOMPARE(spy.count(), 1);
+
+        const QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+        QCOMPARE(arguments.at(1).toString(), cid);
+    }
+    {
+        QHash<QString, QJsonObject> hash =
+                UnitTestCommon::loadVoteHash(":/data/com.atproto.repo.createRecord_vote.expect");
+
+        QHashIterator<QString, QJsonObject> i(hash);
+        while (i.hasNext()) {
+            i.next();
+            const QString uri = i.value().value("uri").toString();
+            const QString cid = i.value().value("cid").toString();
+            const QString option_index = QString::number(i.value().value("optionIndex").toInt());
+            const QString uuid = AccountManager::getInstance()->updateAccount(
+                    QString(), m_service + "/tokimeki", "id", "pass", i.key(), "handle", "email",
+                    "accessJwt", "refreshJwt", true);
+            ope.setAccount(uuid);
+
+            QSignalSpy spy(&ope, &TokimekiPollOperator::finished);
+            ope.vote(cid, uri, option_index);
+            spy.wait();
+            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+            QList<QVariant> arguments = spy.takeFirst();
+            QVERIFY(arguments.at(0).toBool());
+            QCOMPARE(arguments.at(1).toString(),
+                     "bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe");
+
+            QVariant v;
+            v = ope.item(uri, TokimekiPollOperator::PollMyVoteRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toString(), option_index);
+
+            v = ope.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toInt(), 3);
+
+            v = ope.item(uri, TokimekiPollOperator::PollCountOfOptionsRole);
+            QVERIFY(v.isValid());
+            QCOMPARE(v.toStringList(),
+                     QStringList() << "2"
+                                   << "1");
+        }
+    }
+}
+
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -1047,6 +1124,24 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
                              == hash[did].value("record").toObject().value("facets"),
                      did.toLocal8Bit());
         }
+    } else if (collection == "tech.tokimeki.poll.vote") {
+        QString did = json_doc.object().value("repo").toString();
+        QJsonObject expect_obj = json_doc.object();
+
+        QHash<QString, QJsonObject> hash = UnitTestCommon::loadPostExpectHash(
+                ":/data/com.atproto.repo.createRecord_vote.expect");
+        QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
+        {
+            QJsonObject tmp = hash[did].value("record").toObject();
+            tmp.remove("createdAt");
+            hash[did]["record"] = tmp;
+        }
+        {
+            QJsonObject tmp = expect_obj.value("record").toObject();
+            tmp.remove("createdAt");
+            expect_obj["record"] = tmp;
+        }
+        QCOMPARE(hash[did], expect_obj);
     }
 }
 

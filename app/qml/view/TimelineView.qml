@@ -128,10 +128,9 @@ ScrollView {
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             blockedQuoteFrame.visible: model.quoteRecordBlocked
 
-            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+            externalLinkFrame.visible: model.hasExternalLink && !model.hasPoll && contentMediaFilterFrame.showContent
             feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
-
 
             repostReactionAuthor.displayName: model.repostedByDisplayName
             repostReactionAuthor.handle: model.repostedByHandle
@@ -152,11 +151,24 @@ ScrollView {
                 }
                 return text
             }
-            skyblurContent.visible: model.hasSkyblurLink
+            skyblurContent.visible: model.hasSkyblurLink && contentMediaFilterFrame.showContent
             skyblurContent.postText.text: model.skyblurPostText
             skyblurContent.getPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)
             skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
             skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
+
+            pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
+            pollContent.options: model.pollOptions
+            pollContent.countOfOptions: model.pollCountOfOptions
+            pollContent.indexOfOptions: model.pollIndexOfOptions
+            pollContent.myPoll: model.pollIsMine
+            pollContent.myVote: model.pollMyVote
+            pollContent.totalVotes: model.pollTotalVotes
+            pollContent.isEnded: model.pollIsEnded
+            pollContent.remainTime: model.pollRemainTime
+            pollContent.running: model.runningVoteToPoll
+            pollContent.originalUrl: model.externalLinkUri
+            pollContent.onClicked: (vote_index) => rootListView.model.voteToPoll(model.cid, model.pollUri, model.pollCid, vote_index)
 
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage

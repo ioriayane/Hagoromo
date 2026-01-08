@@ -111,6 +111,25 @@ TimelineListModel::TimelineListModel(QObject *parent)
     m_toThreadGateRoles[ThreadGateRulesRole] =
             AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
 
+    m_toTokimekiPollRoles[HasPollRole] = AtpAbstractListModel::TokimekiPollRoles::HasPollRole;
+    m_toTokimekiPollRoles[PollUriRole] = AtpAbstractListModel::TokimekiPollRoles::PollUriRole;
+    m_toTokimekiPollRoles[PollCidRole] = AtpAbstractListModel::TokimekiPollRoles::PollCidRole;
+    m_toTokimekiPollRoles[PollOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollOptionsRole;
+    m_toTokimekiPollRoles[PollCountOfOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollCountOfOptionsRole;
+    m_toTokimekiPollRoles[PollIndexOfOptionsRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollIndexOfOptionsRole;
+
+    m_toTokimekiPollRoles[PollIsMineRole] = AtpAbstractListModel::TokimekiPollRoles::PollIsMineRole;
+    m_toTokimekiPollRoles[PollMyVoteRole] = AtpAbstractListModel::TokimekiPollRoles::PollMyVoteRole;
+    m_toTokimekiPollRoles[PollTotalVotesRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollTotalVotesRole;
+    m_toTokimekiPollRoles[PollIsEndedRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollIsEndedRole;
+    m_toTokimekiPollRoles[PollRemainTimeRole] =
+            AtpAbstractListModel::TokimekiPollRoles::PollRemainTimeRole;
+
     connect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
             &TimelineListModel::updatedPin);
 }
@@ -233,6 +252,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningOtherProcessingCid);
     else if (role == RunningSkyblurPostTextRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningSkyblurPostTextCid);
+    else if (role == RunningVoteToPollRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningVoteToPollCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
              || role == QuoteRecordCidRole || role == QuoteRecordUriRole
@@ -260,6 +281,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
     else if (m_toListLinkRoles.contains(role))
         return getListLinkItem(current.post, m_toListLinkRoles[role]);
+
+    else if (m_toTokimekiPollRoles.contains(role))
+        return getTokimekiPollItem(current.post, m_toTokimekiPollRoles[role]);
 
     else if (role == HasReplyRole) {
         if (isPinnedPost(current.post.cid) && row == 0)
@@ -519,6 +543,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningSkyblurPostTextCid = current.post.cid;
         } else {
             m_runningSkyblurPostTextCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == RunningVoteToPollRole) {
+        if (value.toBool()) {
+            m_runningVoteToPollCid = current.post.cid;
+        } else {
+            m_runningVoteToPollCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
 
@@ -992,6 +1023,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningPostPinningRole] = "runningPostPinning";
     roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
     roles[RunningSkyblurPostTextRole] = "runningSkyblurPostText";
+    roles[RunningVoteToPollRole] = "runningVoteToPoll";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
@@ -1046,6 +1078,18 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";
+
+    roles[HasPollRole] = "hasPoll";
+    roles[PollUriRole] = "pollUri";
+    roles[PollCidRole] = "pollCid";
+    roles[PollOptionsRole] = "pollOptions";
+    roles[PollCountOfOptionsRole] = "pollCountOfOptions";
+    roles[PollIndexOfOptionsRole] = "pollIndexOfOptions";
+    roles[PollIsMineRole] = "pollIsMine";
+    roles[PollMyVoteRole] = "pollMyVote";
+    roles[PollTotalVotesRole] = "pollTotalVotes";
+    roles[PollIsEndedRole] = "pollIsEnded";
+    roles[PollRemainTimeRole] = "pollRemainTime";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
@@ -1227,9 +1271,13 @@ void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &fee
 
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
+        // Tokimekiの投票の取得のキューに入れる
+        appendTokimekiPollToCue(item->post.cid, item->post.embed_AppBskyEmbedExternal_View);
     }
     // embed画像を取得
     getExtendMediaFiles();
+    // Tokimekiの投票を取得
+    getTokimekiPoll();
 }
 
 void TimelineListModel::copyFromNext(
@@ -1249,9 +1297,13 @@ void TimelineListModel::copyFromNext(
 
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
+        // Tokimekiの投票の取得のキューに入れる
+        appendTokimekiPollToCue(item->post.cid, item->post.embed_AppBskyEmbedExternal_View);
     }
     // embed画像を取得
     getExtendMediaFiles();
+    // Tokimekiの投票を取得
+    getTokimekiPoll();
 }
 
 QString
@@ -1418,6 +1470,16 @@ bool TimelineListModel::runningSkyblurPostText(int row) const
 void TimelineListModel::setRunningSkyblurPostText(int row, bool running)
 {
     update(row, RunningSkyblurPostTextRole, running);
+}
+
+bool TimelineListModel::runningVoteToPoll(int row) const
+{
+    return item(row, RunningVoteToPollRole).toBool();
+}
+
+void TimelineListModel::setRunningVoteToPoll(int row, bool running)
+{
+    update(row, RunningVoteToPollRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

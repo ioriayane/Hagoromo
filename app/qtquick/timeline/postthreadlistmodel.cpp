@@ -59,7 +59,8 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
 
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
     while (current != nullptr
-           && current->parent_type == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
+           && current->parent_type
+                   == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
         current = current->parent_ThreadViewPost.get();
         if (current != nullptr) {
             list.push_front(current);
@@ -91,6 +92,10 @@ void PostThreadListModel::copyFromMain(
     post.indexed_at = thread_view_post->post.indexedAt;
     post.reference_time = reference_time;
     m_cuePost.insert(0, post);
+
+    // Tokimekiの投票の取得のキューに入れる
+    appendTokimekiPollToCue(thread_view_post->post.cid,
+                            thread_view_post->post.embed_AppBskyEmbedExternal_View);
 
     AppBskyFeedDefs::FeedViewPost feed_view_post;
     feed_view_post.post = thread_view_post->post;
@@ -151,6 +156,8 @@ void PostThreadListModel::copyFromMain(
         if (!labelers.isEmpty()) {
             LabelProvider::getInstance()->update(labelers, account(), &m_labelConnector);
         }
+        // Tokimekiの投票を取得
+        getTokimekiPoll();
     }
 }
 

@@ -5,6 +5,7 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "operation/skybluroperator.h"
+#include "operation/tokimekipolloperator.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 #include "tools/labelprovider.h"
@@ -44,6 +45,8 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator,
         connect(skyblur, &SkyblurOperator::finished, this,
                 &AtpAbstractListModel::finishedRestoreBluredText);
     }
+    connect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
+            &AtpAbstractListModel::finishedTokimekiPoll);
 }
 
 AtpAbstractListModel::~AtpAbstractListModel()
@@ -60,6 +63,8 @@ AtpAbstractListModel::~AtpAbstractListModel()
         disconnect(skyblur, &SkyblurOperator::finished, this,
                    &AtpAbstractListModel::finishedRestoreBluredText);
     }
+    disconnect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
+               &AtpAbstractListModel::finishedTokimekiPoll);
 }
 
 void AtpAbstractListModel::clear()
@@ -161,6 +166,23 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
     skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
 }
 
+void AtpAbstractListModel::voteToPoll(const QString &post_cid, const QString &poll_uri,
+                                      const QString &poll_cid, const QString &option_index)
+{
+    // m_tokimekiPoll
+    qDebug() << "voteToPoll" << post_cid << poll_uri << poll_cid << option_index;
+    const auto rows = indexsOf(post_cid);
+    for (const auto row : rows) {
+        if (runningVoteToPoll(row))
+            return;
+    }
+    for (const auto row : rows) {
+        setRunningVoteToPoll(row, true);
+    }
+    m_tokimekiPoll.setAccount(account().uuid);
+    m_tokimekiPoll.vote(post_cid, poll_uri, option_index);
+}
+
 void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
 {
     qDebug().noquote() << "finishedTransration" << this << cid << text;
@@ -185,6 +207,28 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
         if (row >= 0 && success) {
             emit dataChanged(index(row), index(row));
         }
+    }
+}
+
+void AtpAbstractListModel::finishedTokimekiPoll(bool success, const QString &cid,
+                                                TokimekiPollOperator::FunctionType type)
+{
+    qDebug().noquote() << "finishedTokimekiPoll" << this << success << cid;
+    const auto rows = indexsOf(cid);
+    if (type == TokimekiPollOperator::FunctionType::Vote) {
+        for (const auto row : rows) {
+            setRunningVoteToPoll(row, false);
+        }
+    }
+    if (success) {
+        for (const auto row : rows) {
+            if (row >= 0) {
+                emit dataChanged(index(row), index(row));
+            }
+        }
+    }
+    if (type == TokimekiPollOperator::FunctionType::GetPoll) {
+        QTimer::singleShot(0, this, &AtpAbstractListModel::getTokimekiPoll);
     }
 }
 
@@ -974,6 +1018,40 @@ AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::Pos
 }
 
 QVariant
+AtpAbstractListModel::getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                          const TokimekiPollRoles role) const
+{
+    QString uri = m_tokimekiPoll.convertUrlToUri(post.embed_AppBskyEmbedExternal_View.external.uri);
+
+    if (role == HasPollRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::HasPollRole);
+    } else if (role == PollUriRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollUriRole);
+    } else if (role == PollCidRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCidRole);
+    } else if (role == PollOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollOptionsRole);
+    } else if (role == PollCountOfOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollCountOfOptionsRole);
+    } else if (role == PollIndexOfOptionsRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollIndexOfOptionsRole);
+    } else if (role == PollIsMineRole) {
+        const auto tmp =
+                m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollUriRole).toString();
+        return (!tmp.isEmpty() && tmp.split("/").contains(account().did));
+    } else if (role == PollMyVoteRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollMyVoteRole);
+    } else if (role == PollTotalVotesRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollTotalVotesRole);
+    } else if (role == PollIsEndedRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollIsEndedRole);
+    } else if (role == PollRemainTimeRole) {
+        return m_tokimekiPoll.item(uri, TokimekiPollOperator::Roles::PollRemainTimeRole);
+    }
+    return QVariant();
+}
+
+QVariant
 AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                         const ThreadGateRoles role) const
 {
@@ -1261,6 +1339,30 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
     }
 }
 
+void AtpAbstractListModel::appendTokimekiPollToCue(const QString &cid,
+                                                   const AppBskyEmbedExternal::View &view)
+{
+    QString uri = m_tokimekiPoll.convertUrlToUri(view.external.uri);
+    if (cid.isEmpty() || uri.isEmpty())
+        return;
+    m_cueTokimekiPoll.append(TokimekiPollChueItem(cid, uri, account().did));
+}
+
+void AtpAbstractListModel::getTokimekiPoll()
+{
+    TokimekiPollChueItem poll_item;
+
+    if (m_cueTokimekiPoll.isEmpty()) {
+        return;
+    } else {
+        poll_item = m_cueTokimekiPoll.back();
+        m_cueTokimekiPoll.pop_back();
+    }
+
+    m_tokimekiPoll.getPoll(poll_item.cid, poll_item.uri, poll_item.viewer);
+    // 完了はfinishedTokimekiPoll()にて。
+}
+
 QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const
 {
     QStringList items = uri.split("/");
@@ -1309,6 +1411,18 @@ bool AtpAbstractListModel::runningSkyblurPostText(int row) const
 }
 
 void AtpAbstractListModel::setRunningSkyblurPostText(int row, bool running)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(running)
+}
+
+bool AtpAbstractListModel::runningVoteToPoll(int row) const
+{
+    Q_UNUSED(row)
+    return false;
+}
+
+void AtpAbstractListModel::setRunningVoteToPoll(int row, bool running)
 {
     Q_UNUSED(row)
     Q_UNUSED(running)

@@ -149,6 +149,19 @@ ColumnLayout {
                 skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
                 skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
 
+                pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
+                pollContent.options: model.pollOptions
+                pollContent.countOfOptions: model.pollCountOfOptions
+                pollContent.indexOfOptions: model.pollIndexOfOptions
+                pollContent.myPoll: model.pollIsMine
+                pollContent.myVote: model.pollMyVote
+                pollContent.totalVotes: model.pollTotalVotes
+                pollContent.isEnded: model.pollIsEnded
+                pollContent.remainTime: model.pollRemainTime
+                pollContent.running: model.runningVoteToPoll
+                pollContent.originalUrl: model.externalLinkUri
+                pollContent.onClicked: (vote_index) => rootListView.model.voteToPoll(model.cid, model.pollUri, model.pollCid, vote_index)
+
                 contentFilterFrame.visible: model.contentFilterMatched
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
@@ -186,7 +199,7 @@ ColumnLayout {
                 embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
                 embedVideoFrame.thumbImageSource: model.videoThumbUri
 
-                externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+                externalLinkFrame.visible: model.hasExternalLink && !model.hasPoll && contentMediaFilterFrame.showContent
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
                 externalLinkFrame.thumbImage.source: model.externalLinkThumb
                 externalLinkFrame.titleLabel.text: model.externalLinkTitle

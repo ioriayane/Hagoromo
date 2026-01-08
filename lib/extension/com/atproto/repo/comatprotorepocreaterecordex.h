@@ -30,6 +30,8 @@ public:
     void postGate(const QString &uri,
                   const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
                   const QStringList &detached_uris);
+    void tokimekiPoll(const QString &post_uri, const QString &post_cid, const QStringList &options,
+                      const int duration, const QString &rkey);
 
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,
                   const QString &root_uri);

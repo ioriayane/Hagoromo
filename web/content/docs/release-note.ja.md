@@ -8,6 +8,9 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 2025
 
+- 追加
+  - TOKIMEKI Poll（投票）に対応
+
 ### v0.56.1 - 2025/12/30
 
 - 修正

@@ -388,6 +388,8 @@ void RealtimeFeedListModel::copyListMembers(
 void RealtimeFeedListModel::getPostThread()
 {
     if (m_cueGetPostThread.isEmpty()) {
+        // Tokimekiの投票を取得
+        QTimer::singleShot(50, this, &RealtimeFeedListModel::getTokimekiPoll);
         m_runningCue = false;
         return;
     }
@@ -427,6 +429,10 @@ void RealtimeFeedListModel::getPostThread()
                 beginInsertRows(QModelIndex(), 0, 0);
                 m_cidList.insert(0, view_post.post.cid);
                 endInsertRows();
+
+                // Tokimekiの投票の取得のキューに入れる
+                appendTokimekiPollToCue(view_post.post.cid,
+                                        view_post.post.embed_AppBskyEmbedExternal_View);
             }
             m_originalCidList.insert(0, view_post.post.cid);
 

@@ -12,7 +12,10 @@
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "tools/accountmanager.h"
+#include "tools/tid.h"
+#include "tokimekipolloperator.h"
 
+#include <QFile>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -135,6 +138,30 @@ void RecordOperator::setPostGate(const bool quote_enabled, const QStringList &ur
     m_postGateDetachedEmbeddingUris = uris;
 }
 
+void RecordOperator::setPoll(const QStringList &options, const int duration)
+{
+    if (options.size() < 2 || duration < (5 * 60))
+        return;
+
+    m_pollOptions = options;
+    m_pollDuration = duration;
+    m_pollRkey = Tid::next();
+    TokimekiPollOperator poll;
+    m_pollOgpImagepath.clear();
+
+    m_externalLinkUri = poll.makeAltUrl(account().did, m_pollRkey);
+    m_externalLinkTitle = tr("Let's poll:"); // tr("投票しよう: 起きてる / 寝てる");
+    for (int i = 0; i < m_pollOptions.size(); i++) {
+        if (i > 0) {
+            m_externalLinkTitle += QStringLiteral("/");
+            m_externalLinkDescription += QStringLiteral(" / ");
+        }
+        m_externalLinkTitle += QString(" %1").arg(m_pollOptions.at(i));
+        m_externalLinkDescription += QString("%1").arg(m_pollOptions.at(i));
+    }
+    m_externalLinkDescription = QLatin1String("\nPowered by TOKIMEKI");
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -158,6 +185,11 @@ void RecordOperator::clear()
 
     m_postGateEmbeddingRule.clear();
     m_postGateDetachedEmbeddingUris.clear();
+
+    m_pollOptions.clear();
+    m_pollDuration = 60 * 60;
+    m_pollRkey.clear();
+    m_pollOgpImagepath.clear();
 }
 
 void RecordOperator::post()
@@ -200,44 +232,57 @@ void RecordOperator::post()
                     if (success) {
                         QString last_post_uri = create_record->uri();
                         QString last_post_cid = create_record->cid();
-                        bool ret = threadGate(
-                                last_post_uri,
-                                [=](bool success2, const QString &uri, const QString &cid) {
-                                    Q_UNUSED(uri)
-                                    Q_UNUSED(cid)
-                                    postGate(last_post_uri,
-                                             [=](bool success3, const QString &uri3,
-                                                 const QString &cid3) {
-                                                 Q_UNUSED(success3)
-                                                 m_sequentialPostsCurrent++;
-                                                 if (m_sequentialPostsCurrent
-                                                     >= m_sequentialPostsTotal) {
-                                                     setProgressMessage(QString());
-                                                     emit finished(success2, uri3, cid3);
-                                                     setRunning(false);
-                                                 } else {
-                                                     setPostGate(true, QStringList());
-                                                     m_threadGateType = "everybody";
-                                                     if (m_sequentialPostsCurrent == 1
-                                                         && m_replyRoot.uri.isEmpty()) {
-                                                         m_replyRoot.uri = last_post_uri;
-                                                         m_replyRoot.cid = last_post_cid;
-                                                     }
-                                                     m_replyParent.uri = last_post_uri;
-                                                     m_replyParent.cid = last_post_cid;
-                                                     post();
-                                                 }
-                                             });
+                        tokimekiPoll(
+                                last_post_uri, last_post_cid,
+                                [=](bool poll_success, const QString &poll_uri,
+                                    const QString &poll_cid) {
+                                    Q_UNUSED(poll_success)
+                                    Q_UNUSED(poll_uri)
+                                    Q_UNUSED(poll_cid)
+
+                                    bool ret = threadGate(
+                                            last_post_uri,
+                                            [=](bool success2, const QString &uri,
+                                                const QString &cid) {
+                                                Q_UNUSED(uri)
+                                                Q_UNUSED(cid)
+                                                postGate(
+                                                        last_post_uri,
+                                                        [=](bool success3, const QString &uri3,
+                                                            const QString &cid3) {
+                                                            Q_UNUSED(success3)
+                                                            m_sequentialPostsCurrent++;
+                                                            if (m_sequentialPostsCurrent
+                                                                >= m_sequentialPostsTotal) {
+                                                                setProgressMessage(QString());
+                                                                emit finished(success2, uri3, cid3);
+                                                                setRunning(false);
+                                                            } else {
+                                                                setPostGate(true, QStringList());
+                                                                m_threadGateType = "everybody";
+                                                                if (m_sequentialPostsCurrent == 1
+                                                                    && m_replyRoot.uri.isEmpty()) {
+                                                                    m_replyRoot.uri = last_post_uri;
+                                                                    m_replyRoot.cid = last_post_cid;
+                                                                }
+                                                                m_replyParent.uri = last_post_uri;
+                                                                m_replyParent.cid = last_post_cid;
+                                                                post();
+                                                            }
+                                                        });
+                                            });
+                                    if (!ret) {
+                                        setProgressMessage(QString());
+                                        emit errorOccured(
+                                                "InvalidThreadGateSetting",
+                                                QString("Invalid thread gate "
+                                                        "setting.\ntype:%1\nrules:%2")
+                                                        .arg(m_threadGateType,
+                                                             m_threadGateRules.join(", ")));
+                                        emit finished(ret, QString(), QString());
+                                        setRunning(false);
+                                    }
                                 });
-                        if (!ret) {
-                            setProgressMessage(QString());
-                            emit errorOccured(
-                                    "InvalidThreadGateSetting",
-                                    QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
-                                            .arg(m_threadGateType, m_threadGateRules.join(", ")));
-                            emit finished(ret, QString(), QString());
-                            setRunning(false);
-                        }
                     } else {
                         setProgressMessage(QString());
                         emit errorOccured(create_record->errorCode(),
@@ -280,6 +325,40 @@ void RecordOperator::postWithImages()
             setRunning(false);
         }
     });
+}
+
+void RecordOperator::postWithPoll()
+{
+    if (m_pollOptions.isEmpty() || m_pollDuration <= 0 || m_pollRkey.isEmpty()) {
+        post();
+        return;
+    }
+    setRunning(true);
+
+    setProgressMessage(tr("Getting OGP image ..."));
+
+    auto poll = new TokimekiPollOperator(this);
+    connect(poll, &TokimekiPollOperator::finished, this,
+            [=](bool success, const QString &path, TokimekiPollOperator::FunctionType type) {
+                if (success && type == TokimekiPollOperator::FunctionType::GetOgp) {
+                    m_embedImages.clear();
+                    m_pollOgpImagepath = path;
+                    if (!m_pollOgpImagepath.isEmpty()) {
+                        EmbedImage e;
+                        e.path = QUrl::fromLocalFile(m_pollOgpImagepath).toString();
+                        m_embedImages.append(e);
+                    }
+                    postWithImages();
+                } else {
+                    setProgressMessage(QString());
+                    emit errorOccured("FailGetOgpImage",
+                                      QString("Failed to get the OGP image from TOKIMEKI."));
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+                poll->deleteLater();
+            });
+    poll->getOgp(m_pollOptions);
 }
 
 void RecordOperator::repost(const QString &cid, const QString &uri, const QString &via_cid,
@@ -1420,6 +1499,36 @@ void RecordOperator::postGate(const QString &uri,
     });
     create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
+}
+
+void RecordOperator::tokimekiPoll(
+        const QString &uri, const QString cid,
+        std::function<void(bool, const QString &, const QString &)> callback)
+{
+    if (m_pollOptions.isEmpty() || m_pollDuration <= 0 || m_pollRkey.isEmpty()) {
+        qDebug() << "No poll.";
+        callback(true, QString(), QString());
+        return;
+    }
+    ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        callback(success, create_record->uri(), create_record->cid());
+        create_record->deleteLater();
+    });
+    create_record->setAccount(account());
+    create_record->tokimekiPoll(uri, cid, m_pollOptions, m_pollDuration, m_pollRkey);
+
+    // この時点でblobにアップロード済み
+    if (QFile::remove(m_pollOgpImagepath)) {
+        qDebug() << "Remove uploaded file:" << m_pollOgpImagepath;
+    }
+    m_pollOptions.clear();
+    m_pollDuration = 0;
+    m_pollRkey.clear();
+    m_pollOgpImagepath.clear();
 }
 
 QString RecordOperator::progressMessage() const

@@ -465,6 +465,32 @@ QJsonObject AccessAtProtocol::makePostGateJsonObject(
     return json_record;
 }
 
+QJsonObject AccessAtProtocol::makeTokimekiPollJsonObject(const QString &post_uri,
+                                                         const QString &post_cid,
+                                                         const QStringList &options,
+                                                         const int duration)
+{
+    QJsonObject json_subject;
+    json_subject.insert("uri", post_uri);
+    json_subject.insert("cid", post_cid);
+
+    QJsonArray json_options;
+    for (const auto option : options) {
+        json_options.append(QJsonValue(option));
+    }
+
+    const auto created_at = QDateTime::currentDateTimeUtc();
+
+    QJsonObject json_record;
+    json_record.insert("$type", "tech.tokimeki.poll.poll");
+    json_record.insert("subject", json_subject);
+    json_record.insert("options", json_options);
+    json_record.insert("createdAt", created_at.toString(Qt::ISODateWithMs));
+    json_record.insert("endsAt", created_at.addSecs(duration).toString(Qt::ISODateWithMs));
+
+    return json_record;
+}
+
 void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
 {
     QHashIterator<QString, QString> i(m_additionalRawHeaders);

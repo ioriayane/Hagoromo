@@ -103,6 +103,8 @@ qt_add_qml_module(Hagoromo
         qml/parts/SkyblurContent.qml
         qml/parts/ExternalLinkCardPopup.qml
         qml/parts/LiveIconCover.qml
+        qml/parts/PollContent.qml
+        qml/parts/PollOptions.qml
         qml/dialogs/SelectThreadGateDialog.qml
         qml/dialogs/SearchDialog.qml
         qml/dialogs/AddToListDialog.qml
@@ -133,6 +135,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/LogViewDialog.qml
         qml/dialogs/BlockedAccountsDialog.qml
         qml/dialogs/AddListDialog.qml
+        qml/dialogs/AddPollDialog.qml
         qml/controls/ComboBoxEx.qml
         qml/controls/IconLabelFrame.qml
         qml/controls/CalendarPicker.qml

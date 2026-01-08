@@ -93,7 +93,7 @@ struct LabelValueDefinition
                       // nothing.
     QString blurs; // What should this label hide in the UI, if applied? 'content' hides all of the
                    // target; 'media' hides the images/video/audio; 'none' hides nothing.
-    QString defaultSetting; // The default setting for this label.
+    QString defaultSetting = QStringLiteral("warn"); // The default setting for this label.
     bool adultOnly = false; // Does the user need to have adult content enabled in order to
                             // configure this label?
     QList<LabelValueDefinitionStrings> locales;
@@ -507,7 +507,7 @@ struct FeedViewPref
     QString feed; // The URI of the feed, or an identifier which describes the feed.
     bool hideReplies = false; // Hide replies in the feed.
     bool hideRepliesByUnfollowed =
-            false; // Hide replies in the feed if they are not by followed users.
+            true; // Hide replies in the feed if they are not by followed users.
     int hideRepliesByLikeCount =
             0; // Hide replies in the feed if they do not have this number of likes.
     bool hideReposts = false; // Hide reposts in the feed.
@@ -529,8 +529,8 @@ struct MutedWord
     QString id;
     QString value; // The muted word itself.
     QList<AppBskyActorDefs::MutedWordTarget> targets;
-    QString actorTarget; // Groups of users to apply the muted word to. If undefined, applies to all
-                         // users.
+    QString actorTarget = QStringLiteral("all"); // Groups of users to apply the muted word to. If
+                                                 // undefined, applies to all users.
     QString expiresAt; // datetime , The date and time at which the muted word will expire and no
                        // longer be applied.
 };
@@ -3015,7 +3015,8 @@ struct Main
     ComWhtwndBlogDefs::Ogp ogp;
     QString theme;
     QList<ComWhtwndBlogDefs::BlobMetadata> blobs;
-    QString visibility; // Tells the visibility of the article to AppView.
+    QString visibility =
+            QStringLiteral("public"); // Tells the visibility of the article to AppView.
 };
 }
 
@@ -3117,6 +3118,35 @@ struct TokenResponse
     QString scope;
     QString sub;
     int expires_in = 0;
+};
+}
+
+// tech.tokimeki.poll.defs
+namespace TechTokimekiPollDefs {
+struct PollRecordView
+{
+    QString uri; // at-uri , AT URI pointing at the poll record.
+    QString cid; // cid , Content identifier of the poll record.
+    QString authorDid; // did , DID of the poll author.
+    ComAtprotoRepoStrongRef::Main subject;
+    QList<QString> options; // Option labels as authored in the poll record order.
+    QString createdAt; // datetime
+    QString endsAt; // datetime
+};
+struct PollOptionTally
+{
+    int index = 0; // Zero-based index pointing at the option in the poll record.
+    QString text; // Option label resolved for the viewer.
+    int count = 0; // Total votes counted for the option.
+};
+struct PollViewDetailed
+{
+    PollRecordView poll;
+    QList<PollOptionTally> options;
+    int totalVotes = 0; // Sum of all option counts.
+    bool isEnded = false; // Whether the poll is already closed for new votes.
+    int myVote = -1; // Option index chosen by the current viewer, if any.
+    QString myVoteUri; // at-uri , Viewer's vote record URI when a vote exists.
 };
 }
 

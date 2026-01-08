@@ -4,6 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "operation/tokimekipolloperator.h"
 #include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
@@ -33,6 +34,20 @@ struct BlobCueItem
     QString did;
     QString cid;
     QString parent_cid;
+};
+
+struct TokimekiPollChueItem
+{
+    TokimekiPollChueItem() {};
+    TokimekiPollChueItem(const QString &cid, const QString &uri, const QString &viewer)
+    {
+        this->cid = cid;
+        this->uri = uri;
+        this->viewer = viewer;
+    }
+    QString cid; // URI of the post that has poll
+    QString uri; // poll's at-uri : at://<auther did>/tech.tokimeki.poll.poll/<rkey>
+    QString viewer; // did
 };
 
 class AtpAbstractListModel : public QAbstractListModel
@@ -129,6 +144,19 @@ public:
         ThreadGateTypeRole,
         ThreadGateRulesRole,
     };
+    enum TokimekiPollRoles {
+        HasPollRole,
+        PollUriRole,
+        PollCidRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollIndexOfOptionsRole,
+        PollIsMineRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
+    };
 
     enum QuoteRecordBlockedStatusType {
         QuoteRecordNonBlocked,
@@ -151,6 +179,8 @@ public:
     QString getTranslation(const QString &cid) const;
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void restoreBluredText(const QString &cid);
+    Q_INVOKABLE void voteToPoll(const QString &post_cid, const QString &poll_uri,
+                                const QString &poll_cid, const QString &option_index);
     Q_INVOKABLE void reflectVisibility();
 
     bool running() const;
@@ -202,6 +232,8 @@ public slots:
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
     void finishedRestoreBluredText(bool success, const QString &cid, const QString text);
+    void finishedTokimekiPoll(bool success, const QString &cid,
+                              TokimekiPollOperator::FunctionType type);
 
 protected:
     void displayQueuedPosts();
@@ -237,6 +269,8 @@ protected:
                                   const AtpAbstractListModel::FeedGeneratorRoles role) const;
     QVariant getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                              const AtpAbstractListModel::ListLinkRoles role) const;
+    QVariant getTokimekiPollItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                 const AtpAbstractListModel::TokimekiPollRoles role) const;
     QVariant getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                const AtpAbstractListModel::ThreadGateRoles role) const;
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
@@ -265,6 +299,10 @@ protected:
                            const AtProtocolType::LexiconsTypeUnknown::CopyImageType type) const;
     void copyImagesFromPostViewToCue(const AtProtocolType::AppBskyFeedDefs::PostView &post);
 
+    void appendTokimekiPollToCue(const QString &cid,
+                                 const AtProtocolType::AppBskyEmbedExternal::View &view);
+    void getTokimekiPoll();
+
     QString atUriToOfficialUrl(const QString &uri, const QString &name) const;
 
     QStringList labelerDids() const;
@@ -278,6 +316,8 @@ protected:
     bool hasSkyblurLink(const AtProtocolType::AppBskyFeedPost::Main &record) const;
     virtual bool runningSkyblurPostText(int row) const;
     virtual void setRunningSkyblurPostText(int row, bool running);
+    virtual bool runningVoteToPoll(int row) const;
+    virtual void setRunningVoteToPoll(int row, bool running);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
@@ -294,10 +334,12 @@ protected:
     QHash<QString, QString> m_pinnedUriCid; // QHash<uri, cid> ピンとして扱ったURIのCIDの記録
 
     QList<BlobCueItem> m_cueExtendMedia;
+    QList<TokimekiPollChueItem> m_cueTokimekiPoll;
 
 private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
+    TokimekiPollOperator m_tokimekiPoll;
     int m_contentFilterRefreshCounter;
     bool m_useTranslator;
     bool m_useSkyblur;

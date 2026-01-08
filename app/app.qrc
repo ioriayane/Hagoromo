@@ -70,5 +70,6 @@
         <file>qml/images/like_via_repost.png</file>
         <file>qml/images/repost_via_repost.png</file>
         <file>qml/images/bookmark.png</file>
+        <file>qml/images/chart.png</file>
     </qresource>
 </RCC>

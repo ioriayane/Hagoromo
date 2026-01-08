@@ -1,0 +1,33 @@
+{
+  "lexicon": 1,
+  "id": "tech.tokimeki.poll.getPoll",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Get detailed poll view. Does not require auth.",
+      "parameters": {
+        "type": "params",
+        "required": ["uri", "viewer"],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "URI of the poll to fetch."
+          },
+          "viewer": {
+            "type": "string",
+            "format": "at-identifier",
+            "description": "Handle or DID of the viewer."
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "ref",
+          "ref": "tech.tokimeki.poll.defs#pollViewDetailed"
+        }
+      }
+    }
+  }
+}
