@@ -130,6 +130,8 @@ protected:
     makePostGateJsonObject(const QString &uri,
                            const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
                            const QStringList &detached_uris);
+    QJsonObject makeTokimekiPollJsonObject(const QString &post_uri, const QString &post_cid,
+                                           const QStringList &options, const int duration);
 
     QString m_listKey;
 

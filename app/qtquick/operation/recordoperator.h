@@ -45,11 +45,13 @@ public:
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
     Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
     Q_INVOKABLE void setPostGate(const bool quote_enabled, const QStringList &uris);
+    Q_INVOKABLE void setPoll(const QStringList &options, const int duration);
 
     Q_INVOKABLE void clear();
 
     Q_INVOKABLE void post();
     Q_INVOKABLE void postWithImages();
+    Q_INVOKABLE void postWithPoll();
     Q_INVOKABLE void repost(const QString &cid, const QString &uri,
                             const QString &via_cid = QString(), const QString &via_uri = QString());
     Q_INVOKABLE void like(const QString &cid, const QString &uri,
@@ -115,6 +117,8 @@ private:
                     std::function<void(bool, const QString &, const QString &)> callback);
     void postGate(const QString &uri,
                   std::function<void(bool, const QString &, const QString &)> callback);
+    void tokimekiPoll(const QString &uri, const QString cid,
+                      std::function<void(bool, const QString &, const QString &)> callback);
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
@@ -140,6 +144,10 @@ private:
     QStringList m_threadGateRules;
     QString m_postGateEmbeddingRule;
     QStringList m_postGateDetachedEmbeddingUris;
+    QStringList m_pollOptions;
+    int m_pollDuration; // sec
+    QString m_pollRkey;
+    QString m_pollOgpImagepath;
 
     bool m_running;
     QString m_progressMessage;

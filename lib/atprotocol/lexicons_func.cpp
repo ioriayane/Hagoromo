@@ -176,7 +176,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
 {
     if (!src.isEmpty()) {
-        dest.enabled = src.value("enabled").toBool();
+        dest.enabled = src.value("enabled").toBool(false);
     }
 }
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest)
@@ -229,7 +229,7 @@ void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &de
     if (!src.isEmpty()) {
         dest.feed = src.value("feed").toString();
         dest.hideReplies = src.value("hideReplies").toBool();
-        dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool();
+        dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool(true);
         dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInt();
         dest.hideReposts = src.value("hideReposts").toBool();
         dest.hideQuotePosts = src.value("hideQuotePosts").toBool();
@@ -264,7 +264,7 @@ void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
             AppBskyActorDefs::copyMutedWordTarget(s, child);
             dest.targets.append(child);
         }
-        dest.actorTarget = src.value("actorTarget").toString();
+        dest.actorTarget = src.value("actorTarget").toString(QStringLiteral("all"));
         dest.expiresAt = src.value("expiresAt").toString();
     }
 }
@@ -296,7 +296,7 @@ void copyNux(const QJsonObject &src, AppBskyActorDefs::Nux &dest)
 {
     if (!src.isEmpty()) {
         dest.id = src.value("id").toString();
-        dest.completed = src.value("completed").toBool();
+        dest.completed = src.value("completed").toBool(false);
         dest.data = src.value("data").toString();
         dest.expiresAt = src.value("expiresAt").toString();
     }
@@ -393,7 +393,7 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
 void copyVerificationPrefs(const QJsonObject &src, AppBskyActorDefs::VerificationPrefs &dest)
 {
     if (!src.isEmpty()) {
-        dest.hideBadges = src.value("hideBadges").toBool();
+        dest.hideBadges = src.value("hideBadges").toBool(false);
     }
 }
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
@@ -654,7 +654,7 @@ void copyLabelValueDefinition(const QJsonObject &src,
         dest.identifier = src.value("identifier").toString();
         dest.severity = src.value("severity").toString();
         dest.blurs = src.value("blurs").toString();
-        dest.defaultSetting = src.value("defaultSetting").toString();
+        dest.defaultSetting = src.value("defaultSetting").toString(QStringLiteral("warn"));
         dest.adultOnly = src.value("adultOnly").toBool();
         for (const auto &s : src.value("locales").toArray()) {
             LabelValueDefinitionStrings child;
@@ -4178,7 +4178,7 @@ void copyMain(const QJsonObject &src, ComWhtwndBlogEntry::Main &dest)
             ComWhtwndBlogDefs::copyBlobMetadata(s.toObject(), child);
             dest.blobs.append(child);
         }
-        dest.visibility = src.value("visibility").toString();
+        dest.visibility = src.value("visibility").toString(QStringLiteral("public"));
     }
 }
 }
@@ -4328,6 +4328,46 @@ void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
         dest.scope = src.value("scope").toString();
         dest.sub = src.value("sub").toString();
         dest.expires_in = src.value("expires_in").toInt();
+    }
+}
+}
+// tech.tokimeki.poll.defs
+namespace TechTokimekiPollDefs {
+void copyPollRecordView(const QJsonObject &src, TechTokimekiPollDefs::PollRecordView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        dest.authorDid = src.value("authorDid").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
+        for (const auto &value : src.value("options").toArray()) {
+            dest.options.append(value.toString());
+        }
+        dest.createdAt = src.value("createdAt").toString();
+        dest.endsAt = src.value("endsAt").toString();
+    }
+}
+void copyPollOptionTally(const QJsonObject &src, TechTokimekiPollDefs::PollOptionTally &dest)
+{
+    if (!src.isEmpty()) {
+        dest.index = src.value("index").toInt();
+        dest.text = src.value("text").toString();
+        dest.count = src.value("count").toInt();
+    }
+}
+void copyPollViewDetailed(const QJsonObject &src, TechTokimekiPollDefs::PollViewDetailed &dest)
+{
+    if (!src.isEmpty()) {
+        copyPollRecordView(src.value("poll").toObject(), dest.poll);
+        for (const auto &s : src.value("options").toArray()) {
+            PollOptionTally child;
+            copyPollOptionTally(s.toObject(), child);
+            dest.options.append(child);
+        }
+        dest.totalVotes = src.value("totalVotes").toInt();
+        dest.isEnded = src.value("isEnded").toBool();
+        dest.myVote = src.value("myVote").toInt(-1);
+        dest.myVoteUri = src.value("myVoteUri").toString();
     }
 }
 }

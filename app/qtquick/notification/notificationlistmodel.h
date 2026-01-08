@@ -75,6 +75,7 @@ public:
         RunningBookmarkRole,
         RunningOtherPrcessingRole,
         RunningSkyblurPostTextRole,
+        RunningVoteToPollRole,
 
         AggregatedAvatarsRole,
         AggregatedDisplayNamesRole,
@@ -133,6 +134,18 @@ public:
 
         ReplyRootCidRole,
         ReplyRootUriRole,
+
+        HasPollRole,
+        PollUriRole,
+        PollCidRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollIndexOfOptionsRole,
+        PollIsMineRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -261,6 +274,9 @@ private:
             m_toFeedGeneratorRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::ListLinkRoles>
             m_toListLinkRoles;
+    QHash<NotificationListModel::NotificationListModelRoles,
+          AtpAbstractListModel::TokimekiPollRoles>
+            m_toTokimekiPollRoles;
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
@@ -296,6 +312,8 @@ private:
     void setRunningOtherPrcessing(int row, bool running);
     virtual bool runningSkyblurPostText(int row) const;
     virtual void setRunningSkyblurPostText(int row, bool running);
+    virtual bool runningVoteToPoll(int row) const;
+    virtual void setRunningVoteToPoll(int row, bool running);
 
     bool m_visibleLike;
     bool m_visibleRepost;
@@ -311,6 +329,7 @@ private:
     QString m_runningBookmarkCid;
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
+    QString m_runningVoteToPollCid;
     bool m_aggregateReactions;
     bool m_visibleSubscribedPost;
 };

@@ -83,6 +83,7 @@ public:
         RunningPostPinningRole,
         RunningOtherPrcessingRole,
         RunningSkyblurPostTextRole,
+        RunningVoteToPollRole,
 
         HasQuoteRecordRole,
         QuoteRecordIsMineRole,
@@ -137,6 +138,18 @@ public:
         IsRepostedByRole,
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
+
+        HasPollRole,
+        PollUriRole,
+        PollCidRole,
+        PollOptionsRole,
+        PollCountOfOptionsRole,
+        PollIndexOfOptionsRole,
+        PollIsMineRole,
+        PollMyVoteRole,
+        PollTotalVotesRole,
+        PollIsEndedRole,
+        PollRemainTimeRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -255,6 +268,8 @@ private:
     void setRunningOtherPrcessing(int row, bool running);
     virtual bool runningSkyblurPostText(int row) const;
     virtual void setRunningSkyblurPostText(int row, bool running);
+    virtual bool runningVoteToPoll(int row) const;
+    virtual void setRunningVoteToPoll(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -268,6 +283,8 @@ private:
             m_toListLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ThreadGateRoles>
             m_toThreadGateRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::TokimekiPollRoles>
+            m_toTokimekiPollRoles;
 
     bool m_visibleReplyToUnfollowedUsers;
     bool m_visibleRepostOfOwn;
@@ -282,6 +299,7 @@ private:
     QString m_runningPostPinningCid;
     QString m_runningOtherProcessingCid;
     QString m_runningSkyblurPostTextCid;
+    QString m_runningVoteToPollCid;
 };
 
 #endif // TIMELINELISTMODEL_H

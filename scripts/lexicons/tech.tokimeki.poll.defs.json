@@ -1,0 +1,127 @@
+{
+  "lexicon": 1,
+  "id": "tech.tokimeki.poll.defs",
+  "defs": {
+    "pollRecordView": {
+      "type": "object",
+      "description": "Lightweight view of the poll record and its metadata.",
+      "required": [
+        "uri",
+        "cid",
+        "authorDid",
+        "subject",
+        "options",
+        "createdAt",
+        "endsAt"
+      ],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "AT URI pointing at the poll record."
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid",
+          "description": "Content identifier of the poll record."
+        },
+        "authorDid": {
+          "type": "string",
+          "format": "did",
+          "description": "DID of the poll author."
+        },
+        "subject": {
+          "type": "ref",
+          "ref": "com.atproto.repo.strongRef",
+          "description": "Record the poll is attached to (usually an app.bsky.feed.post)."
+        },
+        "options": {
+          "type": "array",
+          "description": "Option labels as authored in the poll record order.",
+          "items": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      }
+    },
+    "pollOptionTally": {
+      "type": "object",
+      "description": "Aggregated tally for a single poll option.",
+      "required": [
+        "index",
+        "text",
+        "count"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based index pointing at the option in the poll record."
+        },
+        "text": {
+          "type": "string",
+          "description": "Option label resolved for the viewer."
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total votes counted for the option."
+        }
+      }
+    },
+    "pollViewDetailed": {
+      "type": "object",
+      "description": "Detailed poll view including tallies and viewer state.",
+      "required": [
+        "poll",
+        "options",
+        "totalVotes",
+        "isEnded"
+      ],
+      "properties": {
+        "poll": {
+          "type": "ref",
+          "ref": "#pollRecordView"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "ref",
+            "ref": "#pollOptionTally"
+          },
+          "minItems": 1
+        },
+        "totalVotes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sum of all option counts."
+        },
+        "isEnded": {
+          "type": "boolean",
+          "description": "Whether the poll is already closed for new votes."
+        },
+        "myVote": {
+          "type": "integer",
+          "default": -1,
+          "description": "Option index chosen by the current viewer, if any."
+        },
+        "myVoteUri": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Viewer's vote record URI when a vote exists."
+        }
+      }
+    }
+  }
+}

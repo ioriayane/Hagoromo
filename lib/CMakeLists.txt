@@ -211,6 +211,8 @@ add_library(HagoromoLib STATIC
     atprotocol/com/atproto/sync/comatprotosyncgetblob.h
     atprotocol/com/atproto/sync/comatprotosyncgetrepo.cpp
     atprotocol/com/atproto/sync/comatprotosyncgetrepo.h
+    atprotocol/tech/tokimeki/poll/techtokimekipollgetpoll.cpp
+    atprotocol/tech/tokimeki/poll/techtokimekipollgetpoll.h
     atprotocol/lexicons.h
     atprotocol/lexicons_func.cpp
     atprotocol/lexicons_func.h

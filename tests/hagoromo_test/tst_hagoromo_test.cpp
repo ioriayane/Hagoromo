@@ -1,5 +1,6 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QDir>
 #include <QFile>
@@ -20,6 +21,8 @@
 #include "tools/labelerprovider.h"
 #include "controls/calendartablemodel.h"
 #include "tools/accountmanager.h"
+#include "operation/tokimekipolloperator.h"
+#include "tools/tid.h"
 
 class hagoromo_test : public QObject
 {
@@ -66,6 +69,14 @@ private slots:
     void test_SearchPostListModel_text();
     void test_ContentFilterSettingListModel();
     void test_CalendarTableModel();
+
+    void test_TokimekiPollOperator_convertUrlToUri();
+    void test_TokimekiPollOperator_getPoll();
+    void test_TokimekiPollOperator_getPoll_noVote();
+    void test_TokimekiPollOperator_getPoll_noHit();
+    void test_TokimekiPollOperator_makePollOgpFile();
+    void test_TokimekiPollOperator_makeAltUrl();
+    void test_TokimekiPollOperator_getOgp();
 
 private:
     WebServer m_mockServer;
@@ -3508,6 +3519,259 @@ void hagoromo_test::test_CalendarTableModel()
     model.setEnableUntil(true);
     QVERIFY(model.sinceUtc() == "2024-05-30T15:00:00Z");
     QVERIFY(model.untilUtc() == "2024-05-31T14:59:59Z");
+}
+
+void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
+{
+    TokimekiPollOperator operatorUnderTest;
+
+    const QString validUrl =
+            QStringLiteral("https://poll.tokimeki.tech/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                           "3mb6j6si7qc2u?options=2");
+    const QString expectedUri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    verifyStr(expectedUri, operatorUnderTest.convertUrlToUri(validUrl));
+
+    const QStringList invalidUrls = {
+        QStringLiteral("https://poll.tokimeki.tech/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5"),
+        QStringLiteral("https://poll.tokimeki.tech/p/not-a-did/3mb6j6si7qc2u"),
+        QStringLiteral(
+                "https://poll.tokimeki.tech/x/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/3mb6j6si7qc2u"),
+        QStringLiteral("https://example.com/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/3mb6j6si7qc2u"),
+        QStringLiteral("not a url")
+    };
+
+    for (const QString &invalidUrl : invalidUrls) {
+        QCOMPARE(operatorUnderTest.convertUrlToUri(invalidUrl), QString());
+    }
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getPoll()
+{
+    TokimekiPollOperator operatorUnderTest;
+    operatorUnderTest.setServiceUrl(m_service + "/tokimeki/with_vote");
+
+    QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    const QString cid = QStringLiteral("test-cid");
+    const QString uri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    const QString viewer = QStringLiteral("did:plc:viewerexample0000000000000000000");
+
+    operatorUnderTest.getPoll(cid, uri, viewer);
+
+    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QCOMPARE(spy.count(), 1);
+
+    const QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+    QCOMPARE(arguments.at(1).toString(), cid);
+
+    const QVariant uriVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollUriRole);
+    QVERIFY(uriVariant.isValid());
+    QCOMPARE(
+            uriVariant.toString(),
+            QStringLiteral(
+                    "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u"));
+
+    const QVariant cidVariant = operatorUnderTest.item(uri, TokimekiPollOperator::PollCidRole);
+    QVERIFY(cidVariant.isValid());
+    QCOMPARE(cidVariant.toString(),
+             QStringLiteral("bafyreibir6pwtrmmj6mczufitlbql7h77not66hacysw2cfr6wlaerltpe"));
+
+    const QVariant optionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
+    QVERIFY(optionsVariant.isValid());
+    QCOMPARE(optionsVariant.toStringList(),
+             QStringList() << "awake"
+                           << "sleeping");
+    qDebug() << optionsVariant.toStringList();
+
+    const QVariant countOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollCountOfOptionsRole);
+    QVERIFY(countOfOptionsVariant.isValid());
+    QCOMPARE(countOfOptionsVariant.toStringList(),
+             QStringList() << "1"
+                           << "1");
+    qDebug() << countOfOptionsVariant.toStringList();
+
+    const QVariant indexOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexOfOptionsVariant.isValid());
+    QCOMPARE(indexOfOptionsVariant.toStringList(),
+             QStringList() << "0"
+                           << "1");
+
+    const QVariant myVoteVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(myVoteVariant.isValid());
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("1"));
+
+    const QVariant totalVotesVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+    QVERIFY(totalVotesVariant.isValid());
+    QCOMPARE(totalVotesVariant.toInt(), 2);
+
+    const QVariant isEndedVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIsEndedRole);
+    QVERIFY(isEndedVariant.isValid());
+    QCOMPARE(isEndedVariant.toBool(), false);
+
+    const QVariant remainTimeVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollRemainTimeRole);
+    QVERIFY(remainTimeVariant.isValid());
+
+    const double actualRemainHours = remainTimeVariant.toDouble();
+    const QDateTime endsAt =
+            QDateTime::fromString(QStringLiteral("2025-12-31T04:28:13.299Z"), Qt::ISODateWithMs);
+    QVERIFY(endsAt.isValid());
+    const double expectedRemainHours =
+            static_cast<double>(QDateTime::currentDateTimeUtc().msecsTo(endsAt))
+            / (1000.0 * 60.0 * 60.0);
+    const double toleranceHours = 0.01; // 約36秒
+    QVERIFY2(qAbs(actualRemainHours - expectedRemainHours) < toleranceHours,
+             QStringLiteral("remainHours actual=%1 expected=%2")
+                     .arg(actualRemainHours)
+                     .arg(expectedRemainHours)
+                     .toLocal8Bit());
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
+{
+    TokimekiPollOperator operatorUnderTest;
+    operatorUnderTest.setServiceUrl(m_service + "/tokimeki/no_vote");
+
+    QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    const QString cid = QStringLiteral("test-cid-novote");
+    const QString uri = QStringLiteral(
+            "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
+    const QString viewer = QStringLiteral("did:plc:viewerexample-no-vote000000000000");
+
+    operatorUnderTest.getPoll(cid, uri, viewer);
+
+    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QCOMPARE(spy.count(), 1);
+
+    const QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+    QCOMPARE(arguments.at(1).toString(), cid);
+
+    const QVariant myVoteVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(myVoteVariant.isValid());
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("-1"));
+
+    const QVariant optionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollOptionsRole);
+    QVERIFY(optionsVariant.isValid());
+    QCOMPARE(optionsVariant.toStringList(),
+             QStringList() << "sleeping"
+                           << "awake");
+
+    const QVariant indexOfOptionsVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexOfOptionsVariant.isValid());
+    QCOMPARE(indexOfOptionsVariant.toStringList(),
+             QStringList() << "1"
+                           << "0");
+
+    const QVariant totalVotesVariant =
+            operatorUnderTest.item(uri, TokimekiPollOperator::PollTotalVotesRole);
+    QVERIFY(totalVotesVariant.isValid());
+    QCOMPARE(totalVotesVariant.toInt(), 2);
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getPoll_noHit()
+{
+    TokimekiPollOperator operatorUnderTest;
+
+    const QString unknownUri =
+            QStringLiteral("at://did:plc:unknown/tech.tokimeki.poll.poll/not-exists");
+
+    const QVariant optionsVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollOptionsRole);
+    QVERIFY(optionsVariant.isValid());
+    QCOMPARE(optionsVariant.toStringList(), QStringList());
+
+    const QVariant countVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollCountOfOptionsRole);
+    QVERIFY(countVariant.isValid());
+    QCOMPARE(countVariant.toStringList(), QStringList());
+
+    const QVariant indexVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollIndexOfOptionsRole);
+    QVERIFY(indexVariant.isValid());
+    QCOMPARE(indexVariant.toStringList(), QStringList());
+
+    const QVariant myVoteVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(myVoteVariant.isValid());
+    QCOMPARE(myVoteVariant.toString(), QStringLiteral("-1"));
+
+    const QVariant totalVotesVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollTotalVotesRole);
+    QVERIFY(totalVotesVariant.isValid());
+    QCOMPARE(totalVotesVariant.toInt(), 0);
+
+    const QVariant isEndedVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollIsEndedRole);
+    QVERIFY(isEndedVariant.isValid());
+    QCOMPARE(isEndedVariant.toBool(), true);
+
+    const QVariant remainTimeVariant =
+            operatorUnderTest.item(unknownUri, TokimekiPollOperator::PollRemainTimeRole);
+    QVERIFY(remainTimeVariant.isValid());
+    QCOMPARE(remainTimeVariant.toDouble(), 0.0);
+
+    // uri が空の場合も同じ固定値を返す
+    const QVariant emptyUriMyVote =
+            operatorUnderTest.item(QString(), TokimekiPollOperator::PollMyVoteRole);
+    QVERIFY(emptyUriMyVote.isValid());
+    QCOMPARE(emptyUriMyVote.toString(), QStringLiteral("-1"));
+}
+
+void hagoromo_test::test_TokimekiPollOperator_makePollOgpFile()
+{
+
+    TokimekiPollOperator ope;
+
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2"
+                                                  << "item3"
+                                                  << "item4");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2"
+                                                  << "item3");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1"
+                                                  << "item2");
+    qDebug() << ope.makePollOgpFile(QStringList() << "item1");
+}
+
+void hagoromo_test::test_TokimekiPollOperator_makeAltUrl()
+{
+    TokimekiPollOperator ope;
+    qDebug() << ope.makeAltUrl("did:plc:hogehoge", Tid::next());
+}
+
+void hagoromo_test::test_TokimekiPollOperator_getOgp()
+{
+    // TokimekiPollOperator operatorUnderTest;
+
+    // QSignalSpy spy(&operatorUnderTest, &TokimekiPollOperator::finished);
+
+    // const QStringList options = QStringList() << "item1"
+    //                                           << "item2";
+
+    // operatorUnderTest.getOgp(options);
+
+    // QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    // QCOMPARE(spy.count(), 1);
+
+    // const QList<QVariant> arguments = spy.takeFirst();
+    // QVERIFY(arguments.at(0).toBool());
+
+    // qDebug() << arguments.at(1).toString();
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
