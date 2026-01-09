@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Fix
+  - Fix the behavior of the vote button
+
 ### v0.57.0 - 2026/1/8
 
 - Add
