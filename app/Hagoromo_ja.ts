@@ -2715,12 +2715,12 @@ Please recreate AppPassword in the official application.</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="708"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="709"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="768"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="769"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>

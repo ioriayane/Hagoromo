@@ -670,6 +670,7 @@ Item {
                                      !externalLink.valid &&
                                      !feedGeneratorLink.valid &&
                                      !listLink.valid &&
+                                     !embedImageListModel.count > 0 &&
                                      !embedImageListModel.running
                             iconSource: "../images/chart.png"
                             iconSize: AdjustedValues.i18
