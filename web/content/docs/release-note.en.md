@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Support cach tag
 - Fix
   - Fix the behavior of the vote button
 
