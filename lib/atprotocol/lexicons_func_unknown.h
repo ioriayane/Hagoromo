@@ -39,6 +39,8 @@
             .arg(QChar(0x3000))                                                                    \
             .arg(QChar(0xfeff))
 
+#define REG_EXP_STOCK_TICKER QStringLiteral("\\$[A-Za-z0-9]{1,5}(?![A-Za-z0-9])")
+
 namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
