@@ -12,6 +12,8 @@ public:
 
     void refreshSession();
 
+    const QString &email() const;
+
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 };

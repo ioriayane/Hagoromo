@@ -14,6 +14,16 @@ void ComAtprotoServerRefreshSessionEx::refreshSession()
     ComAtprotoServerRefreshSession::refreshSession();
 }
 
+const QString &ComAtprotoServerRefreshSessionEx::email() const
+{
+    if (ComAtprotoServerRefreshSession::email().isEmpty()) {
+        return account().email;
+    } else {
+        // 取得出来ていたら使う
+        return ComAtprotoServerRefreshSession::email();
+    }
+}
+
 bool ComAtprotoServerRefreshSessionEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoServerRefreshSession::parseJson(success, reply_json);
