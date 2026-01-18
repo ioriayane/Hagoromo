@@ -12,15 +12,11 @@ AppBskyUnspeccedGetPostThreadOtherV2::AppBskyUnspeccedGetPostThreadOtherV2(QObje
 {
 }
 
-void AppBskyUnspeccedGetPostThreadOtherV2::getPostThreadOtherV2(const QString &anchor,
-                                                                const bool prioritizeFollowedUsers)
+void AppBskyUnspeccedGetPostThreadOtherV2::getPostThreadOtherV2(const QString &anchor)
 {
     QUrlQuery url_query;
     if (!anchor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("anchor"), anchor);
-    }
-    if (prioritizeFollowedUsers) {
-        url_query.addQueryItem(QStringLiteral("prioritizeFollowedUsers"), "true");
     }
 
     get(QStringLiteral("xrpc/app.bsky.unspecced.getPostThreadOtherV2"), url_query);

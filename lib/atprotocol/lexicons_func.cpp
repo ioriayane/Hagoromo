@@ -88,6 +88,8 @@ void copyVerificationState(const QJsonObject &src, AppBskyActorDefs::Verificatio
 void copyStatusView(const QJsonObject &src, AppBskyActorDefs::StatusView &dest)
 {
     if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
         dest.status = src.value("status").toString();
         LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
         QString embed_type = src.value("embed").toObject().value("$type").toString();
@@ -99,6 +101,7 @@ void copyStatusView(const QJsonObject &src, AppBskyActorDefs::StatusView &dest)
         }
         dest.expiresAt = src.value("expiresAt").toString();
         dest.isActive = src.value("isActive").toBool();
+        dest.isDisabled = src.value("isDisabled").toBool();
     }
 }
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest)
@@ -119,6 +122,7 @@ void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewB
         dest.createdAt = src.value("createdAt").toString();
         copyVerificationState(src.value("verification").toObject(), dest.verification);
         copyStatusView(src.value("status").toObject(), dest.status);
+        LexiconsTypeUnknown::copyUnknown(src.value("debug").toObject(), dest.debug);
     }
 }
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest)
@@ -141,6 +145,7 @@ void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest
         }
         copyVerificationState(src.value("verification").toObject(), dest.verification);
         copyStatusView(src.value("status").toObject(), dest.status);
+        LexiconsTypeUnknown::copyUnknown(src.value("debug").toObject(), dest.debug);
     }
 }
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest)
@@ -171,6 +176,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
         copyVerificationState(src.value("verification").toObject(), dest.verification);
         copyStatusView(src.value("status").toObject(), dest.status);
+        LexiconsTypeUnknown::copyUnknown(src.value("debug").toObject(), dest.debug);
     }
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
@@ -224,6 +230,14 @@ void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalD
         dest.birthDate = src.value("birthDate").toString();
     }
 }
+void copyDeclaredAgePref(const QJsonObject &src, AppBskyActorDefs::DeclaredAgePref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.isOverAge13 = src.value("isOverAge13").toBool();
+        dest.isOverAge16 = src.value("isOverAge16").toBool();
+        dest.isOverAge18 = src.value("isOverAge18").toBool();
+    }
+}
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest)
 {
     if (!src.isEmpty()) {
@@ -239,7 +253,6 @@ void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref
 {
     if (!src.isEmpty()) {
         dest.sort = src.value("sort").toString();
-        dest.prioritizeFollowedUsers = src.value("prioritizeFollowedUsers").toBool();
     }
 }
 void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest)
@@ -396,6 +409,15 @@ void copyVerificationPrefs(const QJsonObject &src, AppBskyActorDefs::Verificatio
         dest.hideBadges = src.value("hideBadges").toBool(false);
     }
 }
+void copyLiveEventPreferences(const QJsonObject &src, AppBskyActorDefs::LiveEventPreferences &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("hiddenFeedIds").toArray()) {
+            dest.hiddenFeedIds.append(value.toString());
+        }
+        dest.hideAllFeeds = src.value("hideAllFeeds").toBool(false);
+    }
+}
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
 {
     if (!src.isEmpty()) {
@@ -421,6 +443,10 @@ void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
                 AppBskyActorDefs::PersonalDetailsPref child;
                 AppBskyActorDefs::copyPersonalDetailsPref(value.toObject(), child);
                 dest.personalDetailsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#declaredAgePref")) {
+                AppBskyActorDefs::DeclaredAgePref child;
+                AppBskyActorDefs::copyDeclaredAgePref(value.toObject(), child);
+                dest.declaredAgePref.append(child);
             } else if (value_type == QStringLiteral("app.bsky.actor.defs#feedViewPref")) {
                 AppBskyActorDefs::FeedViewPref child;
                 AppBskyActorDefs::copyFeedViewPref(value.toObject(), child);
@@ -458,6 +484,10 @@ void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
                 AppBskyActorDefs::VerificationPrefs child;
                 AppBskyActorDefs::copyVerificationPrefs(value.toObject(), child);
                 dest.verificationPrefs.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#liveEventPreferences")) {
+                AppBskyActorDefs::LiveEventPreferences child;
+                AppBskyActorDefs::copyLiveEventPreferences(value.toObject(), child);
+                dest.liveEventPreferences.append(child);
             }
         }
     }
@@ -600,6 +630,10 @@ void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &de
         dest.did = src.value("did").toString();
         dest.following = src.value("following").toString();
         dest.followedBy = src.value("followedBy").toString();
+        dest.blocking = src.value("blocking").toString();
+        dest.blockedBy = src.value("blockedBy").toString();
+        dest.blockingByList = src.value("blockingByList").toString();
+        dest.blockedByList = src.value("blockedByList").toString();
     }
 }
 }
@@ -916,6 +950,197 @@ void copyMain(const QJsonObject &src, AppBskyActorStatus::Main &dest)
     }
 }
 }
+// app.bsky.ageassurance.defs
+namespace AppBskyAgeassuranceDefs {
+void copyAccess(const QJsonValue &src, AppBskyAgeassuranceDefs::Access &dest)
+{
+    dest = src.toString();
+}
+void copyStatus(const QJsonValue &src, AppBskyAgeassuranceDefs::Status &dest)
+{
+    dest = src.toString();
+}
+void copyState(const QJsonObject &src, AppBskyAgeassuranceDefs::State &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lastInitiatedAt = src.value("lastInitiatedAt").toString();
+        AppBskyAgeassuranceDefs::copyStatus(src.value("status"), dest.status);
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyStateMetadata(const QJsonObject &src, AppBskyAgeassuranceDefs::StateMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        dest.accountCreatedAt = src.value("accountCreatedAt").toString();
+    }
+}
+void copyConfigRegionRuleDefault(const QJsonObject &src,
+                                 AppBskyAgeassuranceDefs::ConfigRegionRuleDefault &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfDeclaredOverAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredOverAge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.age = src.value("age").toInt();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfDeclaredUnderAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredUnderAge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.age = src.value("age").toInt();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfAssuredOverAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredOverAge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.age = src.value("age").toInt();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfAssuredUnderAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredUnderAge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.age = src.value("age").toInt();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfAccountNewerThan(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountNewerThan &dest)
+{
+    if (!src.isEmpty()) {
+        dest.date = src.value("date").toString();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegionRuleIfAccountOlderThan(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountOlderThan &dest)
+{
+    if (!src.isEmpty()) {
+        dest.date = src.value("date").toString();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+    }
+}
+void copyConfigRegion(const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegion &dest)
+{
+    if (!src.isEmpty()) {
+        dest.countryCode = src.value("countryCode").toString();
+        dest.regionCode = src.value("regionCode").toString();
+        dest.minAccessAge = src.value("minAccessAge").toInt();
+        // array<union> rules
+        if (src.contains("rules")) {
+            dest.rules_type =
+                    AppBskyAgeassuranceDefs::ConfigRegionRulesType::rules_ConfigRegionRuleDefault;
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral("app.bsky.ageassurance.defs#configRegionRuleDefault")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleDefault child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleDefault(value.toObject(), child);
+                dest.rules_ConfigRegionRuleDefault.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral("app.bsky.ageassurance.defs#configRegionRuleIfDeclaredOverAge")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredOverAge child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfDeclaredOverAge(value.toObject(),
+                                                                               child);
+                dest.rules_ConfigRegionRuleIfDeclaredOverAge.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral(
+                        "app.bsky.ageassurance.defs#configRegionRuleIfDeclaredUnderAge")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredUnderAge child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfDeclaredUnderAge(value.toObject(),
+                                                                                child);
+                dest.rules_ConfigRegionRuleIfDeclaredUnderAge.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral("app.bsky.ageassurance.defs#configRegionRuleIfAssuredOverAge")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredOverAge child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfAssuredOverAge(value.toObject(),
+                                                                              child);
+                dest.rules_ConfigRegionRuleIfAssuredOverAge.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral("app.bsky.ageassurance.defs#configRegionRuleIfAssuredUnderAge")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredUnderAge child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfAssuredUnderAge(value.toObject(),
+                                                                               child);
+                dest.rules_ConfigRegionRuleIfAssuredUnderAge.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral(
+                        "app.bsky.ageassurance.defs#configRegionRuleIfAccountNewerThan")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountNewerThan child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfAccountNewerThan(value.toObject(),
+                                                                                child);
+                dest.rules_ConfigRegionRuleIfAccountNewerThan.append(child);
+            }
+        }
+        for (const auto &value : src.value("rules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type
+                == QStringLiteral(
+                        "app.bsky.ageassurance.defs#configRegionRuleIfAccountOlderThan")) {
+                AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountOlderThan child;
+                AppBskyAgeassuranceDefs::copyConfigRegionRuleIfAccountOlderThan(value.toObject(),
+                                                                                child);
+                dest.rules_ConfigRegionRuleIfAccountOlderThan.append(child);
+            }
+        }
+    }
+}
+void copyConfig(const QJsonObject &src, AppBskyAgeassuranceDefs::Config &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("regions").toArray()) {
+            AppBskyAgeassuranceDefs::ConfigRegion child;
+            AppBskyAgeassuranceDefs::copyConfigRegion(s.toObject(), child);
+            dest.regions.append(child);
+        }
+    }
+}
+void copyEvent(const QJsonObject &src, AppBskyAgeassuranceDefs::Event &dest)
+{
+    if (!src.isEmpty()) {
+        dest.createdAt = src.value("createdAt").toString();
+        dest.attemptId = src.value("attemptId").toString();
+        dest.status = src.value("status").toString();
+        dest.access = src.value("access").toString();
+        dest.countryCode = src.value("countryCode").toString();
+        dest.regionCode = src.value("regionCode").toString();
+        dest.email = src.value("email").toString();
+        dest.initIp = src.value("initIp").toString();
+        dest.initUa = src.value("initUa").toString();
+        dest.completeIp = src.value("completeIp").toString();
+        dest.completeUa = src.value("completeUa").toString();
+    }
+}
+}
 // app.bsky.bookmark.defs
 namespace AppBskyBookmarkDefs {
 void copyBookmark(const QJsonObject &src, AppBskyBookmarkDefs::Bookmark &dest)
@@ -1080,6 +1305,7 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
             dest.labels.append(child);
         }
         copyThreadgateView(src.value("threadgate").toObject(), dest.threadgate);
+        LexiconsTypeUnknown::copyUnknown(src.value("debug").toObject(), dest.debug);
     }
 }
 void copyThreadContext(const QJsonObject &src, AppBskyFeedDefs::ThreadContext &dest)
@@ -1680,6 +1906,190 @@ void copyLabelerViewDetailed(const QJsonObject &src, AppBskyLabelerDefs::Labeler
     }
 }
 }
+// app.bsky.contact.defs
+namespace AppBskyContactDefs {
+void copyMatchAndContactIndex(const QJsonObject &src,
+                              AppBskyContactDefs::MatchAndContactIndex &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyActorDefs::copyProfileView(src.value("match").toObject(), dest.match);
+        dest.contactIndex = src.value("contactIndex").toInt();
+    }
+}
+void copySyncStatus(const QJsonObject &src, AppBskyContactDefs::SyncStatus &dest)
+{
+    if (!src.isEmpty()) {
+        dest.syncedAt = src.value("syncedAt").toString();
+        dest.matchesCount = src.value("matchesCount").toInt();
+    }
+}
+void copyNotification(const QJsonObject &src, AppBskyContactDefs::Notification &dest)
+{
+    if (!src.isEmpty()) {
+        dest.from = src.value("from").toString();
+        dest.to = src.value("to").toString();
+    }
+}
+}
+// app.bsky.draft.defs
+namespace AppBskyDraftDefs {
+void copyDraftEmbedLocalRef(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedLocalRef &dest)
+{
+    if (!src.isEmpty()) {
+        dest.path = src.value("path").toString();
+    }
+}
+void copyDraftEmbedImage(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedImage &dest)
+{
+    if (!src.isEmpty()) {
+        copyDraftEmbedLocalRef(src.value("localRef").toObject(), dest.localRef);
+        dest.alt = src.value("alt").toString();
+    }
+}
+void copyDraftEmbedCaption(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedCaption &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lang = src.value("lang").toString();
+        dest.content = src.value("content").toString();
+    }
+}
+void copyDraftEmbedVideo(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedVideo &dest)
+{
+    if (!src.isEmpty()) {
+        copyDraftEmbedLocalRef(src.value("localRef").toObject(), dest.localRef);
+        dest.alt = src.value("alt").toString();
+        for (const auto &s : src.value("captions").toArray()) {
+            DraftEmbedCaption child;
+            copyDraftEmbedCaption(s.toObject(), child);
+            dest.captions.append(child);
+        }
+    }
+}
+void copyDraftEmbedExternal(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedExternal &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+    }
+}
+void copyDraftEmbedRecord(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedRecord &dest)
+{
+    if (!src.isEmpty()) {
+        ComAtprotoRepoStrongRef::copyMain(src.value("record").toObject(), dest.record);
+    }
+}
+void copyDraftPost(const QJsonObject &src, AppBskyDraftDefs::DraftPost &dest)
+{
+    if (!src.isEmpty()) {
+        dest.text = src.value("text").toString();
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyDraftDefs::DraftPostLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
+        }
+        for (const auto &s : src.value("embedImages").toArray()) {
+            DraftEmbedImage child;
+            copyDraftEmbedImage(s.toObject(), child);
+            dest.embedImages.append(child);
+        }
+        for (const auto &s : src.value("embedVideos").toArray()) {
+            DraftEmbedVideo child;
+            copyDraftEmbedVideo(s.toObject(), child);
+            dest.embedVideos.append(child);
+        }
+        for (const auto &s : src.value("embedExternals").toArray()) {
+            DraftEmbedExternal child;
+            copyDraftEmbedExternal(s.toObject(), child);
+            dest.embedExternals.append(child);
+        }
+        for (const auto &s : src.value("embedRecords").toArray()) {
+            DraftEmbedRecord child;
+            copyDraftEmbedRecord(s.toObject(), child);
+            dest.embedRecords.append(child);
+        }
+    }
+}
+void copyDraft(const QJsonObject &src, AppBskyDraftDefs::Draft &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("posts").toArray()) {
+            DraftPost child;
+            copyDraftPost(s.toObject(), child);
+            dest.posts.append(child);
+        }
+        for (const auto &value : src.value("langs").toArray()) {
+            dest.langs.append(value.toString());
+        }
+        // array<union> postgateEmbeddingRules
+        if (src.contains("postgateEmbeddingRules")) {
+            dest.postgateEmbeddingRules_type = AppBskyDraftDefs::DraftPostgateEmbeddingRulesType::
+                    postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule;
+        }
+        for (const auto &value : src.value("postgateEmbeddingRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
+                AppBskyFeedPostgate::DisableRule child;
+                AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
+                dest.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.append(child);
+            }
+        }
+        // array<union> threadgateAllow
+        if (src.contains("threadgateAllow")) {
+            dest.threadgateAllow_type = AppBskyDraftDefs::DraftThreadgateAllowType::
+                    threadgateAllow_AppBskyFeedThreadgate_MentionRule;
+        }
+        for (const auto &value : src.value("threadgateAllow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                AppBskyFeedThreadgate::MentionRule child;
+                AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
+                dest.threadgateAllow_AppBskyFeedThreadgate_MentionRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followerRule")) {
+                AppBskyFeedThreadgate::FollowerRule child;
+                AppBskyFeedThreadgate::copyFollowerRule(value.toObject(), child);
+                dest.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                AppBskyFeedThreadgate::FollowingRule child;
+                AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
+                dest.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                AppBskyFeedThreadgate::ListRule child;
+                AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
+                dest.threadgateAllow_AppBskyFeedThreadgate_ListRule.append(child);
+            }
+        }
+    }
+}
+void copyDraftWithId(const QJsonObject &src, AppBskyDraftDefs::DraftWithId &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        copyDraft(src.value("draft").toObject(), dest.draft);
+    }
+}
+void copyDraftView(const QJsonObject &src, AppBskyDraftDefs::DraftView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        copyDraft(src.value("draft").toObject(), dest.draft);
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+    }
+}
+}
 // app.bsky.feed.describeFeedGenerator
 namespace AppBskyFeedDescribeFeedGenerator {
 void copyFeed(const QJsonObject &src, AppBskyFeedDescribeFeedGenerator::Feed &dest)
@@ -1855,6 +2265,7 @@ void copyMain(const QJsonObject &src, AppBskyGraphFollow::Main &dest)
     if (!src.isEmpty()) {
         dest.subject = src.value("subject").toString();
         dest.createdAt = src.value("createdAt").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("via").toObject(), dest.via);
     }
 }
 }
@@ -3045,6 +3456,32 @@ void copyEvent(const QJsonObject &src, ToolsOzoneHostingGetAccountHistory::Event
     }
 }
 }
+// tools.ozone.moderation.cancelScheduledActions
+namespace ToolsOzoneModerationCancelScheduledActions {
+void copyFailedCancellation(const QJsonObject &src,
+                            ToolsOzoneModerationCancelScheduledActions::FailedCancellation &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.error = src.value("error").toString();
+        dest.errorCode = src.value("errorCode").toString();
+    }
+}
+void copyCancellationResults(const QJsonObject &src,
+                             ToolsOzoneModerationCancelScheduledActions::CancellationResults &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("succeeded").toArray()) {
+            dest.succeeded.append(value.toString());
+        }
+        for (const auto &s : src.value("failed").toArray()) {
+            FailedCancellation child;
+            copyFailedCancellation(s.toObject(), child);
+            dest.failed.append(child);
+        }
+    }
+}
+}
 // tools.ozone.moderation.defs
 namespace ToolsOzoneModerationDefs {
 void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTakedown &dest)
@@ -3056,6 +3493,12 @@ void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModE
         for (const auto &value : src.value("policies").toArray()) {
             dest.policies.append(value.toString());
         }
+        dest.severityLevel = src.value("severityLevel").toString();
+        for (const auto &value : src.value("targetServices").toArray()) {
+            dest.targetServices.append(value.toString());
+        }
+        dest.strikeCount = src.value("strikeCount").toInt();
+        dest.strikeExpiresAt = src.value("strikeExpiresAt").toString();
     }
 }
 void copyModEventReverseTakedown(const QJsonObject &src,
@@ -3063,6 +3506,11 @@ void copyModEventReverseTakedown(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
+        for (const auto &value : src.value("policies").toArray()) {
+            dest.policies.append(value.toString());
+        }
+        dest.severityLevel = src.value("severityLevel").toString();
+        dest.strikeCount = src.value("strikeCount").toInt();
     }
 }
 void copyModEventComment(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventComment &dest)
@@ -3141,6 +3589,13 @@ void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEven
         dest.subjectLine = src.value("subjectLine").toString();
         dest.content = src.value("content").toString();
         dest.comment = src.value("comment").toString();
+        for (const auto &value : src.value("policies").toArray()) {
+            dest.policies.append(value.toString());
+        }
+        dest.severityLevel = src.value("severityLevel").toString();
+        dest.strikeCount = src.value("strikeCount").toInt();
+        dest.strikeExpiresAt = src.value("strikeExpiresAt").toString();
+        dest.isDelivered = src.value("isDelivered").toBool();
     }
 }
 void copyModEventResolveAppeal(const QJsonObject &src,
@@ -3209,8 +3664,11 @@ void copyAgeAssuranceEvent(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.createdAt = src.value("createdAt").toString();
-        dest.status = src.value("status").toString();
         dest.attemptId = src.value("attemptId").toString();
+        dest.status = src.value("status").toString();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
+        dest.countryCode = src.value("countryCode").toString();
+        dest.regionCode = src.value("regionCode").toString();
         dest.initIp = src.value("initIp").toString();
         dest.initUa = src.value("initUa").toString();
         dest.completeIp = src.value("completeIp").toString();
@@ -3222,11 +3680,29 @@ void copyAgeAssuranceOverrideEvent(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.status = src.value("status").toString();
+        AppBskyAgeassuranceDefs::copyAccess(src.value("access"), dest.access);
         dest.comment = src.value("comment").toString();
     }
 }
 void copyRevokeAccountCredentialsEvent(
         const QJsonObject &src, ToolsOzoneModerationDefs::RevokeAccountCredentialsEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyScheduleTakedownEvent(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ScheduleTakedownEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.executeAt = src.value("executeAt").toString();
+        dest.executeAfter = src.value("executeAfter").toString();
+        dest.executeUntil = src.value("executeUntil").toString();
+    }
+}
+void copyCancelScheduledTakedownEvent(const QJsonObject &src,
+                                      ToolsOzoneModerationDefs::CancelScheduledTakedownEvent &dest)
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
@@ -3367,6 +3843,19 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
             ToolsOzoneModerationDefs::copyRevokeAccountCredentialsEvent(
                     src.value("event").toObject(), dest.event_RevokeAccountCredentialsEvent);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#scheduleTakedownEvent")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ScheduleTakedownEvent;
+            ToolsOzoneModerationDefs::copyScheduleTakedownEvent(src.value("event").toObject(),
+                                                                dest.event_ScheduleTakedownEvent);
+        }
+        if (event_type
+            == QStringLiteral("tools.ozone.moderation.defs#cancelScheduledTakedownEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::
+                    event_CancelScheduledTakedownEvent;
+            ToolsOzoneModerationDefs::copyCancelScheduledTakedownEvent(
+                    src.value("event").toObject(), dest.event_CancelScheduledTakedownEvent);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
@@ -3444,6 +3933,15 @@ void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsS
         dest.takendownCount = src.value("takendownCount").toInt();
     }
 }
+void copyAccountStrike(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStrike &dest)
+{
+    if (!src.isEmpty()) {
+        dest.activeStrikeCount = src.value("activeStrikeCount").toInt();
+        dest.totalStrikeCount = src.value("totalStrikeCount").toInt();
+        dest.firstStrikeAt = src.value("firstStrikeAt").toString();
+        dest.lastStrikeAt = src.value("lastStrikeAt").toString();
+    }
+}
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest)
 {
@@ -3504,6 +4002,7 @@ void copySubjectStatusView(const QJsonObject &src,
         }
         copyAccountStats(src.value("accountStats").toObject(), dest.accountStats);
         copyRecordsStats(src.value("recordsStats").toObject(), dest.recordsStats);
+        copyAccountStrike(src.value("accountStrike").toObject(), dest.accountStrike);
         dest.ageAssuranceState = src.value("ageAssuranceState").toString();
         dest.ageAssuranceUpdatedBy = src.value("ageAssuranceUpdatedBy").toString();
     }
@@ -3735,6 +4234,19 @@ void copyModEventViewDetail(const QJsonObject &src,
             ToolsOzoneModerationDefs::copyRevokeAccountCredentialsEvent(
                     src.value("event").toObject(), dest.event_RevokeAccountCredentialsEvent);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#scheduleTakedownEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_ScheduleTakedownEvent;
+            ToolsOzoneModerationDefs::copyScheduleTakedownEvent(src.value("event").toObject(),
+                                                                dest.event_ScheduleTakedownEvent);
+        }
+        if (event_type
+            == QStringLiteral("tools.ozone.moderation.defs#cancelScheduledTakedownEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_CancelScheduledTakedownEvent;
+            ToolsOzoneModerationDefs::copyCancelScheduledTakedownEvent(
+                    src.value("event").toObject(), dest.event_CancelScheduledTakedownEvent);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {
             dest.subject_type =
@@ -3852,6 +4364,27 @@ void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::Reporte
         dest.labeledRecordCount = src.value("labeledRecordCount").toInt();
     }
 }
+void copyScheduledActionView(const QJsonObject &src,
+                             ToolsOzoneModerationDefs::ScheduledActionView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toInt();
+        dest.action = src.value("action").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("eventData").toObject(), dest.eventData);
+        dest.did = src.value("did").toString();
+        dest.executeAt = src.value("executeAt").toString();
+        dest.executeAfter = src.value("executeAfter").toString();
+        dest.executeUntil = src.value("executeUntil").toString();
+        dest.randomizeExecution = src.value("randomizeExecution").toBool();
+        dest.createdBy = src.value("createdBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.status = src.value("status").toString();
+        dest.lastExecutedAt = src.value("lastExecutedAt").toString();
+        dest.lastFailureReason = src.value("lastFailureReason").toString();
+        dest.executionEventId = src.value("executionEventId").toInt();
+    }
+}
 }
 // tools.ozone.moderation.getAccountTimeline
 namespace ToolsOzoneModerationGetAccountTimeline {
@@ -3873,6 +4406,57 @@ void copyTimelineItem(const QJsonObject &src,
             TimelineItemSummary child;
             copyTimelineItemSummary(s.toObject(), child);
             dest.summary.append(child);
+        }
+    }
+}
+}
+// tools.ozone.moderation.scheduleAction
+namespace ToolsOzoneModerationScheduleAction {
+void copyTakedown(const QJsonObject &src, ToolsOzoneModerationScheduleAction::Takedown &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.durationInHours = src.value("durationInHours").toInt();
+        dest.acknowledgeAccountSubjects = src.value("acknowledgeAccountSubjects").toBool();
+        for (const auto &value : src.value("policies").toArray()) {
+            dest.policies.append(value.toString());
+        }
+        dest.severityLevel = src.value("severityLevel").toString();
+        dest.strikeCount = src.value("strikeCount").toInt();
+        dest.strikeExpiresAt = src.value("strikeExpiresAt").toString();
+        dest.emailContent = src.value("emailContent").toString();
+        dest.emailSubject = src.value("emailSubject").toString();
+    }
+}
+void copySchedulingConfig(const QJsonObject &src,
+                          ToolsOzoneModerationScheduleAction::SchedulingConfig &dest)
+{
+    if (!src.isEmpty()) {
+        dest.executeAt = src.value("executeAt").toString();
+        dest.executeAfter = src.value("executeAfter").toString();
+        dest.executeUntil = src.value("executeUntil").toString();
+    }
+}
+void copyFailedScheduling(const QJsonObject &src,
+                          ToolsOzoneModerationScheduleAction::FailedScheduling &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subject = src.value("subject").toString();
+        dest.error = src.value("error").toString();
+        dest.errorCode = src.value("errorCode").toString();
+    }
+}
+void copyScheduledActionResults(const QJsonObject &src,
+                                ToolsOzoneModerationScheduleAction::ScheduledActionResults &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("succeeded").toArray()) {
+            dest.succeeded.append(value.toString());
+        }
+        for (const auto &s : src.value("failed").toArray()) {
+            FailedScheduling child;
+            copyFailedScheduling(s.toObject(), child);
+            dest.failed.append(child);
         }
     }
 }

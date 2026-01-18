@@ -237,17 +237,17 @@ void atprotocol_test::test_ComAtprotoServerRefreshSession()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(session.did() == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(session.handle() == "ioriayane2.bsky.social");
-    QVERIFY(session.email() == "email");
-    QVERIFY(session.accessJwt() == "access jwt");
-    QVERIFY(session.refreshJwt() == "refresh jwt");
+    QCOMPARE(session.did(), "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(session.handle(), "ioriayane2.bsky.social");
+    QCOMPARE(session.email(), "email");
+    QCOMPARE(session.accessJwt(), "access jwt");
+    QCOMPARE(session.refreshJwt(), "refresh jwt");
 
-    QVERIFY(session.did() == session.account().did);
-    QVERIFY(session.handle() == session.account().handle);
-    QVERIFY(session.email() == session.account().email);
-    QVERIFY(session.accessJwt() == session.account().accessJwt);
-    QVERIFY(session.refreshJwt() == session.account().refreshJwt);
+    QCOMPARE(session.did(), session.account().did);
+    QCOMPARE(session.handle(), session.account().handle);
+    QCOMPARE(session.email(), session.account().email);
+    QCOMPARE(session.accessJwt(), session.account().accessJwt);
+    QCOMPARE(session.refreshJwt(), session.account().refreshJwt);
 }
 
 void atprotocol_test::test_OpenGraphProtocol()

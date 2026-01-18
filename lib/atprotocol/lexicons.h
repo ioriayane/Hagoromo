@@ -178,6 +178,14 @@ struct Relationship
                        // record
     QString followedBy; // at-uri , if the actor is followed by this DID, contains the AT-URI of the
                         // follow record
+    QString blocking; // at-uri , if the actor blocks this DID, this is the AT-URI of the block
+                      // record
+    QString blockedBy; // at-uri , if the actor is blocked by this DID, contains the AT-URI of the
+                       // block record
+    QString blockingByList; // at-uri , if the actor blocks this DID via a block list, this is the
+                            // AT-URI of the listblock record
+    QString blockedByList; // at-uri , if the actor is blocked by this DID via a block list,
+                           // contains the AT-URI of the listblock record
 };
 }
 
@@ -405,6 +413,8 @@ struct VerificationState
 };
 struct StatusView
 {
+    QString uri; // at-uri
+    QString cid; // cid
     QString status; // The status for the account.
     QVariant record;
     // union start : embed
@@ -416,6 +426,8 @@ struct StatusView
                        // choose to no longer return the status after expiration.
     bool isActive = false; // True if the status is not expired, false if it is expired. Only
                            // present if expiration was set.
+    bool isDisabled = false; // True if the user's go-live access has been disabled by a moderator,
+                             // false otherwise.
 };
 struct ProfileViewBasic
 {
@@ -430,6 +442,7 @@ struct ProfileViewBasic
     QString createdAt; // datetime
     VerificationState verification;
     StatusView status;
+    QVariant debug; // Debug information for internal development
 };
 struct ProfileView
 {
@@ -446,6 +459,7 @@ struct ProfileView
     QList<ComAtprotoLabelDefs::Label> labels;
     VerificationState verification;
     StatusView status;
+    QVariant debug; // Debug information for internal development
 };
 struct ProfileViewDetailed
 {
@@ -469,6 +483,7 @@ struct ProfileViewDetailed
     ComAtprotoRepoStrongRef::Main pinnedPost;
     VerificationState verification;
     StatusView status;
+    QVariant debug; // Debug information for internal development
 };
 struct AdultContentPref
 {
@@ -502,6 +517,15 @@ struct PersonalDetailsPref
 {
     QString birthDate; // datetime , The birth date of account owner.
 };
+struct DeclaredAgePref
+{
+    bool isOverAge13 =
+            false; // Indicates if the user has declared that they are over 13 years of age.
+    bool isOverAge16 =
+            false; // Indicates if the user has declared that they are over 16 years of age.
+    bool isOverAge18 =
+            false; // Indicates if the user has declared that they are over 18 years of age.
+};
 struct FeedViewPref
 {
     QString feed; // The URI of the feed, or an identifier which describes the feed.
@@ -516,7 +540,6 @@ struct FeedViewPref
 struct ThreadViewPref
 {
     QString sort; // Sorting mode for threads.
-    bool prioritizeFollowedUsers = false; // Show followed users at the top of all replies.
 };
 struct InterestsPref
 {
@@ -625,6 +648,11 @@ struct VerificationPrefs
     bool hideBadges =
             false; // Hide the blue check badges for verified accounts and trusted verifiers.
 };
+struct LiveEventPreferences
+{
+    QList<QString> hiddenFeedIds; // A list of feed IDs that the user has hidden from live events.
+    bool hideAllFeeds = false; // Whether to hide all feeds from live events.
+};
 struct Preferences
 {
     // union start : preferences
@@ -633,6 +661,7 @@ struct Preferences
     QList<AppBskyActorDefs::SavedFeedsPref> savedFeedsPref;
     QList<AppBskyActorDefs::SavedFeedsPrefV2> savedFeedsPrefV2;
     QList<AppBskyActorDefs::PersonalDetailsPref> personalDetailsPref;
+    QList<AppBskyActorDefs::DeclaredAgePref> declaredAgePref;
     QList<AppBskyActorDefs::FeedViewPref> feedViewPref;
     QList<AppBskyActorDefs::ThreadViewPref> threadViewPref;
     QList<AppBskyActorDefs::InterestsPref> interestsPref;
@@ -642,6 +671,7 @@ struct Preferences
     QList<AppBskyActorDefs::LabelersPref> labelersPref;
     QList<AppBskyActorDefs::PostInteractionSettingsPref> postInteractionSettingsPref;
     QList<AppBskyActorDefs::VerificationPrefs> verificationPrefs;
+    QList<AppBskyActorDefs::LiveEventPreferences> liveEventPreferences;
     // union end : preferences
 };
 }
@@ -689,6 +719,146 @@ struct Main
     int durationMinutes = 0; // The duration of the status in minutes. Applications can choose to
                              // impose minimum and maximum limits.
     QString createdAt; // datetime
+};
+}
+
+// app.bsky.ageassurance.defs
+namespace AppBskyAgeassuranceDefs {
+enum class ConfigRegionRulesType : int {
+    none,
+    rules_ConfigRegionRuleDefault,
+    rules_ConfigRegionRuleIfDeclaredOverAge,
+    rules_ConfigRegionRuleIfDeclaredUnderAge,
+    rules_ConfigRegionRuleIfAssuredOverAge,
+    rules_ConfigRegionRuleIfAssuredUnderAge,
+    rules_ConfigRegionRuleIfAccountNewerThan,
+    rules_ConfigRegionRuleIfAccountOlderThan,
+};
+typedef QString Access; // The access level granted based on Age Assurance data we've processed.
+typedef QString Status; // The status of the Age Assurance process.
+struct State
+{
+    QString lastInitiatedAt; // datetime , The timestamp when this state was last updated.
+    AppBskyAgeassuranceDefs::Status status;
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct StateMetadata
+{
+    QString accountCreatedAt; // datetime , The account creation timestamp.
+};
+struct ConfigRegionRuleDefault
+{
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfDeclaredOverAge
+{
+    int age = 0; // The age threshold as a whole integer.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfDeclaredUnderAge
+{
+    int age = 0; // The age threshold as a whole integer.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfAssuredOverAge
+{
+    int age = 0; // The age threshold as a whole integer.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfAssuredUnderAge
+{
+    int age = 0; // The age threshold as a whole integer.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfAccountNewerThan
+{
+    QString date; // datetime , The date threshold as a datetime string.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegionRuleIfAccountOlderThan
+{
+    QString date; // datetime , The date threshold as a datetime string.
+    AppBskyAgeassuranceDefs::Access access;
+};
+struct ConfigRegion
+{
+    QString countryCode; // The ISO 3166-1 alpha-2 country code this configuration applies to.
+    QString regionCode; // The ISO 3166-2 region code this configuration applies to. If omitted, the
+                        // configuration applies to the entire country.
+    int minAccessAge =
+            0; // The minimum age (as a whole integer) required to use Bluesky in this region.
+    // union start : rules
+    ConfigRegionRulesType rules_type = ConfigRegionRulesType::none;
+    QList<ConfigRegionRuleDefault>
+            rules_ConfigRegionRuleDefault; // The ordered list of Age Assurance rules that apply to
+                                           // this region. Rules should be applied in order, and the
+                                           // first matching rule determines the access level
+                                           // granted. The rules array should always include a
+                                           // default rule as the last item.
+    QList<ConfigRegionRuleIfDeclaredOverAge>
+            rules_ConfigRegionRuleIfDeclaredOverAge; // The ordered list of Age Assurance rules that
+                                                     // apply to this region. Rules should be
+                                                     // applied in order, and the first matching
+                                                     // rule determines the access level granted.
+                                                     // The rules array should always include a
+                                                     // default rule as the last item.
+    QList<ConfigRegionRuleIfDeclaredUnderAge>
+            rules_ConfigRegionRuleIfDeclaredUnderAge; // The ordered list of Age Assurance rules
+                                                      // that apply to this region. Rules should be
+                                                      // applied in order, and the first matching
+                                                      // rule determines the access level granted.
+                                                      // The rules array should always include a
+                                                      // default rule as the last item.
+    QList<ConfigRegionRuleIfAssuredOverAge>
+            rules_ConfigRegionRuleIfAssuredOverAge; // The ordered list of Age Assurance rules that
+                                                    // apply to this region. Rules should be applied
+                                                    // in order, and the first matching rule
+                                                    // determines the access level granted. The
+                                                    // rules array should always include a default
+                                                    // rule as the last item.
+    QList<ConfigRegionRuleIfAssuredUnderAge>
+            rules_ConfigRegionRuleIfAssuredUnderAge; // The ordered list of Age Assurance rules that
+                                                     // apply to this region. Rules should be
+                                                     // applied in order, and the first matching
+                                                     // rule determines the access level granted.
+                                                     // The rules array should always include a
+                                                     // default rule as the last item.
+    QList<ConfigRegionRuleIfAccountNewerThan>
+            rules_ConfigRegionRuleIfAccountNewerThan; // The ordered list of Age Assurance rules
+                                                      // that apply to this region. Rules should be
+                                                      // applied in order, and the first matching
+                                                      // rule determines the access level granted.
+                                                      // The rules array should always include a
+                                                      // default rule as the last item.
+    QList<ConfigRegionRuleIfAccountOlderThan>
+            rules_ConfigRegionRuleIfAccountOlderThan; // The ordered list of Age Assurance rules
+                                                      // that apply to this region. Rules should be
+                                                      // applied in order, and the first matching
+                                                      // rule determines the access level granted.
+                                                      // The rules array should always include a
+                                                      // default rule as the last item.
+    // union end : rules
+};
+struct Config
+{
+    QList<AppBskyAgeassuranceDefs::ConfigRegion> regions;
+};
+struct Event
+{
+    QString createdAt; // datetime , The date and time of this write operation.
+    QString attemptId; // The unique identifier for this instance of the Age Assurance flow, in UUID
+                       // format.
+    QString status; // The status of the Age Assurance process.
+    QString access; // The access level granted based on Age Assurance data we've processed.
+    QString countryCode; // The ISO 3166-1 alpha-2 country code provided when beginning the Age
+                         // Assurance flow.
+    QString regionCode; // The ISO 3166-2 region code provided when beginning the Age Assurance
+                        // flow.
+    QString email; // The email used for Age Assurance.
+    QString initIp; // The IP address used when initiating the Age Assurance flow.
+    QString initUa; // The user agent used when initiating the Age Assurance flow.
+    QString completeIp; // The IP address used when completing the Age Assurance flow.
+    QString completeUa; // The user agent used when completing the Age Assurance flow.
 };
 }
 
@@ -1076,6 +1246,7 @@ struct PostView
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     ThreadgateView threadgate;
+    QVariant debug; // Debug information for internal development
 };
 struct ThreadContext
 {
@@ -1187,6 +1358,133 @@ struct BookmarkView
     AppBskyFeedDefs::NotFoundPost item_AppBskyFeedDefs_NotFoundPost;
     AppBskyFeedDefs::PostView item_AppBskyFeedDefs_PostView;
     // union end : item
+};
+}
+
+// app.bsky.contact.defs
+namespace AppBskyContactDefs {
+struct MatchAndContactIndex
+{
+    AppBskyActorDefs::ProfileView match;
+    int contactIndex = 0; // The index of this match in the import contact input.
+};
+struct SyncStatus
+{
+    QString syncedAt; // datetime , Last date when contacts where imported.
+    int matchesCount =
+            0; // Number of existing contact matches resulting of the user imports and of their
+               // imported contacts having imported the user. Matches stop being counted when the
+               // user either follows the matched contact or dismisses the match.
+};
+struct Notification
+{
+    QString from; // did , The DID of who this notification comes from.
+    QString to; // did , The DID of who this notification should go to.
+};
+}
+
+// app.bsky.draft.defs
+namespace AppBskyDraftDefs {
+enum class DraftPostgateEmbeddingRulesType : int {
+    none,
+    postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule,
+};
+enum class DraftThreadgateAllowType : int {
+    none,
+    threadgateAllow_AppBskyFeedThreadgate_MentionRule,
+    threadgateAllow_AppBskyFeedThreadgate_FollowerRule,
+    threadgateAllow_AppBskyFeedThreadgate_FollowingRule,
+    threadgateAllow_AppBskyFeedThreadgate_ListRule,
+};
+enum class DraftPostLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
+struct DraftEmbedLocalRef
+{
+    QString path; // Local, on-device ref to file to be embedded. Embeds are currently device-bound
+                  // for drafts.
+};
+struct DraftEmbedImage
+{
+    DraftEmbedLocalRef localRef;
+    QString alt;
+};
+struct DraftEmbedCaption
+{
+    QString lang; // language
+    QString content;
+};
+struct DraftEmbedVideo
+{
+    DraftEmbedLocalRef localRef;
+    QString alt;
+    QList<DraftEmbedCaption> captions;
+};
+struct DraftEmbedExternal
+{
+    QString uri; // uri
+};
+struct DraftEmbedRecord
+{
+    ComAtprotoRepoStrongRef::Main record;
+};
+struct DraftPost
+{
+    QString text; // The primary post content.
+    // union start : labels
+    DraftPostLabelsType labels_type = DraftPostLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
+                                                   // content warnings.
+    // union end : labels
+    QList<DraftEmbedImage> embedImages;
+    QList<DraftEmbedVideo> embedVideos;
+    QList<DraftEmbedExternal> embedExternals;
+    QList<DraftEmbedRecord> embedRecords;
+};
+struct Draft
+{
+    QList<DraftPost> posts; // Array of draft posts that compose this draft.
+    QList<QString> langs; // Indicates human language of posts primary text content.
+    // union start : postgateEmbeddingRules
+    DraftPostgateEmbeddingRulesType postgateEmbeddingRules_type =
+            DraftPostgateEmbeddingRulesType::none;
+    QList<AppBskyFeedPostgate::DisableRule>
+            postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule; // Embedding rules for the
+                                                                    // postgates to be created when
+                                                                    // this draft is published.
+    // union end : postgateEmbeddingRules
+    // union start : threadgateAllow
+    DraftThreadgateAllowType threadgateAllow_type = DraftThreadgateAllowType::none;
+    QList<AppBskyFeedThreadgate::MentionRule>
+            threadgateAllow_AppBskyFeedThreadgate_MentionRule; // Allow-rules for the threadgate to
+                                                               // be created when this draft is
+                                                               // published.
+    QList<AppBskyFeedThreadgate::FollowerRule>
+            threadgateAllow_AppBskyFeedThreadgate_FollowerRule; // Allow-rules for the threadgate to
+                                                                // be created when this draft is
+                                                                // published.
+    QList<AppBskyFeedThreadgate::FollowingRule>
+            threadgateAllow_AppBskyFeedThreadgate_FollowingRule; // Allow-rules for the threadgate
+                                                                 // to be created when this draft is
+                                                                 // published.
+    QList<AppBskyFeedThreadgate::ListRule>
+            threadgateAllow_AppBskyFeedThreadgate_ListRule; // Allow-rules for the threadgate to be
+                                                            // created when this draft is published.
+    // union end : threadgateAllow
+};
+struct DraftWithId
+{
+    QString id; // tid , A TID to be used as a draft identifier.
+    Draft draft;
+};
+struct DraftView
+{
+    QString id; // tid , A TID to be used as a draft identifier.
+    Draft draft;
+    QString createdAt; // datetime , The time the draft was created.
+    QString updatedAt; // datetime , The time the draft was last updated.
 };
 }
 
@@ -1333,6 +1631,7 @@ struct Main
 {
     QString subject; // did
     QString createdAt; // datetime
+    ComAtprotoRepoStrongRef::Main via;
 };
 }
 
@@ -2259,6 +2558,22 @@ struct Event
 };
 }
 
+// tools.ozone.moderation.cancelScheduledActions
+namespace ToolsOzoneModerationCancelScheduledActions {
+struct FailedCancellation
+{
+    QString did; // did
+    QString error;
+    QString errorCode;
+};
+struct CancellationResults
+{
+    QList<QString>
+            succeeded; // DIDs for which all pending scheduled actions were successfully cancelled
+    QList<FailedCancellation> failed; // DIDs for which cancellation failed with error details
+};
+}
+
 // tools.ozone.moderation.defs
 namespace ToolsOzoneModerationDefs {
 enum class ModEventViewDetailEventType : int {
@@ -2285,6 +2600,8 @@ enum class ModEventViewDetailEventType : int {
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
     event_RevokeAccountCredentialsEvent,
+    event_ScheduleTakedownEvent,
+    event_CancelScheduledTakedownEvent,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -2333,6 +2650,8 @@ enum class ModEventViewEventType : int {
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
     event_RevokeAccountCredentialsEvent,
+    event_ScheduleTakedownEvent,
+    event_CancelScheduledTakedownEvent,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -2348,10 +2667,24 @@ struct ModEventTakedown
     bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
                                              // this account will be resolved (acknowledged).
     QList<QString> policies; // Names/Keywords of the policies that drove the decision.
+    QString severityLevel; // Severity level of the violation (e.g., 'sev-0', 'sev-1', 'sev-2',
+                           // etc.).
+    QList<QString>
+            targetServices; // List of services where the takedown should be applied. If empty or
+                            // not provided, takedown is applied on all configured services.
+    int strikeCount = 0; // Number of strikes to assign to the user for this violation.
+    QString strikeExpiresAt; // datetime , When the strike should expire. If not provided, the
+                             // strike never expires.
 };
 struct ModEventReverseTakedown
 {
     QString comment; // Describe reasoning behind the reversal.
+    QList<QString> policies; // Names/Keywords of the policy infraction for which takedown is being
+                             // reversed.
+    QString severityLevel; // Severity level of the violation. Usually set from the last policy
+                           // infraction's severity.
+    int strikeCount = 0; // Number of strikes to subtract from the user's strike count. Usually set
+                         // from the last policy infraction's severity.
 };
 struct ModEventComment
 {
@@ -2408,6 +2741,16 @@ struct ModEventEmail
     QString subjectLine; // The subject line of the email sent to the user.
     QString content; // The content of the email sent to the user.
     QString comment; // Additional comment about the outgoing comm.
+    QList<QString> policies; // Names/Keywords of the policies that necessitated the email.
+    QString severityLevel; // Severity level of the violation. Normally 'sev-1' that adds strike on
+                           // repeat offense
+    int strikeCount =
+            0; // Number of strikes to assign to the user for this violation. Normally 0 as an
+               // indicator of a warning and only added as a strike on a repeat offense.
+    QString strikeExpiresAt; // datetime , When the strike should expire. If not provided, the
+                             // strike never expires.
+    bool isDelivered =
+            false; // Indicates whether the email was successfully delivered to the user's inbox.
 };
 struct ModEventResolveAppeal
 {
@@ -2455,9 +2798,14 @@ struct ModEventPriorityScore
 struct AgeAssuranceEvent
 {
     QString createdAt; // datetime , The date and time of this write operation.
-    QString status; // The status of the age assurance process.
     QString attemptId; // The unique identifier for this instance of the age assurance flow, in UUID
                        // format.
+    QString status; // The status of the Age Assurance process.
+    AppBskyAgeassuranceDefs::Access access;
+    QString countryCode; // The ISO 3166-1 alpha-2 country code provided when beginning the Age
+                         // Assurance flow.
+    QString regionCode; // The ISO 3166-2 region code provided when beginning the Age Assurance
+                        // flow.
     QString initIp; // The IP address used when initiating the AA flow.
     QString initUa; // The user agent used when initiating the AA flow.
     QString completeIp; // The IP address used when completing the AA flow.
@@ -2467,11 +2815,23 @@ struct AgeAssuranceOverrideEvent
 {
     QString status; // The status to be set for the user decided by a moderator, overriding whatever
                     // value the user had previously. Use reset to default to original state.
+    AppBskyAgeassuranceDefs::Access access;
     QString comment; // Comment describing the reason for the override.
 };
 struct RevokeAccountCredentialsEvent
 {
     QString comment; // Comment describing the reason for the revocation.
+};
+struct ScheduleTakedownEvent
+{
+    QString comment;
+    QString executeAt; // datetime
+    QString executeAfter; // datetime
+    QString executeUntil; // datetime
+};
+struct CancelScheduledTakedownEvent
+{
+    QString comment;
 };
 struct ModTool
 {
@@ -2505,6 +2865,8 @@ struct ModEventView
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
+    ScheduleTakedownEvent event_ScheduleTakedownEvent;
+    CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -2555,6 +2917,13 @@ struct RecordsStats
     int processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
     int takendownCount = 0; // Number of item currently taken down
 };
+struct AccountStrike
+{
+    int activeStrikeCount = 0; // Current number of active strikes (excluding expired strikes)
+    int totalStrikeCount = 0; // Total number of strikes ever received (including expired strikes)
+    QString firstStrikeAt; // datetime , Timestamp of the first strike received
+    QString lastStrikeAt; // datetime , Timestamp of the most recent strike received
+};
 struct SubjectStatusView
 {
     int id = 0;
@@ -2595,6 +2964,7 @@ struct SubjectStatusView
     AccountStats accountStats; // Statistics related to the account subject
     RecordsStats recordsStats; // Statistics related to the record subjects authored by the
                                // subject's account
+    AccountStrike accountStrike; // Strike information for the account (account-level only)
     QString ageAssuranceState; // Current age assurance state of the subject.
     QString ageAssuranceUpdatedBy; // Whether or not the last successful update to age assurance was
                                    // made by the user or admin.
@@ -2685,6 +3055,8 @@ struct ModEventViewDetail
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
+    ScheduleTakedownEvent event_ScheduleTakedownEvent;
+    CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -2755,6 +3127,29 @@ struct ReporterStats
     int labeledRecordCount =
             0; // The total number of records labeled as a result of the user's reports.
 };
+struct ScheduledActionView
+{
+    int id = 0; // Auto-incrementing row ID
+    QString action; // Type of action to be executed
+    QVariant eventData; // Serialized event object that will be propagated to the event when
+                        // performed
+    QString did; // did , Subject DID for the action
+    QString executeAt; // datetime , Exact time to execute the action
+    QString executeAfter; // datetime , Earliest time to execute the action (for randomized
+                          // scheduling)
+    QString executeUntil; // datetime , Latest time to execute the action (for randomized
+                          // scheduling)
+    bool randomizeExecution =
+            false; // Whether execution time should be randomized within the specified range
+    QString createdBy; // did , DID of the user who created this scheduled action
+    QString createdAt; // datetime , When the scheduled action was created
+    QString updatedAt; // datetime , When the scheduled action was last updated
+    QString status; // Current status of the scheduled action
+    QString lastExecutedAt; // datetime , When the action was last attempted to be executed
+    QString lastFailureReason; // Reason for the last execution failure
+    int executionEventId =
+            0; // ID of the moderation event created when action was successfully executed
+};
 }
 
 // tools.ozone.moderation.getAccountTimeline
@@ -2769,6 +3164,45 @@ struct TimelineItem
 {
     QString day;
     QList<TimelineItemSummary> summary;
+};
+}
+
+// tools.ozone.moderation.scheduleAction
+namespace ToolsOzoneModerationScheduleAction {
+struct Takedown
+{
+    QString comment;
+    int durationInHours =
+            0; // Indicates how long the takedown should be in effect before automatically expiring.
+    bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
+                                             // this account will be resolved (acknowledged).
+    QList<QString> policies; // Names/Keywords of the policies that drove the decision.
+    QString severityLevel; // Severity level of the violation (e.g., 'sev-0', 'sev-1', 'sev-2',
+                           // etc.).
+    int strikeCount = 0; // Number of strikes to assign to the user when takedown is applied.
+    QString strikeExpiresAt; // datetime , When the strike should expire. If not provided, the
+                             // strike never expires.
+    QString emailContent; // Email content to be sent to the user upon takedown.
+    QString emailSubject; // Subject of the email to be sent to the user upon takedown.
+};
+struct SchedulingConfig
+{
+    QString executeAt; // datetime , Exact time to execute the action
+    QString executeAfter; // datetime , Earliest time to execute the action (for randomized
+                          // scheduling)
+    QString executeUntil; // datetime , Latest time to execute the action (for randomized
+                          // scheduling)
+};
+struct FailedScheduling
+{
+    QString subject; // did
+    QString error;
+    QString errorCode;
+};
+struct ScheduledActionResults
+{
+    QList<QString> succeeded;
+    QList<FailedScheduling> failed;
 };
 }
 
