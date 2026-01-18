@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QDir>
 #include <QFile>
+#include <QStringConverter>
 
 #include "webserver.h"
 #include "unittest_common.h"
@@ -1536,9 +1537,7 @@ void hagoromo_test::test_charCount()
     QVERIFY(file.open(QFile::ReadOnly));
 
     QTextStream ts(&file);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    ts.setCodec("utf-8");
-#endif
+    ts.setEncoding(QStringConverter::Utf8);
     QStringEx text = ts.readAll();
     qDebug() << text << text.length();
     for (int i = 0; i < text.size(); i++) {

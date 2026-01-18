@@ -194,11 +194,7 @@ LanguageListModel::LanguageListModel(QObject *parent) : QAbstractListModel(paren
     for (int i = 0; i < m_languageList.count() - 1; i++) {
         for (int j = i + 1; j < m_languageList.count(); j++) {
             if (m_languageList[i].name.compare(m_languageList[j].name) > 0) {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
-                m_languageList.swap(i, j);
-#else
                 m_languageList.swapItemsAt(i, j);
-#endif
             }
         }
     }

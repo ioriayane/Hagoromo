@@ -39,14 +39,9 @@ http_test::http_test()
                 qDebug() << "receive POST" << request.url().path();
                 QByteArray data;
                 if (request.url().path() == "/response/xrpc/com.atproto.repo.uploadBlob") {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-                    for (const auto key : request.headers().keys()) {
-                        QString value = request.headers().value(key).toString();
-#else
-                    for(const auto &header: request.headers().toListOfPairs()){
+                    for (const auto &header : request.headers().toListOfPairs()) {
                         QString value = header.second;
                         QString key = header.first;
-#endif
                         qDebug().noquote() << "  header:" << key << value;
                         if (key == "PostFile") {
                             QVERIFY(QFile::exists(value));
