@@ -11,8 +11,7 @@ public:
     explicit AppBskyUnspeccedGetPostThreadV2(QObject *parent = nullptr);
 
     void getPostThreadV2(const QString &anchor, const bool above, const int below,
-                         const int branchingFactor, const bool prioritizeFollowedUsers,
-                         const QString &sort);
+                         const int branchingFactor, const QString &sort);
 
     const QList<AtProtocolType::AppBskyUnspeccedGetPostThreadV2::ThreadItem> &threadList() const;
     const AtProtocolType::AppBskyFeedDefs::ThreadgateView &threadgate() const;

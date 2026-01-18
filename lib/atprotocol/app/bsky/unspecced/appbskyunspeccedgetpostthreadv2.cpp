@@ -15,7 +15,6 @@ AppBskyUnspeccedGetPostThreadV2::AppBskyUnspeccedGetPostThreadV2(QObject *parent
 
 void AppBskyUnspeccedGetPostThreadV2::getPostThreadV2(const QString &anchor, const bool above,
                                                       const int below, const int branchingFactor,
-                                                      const bool prioritizeFollowedUsers,
                                                       const QString &sort)
 {
     QUrlQuery url_query;
@@ -30,9 +29,6 @@ void AppBskyUnspeccedGetPostThreadV2::getPostThreadV2(const QString &anchor, con
     }
     if (branchingFactor > 0) {
         url_query.addQueryItem(QStringLiteral("branchingFactor"), QString::number(branchingFactor));
-    }
-    if (prioritizeFollowedUsers) {
-        url_query.addQueryItem(QStringLiteral("prioritizeFollowedUsers"), "true");
     }
     if (!sort.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("sort"), sort);

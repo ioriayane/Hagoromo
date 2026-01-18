@@ -42,6 +42,21 @@ const QVariant &ComAtprotoServerRefreshSession::didDoc() const
     return m_didDoc;
 }
 
+const QString &ComAtprotoServerRefreshSession::email() const
+{
+    return m_email;
+}
+
+const bool &ComAtprotoServerRefreshSession::emailConfirmed() const
+{
+    return m_emailConfirmed;
+}
+
+const bool &ComAtprotoServerRefreshSession::emailAuthFactor() const
+{
+    return m_emailAuthFactor;
+}
+
 const bool &ComAtprotoServerRefreshSession::active() const
 {
     return m_active;
@@ -67,6 +82,11 @@ bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("did"), m_did);
         AtProtocolType::LexiconsTypeUnknown::copyUnknown(
                 json_doc.object().value("didDoc").toObject(), m_didDoc);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("email"), m_email);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("emailConfirmed"),
+                                                      m_emailConfirmed);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("emailAuthFactor"),
+                                                      m_emailAuthFactor);
         AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("active"), m_active);
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("status"),
                                                         m_status);
