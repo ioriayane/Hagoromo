@@ -1,56 +1,40 @@
 #include "webserver.h"
 
+#include <QTcpServer>
+
 WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
-#    define MAKE_RESPONDER makeResponder(request, socket)
-#else
-#    define MAKE_RESPONDER responder
 bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder)
-#endif
 {
     if (!verifyHttpHeader(request)) {
-        MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::BadRequest);
+        responder.write(QHttpServerResponder::StatusCode::BadRequest);
     } else if (request.url().path().contains("//")) {
-        MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
+        responder.write(QHttpServerResponder::StatusCode::NotFound);
     } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
         emit receivedPost(request, result, json);
         if (result) {
             if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-                QHttpServerResponder::HeaderList headers {
-                    std::make_pair(QByteArray("content-type"),
-                                   QByteArray("application/json; charset=utf-8")),
-                    std::make_pair(QByteArray("ratelimit-limit"), QByteArray("30")),
-                    std::make_pair(QByteArray("ratelimit-remaining"), QByteArray("10")),
-                    std::make_pair(QByteArray("ratelimit-reset"), QByteArray("1694914267")),
-                    std::make_pair(QByteArray("ratelimit-policy"), QByteArray("30;w=300"))
-                };
-#else
                 QHttpHeaders headers;
                 headers.append("content-type", "application/json; charset=utf-8");
                 headers.append("ratelimit-reset", "1694914267");
                 headers.append("ratelimit-limit", "30");
                 headers.append("ratelimit-remaining", "10");
                 headers.append("ratelimit-policy", "30;w=300");
-#endif
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Unauthorized);
+                    responder.write(json.toUtf8(), headers,
+                                    QHttpServerResponder::StatusCode::Unauthorized);
                 } else {
-                    MAKE_RESPONDER.write(json.toUtf8(), headers,
-                                         QHttpServerResponder::StatusCode::Ok);
+                    responder.write(json.toUtf8(), headers, QHttpServerResponder::StatusCode::Ok);
                 }
             } else {
-                MAKE_RESPONDER.write(json.toUtf8(),
-                                     m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+                responder.write(json.toUtf8(),
+                                m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
+                                QHttpServerResponder::StatusCode::Ok);
             }
         } else {
-            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+            responder.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     } else {
         QString path = WebServer::convertResoucePath(request.url());
@@ -68,7 +52,7 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
         }
         qDebug().noquote() << "SERVER PATH=" << path;
         if (!QFile::exists(path)) {
-            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
+            responder.write(QHttpServerResponder::StatusCode::NotFound);
         } else {
             QFileInfo file_info(request.url().path());
             QByteArray data;
@@ -78,18 +62,15 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
             }
             if (WebServer::readFile(path, data)) {
                 data.replace("{{SERVER_PORT_NO}}", QString::number(request.localPort()).toUtf8());
-                MAKE_RESPONDER.write(data, mime_type.toUtf8(),
-                                     QHttpServerResponder::StatusCode::Ok);
+                responder.write(data, mime_type.toUtf8(), QHttpServerResponder::StatusCode::Ok);
             } else {
-                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
+                responder.write(QHttpServerResponder::StatusCode::InternalServerError);
             }
         }
     }
     return true;
 }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-#else
 void WebServer::missingHandler(const QHttpServerRequest &request, QHttpServerResponder &responder)
 {
     Q_UNUSED(request)
@@ -105,7 +86,6 @@ quint16 WebServer::listen(const QHostAddress &address, quint16 port)
     }
     return tcpserver->serverPort();
 }
-#endif
 
 QString WebServer::convertResoucePath(const QUrl &url)
 {
@@ -127,16 +107,6 @@ bool WebServer::readFile(const QString &path, QByteArray &data)
 
 bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
 {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    if (request.headers().contains("atproto-accept-labelers")) {
-        QStringList dids = request.headers().value("atproto-accept-labelers").toString().split(",");
-        for (const auto &did : dids) {
-            if (!did.startsWith("did:")) {
-                return false;
-            }
-        }
-    }
-#else
     QStringList exclude_endopoint = QStringList()
             << QStringLiteral("app.bsky.video.getUploadLimits")
             << QStringLiteral("app.bsky.video.uploadVideo")
@@ -165,6 +135,5 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
             }
         }
     }
-#endif
     return true;
 }

@@ -12,12 +12,7 @@ void setAppFont(QGuiApplication &app, QSettings &settings)
     if (family.isEmpty()) {
         family = SystemTool::defaultFontFamily();
     }
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QFontDatabase db;
-    if (db.families().contains(family)) {
-#else
     if (QFontDatabase::families().contains(family)) {
-#endif
         app.setFont(QFont(family));
         if (settings.value("fontFamily").toString() != family) {
             settings.setValue("fontFamily", family);

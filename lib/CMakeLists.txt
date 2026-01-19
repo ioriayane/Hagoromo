@@ -330,7 +330,7 @@ target_include_directories(HagoromoLib PRIVATE
     ${OPENSSL_INCLUDE_DIR}
 )
 target_link_libraries(HagoromoLib PRIVATE
-    Qt${QT_VERSION_MAJOR}::Core
+    Qt6::Core
     $<$<TARGET_EXISTS:Qt6::Core5Compat>:Qt6::Core5Compat>
     Qt6::Gui
     $<$<TARGET_EXISTS:Qt6::HttpServer>:Qt6::HttpServer>

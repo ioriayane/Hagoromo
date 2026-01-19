@@ -56,20 +56,15 @@ oauth_test::oauth_test()
 
                 if (path.endsWith("/oauth/token")) {
                     qDebug().noquote() << "Verify jwt";
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-                    QVERIFY(request.headers().contains("DPoP"));
-                    verify_jwt(request.headers().value("DPoP").toByteArray(), nullptr);
-#else
                     bool exist = false;
-                    for(const auto &header: request.headers().toListOfPairs()){
-                        if(header.first.toLower() == "dpop"){
+                    for (const auto &header : request.headers().toListOfPairs()) {
+                        if (header.first.toLower() == "dpop") {
                             verify_jwt(header.second, nullptr);
                             exist = true;
                             break;
                         }
                     }
                     QVERIFY(exist);
-#endif
                 }
 
                 if (!QFile::exists(path)) {
