@@ -83,8 +83,6 @@ private:
     WebServer m_mockServer;
     quint16 m_listenPort;
     QString m_service;
-
-    void verifyStr(const QString &expect, const QString &actual);
 };
 
 hagoromo_test::hagoromo_test()
@@ -125,7 +123,7 @@ hagoromo_test::~hagoromo_test() { }
 
 void hagoromo_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
 }
 
 void hagoromo_test::cleanupTestCase() { }
@@ -135,8 +133,8 @@ void hagoromo_test::test_test_TimelineListModelError()
     TimelineListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
+    QCOMPARE(model.getLatest(), false);
+    QCOMPARE(model.getNext(), false);
 }
 
 void hagoromo_test::test_TimelineListModelFacet()
@@ -165,9 +163,9 @@ void hagoromo_test::test_TimelineListModelFacet()
              QString("%1 == %2").arg(json_doc.array().count()).arg(model.rowCount()).toLocal8Bit());
 
     for (int i = 0; i < model.rowCount(); i++) {
-        verifyStr(json_doc.array().at(i).toObject().value("recordText").toString(),
-                  model.item(i, TimelineListModel::TimelineListModelRoles::RecordTextRole)
-                          .toString());
+        QCOMPARE(json_doc.array().at(i).toObject().value("recordText").toString(),
+                 model.item(i, TimelineListModel::TimelineListModelRoles::RecordTextRole)
+                         .toString());
     }
 }
 
@@ -188,7 +186,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     QVERIFY2(model.getPreviousRow(0) == 1,
@@ -199,7 +197,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 0 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 0 << 2 << 3);
 
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     QVERIFY2(model.getPreviousRow(0) == 2,
@@ -210,7 +208,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 0,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0 << 3);
 
     model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     QVERIFY2(model.getPreviousRow(0) == 3,
@@ -221,7 +219,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     QVERIFY2(model.getPreviousRow(0) == 3,
@@ -232,7 +230,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
     QVERIFY2(model.getPreviousRow(0) == 2,
@@ -243,7 +241,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 0,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0 << 3);
 
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
     QVERIFY2(model.getPreviousRow(0) == 1,
@@ -254,7 +252,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 0 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 0 << 2 << 3);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
     QVERIFY2(model.getPreviousRow(0) == -1,
@@ -265,7 +263,7 @@ void hagoromo_test::test_ColumnListModelMove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 }
 
 void hagoromo_test::test_ColumnListModelRemove()
@@ -288,7 +286,7 @@ void hagoromo_test::test_ColumnListModelRemove()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.removeByKey(model.item(2, ColumnListModel::KeyRole).toString());
     QVERIFY2(model.getPreviousRow(0) == 2,
@@ -297,7 +295,7 @@ void hagoromo_test::test_ColumnListModelRemove()
              QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(2) == 1,
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0);
 }
 
 void hagoromo_test::test_ColumnListModelInsertNext()
@@ -317,7 +315,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(3) == 2,
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_10", 10, false, 10,
                      800, 1, "column 1 next", "value 10", QStringList());
@@ -331,7 +329,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
              QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(4) == 0,
              QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 4 << 1 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_11", 11, false, 11,
                      900, 1, "column 1 next2", "value 11", QStringList());
@@ -347,7 +345,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
              QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(5) == 0,
              QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 5 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(3, ColumnListModel::KeyRole).toString(), "uuid_12", 12, false, 12,
                      1000, 1, "column 4 next", "value 12", QStringList());
@@ -365,7 +363,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
              QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(6) == 3,
              QString("left pos=%1").arg(model.getPreviousRow(6)).toLocal8Bit());
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
 }
 
 void hagoromo_test::test_ColumnListModelSelected()
@@ -381,7 +379,7 @@ void hagoromo_test::test_ColumnListModelSelected()
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 2 << 1 << 0 << 3);
+    QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 2 << 1 << 0 << 3);
 
     row = 0;
     QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
@@ -1498,7 +1496,7 @@ void hagoromo_test::test_UserProfile()
     UserProfile profile;
 
     profile.setDescription("test \r\ntest\ntest");
-    QVERIFY(profile.formattedDescription() == "test <br/>test<br/>test");
+    QCOMPARE(profile.formattedDescription(), "test <br/>test<br/>test");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo");
     QVERIFY(profile.formattedDescription()
@@ -1564,49 +1562,49 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 7);
+    QCOMPARE(model.rowCount(), 7);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quoted mute user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 1;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote mute user test with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 2;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 5;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote blocked user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), true);
 }
 
 void hagoromo_test::test_TimelineListModel_quote_hide()
@@ -1626,49 +1624,49 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 7);
+    QCOMPARE(model.rowCount(), 7);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quoted mute user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 1;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote mute user test with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 2;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 5;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote blocked user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), true);
 }
 
 void hagoromo_test::test_TimelineListModel_quote_hide2()
@@ -1690,31 +1688,31 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 7);
+    QCOMPARE(model.rowCount(), 7);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quoted mute user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 1;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote mute user test with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 2;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
     QVERIFY(model.item(row, TimelineListModel::QuoteRecordEmbedImagesRole).toStringList()
             == QStringList()
                     << "https://cdn.bsky.social/imgproxy/"
@@ -1729,21 +1727,21 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 5;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote blocked user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList() == QStringList());
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::LabelsRole).toStringList(), QStringList());
 }
 
 void hagoromo_test::test_TimelineListModel_quote_label()
@@ -1762,14 +1760,14 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 9);
+    QCOMPARE(model.rowCount(), 9);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quoted mute user's post");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList() == QStringList());
+    QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool(), true);
+    QCOMPARE(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool(), false);
+    QCOMPARE(model.item(row, TimelineListModel::LabelsRole).toStringList(), QStringList());
     QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString().isEmpty());
     QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString().isEmpty());
 
@@ -1787,14 +1785,14 @@ void hagoromo_test::test_TimelineListModel_quote_label()
                              << "!warn");
 
     row = 7;
-    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test reply full");
+    QCOMPARE(model.item(row, TimelineListModel::RecordTextRole).toString(), "test reply full");
     QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString()
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe");
     QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString()
             == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k7n55v57bn26");
 
     row = 8;
-    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test reply simple");
+    QCOMPARE(model.item(row, TimelineListModel::RecordTextRole).toString(), "test reply simple");
     QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString()
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe");
     QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString()
@@ -1841,7 +1839,7 @@ void hagoromo_test::test_TimelineListModel_animated_image()
     }
 
     row = 1;
-    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "animated images");
+    QCOMPARE(model.item(row, TimelineListModel::RecordTextRole).toString(), "animated images");
 
     // //////////////////////
     thumb_paths.clear();
@@ -2724,13 +2722,13 @@ void hagoromo_test::test_NotificationListModel_warn()
     spy.wait(20 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 2);
+    QCOMPARE(model.rowCount(), 2);
 
     row = 0;
     QVERIFY(model.item(row, NotificationListModel::RecordTextPlainRole).toString()
             == "@ioriayane2.bsky.social labeling sexual with image");
-    QVERIFY(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool() == true);
+    QCOMPARE(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool(), false);
+    QCOMPARE(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool(), true);
     QVERIFY(model.item(row, NotificationListModel::EmbedImagesRole).toStringList()
             == QStringList()
                     << "https://cdn.bsky.social/imgproxy/"
@@ -2745,7 +2743,7 @@ void hagoromo_test::test_NotificationListModel_warn()
     row = 1;
     QVERIFY(model.item(row, NotificationListModel::RecordTextPlainRole).toString()
             == "@ioriayane2.bsky.social labeling warn");
-    QVERIFY(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool() == true);
+    QCOMPARE(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool(), true);
     QVERIFY(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool()
             == false);
 }
@@ -2767,7 +2765,7 @@ void hagoromo_test::test_TimelineListModel_next()
         spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    QVERIFY(model.rowCount() == 6);
+    QCOMPARE(model.rowCount(), 6);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
@@ -2778,7 +2776,7 @@ void hagoromo_test::test_TimelineListModel_next()
     row = 2;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreif2ux6qo4b2ez266iewichrjvqgeeehui5c7lo3gcglrzdi54pjja_3");
-    QVERIFY(model.item(row, TimelineListModel::IsRepostedRole).toBool() == true);
+    QCOMPARE(model.item(row, TimelineListModel::IsRepostedRole).toBool(), true);
 
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
@@ -2797,7 +2795,7 @@ void hagoromo_test::test_TimelineListModel_next()
         spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    QVERIFY(model.rowCount() == 13);
+    QCOMPARE(model.rowCount(), 13);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
@@ -2841,7 +2839,7 @@ void hagoromo_test::test_AnyProfileListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY(model.rowCount() == 5);
+    QCOMPARE(model.rowCount(), 5);
 
     model.setType(AnyProfileListModel::AnyProfileListModelType::Repost);
     {
@@ -2851,7 +2849,7 @@ void hagoromo_test::test_AnyProfileListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY(model.rowCount() == 2);
+    QCOMPARE(model.rowCount(), 2);
 }
 
 void hagoromo_test::test_TimelineListModel_text()
@@ -2870,13 +2868,13 @@ void hagoromo_test::test_TimelineListModel_text()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 4);
+    QCOMPARE(model.rowCount(), 4);
 
     qDebug() << QString("hoge\nfuga<>\"foo").toHtmlEscaped();
 
     row = 0;
-    QVERIFY(model.item(row, TimelineListModel::RecordTextPlainRole).toString() == "test < data");
-    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test &lt; data");
+    QCOMPARE(model.item(row, TimelineListModel::RecordTextPlainRole).toString(), "test < data");
+    QCOMPARE(model.item(row, TimelineListModel::RecordTextRole).toString(), "test &lt; data");
 
     row = 1;
     QVERIFY(model.item(row, TimelineListModel::RecordTextPlainRole).toString()
@@ -2987,21 +2985,21 @@ void hagoromo_test::test_PostThreadListModel()
 
     QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     row = 0;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 1;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 2;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 3;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
 
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/postthread/2", "id", "pass",
@@ -3018,29 +3016,29 @@ void hagoromo_test::test_PostThreadListModel()
 
     QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     row = 0;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 1;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 2;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3 - 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 3;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4 - 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
     row = 4;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 5;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
 
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/postthread/3", "id", "pass",
@@ -3057,29 +3055,29 @@ void hagoromo_test::test_PostThreadListModel()
 
     QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     row = 0;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 1;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 2;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3 - 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 3;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4 - 2");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
     row = 4;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
     row = 5;
-    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
 }
 
 void hagoromo_test::test_SystemTool_ImageClip()
@@ -3474,50 +3472,50 @@ void hagoromo_test::test_CalendarTableModel()
     model.setUntilDate(2024, 6, 10);
     model.setEnableSince(true);
     model.setEnableUntil(false);
-    QVERIFY(model.item(2, 0, CalendarTableModel::EnabledRole).toBool() == false); // 6/9
-    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
+    QCOMPARE(model.item(2, 0, CalendarTableModel::EnabledRole).toBool(), false); // 6/9
+    QCOMPARE(model.item(2, 1, CalendarTableModel::EnabledRole).toBool(), true); // 6/10
 
     model.setSinceDate(2024, 6, 10);
     model.setUntilDate(2024, 6, 10);
     model.setEnableSince(false);
     model.setEnableUntil(true);
-    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
-    QVERIFY(model.item(2, 2, CalendarTableModel::EnabledRole).toBool() == false); // 6/11
+    QCOMPARE(model.item(2, 1, CalendarTableModel::EnabledRole).toBool(), true); // 6/10
+    QCOMPARE(model.item(2, 2, CalendarTableModel::EnabledRole).toBool(), false); // 6/11
 
     model.setEnableSince(true);
     model.setEnableUntil(true);
     model.setSinceDate(2024, 6, 1);
     model.setUntilDate(2024, 6, 10);
     model.setSinceDate(2024, 6, 11);
-    QVERIFY(model.since() == "2024/06/10");
-    QVERIFY(model.until() == "2024/06/10");
+    QCOMPARE(model.since(), "2024/06/10");
+    QCOMPARE(model.until(), "2024/06/10");
 
     model.setSinceDate(2024, 6, 1);
     model.setUntilDate(2024, 6, 10);
     model.setUntilDate(2024, 5, 31);
-    QVERIFY(model.since() == "2024/06/01");
-    QVERIFY(model.until() == "2024/06/01");
+    QCOMPARE(model.since(), "2024/06/01");
+    QCOMPARE(model.until(), "2024/06/01");
 
     model.setEnableSince(true);
     model.setEnableUntil(false);
     model.setSinceDate(2024, 6, 1);
     model.setUntilDate(2024, 6, 10);
     model.setSinceDate(2024, 6, 11);
-    QVERIFY(model.since() == "2024/06/11");
-    QVERIFY(model.until() == "2024/06/11");
+    QCOMPARE(model.since(), "2024/06/11");
+    QCOMPARE(model.until(), "2024/06/11");
 
     model.setEnableSince(false);
     model.setEnableUntil(true);
     model.setSinceDate(2024, 6, 1);
     model.setUntilDate(2024, 6, 10);
     model.setUntilDate(2024, 5, 31);
-    QVERIFY(model.since() == "2024/05/31");
-    QVERIFY(model.until() == "2024/05/31");
+    QCOMPARE(model.since(), "2024/05/31");
+    QCOMPARE(model.until(), "2024/05/31");
 
     model.setEnableSince(true);
     model.setEnableUntil(true);
-    QVERIFY(model.sinceUtc() == "2024-05-30T15:00:00Z");
-    QVERIFY(model.untilUtc() == "2024-05-31T14:59:59Z");
+    QCOMPARE(model.sinceUtc(), "2024-05-30T15:00:00Z");
+    QCOMPARE(model.untilUtc(), "2024-05-31T14:59:59Z");
 }
 
 void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
@@ -3529,7 +3527,7 @@ void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
                            "3mb6j6si7qc2u?options=2");
     const QString expectedUri = QStringLiteral(
             "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/tech.tokimeki.poll.poll/3mb6j6si7qc2u");
-    verifyStr(expectedUri, operatorUnderTest.convertUrlToUri(validUrl));
+    QCOMPARE(expectedUri, operatorUnderTest.convertUrlToUri(validUrl));
 
     const QStringList invalidUrls = {
         QStringLiteral("https://poll.tokimeki.tech/p/did:plc:mqxsuw5b5rhpwo4lw6iwlid5"),
@@ -3771,12 +3769,6 @@ void hagoromo_test::test_TokimekiPollOperator_getOgp()
     // QVERIFY(arguments.at(0).toBool());
 
     // qDebug() << arguments.at(1).toString();
-}
-
-void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
-{
-    QVERIFY2(expect == actual,
-             QString("\nexpect:%1\nactual:%2\n").arg(expect, actual).toLocal8Bit());
 }
 
 QTEST_MAIN(hagoromo_test)

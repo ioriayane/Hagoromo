@@ -55,7 +55,6 @@ private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
     void test_putNotificationPreferences(const QString &path, const QByteArray &body);
-    void verifyStr(const QString &expect, const QString &actual);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
 
@@ -1118,7 +1117,7 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
                 ":/data/com.atproto.repo.createRecord_post.expect");
 
         QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
-        verifyStr(hash[did].value("record").toObject().value("text").toString(), record);
+        QCOMPARE(hash[did].value("record").toObject().value("text").toString(), record);
         if (!hash[did].value("record").toObject().value("facets").isNull()) {
             QVERIFY2(json_doc.object().value("record").toObject().value("facets")
                              == hash[did].value("record").toObject().value("facets"),
@@ -1201,12 +1200,6 @@ void hagoromo_test::test_putNotificationPreferences(const QString &path, const Q
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
     QVERIFY(json_doc_expect.object() == json_doc.object());
-}
-
-void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
-{
-    QVERIFY2(expect == actual,
-             QString("\nexpect:%1\nactual:%2\n").arg(expect, actual).toLocal8Bit());
 }
 
 QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList &excludes)
