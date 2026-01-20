@@ -40,7 +40,7 @@ search_test::~search_test() { }
 
 void search_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
 }
 
 void search_test::cleanupTestCase() { }
@@ -60,7 +60,7 @@ void search_test::test_SearchPostListModel()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 2);
+    QCOMPARE(model.rowCount(), 2);
 }
 
 void search_test::test_SearchProfileListModel()
@@ -78,7 +78,7 @@ void search_test::test_SearchProfileListModel()
     spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 3);
+    QCOMPARE(model.rowCount(), 3);
 }
 
 QTEST_MAIN(search_test)
