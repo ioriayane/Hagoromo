@@ -97,7 +97,7 @@ void log_test::test_LogManager()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == false);
+        QCOMPARE(arguments.at(0).toBool(), false);
     }
 
     {
@@ -107,7 +107,7 @@ void log_test::test_LogManager()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     {
@@ -117,7 +117,7 @@ void log_test::test_LogManager()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -633,7 +633,7 @@ void log_test::test_LogOperator()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -689,10 +689,10 @@ void log_test::test_LogFeedListModel()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
-    QVERIFY(model.running() == false);
+    QCOMPARE(model.running(), false);
     QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
 
     i = 1;
