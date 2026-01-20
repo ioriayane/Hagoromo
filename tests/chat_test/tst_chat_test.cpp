@@ -67,7 +67,7 @@ chat_test::~chat_test() { }
 
 void chat_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
 }
 
 void chat_test::cleanupTestCase() { }
