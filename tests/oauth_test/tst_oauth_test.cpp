@@ -181,7 +181,7 @@ void oauth_test::test_oauth()
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    QVERIFY(oauth.serviceEndpoint() == QString("http://localhost:%1/response/1").arg(m_listenPort));
+    QCOMPARE(oauth.serviceEndpoint(), QString("http://localhost:%1/response/1").arg(m_listenPort));
 
     {
         QSignalSpy spy(&oauth, SIGNAL(authorizationServerChanged()));
@@ -320,7 +320,7 @@ void oauth_test::test_get(const QString &url, const QByteArray &except_data)
 
         QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
 
-        QVERIFY(reply->error() == QNetworkReply::NoError);
+        QCOMPARE(reply->error(), QNetworkReply::NoError);
         QVERIFY2(reply->readAll() == except_data, json_doc.toJson());
 
         reply->deleteLater();
@@ -385,11 +385,11 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
                          sig_rr.length(), NULL);
     ec_sig_s = BN_bin2bn(reinterpret_cast<const unsigned char *>(sig_ss.constData()),
                          sig_ss.length(), NULL);
-    QVERIFY(ec_sig_r != NULL);
-    QVERIFY(ec_sig_s != NULL);
+    QCOMPARE_NE(ec_sig_r, NULL);
+    QCOMPARE_NE(ec_sig_s, NULL);
 
     ECDSA_SIG *ec_sig = ECDSA_SIG_new();
-    QVERIFY(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s) == 1);
+    QCOMPARE(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s), 1);
 
     unsigned char *der_sig = NULL;
     int der_sig_len = i2d_ECDSA_SIG(ec_sig, &der_sig);
@@ -397,7 +397,7 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
 
     // ECDSA署名の検証
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
-    QVERIFY(pkey != nullptr);
+    QCOMPARE_NE(pkey, nullptr);
     QVERIFY(EVP_DigestVerifyInit(mdctx, nullptr, EVP_sha256(), nullptr, pkey) > 0);
     QVERIFY(EVP_DigestVerifyUpdate(mdctx, message.constData(), message.length()) > 0);
     QVERIFY(EVP_DigestVerifyFinal(mdctx, der_sig, der_sig_len) > 0);
