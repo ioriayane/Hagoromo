@@ -385,8 +385,8 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
                          sig_rr.length(), NULL);
     ec_sig_s = BN_bin2bn(reinterpret_cast<const unsigned char *>(sig_ss.constData()),
                          sig_ss.length(), NULL);
-    QCOMPARE_NE(ec_sig_r, NULL);
-    QCOMPARE_NE(ec_sig_s, NULL);
+    QVERIFY(ec_sig_r != NULL);
+    QVERIFY(ec_sig_s != NULL);
 
     ECDSA_SIG *ec_sig = ECDSA_SIG_new();
     QCOMPARE(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s), 1);
