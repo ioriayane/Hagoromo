@@ -119,7 +119,7 @@ hagoromo_test::~hagoromo_test() { }
 
 void hagoromo_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
 }
 
 void hagoromo_test::cleanupTestCase() { }
@@ -153,8 +153,8 @@ void hagoromo_test::test_RecordOperator()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -173,8 +173,8 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     uuid = AccountManager::getInstance()->updateAccount(
@@ -190,8 +190,8 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     uuid = AccountManager::getInstance()->updateAccount(
@@ -205,8 +205,8 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -225,19 +225,19 @@ void hagoromo_test::test_FeedGeneratorListModel()
         spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-        QVERIFY(model.rowCount() == 8);
-        QVERIFY(model.item(0, FeedGeneratorListModel::SavingRole) == true);
+        QCOMPARE(model.rowCount(), 8);
+        QCOMPARE(model.item(0, FeedGeneratorListModel::SavingRole), true);
         QVERIFY(model.item(1, FeedGeneratorListModel::DisplayNameRole)
                 == QStringLiteral("What's Hot"));
-        QVERIFY(model.item(1, FeedGeneratorListModel::SavingRole) == true);
-        QVERIFY(model.item(2, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(3, FeedGeneratorListModel::SavingRole) == true);
-        QVERIFY(model.item(4, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(5, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(6, FeedGeneratorListModel::SavingRole) == false);
+        QCOMPARE(model.item(1, FeedGeneratorListModel::SavingRole), true);
+        QCOMPARE(model.item(2, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(3, FeedGeneratorListModel::SavingRole), true);
+        QCOMPARE(model.item(4, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(5, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(6, FeedGeneratorListModel::SavingRole), false);
         QVERIFY(model.item(7, FeedGeneratorListModel::DisplayNameRole)
                 == QStringLiteral("mostpop"));
-        QVERIFY(model.item(7, FeedGeneratorListModel::SavingRole) == false);
+        QCOMPARE(model.item(7, FeedGeneratorListModel::SavingRole), false);
     }
     {
         // save
@@ -275,15 +275,15 @@ void hagoromo_test::test_FeedGeneratorLink()
 
     FeedGeneratorLink link;
 
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed") == true);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed"), true);
     QVERIFY(link.checkUri("https://staging.bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed")
             == false);
-    QVERIFY(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed") == true);
-    QVERIFY(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed") == false);
+    QCOMPARE(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed"), true);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed"), false);
 
     link.setAccount(uuid);
     {
@@ -293,10 +293,10 @@ void hagoromo_test::test_FeedGeneratorLink()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY(link.avatar() == "https://cdn.bsky.social/view_avator.jpeg");
-    QVERIFY(link.displayName() == "view:displayName");
-    QVERIFY(link.creatorHandle() == "creator.bsky.social");
-    QVERIFY(link.likeCount() == 9);
+    QCOMPARE(link.avatar(), "https://cdn.bsky.social/view_avator.jpeg");
+    QCOMPARE(link.displayName(), "view:displayName");
+    QCOMPARE(link.creatorHandle(), "creator.bsky.social");
+    QCOMPARE(link.likeCount(), 9);
 }
 
 void hagoromo_test::test_AccountListModel()
@@ -434,41 +434,41 @@ void hagoromo_test::test_AccountManager()
 
     QStringList uuids = manager->getUuids();
 
-    QVERIFY(uuids.count() == 2);
+    QCOMPARE(uuids.count(), 2);
 
     account = manager->getAccount(uuids.at(0));
-    QVERIFY(account.service == m_service + "/account/account1");
-    QVERIFY(account.password == "password1");
-    QVERIFY(account.did == "did:plc:account1");
-    QVERIFY(account.handle == "account1.relog.tech");
-    QVERIFY(account.email == "account1@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account1");
-    QVERIFY(account.refreshJwt == "refreshJwt_account1");
+    QCOMPARE(account.service, m_service + "/account/account1");
+    QCOMPARE(account.password, "password1");
+    QCOMPARE(account.did, "did:plc:account1");
+    QCOMPARE(account.handle, "account1.relog.tech");
+    QCOMPARE(account.email, "account1@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account1");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account1");
 
     account = manager->getAccount(uuids.at(1));
-    QVERIFY(account.service == m_service + "/account/account2");
-    QVERIFY(account.password == "password2");
-    QVERIFY(account.did == "did:plc:account2");
-    QVERIFY(account.handle == "account2.relog.tech");
-    QVERIFY(account.email == "account2@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account2");
-    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+    QCOMPARE(account.service, m_service + "/account/account2");
+    QCOMPARE(account.password, "password2");
+    QCOMPARE(account.did, "did:plc:account2");
+    QCOMPARE(account.handle, "account2.relog.tech");
+    QCOMPARE(account.email, "account2@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account2");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account2");
 
-    QVERIFY(manager->checkAllAccountsReady() == false);
+    QCOMPARE(manager->checkAllAccountsReady(), false);
 
     manager->save();
 
     manager->removeAccount(manager->getUuids().at(0));
-    QVERIFY(manager->getUuids().count() == 1);
+    QCOMPARE(manager->getUuids().count(), 1);
 
     account = manager->getAccount(manager->getUuids().at(0));
-    QVERIFY(account.service == m_service + "/account/account2");
-    QVERIFY(account.password == "password2");
-    QVERIFY(account.did == "did:plc:account2");
-    QVERIFY(account.handle == "account2.relog.tech");
-    QVERIFY(account.email == "account2@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account2");
-    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+    QCOMPARE(account.service, m_service + "/account/account2");
+    QCOMPARE(account.password, "password2");
+    QCOMPARE(account.did, "did:plc:account2");
+    QCOMPARE(account.handle, "account2.relog.tech");
+    QCOMPARE(account.email, "account2@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account2");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account2");
 
     manager->clear();
     QVERIFY(manager->getUuids().isEmpty());
@@ -481,14 +481,14 @@ void hagoromo_test::test_AccountManager()
     }
 
     uuids = manager->getUuids();
-    QVERIFY(manager->count() == 1);
+    QCOMPARE(manager->count(), 1);
 
     account = manager->getAccount(uuids.at(0));
     QVERIFY2(account.service == m_service + "/account/account2", account.service.toLocal8Bit());
     QVERIFY(account.service_endpoint
             == QString("http://localhost:%1/response/account/account2")
                        .arg(QString::number(m_listenPort)));
-    QVERIFY(account.did == "did:plc:account2_refresh");
+    QCOMPARE(account.did, "did:plc:account2_refresh");
 }
 
 void hagoromo_test::test_ListsListModel()
@@ -511,16 +511,16 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == true);
-    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(1, ListsListModel::MutedRole).toBool(), true);
+    QCOMPARE(model.item(1, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(2, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(2, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(2, ListsListModel::BlockedRole).toBool() == true);
+    QCOMPARE(model.item(2, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(2, ListsListModel::BlockedRole).toBool(), true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
@@ -534,12 +534,12 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == true);
+    QCOMPARE(model.item(1, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(1, ListsListModel::BlockedRole).toBool(), true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
@@ -553,8 +553,8 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == true);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), true);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
@@ -643,8 +643,8 @@ void hagoromo_test::test_ListsListModel_error()
     ListsListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
+    QCOMPARE(model.getLatest(), false);
+    QCOMPARE(model.getNext(), false);
 }
 
 void hagoromo_test::test_ListItemListModel()
@@ -673,12 +673,12 @@ void hagoromo_test::test_ListItemListModel()
             == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
     QVERIFY(model.uri()
             == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
-    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.name() == "my accounts");
-    QVERIFY(model.avatar() == "");
-    QVERIFY(model.description() == "my accounts list");
-    QVERIFY(model.muted() == false);
-    QVERIFY(model.blocked() == false);
+    QCOMPARE(model.cid(), "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QCOMPARE(model.name(), "my accounts");
+    QCOMPARE(model.avatar(), "");
+    QCOMPARE(model.description(), "my accounts list");
+    QCOMPARE(model.muted(), false);
+    QCOMPARE(model.blocked(), false);
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
@@ -703,12 +703,12 @@ void hagoromo_test::test_ListItemListModel()
             == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_next");
     QVERIFY(model.uri()
             == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
-    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.name() == "my accounts");
-    QVERIFY(model.avatar() == "");
-    QVERIFY(model.description() == "");
-    QVERIFY(model.muted() == false);
-    QVERIFY(model.blocked() == false);
+    QCOMPARE(model.cid(), "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QCOMPARE(model.name(), "my accounts");
+    QCOMPARE(model.avatar(), "");
+    QCOMPARE(model.description(), "");
+    QCOMPARE(model.muted(), false);
+    QCOMPARE(model.blocked(), false);
 }
 
 void hagoromo_test::test_ListItemListModel_error()
@@ -716,8 +716,8 @@ void hagoromo_test::test_ListItemListModel_error()
     ListItemListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
+    QCOMPARE(model.getLatest(), false);
+    QCOMPARE(model.getNext(), false);
 }
 
 void hagoromo_test::test_ListFeedListModel()
@@ -776,7 +776,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // Follow (Social category) - リソース: include="all", list=true, push=false
     QVERIFY(model.item(0, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::FollowType);
-    QVERIFY(model.item(0, NotificationPreferenceListModel::CategoryRole).toString() == "Social");
+    QCOMPARE(model.item(0, NotificationPreferenceListModel::CategoryRole).toString(), "Social");
     QVERIFY2(model.item(0, NotificationPreferenceListModel::IncludeRole).toString() == "all",
              QString("Follow include expected 'all', got '%1'")
                      .arg(model.item(0, NotificationPreferenceListModel::IncludeRole).toString())
@@ -789,7 +789,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // Like (Social category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(1, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::LikeType);
-    QVERIFY(model.item(1, NotificationPreferenceListModel::CategoryRole).toString() == "Social");
+    QCOMPARE(model.item(1, NotificationPreferenceListModel::CategoryRole).toString(), "Social");
     QVERIFY2(model.item(1, NotificationPreferenceListModel::IncludeRole).toString() == "all",
              QString("Like include expected 'all', got '%1'")
                      .arg(model.item(1, NotificationPreferenceListModel::IncludeRole).toString())
@@ -890,7 +890,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::StarterpackJoinedType);
-    QVERIFY(model.item(9, NotificationPreferenceListModel::CategoryRole).toString() == "Activity");
+    QCOMPARE(model.item(9, NotificationPreferenceListModel::CategoryRole).toString(), "Activity");
     QVERIFY2(model.item(9, NotificationPreferenceListModel::ListRole).toBool() == true,
              "StarterpackJoined list should be true from resource");
     QVERIFY2(model.item(9, NotificationPreferenceListModel::PushRole).toBool() == true,
@@ -907,7 +907,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // Unverified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::UnverifiedType);
-    QVERIFY(model.item(11, NotificationPreferenceListModel::CategoryRole).toString() == "System");
+    QCOMPARE(model.item(11, NotificationPreferenceListModel::CategoryRole).toString(), "System");
     QVERIFY2(model.item(11, NotificationPreferenceListModel::ListRole).toBool() == true,
              "Unverified list should be true from resource");
     QVERIFY2(model.item(11, NotificationPreferenceListModel::PushRole).toBool() == true,
@@ -916,7 +916,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // Verified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::VerifiedType);
-    QVERIFY(model.item(12, NotificationPreferenceListModel::CategoryRole).toString() == "System");
+    QCOMPARE(model.item(12, NotificationPreferenceListModel::CategoryRole).toString(), "System");
     QVERIFY2(model.item(12, NotificationPreferenceListModel::ListRole).toBool() == true,
              "Verified list should be true from resource");
     QVERIFY2(model.item(12, NotificationPreferenceListModel::PushRole).toBool() == true,
@@ -1164,7 +1164,7 @@ void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &b
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect2.toJson(), json_doc2.toJson());
     }
-    QVERIFY(json_doc_expect2.object() == json_doc2.object());
+    QCOMPARE(json_doc_expect2.object(), json_doc2.object());
 }
 
 void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
@@ -1186,7 +1186,7 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)
@@ -1199,7 +1199,7 @@ void hagoromo_test::test_putNotificationPreferences(const QString &path, const Q
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList &excludes)
