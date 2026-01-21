@@ -150,7 +150,7 @@ void hagoromo_test::test_TimelineListModelFacet()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QFile file(":/response/facet/xrpc/app.bsky.feed.getTimeline.expect");
     QVERIFY(file.open(QFile::ReadOnly));
@@ -159,8 +159,7 @@ void hagoromo_test::test_TimelineListModelFacet()
     QJsonDocument json_doc = QJsonDocument::fromJson(file.readAll());
     QVERIFY(json_doc.isArray());
 
-    QVERIFY2(json_doc.array().count() == model.rowCount(),
-             QString("%1 == %2").arg(json_doc.array().count()).arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(json_doc.array().count(), model.rowCount());
 
     for (int i = 0; i < model.rowCount(); i++) {
         QCOMPARE(json_doc.array().at(i).toObject().value("recordText").toString(),
@@ -178,91 +177,59 @@ void hagoromo_test::test_ColumnListModelMove()
     model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
     model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 0);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY2(model.getPreviousRow(0) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 1);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 0);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 0 << 2 << 3);
 
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY2(model.getPreviousRow(0) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 2);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 0);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0 << 3);
 
     model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY2(model.getPreviousRow(0) == 3,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 3);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY2(model.getPreviousRow(0) == 3,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 3);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
-    QVERIFY2(model.getPreviousRow(0) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 2);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 0);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0 << 3);
 
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
-    QVERIFY2(model.getPreviousRow(0) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 1);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 0);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 0 << 2 << 3);
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 0);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 }
 
@@ -278,23 +245,16 @@ void hagoromo_test::test_ColumnListModelRemove()
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
-    QVERIFY2(model.getPreviousRow(0) == 3,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 3);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 3 << 0);
 
     model.removeByKey(model.item(2, ColumnListModel::KeyRole).toString());
-    QVERIFY2(model.getPreviousRow(0) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), 2);
+    QCOMPARE(model.getPreviousRow(1), -1);
+    QCOMPARE(model.getPreviousRow(2), 1);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 1 << 2 << 0);
 }
 
@@ -307,62 +267,40 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
     model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 0);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_10", 10, false, 10,
                      800, 1, "column 1 next", "value 10", QStringList());
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 4,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(4) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 4);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
+    QCOMPARE(model.getPreviousRow(4), 0);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_11", 11, false, 11,
                      900, 1, "column 1 next2", "value 11", QStringList());
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 4,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(4) == 5,
-             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(5) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 4);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
+    QCOMPARE(model.getPreviousRow(4), 5);
+    QCOMPARE(model.getPreviousRow(5), 0);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 5 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(3, ColumnListModel::KeyRole).toString(), "uuid_12", 12, false, 12,
                      1000, 1, "column 4 next", "value 12", QStringList());
-    QVERIFY2(model.getPreviousRow(0) == -1,
-             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(1) == 4,
-             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(2) == 1,
-             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(3) == 2,
-             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(4) == 5,
-             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(5) == 0,
-             QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
-    QVERIFY2(model.getPreviousRow(6) == 3,
-             QString("left pos=%1").arg(model.getPreviousRow(6)).toLocal8Bit());
+    QCOMPARE(model.getPreviousRow(0), -1);
+    QCOMPARE(model.getPreviousRow(1), 4);
+    QCOMPARE(model.getPreviousRow(2), 1);
+    QCOMPARE(model.getPreviousRow(3), 2);
+    QCOMPARE(model.getPreviousRow(4), 5);
+    QCOMPARE(model.getPreviousRow(5), 0);
+    QCOMPARE(model.getPreviousRow(6), 3);
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
 }
 
@@ -382,87 +320,39 @@ void hagoromo_test::test_ColumnListModelSelected()
     QCOMPARE(model.getRowListInOrderOfPosition(), QList<int>() << 2 << 1 << 0 << 3);
 
     row = 0;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), false);
     row++;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), false);
     row++;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     row++;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), false);
 
     model.moveSelectionToRight();
     row = 1;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToRight();
     row = 0;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToRight();
     row = 3;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToRight();
     row = 3;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
 
     model.moveSelectionToLeft();
     row = 0;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToLeft();
     row = 1;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToLeft();
     row = 2;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
     model.moveSelectionToLeft();
     row = 2;
-    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
-             QString("row(%1)=%2")
-                     .arg(row)
-                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, ColumnListModel::SelectedRole).toBool(), true);
 }
 
 void hagoromo_test::test_NotificationListModel()
@@ -479,39 +369,27 @@ void hagoromo_test::test_NotificationListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 6);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
+        i++;
     }
 
     {
@@ -526,34 +404,24 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
+        i++;
     }
 
     {
@@ -568,34 +436,24 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
+        i++;
     }
 
     {
@@ -610,34 +468,24 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
+        i++;
     }
 
     {
@@ -652,34 +500,24 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
+        i++;
     }
 
     {
@@ -694,34 +532,23 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonQuote);
     }
 
     {
@@ -736,34 +563,23 @@ void hagoromo_test::test_NotificationListModel()
         model.clear();
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonLike,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonMention,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
-        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                         == NotificationListModel::NotificationListModelReason::ReasonReply,
-                 QString("reason=%1")
-                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                         .toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonLike);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonRepost);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonFollow);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonMention);
+        i++;
+        QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+                 NotificationListModel::NotificationListModelReason::ReasonReply);
     }
 }
 
@@ -786,9 +602,9 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleQuote(false);
     model.getLatest();
     spy.wait(20 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
-    QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 0);
 
     //   like
     //   repost
@@ -798,12 +614,9 @@ void hagoromo_test::test_NotificationListModel2()
     //   quote
     model.setVisibleReply(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 1);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
 
     //   like
     //   repost
@@ -814,17 +627,13 @@ void hagoromo_test::test_NotificationListModel2()
     i = 0;
     model.setVisibleFollow(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 2);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonFollow);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
+    i++;
 
     //   like
     //   repost
@@ -835,22 +644,15 @@ void hagoromo_test::test_NotificationListModel2()
     i = 0;
     model.setVisibleMention(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 3, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonMention,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 3);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonFollow);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonMention);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
 
     // * like
     // * repost
@@ -862,32 +664,21 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleLike(true);
     model.setVisibleRepost(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonLike,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonMention,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 5);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonLike);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonRepost);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonFollow);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonMention);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
 
     // * like
     // * repost
@@ -898,37 +689,24 @@ void hagoromo_test::test_NotificationListModel2()
     i = 0;
     model.setVisibleQuote(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonLike,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonMention,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonLike);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonRepost);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonFollow);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonMention);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonQuote);
 
     // * like
     // * repost
@@ -940,27 +718,18 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleFollow(false);
     model.setVisibleMention(false);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonLike,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 4);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonLike);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonRepost);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonQuote);
 
     // * like
     //   repost
@@ -972,27 +741,18 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleRepost(false);
     model.setVisibleMention(true);
     //    model.reflectVisibility();
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonLike,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonMention,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonReply,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
-                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
-             QString("reason=%1")
-                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
-                     .toLocal8Bit());
+    QCOMPARE(model.rowCount(), 4);
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonLike);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonMention);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonReply);
+    i++;
+    QCOMPARE(model.item(i, NotificationListModel::ReasonRole),
+             NotificationListModel::NotificationListModelReason::ReasonQuote);
 }
 
 void hagoromo_test::test_NotificationList_collecting()
@@ -1009,49 +769,45 @@ void hagoromo_test::test_NotificationList_collecting()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 1);
     i = 0;
     QStringList liked_avatars =
             model.item(i, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 3);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 1);
     i = 0;
     liked_avatars = model.item(i, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 3);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg");
 
     model.setVisibleLike(false);
-    QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 0);
     model.setVisibleLike(true);
-    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 1);
 }
 
 void hagoromo_test::test_NotificationList_collecting_next()
@@ -1067,108 +823,90 @@ void hagoromo_test::test_NotificationList_collecting_next()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 4);
     QStringList liked_avatars;
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 3);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg");
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 1, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 1);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/"
-                                "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
-                                "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/"
+                              "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
+                              "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg");
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 6);
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 4, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
-                                "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 4);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
+                              "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg");
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/"
-                                "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
-                                "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/"
+                              "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
+                              "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg");
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
-    QVERIFY2(model.item(4, NotificationListModel::CidRole).toString()
-                     == "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa",
-             model.item(4, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(4, NotificationListModel::CidRole).toString(),
+             "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa");
 
-    QVERIFY2(model.item(5, NotificationListModel::CidRole).toString()
-                     == "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm",
-             model.item(5, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(5, NotificationListModel::CidRole).toString(),
+             "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm");
 }
 
 void hagoromo_test::test_NotificationList_collecting_visibility()
@@ -1183,111 +921,93 @@ void hagoromo_test::test_NotificationList_collecting_visibility()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 2);
 
     model.setVisibleLike(true);
 
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 4);
     QStringList liked_avatars;
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 3);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg");
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 1, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 1);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/"
-                                "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
-                                "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/"
+                              "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
+                              "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg");
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 6);
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 4, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
-                                "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 4);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
+                              "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg");
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/"
-                                "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
-                                "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/"
+                              "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
+                              "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg");
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
-    QVERIFY2(model.item(4, NotificationListModel::CidRole).toString()
-                     == "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa",
-             model.item(4, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(4, NotificationListModel::CidRole).toString(),
+             "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa");
 
-    QVERIFY2(model.item(5, NotificationListModel::CidRole).toString()
-                     == "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm",
-             model.item(5, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(5, NotificationListModel::CidRole).toString(),
+             "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm");
 }
 
 void hagoromo_test::test_NotificationList_no_collecting()
@@ -1303,192 +1023,160 @@ void hagoromo_test::test_NotificationList_no_collecting()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 7, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 7);
     QStringList liked_avatars;
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreibx5qd5ggsuxn3cd6mdej3hyvwfvzuephlqpjkfwutz74adozzvey",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreibx5qd5ggsuxn3cd6mdej3hyvwfvzuephlqpjkfwutz74adozzvey");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreidamian6nt26vfagrxmbzjtbmhdy7dubjp66dd44wygofkijxcv7y",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreidamian6nt26vfagrxmbzjtbmhdy7dubjp66dd44wygofkijxcv7y");
 
-    QVERIFY2(model.item(4, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(4, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(4, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
 
-    QVERIFY2(model.item(5, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(5, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(5, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
-    QVERIFY2(model.item(6, NotificationListModel::CidRole).toString()
-                     == "bafyreidylqkiau6mt3ps6vjnzi5ibcqrgkroshdjxa4imhevks2ni65cxm",
-             model.item(6, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(6, NotificationListModel::CidRole).toString(),
+             "bafyreidylqkiau6mt3ps6vjnzi5ibcqrgkroshdjxa4imhevks2ni65cxm");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 11, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 11);
 
-    QVERIFY2(model.item(7, NotificationListModel::CidRole).toString()
-                     == "bafyreieeelqkoh5qwigmudmyofo3qjsonrpwjbt6enx7xbq3dc55p3grmi",
-             model.item(7, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(7, NotificationListModel::CidRole).toString(),
+             "bafyreieeelqkoh5qwigmudmyofo3qjsonrpwjbt6enx7xbq3dc55p3grmi");
 
-    QVERIFY2(model.item(8, NotificationListModel::CidRole).toString()
-                     == "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa",
-             model.item(8, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(8, NotificationListModel::CidRole).toString(),
+             "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa");
 
-    QVERIFY2(model.item(9, NotificationListModel::CidRole).toString()
-                     == "bafyreiclmktsadw7kw7upeb6gesi7ebjjdduog6e3c3qru3u6axs2i3p5u",
-             model.item(9, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(9, NotificationListModel::CidRole).toString(),
+             "bafyreiclmktsadw7kw7upeb6gesi7ebjjdduog6e3c3qru3u6axs2i3p5u");
 
-    QVERIFY2(model.item(10, NotificationListModel::CidRole).toString()
-                     == "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm",
-             model.item(10, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(10, NotificationListModel::CidRole).toString(),
+             "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm");
 
     // /////
     model.setAggregateReactions(true);
 
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 6);
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 4, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
-                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
-                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
-                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
-                                "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 4);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                              "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                              "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                              "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_18_did/"
+                              "bafkreideay2fqegla7bx3vm47mnfbcwhplw6mk6s4dmxo5657ygomlpe7i@jpeg");
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 2, QString::number(liked_avatars.count()).toLocal8Bit());
-    QVERIFY2(liked_avatars
-                     == QStringList()
-                             << "https://cdn.bsky.app/img/avatar/plain/"
-                                "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
-                                "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg",
-             liked_avatars.join(", ").toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 2);
+    QCOMPARE(liked_avatars,
+             QStringList() << "https://cdn.bsky.app/img/avatar/plain/"
+                              "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
+                           << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_11_did/"
+                              "bafkreiblrxnoqf2wxdsmwefvgktbfjvtrrasv666veul6raxgpfjj22jay@jpeg");
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
 
-    QVERIFY2(model.item(4, NotificationListModel::CidRole).toString()
-                     == "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa",
-             model.item(4, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(4, NotificationListModel::CidRole).toString(),
+             "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa");
 
-    QVERIFY2(model.item(5, NotificationListModel::CidRole).toString()
-                     == "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm",
-             model.item(5, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(5, NotificationListModel::CidRole).toString(),
+             "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm");
 
     // /////
     model.setAggregateReactions(false);
-    QVERIFY2(model.rowCount() == 11, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 11);
 
-    QVERIFY2(model.item(0, NotificationListModel::CidRole).toString()
-                     == "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4",
-             model.item(0, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, NotificationListModel::CidRole).toString(),
+             "bafyreiebakaokbztlhlbb5sr2ekp3fnzf3apodwnyx3ae4bevz7d4s23e4");
     liked_avatars = model.item(0, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(1, NotificationListModel::CidRole).toString()
-                     == "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
-             model.item(1, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(1, NotificationListModel::CidRole).toString(),
+             "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi");
     liked_avatars = model.item(1, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(2, NotificationListModel::CidRole).toString()
-                     == "bafyreibx5qd5ggsuxn3cd6mdej3hyvwfvzuephlqpjkfwutz74adozzvey",
-             model.item(2, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(2, NotificationListModel::CidRole).toString(),
+             "bafyreibx5qd5ggsuxn3cd6mdej3hyvwfvzuephlqpjkfwutz74adozzvey");
     liked_avatars = model.item(2, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(3, NotificationListModel::CidRole).toString()
-                     == "bafyreidamian6nt26vfagrxmbzjtbmhdy7dubjp66dd44wygofkijxcv7y",
-             model.item(3, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, NotificationListModel::CidRole).toString(),
+             "bafyreidamian6nt26vfagrxmbzjtbmhdy7dubjp66dd44wygofkijxcv7y");
     liked_avatars = model.item(3, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(4, NotificationListModel::CidRole).toString()
-                     == "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e",
-             model.item(4, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(4, NotificationListModel::CidRole).toString(),
+             "bafyreih7kafwej4ezcr6phztanahjxbegbmix3t3vt5k4nghhqtztnpb6e");
     liked_avatars = model.item(4, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(5, NotificationListModel::CidRole).toString()
-                     == "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu",
-             model.item(5, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(5, NotificationListModel::CidRole).toString(),
+             "bafyreid45fiup7gptei6wzna534ydnctgl6hahw3gthz4zlurzr6oozrsu");
     liked_avatars = model.item(5, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(6, NotificationListModel::CidRole).toString()
-                     == "bafyreidylqkiau6mt3ps6vjnzi5ibcqrgkroshdjxa4imhevks2ni65cxm",
-             model.item(6, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(6, NotificationListModel::CidRole).toString(),
+             "bafyreidylqkiau6mt3ps6vjnzi5ibcqrgkroshdjxa4imhevks2ni65cxm");
     liked_avatars = model.item(6, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(7, NotificationListModel::CidRole).toString()
-                     == "bafyreieeelqkoh5qwigmudmyofo3qjsonrpwjbt6enx7xbq3dc55p3grmi",
-             model.item(7, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(7, NotificationListModel::CidRole).toString(),
+             "bafyreieeelqkoh5qwigmudmyofo3qjsonrpwjbt6enx7xbq3dc55p3grmi");
     liked_avatars = model.item(7, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(8, NotificationListModel::CidRole).toString()
-                     == "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa",
-             model.item(8, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(8, NotificationListModel::CidRole).toString(),
+             "bafyreihh665zos4rof4cefnzd6iiswzswwnotakmxgjbl44vfdt2a7ysxa");
     liked_avatars = model.item(8, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(9, NotificationListModel::CidRole).toString()
-                     == "bafyreiclmktsadw7kw7upeb6gesi7ebjjdduog6e3c3qru3u6axs2i3p5u",
-             model.item(9, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(9, NotificationListModel::CidRole).toString(),
+             "bafyreiclmktsadw7kw7upeb6gesi7ebjjdduog6e3c3qru3u6axs2i3p5u");
     liked_avatars = model.item(9, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 
-    QVERIFY2(model.item(10, NotificationListModel::CidRole).toString()
-                     == "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm",
-             model.item(10, NotificationListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(10, NotificationListModel::CidRole).toString(),
+             "bafyreia67z4x3gmhs6afclhdodq2jvdwdimnykjfhpjgmqqtb2hrpce5bm");
     liked_avatars = model.item(10, NotificationListModel::AggregatedAvatarsRole).toStringList();
-    QVERIFY2(liked_avatars.count() == 0, QString::number(liked_avatars.count()).toLocal8Bit());
+    QCOMPARE(liked_avatars.count(), 0);
 }
 
 void hagoromo_test::test_UserProfile()
@@ -1560,7 +1248,7 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 7);
 
@@ -1622,7 +1310,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 7);
 
@@ -1686,7 +1374,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 7);
 
@@ -1758,7 +1446,7 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 9);
 
@@ -1814,9 +1502,9 @@ void hagoromo_test::test_TimelineListModel_animated_image()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
-    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QCOMPARE(model.rowCount(), 2);
 
     QString folder = Common::appTempFolder("ext_images");
     QStringList thumb_paths;
@@ -1852,18 +1540,8 @@ void hagoromo_test::test_TimelineListModel_animated_image()
                   "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
                << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
                   "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
-             model.item(row, TimelineListModel::EmbedImagesRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
-             model.item(row, TimelineListModel::EmbedImagesFullRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesRole).toStringList(), thumb_paths);
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList(), full_paths);
 
     // //////////////////
     QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(0)));
@@ -1875,18 +1553,8 @@ void hagoromo_test::test_TimelineListModel_animated_image()
     full_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
                << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
                   "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
-             model.item(row, TimelineListModel::EmbedImagesRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
-             model.item(row, TimelineListModel::EmbedImagesFullRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesRole).toStringList(), thumb_paths);
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList(), full_paths);
 
     for (const auto &image_path : std::as_const(image_paths)) {
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
@@ -1903,18 +1571,8 @@ void hagoromo_test::test_TimelineListModel_animated_image()
     full_paths << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
                   "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
                << QUrl::fromLocalFile(image_paths.at(1)).toString();
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
-             model.item(row, TimelineListModel::EmbedImagesRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
-             model.item(row, TimelineListModel::EmbedImagesFullRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesRole).toStringList(), thumb_paths);
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList(), full_paths);
 
     // ////////////////////
     QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(0)));
@@ -1925,18 +1583,8 @@ void hagoromo_test::test_TimelineListModel_animated_image()
                 << QUrl::fromLocalFile(image_paths.at(1)).toString();
     full_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
                << QUrl::fromLocalFile(image_paths.at(1)).toString();
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
-             model.item(row, TimelineListModel::EmbedImagesRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
-             model.item(row, TimelineListModel::EmbedImagesFullRole)
-                             .toStringList()
-                             .join("\n")
-                             .toLocal8Bit()
-                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesRole).toStringList(), thumb_paths);
+    QCOMPARE(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList(), full_paths);
 
     for (const auto &image_path : std::as_const(image_paths)) {
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
@@ -1959,69 +1607,38 @@ void hagoromo_test::test_TimelineListModel_threadgate()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     row = 0;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     == QStringList() << "followed"
-                                      << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                         "app.bsky.graph.list/3kflf2r3lwg2x"
-                                      << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                                         "app.bsky.graph.list/3kflbnc4c4o2x",
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "choice");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole),
+             QStringList() << "followed"
+                           << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "app.bsky.graph.list/3kflf2r3lwg2x"
+                           << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                              "app.bsky.graph.list/3kflbnc4c4o2x");
 
     row = 1;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "everybody",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList(),
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "everybody");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole), QStringList());
 
     row = 2;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "nobody",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList(),
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "nobody");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole), QStringList());
 
     row = 3;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     == QStringList() << "at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
-                                         "app.bsky.graph.list/3kdoiwxqcjv2v",
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "choice");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole),
+             QStringList() << "at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                              "app.bsky.graph.list/3kdoiwxqcjv2v");
 
     row = 4;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList() << "followed",
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "choice");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole), QStringList() << "followed");
 
     row = 5;
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
-             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     == QStringList() << "mentioned",
-             model.item(row, TimelineListModel::ThreadGateRulesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateTypeRole), "choice");
+    QCOMPARE(model.item(row, TimelineListModel::ThreadGateRulesRole), QStringList() << "mentioned");
 }
 
 void hagoromo_test::test_TimelineListModel_hide_repost()
@@ -2039,53 +1656,39 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     //
     {
-        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 7);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 1;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 2;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 3;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 4;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 5;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row = 6;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
     //
     {
@@ -2095,51 +1698,35 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         model.setVisibleRepostOfMine(true);
         model.setVisibleRepostByMe(true);
 
-        QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                     == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //             model.item(row,
-        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        //    QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                     == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //             model.item(row,
-        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        //    QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
     //
     {
@@ -2149,52 +1736,35 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         model.setVisibleRepostOfMine(true);
         model.setVisibleRepostByMe(true);
 
-        QVERIFY2(model.rowCount() == 4, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 4);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                     == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //             model.item(row,
-        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        //    QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                     == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //             model.item(row,
-        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        //    QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                     == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //             model.item(row,
-        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        //    QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
     //
     {
@@ -2204,49 +1774,35 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         model.setVisibleRepostOfMine(true);
         model.setVisibleRepostByMe(true);
 
-        QVERIFY2(model.rowCount() == 5, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
         row = 0;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         //    row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         // row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
     //
     {
@@ -2256,49 +1812,35 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         model.setVisibleRepostOfMine(false);
         model.setVisibleRepostByMe(true);
 
-        QVERIFY2(model.rowCount() == 5, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                  == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         // row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                  == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
     //
     {
@@ -2308,49 +1850,35 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         model.setVisibleRepostOfMine(true);
         model.setVisibleRepostByMe(false);
 
-        QVERIFY2(model.rowCount() == 4, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 4);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4");
+        QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         // row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
         // row++;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //                  == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // QCOMPARE(model.item(row, TimelineListModel::CidRole)
+        //, "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe");
+        // QCOMPARE(model.item(row, TimelineListModel::IsRepostedByRole), true);
     }
 }
 
@@ -2371,166 +1899,66 @@ void hagoromo_test::test_TimelineListModel_labelers()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     //
     {
-        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 7);
         row = 0;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "Content warning",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), true);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "Content warning");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole), "");
         row = 1;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         == "Inauthentic Account",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), true);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole),
+                 "Inauthentic Account");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole), "");
         row = 2;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         == "Sexually Suggestive (Cartoon)",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), true);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole),
+                 "Sexually Suggestive (Cartoon)");
         row = 3;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         == "Graphic Media",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), true);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole),
+                 "Graphic Media");
         row = 4;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_5",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_5");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole), true);
         row = 5;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_6",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_6");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole), true);
         row = 6;
-        QVERIFY2(model.item(row, TimelineListModel::CidRole)
-                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_7",
-                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
-                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
-                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
-                         .toString()
-                         .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
-                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
-                         .toString()
-                         .toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::CidRole),
+                 "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_7");
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole), false);
+        QCOMPARE(model.item(row, TimelineListModel::ContentFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::ContentMediaFilterMessageRole), "");
+        QCOMPARE(model.item(row, TimelineListModel::QuoteFilterMatchedRole), true);
     }
 }
 
@@ -2552,24 +1980,18 @@ void hagoromo_test::test_TimelineListModel_pinnded()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 5);
         row = 0;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
         row = 1;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e");
         row = 2;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuyasqh72k",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuyasqh72k");
     }
 
     uuid = AccountManager::getInstance()->updateAccount(
@@ -2581,29 +2003,21 @@ void hagoromo_test::test_TimelineListModel_pinnded()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 7);
         row = 0;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
         row = 1;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
         row = 2;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m");
         row = 3;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e");
     }
 
     // clear
@@ -2612,24 +2026,18 @@ void hagoromo_test::test_TimelineListModel_pinnded()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 6, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 6);
         row = 0;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
         row = 1;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m");
         row = 2;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e");
     }
 
     // re-set
@@ -2643,29 +2051,21 @@ void hagoromo_test::test_TimelineListModel_pinnded()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 7);
         row = 0;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
         row = 1;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
         row = 2;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m");
         row = 3;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e");
     }
 
     // replace pin
@@ -2679,29 +2079,21 @@ void hagoromo_test::test_TimelineListModel_pinnded()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        QCOMPARE(model.rowCount(), 7);
         row = 0;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
         row = 1;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
         row = 2;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m");
         row = 3;
-        QVERIFY2(
-                model.item(row, TimelineListModel::UriRole)
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
-                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        QCOMPARE(model.item(row, TimelineListModel::UriRole),
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e");
     }
 }
 
@@ -2720,7 +2112,7 @@ void hagoromo_test::test_NotificationListModel_warn()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(20 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 2);
 
@@ -2763,7 +2155,7 @@ void hagoromo_test::test_TimelineListModel_next()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
     QCOMPARE(model.rowCount(), 6);
 
@@ -2793,7 +2185,7 @@ void hagoromo_test::test_TimelineListModel_next()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
     QCOMPARE(model.rowCount(), 13);
 
@@ -2801,9 +2193,8 @@ void hagoromo_test::test_TimelineListModel_next()
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreiejog3yvjc2tdg4muknodbplaib2yqftukwurd4qjcnal3zdxu4ni_7");
     row = 7;
-    QVERIFY2(model.item(row, TimelineListModel::CidRole).toString()
-                     == "bafyreib67ewj54g6maljtbclhno7mrkquf3w7wbex2woedj5m23mjwyite_8",
-             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(row, TimelineListModel::CidRole).toString(),
+             "bafyreib67ewj54g6maljtbclhno7mrkquf3w7wbex2woedj5m23mjwyite_8");
     row = 8;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreigj7v4cnmqpu5jiaqk2e4z7lele7toehjjbzbgmnaydufkayrsrly_9");
@@ -2836,7 +2227,7 @@ void hagoromo_test::test_AnyProfileListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     QCOMPARE(model.rowCount(), 5);
@@ -2846,7 +2237,7 @@ void hagoromo_test::test_AnyProfileListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     QCOMPARE(model.rowCount(), 2);
@@ -2866,7 +2257,7 @@ void hagoromo_test::test_TimelineListModel_text()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait(10 * 1000);
-    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 2);
 
     QCOMPARE(model.rowCount(), 4);
 
@@ -2906,10 +2297,10 @@ void hagoromo_test::test_TimelineListModel_reply()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 5);
     QVERIFY(model.item(0, TimelineListModel::CidRole)
             == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
     QVERIFY(model.item(1, TimelineListModel::CidRole)
@@ -2926,10 +2317,10 @@ void hagoromo_test::test_TimelineListModel_reply()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 3, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 3);
     QVERIFY(model.item(0, TimelineListModel::CidRole)
             == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
     QVERIFY(model.item(1, TimelineListModel::CidRole)
@@ -2947,10 +2338,10 @@ void hagoromo_test::test_TimelineListModel_reply()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 5);
     QVERIFY(model.item(0, TimelineListModel::CidRole)
             == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
     QVERIFY(model.item(1, TimelineListModel::CidRole)
@@ -2978,12 +2369,12 @@ void hagoromo_test::test_PostThreadListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     int row;
 
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 4);
     row = 0;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
@@ -3011,10 +2402,10 @@ void hagoromo_test::test_PostThreadListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
     row = 0;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
@@ -3050,10 +2441,10 @@ void hagoromo_test::test_PostThreadListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
     row = 0;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
@@ -3100,34 +2491,34 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     QString actual;
 
     actual = model.extractHandleBlock("");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("\n\n");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social ");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\t");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\n");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\n\nhoge");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\n\nhoge@handle2");
-    QVERIFY2(actual == "handle2", actual.toLocal8Bit());
+    QCOMPARE(actual, "handle2");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\n\nhoge@han.dle2");
-    QVERIFY2(actual == "han.dle2", actual.toLocal8Bit());
+    QCOMPARE(actual, "han.dle2");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social\n\nhoge@han.dle2[");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     actual = model.extractHandleBlock("hoge fuga @handle.bsky.social hoge");
-    QVERIFY2(actual == "", actual.toLocal8Bit());
+    QCOMPARE(actual, "");
 
     // 見つかったところを入力済みデータの中で置換
     // 探すときの候補文字列より入力が先にいってしまってずれたときは置き換えないようにする?
@@ -3144,49 +2535,49 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social
     actual = model.replaceText("hoge @handl", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social ", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social ");
 
     // 1. hoge @handl[] fuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social  fuga
     actual = model.replaceText("hoge @handl fuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social fuga");
 
     // 1. hoge @handl[]  fuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social  fuga
     actual = model.replaceText("hoge @handl  fuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social  fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social  fuga");
 
     // 1. hoge @handl[]\tfuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social\tfuga
     actual = model.replaceText("hoge @handl\tfuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social\tfuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social\tfuga");
 
     // 1. hoge @handl[]\nfuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social\nfuga
     actual = model.replaceText("hoge @handl\nfuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social\nfuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social\nfuga");
 
     // 1. hoge @handl[] fuga
     // 2. handl
     // 3. another.handle.bsky.social
     // 4. hoge @another.handle.bsky.social fuga
     actual = model.replaceText("hoge @handl fuga", 11, "another.handle.bsky.social");
-    QVERIFY2(actual == "hoge @another.handle.bsky.social fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @another.handle.bsky.social fuga");
 
     // 1. hoge @handl[]fuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.socialfuga
     actual = model.replaceText("hoge @handlfuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social fuga");
 
     // 1.  hoge @handl[] fuga
     // 1'. hoge @hande[] fuga
@@ -3194,21 +2585,21 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social[] fuga
     actual = model.replaceText("hoge @hande fuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge @handle.bsky.social fuga");
 
     // 1. ho\nge @handl[] fuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. ho\nge @handle.bsky.social fuga
     actual = model.replaceText("ho\nge @handl fuga", 12, "handle.bsky.social");
-    QVERIFY2(actual == "ho\nge @handle.bsky.social fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "ho\nge @handle.bsky.social fuga");
 
     // 1. ho\nge @handl[] f\nuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. ho\nge @handle.bsky.social f\nuga
     actual = model.replaceText("ho\nge @handl f\nuga", 12, "handle.bsky.social");
-    QVERIFY2(actual == "ho\nge @handle.bsky.social f\nuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "ho\nge @handle.bsky.social f\nuga");
 }
 
 void hagoromo_test::test_SearchPostListModel_text()
@@ -3219,20 +2610,16 @@ void hagoromo_test::test_SearchPostListModel_text()
     SearchPostListModel model;
     model.setAccount(uuid);
 
-    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.social",
-             model.text().toLocal8Bit());
+    QCOMPARE(model.replaceSearchCommand("from:me"), "from:hogehoge.bsky.social");
 
-    QVERIFY2(model.replaceSearchCommand("fuga  from:me hoge")
-                     == "fuga  from:hogehoge.bsky.social hoge",
-             model.text().toLocal8Bit());
+    QCOMPARE(model.replaceSearchCommand("fuga  from:me hoge"),
+             "fuga  from:hogehoge.bsky.social hoge");
 
-    QVERIFY2(model.replaceSearchCommand("fuga\tfrom:me\thoge")
-                     == "fuga from:hogehoge.bsky.social hoge",
-             model.text().toLocal8Bit());
+    QCOMPARE(model.replaceSearchCommand("fuga\tfrom:me\thoge"),
+             "fuga from:hogehoge.bsky.social hoge");
 
-    QVERIFY2(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000)))
-                     == "fuga from:hogehoge.bsky.social hoge",
-             model.text().toLocal8Bit());
+    QCOMPARE(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000))),
+             "fuga from:hogehoge.bsky.social hoge");
 }
 
 void hagoromo_test::test_ContentFilterSettingListModel()
@@ -3247,101 +2634,65 @@ void hagoromo_test::test_ContentFilterSettingListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.load();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     // -----------------------------------------
     model.setLabelerDid(QString());
-    QVERIFY2(model.rowCount() == 11, QString::number(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 11);
     i = 0;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Content hidden",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
-    QVERIFY2(
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
-                    == "Moderator overrides for special cases.",
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
-                     == static_cast<int>(ConfigurableLabelStatus::Hide),
-             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
-             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
-                     .toString()
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == false,
-             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
-                     .toString()
-                     .toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), "Content hidden");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::DescriptionRole).toString(),
+             "Moderator overrides for special cases.");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::StatusRole).toInt(),
+             static_cast<int>(ConfigurableLabelStatus::Hide));
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool(), false);
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool(), false);
     //
     i = 10;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
-                     == "Impersonation / Scam",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(),
+             "Impersonation / Scam");
     //
     i = 11;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), QString());
 
     model.setLabelerDid("did:plc:ar7c4by46qjdydhdevvrndac");
-    QVERIFY2(model.rowCount() == 18, QString::number(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 18);
     i = 0;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
-                     == "Sexually Suggestive (Cartoon)",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
-    QVERIFY2(
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
-                    == "Art with explicit or suggestive sexual themes, including provocative "
-                       "imagery or partial nudity.",
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
-                     == static_cast<int>(ConfigurableLabelStatus::Show),
-             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == true,
-             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
-                     .toString()
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == true,
-             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
-                     .toString()
-                     .toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(),
+             "Sexually Suggestive (Cartoon)");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::DescriptionRole).toString(),
+             "Art with explicit or suggestive sexual themes, including provocative "
+             "imagery or partial nudity.");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::StatusRole).toInt(),
+             static_cast<int>(ConfigurableLabelStatus::Show));
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool(), true);
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool(), true);
     i = 11;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Misinformation",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
-    QVERIFY2(
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
-                    == "Spreading false or misleading info, including unverified claims and "
-                       "harmful conspiracy theories.",
-            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
-                     == static_cast<int>(ConfigurableLabelStatus::Warning),
-             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
-             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
-                     .toString()
-                     .toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == true,
-             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
-                     .toString()
-                     .toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), "Misinformation");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::DescriptionRole).toString(),
+             "Spreading false or misleading info, including unverified claims and "
+             "harmful conspiracy theories.");
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::StatusRole).toInt(),
+             static_cast<int>(ConfigurableLabelStatus::Warning));
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool(), false);
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool(), true);
     i = 17;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
-                     == "Inauthentic Account",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(),
+             "Inauthentic Account");
     i = 18;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), QString());
 
     // -----------------------------------------
     model.setLabelerDid("did:plc:original_labeler_did");
-    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 1);
     i = 0;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Original",
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), "Original");
     i = 1;
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
-             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, ContentFilterSettingListModel::TitleRole).toString(), QString());
 
     model.setLabelerDid("did:plc:unknown");
-    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 0);
 }
 
 struct CalendarTableModelTestData
@@ -3442,27 +2793,9 @@ void hagoromo_test::test_CalendarTableModel()
         e_day = model.item(data.row, data.column, CalendarTableModel::DayRole).toInt(&ok);
         if (!ok)
             e_day = -1;
-        QVERIFY2(e_year == data.e_year,
-                 QString("e=%1/%2/%3, %4")
-                         .arg(e_year)
-                         .arg(e_month)
-                         .arg(e_day)
-                         .arg(data.toString())
-                         .toLocal8Bit());
-        QVERIFY2(e_month == data.e_month,
-                 QString("e=%1/%2/%3, %4")
-                         .arg(e_year)
-                         .arg(e_month)
-                         .arg(e_day)
-                         .arg(data.toString())
-                         .toLocal8Bit());
-        QVERIFY2(e_day == data.e_day,
-                 QString("e=%1/%2/%3, %4")
-                         .arg(e_year)
-                         .arg(e_month)
-                         .arg(e_day)
-                         .arg(data.toString())
-                         .toLocal8Bit());
+        QCOMPARE(e_year, data.e_year);
+        QCOMPARE(e_month, data.e_month);
+        QCOMPARE(e_day, data.e_day);
     }
 
     model.setYear(2024);
@@ -3557,7 +2890,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
 
     operatorUnderTest.getPoll(cid, uri, viewer);
 
-    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QVERIFY(spy.wait(10 * 1000));
     QCOMPARE(spy.count(), 1);
 
     const QList<QVariant> arguments = spy.takeFirst();
@@ -3626,11 +2959,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll()
             static_cast<double>(QDateTime::currentDateTimeUtc().msecsTo(endsAt))
             / (1000.0 * 60.0 * 60.0);
     const double toleranceHours = 0.01; // 約36秒
-    QVERIFY2(qAbs(actualRemainHours - expectedRemainHours) < toleranceHours,
-             QStringLiteral("remainHours actual=%1 expected=%2")
-                     .arg(actualRemainHours)
-                     .arg(expectedRemainHours)
-                     .toLocal8Bit());
+    QCOMPARE_LT(qAbs(actualRemainHours - expectedRemainHours), toleranceHours);
 }
 
 void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
@@ -3647,7 +2976,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_noVote()
 
     operatorUnderTest.getPoll(cid, uri, viewer);
 
-    QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    QVERIFY(spy.wait(10 * 1000));
     QCOMPARE(spy.count(), 1);
 
     const QList<QVariant> arguments = spy.takeFirst();
@@ -3762,7 +3091,7 @@ void hagoromo_test::test_TokimekiPollOperator_getOgp()
 
     // operatorUnderTest.getOgp(options);
 
-    // QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+    // QVERIFY(spy.wait(10 * 1000));
     // QCOMPARE(spy.count(), 1);
 
     // const QList<QVariant> arguments = spy.takeFirst();

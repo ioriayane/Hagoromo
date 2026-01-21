@@ -48,12 +48,10 @@ void tools_test::test_base32()
                           0xd8, 0xe6, 0x05, 0x47, 0x02, 0x1b, 0x46, 0x29, 0x70, 0xd7, 0x6a, 0x64 };
         QString actual =
                 Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)));
-        QVERIFY2(actual == "afkreif4zzap2zrkvrdavcpvw7hdnne667p5qb6y4ycuoaq3iyuxbv3kmq",
-                 actual.toLocal8Bit());
+        QCOMPARE(actual, "afkreif4zzap2zrkvrdavcpvw7hdnne667p5qb6y4ycuoaq3iyuxbv3kmq");
         actual = Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                                 true);
-        QVERIFY2(actual == "afkreif4zzap2zrkvrdavcpvw7hdnne667p5qb6y4ycuoaq3iyuxbv3kmq======",
-                 actual.toLocal8Bit());
+        QCOMPARE(actual, "afkreif4zzap2zrkvrdavcpvw7hdnne667p5qb6y4ycuoaq3iyuxbv3kmq======");
     }
     {
         uint8_t buf[] = { 0x01, 0x71, 0x12, 0x20, 0xaf, 0x9c, 0xf5, 0x65, 0x15, 0x54, 0x9f, 0x63,
@@ -61,34 +59,32 @@ void tools_test::test_base32()
                           0xc3, 0xf6, 0x2b, 0x11, 0xbd, 0xbd, 0x68, 0x35, 0xcb, 0x06, 0x0b, 0xc6 };
         QString actual =
                 Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)));
-        QVERIFY2(actual == "afyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy",
-                 actual.toLocal8Bit());
+        QCOMPARE(actual, "afyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy");
         actual = Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                                 true);
-        QVERIFY2(actual == "afyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy======",
-                 actual.toLocal8Bit());
+        QCOMPARE(actual, "afyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy======");
     }
 
     {
         uint8_t buf[] = { 0x00 };
         QString actual =
                 Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)));
-        QVERIFY2(actual == "aa", actual.toLocal8Bit());
+        QCOMPARE(actual, "aa");
         actual = Base32::encode(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                                 true);
-        QVERIFY2(actual == "aa======", actual.toLocal8Bit());
+        QCOMPARE(actual, "aa======");
     }
     {
         QString actual = Base32::encode(QByteArray());
-        QVERIFY2(actual == QString(), actual.toLocal8Bit());
+        QCOMPARE(actual, QString());
         actual = Base32::encode(QByteArray(), true);
-        QVERIFY2(actual == QString(), actual.toLocal8Bit());
+        QCOMPARE(actual, QString());
     }
 }
 
 void tools_test::test_base32_s()
 {
-    QVERIFY2(Base32::encode_s(0) == "2222222222222", Base32::encode_s(0).toLocal8Bit());
+    QCOMPARE(Base32::encode_s(0), "2222222222222");
 }
 
 void tools_test::test_tid()
@@ -98,8 +94,7 @@ void tools_test::test_tid()
 
     for (int i = 0; i < 1000; i++) {
         current = Tid::next();
-        QVERIFY2(prev < current,
-                 QString("prev, current = %1, %2").arg(prev, current).toLocal8Bit());
+        QCOMPARE_LT(prev, current);
         prev = current;
     }
 }
@@ -115,8 +110,8 @@ void tools_test::test_Leb128()
     offset = 0;
     v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                          offset);
-    QVERIFY2(v == 32, QString::number(v).toLocal8Bit());
-    QVERIFY2(offset == 1, QString::number(v).toLocal8Bit());
+    QCOMPARE(v, 32);
+    QCOMPARE(offset, 1);
 
     memset(buf, 0, sizeof(buf));
     buf[0] = 0xff;
@@ -124,8 +119,8 @@ void tools_test::test_Leb128()
     offset = 0;
     v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                          offset);
-    QVERIFY2(v == 6143, QString::number(v).toLocal8Bit());
-    QVERIFY2(offset == 3, QString::number(offset).toLocal8Bit());
+    QCOMPARE(v, 6143);
+    QCOMPARE(offset, 3);
 
     memset(buf, 0, sizeof(buf));
     buf[0] = 0x3a;
@@ -134,8 +129,8 @@ void tools_test::test_Leb128()
     offset = 0;
     v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                          offset);
-    QVERIFY2(v == 58, QString::number(v).toLocal8Bit());
-    QVERIFY2(offset == 1, QString::number(offset).toLocal8Bit());
+    QCOMPARE(v, 58);
+    QCOMPARE(offset, 1);
 
     memset(buf, 0, sizeof(buf));
     buf[0] = 0xd7;
@@ -144,8 +139,8 @@ void tools_test::test_Leb128()
     offset = 0;
     v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
                          offset);
-    QVERIFY2(v == 1239, QString::number(v).toLocal8Bit());
-    QVERIFY2(offset == 2, QString::number(offset).toLocal8Bit());
+    QCOMPARE(v, 1239);
+    QCOMPARE(offset, 2);
 }
 
 void tools_test::test_CarDecoder()
@@ -171,8 +166,7 @@ void tools_test::test_CarDecoder()
         }
     }
 
-    QVERIFY2(decoder.cids().length() == 718,
-             QString::number(decoder.cids().length()).toLocal8Bit());
+    QCOMPARE(decoder.cids().length(), 718);
 
     for (const auto &cid : decoder.cids()) {
         if (decoder.type(cid) != "$car_address") {
@@ -187,11 +181,7 @@ void tools_test::test_CarDecoder()
             }
             QVERIFY(check);
 
-            QVERIFY2(except_hash[cid].value("uri").toString() == decoder.uri(cid),
-                     QString("%1 <> %2")
-                             .arg(except_hash[cid].value("uri").toString())
-                             .arg(decoder.uri(cid))
-                             .toLocal8Bit());
+            QCOMPARE(except_hash[cid].value("uri").toString(), decoder.uri(cid));
         } else {
             // qDebug().nospace().noquote() << "cid:" << cid;
             // qDebug().nospace().noquote() << "actual:" <<

@@ -46,10 +46,7 @@ http_test::http_test()
                         if (key == "PostFile") {
                             QVERIFY(QFile::exists(value));
                             QVERIFY(WebServer::readFile(value, data));
-                            QVERIFY2(request.body().size() == data.size(),
-                                     QString("%1 == %2")
-                                             .arg(request.body().size(), data.size())
-                                             .toLocal8Bit());
+                            QCOMPARE(request.body().size(), data.size());
                             QCOMPARE(request.body(), data);
                             break;
                         }
@@ -311,34 +308,29 @@ void http_test::test_HttpReply()
     reply.setRawHeader("Content-Type", "image/png");
     reply.setRawHeader("Content-Length", "1234");
 
-    QVERIFY2(reply.rawHeader("Accept") == "*/*", reply.rawHeader("Accept"));
-    QVERIFY2(reply.rawHeader("Connection") == "close", reply.rawHeader("Connection"));
-    QVERIFY2(reply.rawHeader("Content-Type") == "image/png", reply.rawHeader("Content-Type"));
-    QVERIFY2(reply.rawHeader("Content-Length") == "1234", reply.rawHeader("Content-Length"));
+    QCOMPARE(reply.rawHeader("Accept"), "*/*");
+    QCOMPARE(reply.rawHeader("Connection"), "close");
+    QCOMPARE(reply.rawHeader("Content-Type"), "image/png");
+    QCOMPARE(reply.rawHeader("Content-Length"), "1234");
 
-    QVERIFY2(reply.rawHeader("accept") == "*/*", reply.rawHeader("Accept"));
-    QVERIFY2(reply.rawHeader("connection") == "close", reply.rawHeader("Connection"));
-    QVERIFY2(reply.rawHeader("content-type") == "image/png", reply.rawHeader("Content-Type"));
-    QVERIFY2(reply.rawHeader("content-length") == "1234", reply.rawHeader("Content-Length"));
+    QCOMPARE(reply.rawHeader("accept"), "*/*");
+    QCOMPARE(reply.rawHeader("connection"), "close");
+    QCOMPARE(reply.rawHeader("content-type"), "image/png");
+    QCOMPARE(reply.rawHeader("content-length"), "1234");
 
     reply.setRawHeader("accept", "application/json");
     reply.setRawHeader("connection", "open");
     reply.setRawHeader("content-type", "application/json");
     reply.setRawHeader("content-length", "4321");
 
-    QVERIFY2(reply.rawHeaderPairs().at(0).first == "accept", reply.rawHeaderPairs().at(0).first);
-    QVERIFY2(reply.rawHeaderPairs().at(0).second == "application/json",
-             reply.rawHeaderPairs().at(0).second);
-    QVERIFY2(reply.rawHeaderPairs().at(1).first == "connection",
-             reply.rawHeaderPairs().at(1).first);
-    QVERIFY2(reply.rawHeaderPairs().at(1).second == "open", reply.rawHeaderPairs().at(1).second);
-    QVERIFY2(reply.rawHeaderPairs().at(2).first == "content-type",
-             reply.rawHeaderPairs().at(2).first);
-    QVERIFY2(reply.rawHeaderPairs().at(2).second == "application/json",
-             reply.rawHeaderPairs().at(2).second);
-    QVERIFY2(reply.rawHeaderPairs().at(3).first == "content-length",
-             reply.rawHeaderPairs().at(3).first);
-    QVERIFY2(reply.rawHeaderPairs().at(3).second == "4321", reply.rawHeaderPairs().at(3).second);
+    QCOMPARE(reply.rawHeaderPairs().at(0).first, "accept");
+    QCOMPARE(reply.rawHeaderPairs().at(0).second, "application/json");
+    QCOMPARE(reply.rawHeaderPairs().at(1).first, "connection");
+    QCOMPARE(reply.rawHeaderPairs().at(1).second, "open");
+    QCOMPARE(reply.rawHeaderPairs().at(2).first, "content-type");
+    QCOMPARE(reply.rawHeaderPairs().at(2).second, "application/json");
+    QCOMPARE(reply.rawHeaderPairs().at(3).first, "content-length");
+    QCOMPARE(reply.rawHeaderPairs().at(3).second, "4321");
 }
 
 QTEST_MAIN(http_test)

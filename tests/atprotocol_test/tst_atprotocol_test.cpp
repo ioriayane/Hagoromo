@@ -176,7 +176,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -208,19 +208,18 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QCOMPARE(arguments.at(0).toBool(), false);
     }
 
-    QVERIFY2(session.errorCode() == "RateLimitExceeded", session.errorCode().toLocal8Bit());
+    QCOMPARE(session.errorCode(), "RateLimitExceeded");
     QVERIFY(session.errorMessage().contains("ratelimit-limit:30"));
     QVERIFY(session.errorMessage().contains("ratelimit-reset:2023/09/17 10:31:07"));
     QVERIFY(session.errorMessage().contains("ratelimit-remaining:10"));
     QVERIFY(session.errorMessage().contains("ratelimit-policy:30;w=300"));
-    QVERIFY2(session.replyJson().trimmed()
-                     == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
-             session.replyJson().toLocal8Bit());
+    QCOMPARE(session.replyJson().trimmed(),
+             "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}");
 }
 
 void atprotocol_test::test_ComAtprotoServerRefreshSession()
@@ -232,7 +231,7 @@ void atprotocol_test::test_ComAtprotoServerRefreshSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.refreshSession();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -258,7 +257,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -276,7 +275,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -292,21 +291,19 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file2.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
         QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file2.html");
-        QVERIFY2(ogp.title()
-                         == QString("file2 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
+        QCOMPARE(ogp.title(),
+                 QString("file2 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file2.gif");
     }
     {
@@ -318,7 +315,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -334,21 +331,19 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file3.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
         QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file3.html");
-        QVERIFY2(ogp.title()
-                         == QString("file3 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
+        QCOMPARE(ogp.title(),
+                 QString("file3 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
     }
     {
@@ -360,7 +355,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -376,24 +371,20 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file4.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(
-                ogp.uri()
-                        == QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort),
-                ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title()
-                         == QString("file4 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort));
+        QCOMPARE(ogp.title(),
+                 QString("file4 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
     }
     {
@@ -405,7 +396,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -421,22 +412,19 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file5.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html?id=10186&s=720",
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title()
-                         == QString("file5 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
+        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file5.html?id=10186&s=720");
+        QCOMPARE(ogp.title(),
+                 QString("file5 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(), "");
     }
 
@@ -444,44 +432,38 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file6.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri()
-                         == QString("http://localhost:%1/response/ogp/file6.html")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY2(ogp.thumb()
-                         == QString("http://localhost:%1/response/ogp/images/file6.png")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.thumb().toLocal8Bit());
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file6.html")
+                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.title(), QString("file6 TITLE"));
+        QCOMPARE(ogp.description(), QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(),
+                 QString("http://localhost:%1/response/ogp/images/file6.png")
+                         .arg(QString::number(m_listenPort)));
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file7.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri()
-                         == QString("http://localhost:%1/response/ogp/file7.html")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title() == QString("file7 TITLE"), ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY2(ogp.thumb()
-                         == QString("http://localhost:%1/response/ogp/images/file7.png")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.thumb().toLocal8Bit());
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file7.html")
+                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.title(), QString("file7 TITLE"));
+        QCOMPARE(ogp.description(), QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(),
+                 QString("http://localhost:%1/response/ogp/images/file7.png")
+                         .arg(QString::number(m_listenPort)));
     }
 }
 
@@ -490,22 +472,22 @@ void atprotocol_test::test_ogpDecodeHtml()
     QString actual;
 
     actual = OpenGraphProtocol::decodeHtml("hoge fuga");
-    QVERIFY2(actual == "hoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("hoge&amp;fuga");
-    QVERIFY2(actual == "hoge&fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge&fuga");
 
     actual = OpenGraphProtocol::decodeHtml("hoge fuga&amp;");
-    QVERIFY2(actual == "hoge fuga&", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge fuga&");
 
     actual = OpenGraphProtocol::decodeHtml("&amp;hoge fuga");
-    QVERIFY2(actual == "&hoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "&hoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("&amphoge fuga");
-    QVERIFY2(actual == "&amphoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "&amphoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("&amp;hoge&lt;fuga&gt;&quot;foo&apos;&nbsp;bar");
-    QVERIFY2(actual == "&hoge<fuga>\"foo' bar", actual.toLocal8Bit());
+    QCOMPARE(actual, "&hoge<fuga>\"foo' bar");
 }
 
 void atprotocol_test::test_getTimeline()
@@ -516,7 +498,7 @@ void atprotocol_test::test_getTimeline()
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
     timeline.getTimeline(QString(), 0, QString());
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
 
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
@@ -525,55 +507,26 @@ void atprotocol_test::test_getTimeline()
 
     QCOMPARE(timeline.feedList().at(0).post.author.did, "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
-    QVERIFY2(timeline.feedList().at(1).post.embed_type
-                     == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View,
-             QString("%1")
-                     .arg(static_cast<int>(timeline.feedList().at(1).post.embed_type))
-                     .toLocal8Bit());
+    QCOMPARE(timeline.feedList().at(1).post.embed_type,
+             AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View);
 
-    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                     == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
-             QString("%1")
-                     .arg(static_cast<int>(
-                             timeline.feedList()
-                                     .at(1)
-                                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
-                     == false,
-             QString("%1")
-                     .arg(timeline.feedList()
-                                  .at(1)
-                                  .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull())
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                     == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord,
-             QString("%1")
-                     .arg(static_cast<int>(timeline.feedList()
-                                                   .at(1)
-                                                   .post.embed_AppBskyEmbedRecordWithMedia_View
-                                                   .record->record_type))
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
-                             .cid
-                     == "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
-             timeline.feedList()
+    QCOMPARE(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type,
+             AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View);
+    QCOMPARE(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull(),
+             false);
+    QCOMPARE(timeline.feedList()
                      .at(1)
-                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
-                             .author.handle
-                     == "ioriayane2.bsky.social",
-             timeline.feedList()
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type,
+             AppBskyEmbedRecord::ViewRecordType::record_ViewRecord);
+    QCOMPARE(timeline.feedList()
+                     .at(1)
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid,
+             "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu");
+    QCOMPARE(timeline.feedList()
                      .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
-                     .handle.toLocal8Bit());
+                     .handle,
+             "ioriayane2.bsky.social");
 
     QVERIFY(LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
                     timeline.feedList()
@@ -689,7 +642,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -733,7 +686,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -772,7 +725,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -807,7 +760,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -844,55 +797,35 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(labels.mutedWordCount() == 4,
-                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 4);
 
         i = 0;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-1",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 2,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>()
-                                 << MutedWordTarget::Content << MutedWordTarget::Tag,
-                 QString("%1,%2")
-                         .arg(int(labels.getMutedWordItem(i).targets.at(0)),
-                              int(labels.getMutedWordItem(i).targets.at(1)))
-                         .toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-1");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 2);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
         i = 1;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-2",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>() << MutedWordTarget::Tag,
-                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-2");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Tag);
         i = 2;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-3",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-3");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 0);
         QCOMPARE(labels.getMutedWordItem(i).targets, QList<MutedWordTarget>());
         i = 3;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-4",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>() << MutedWordTarget::Content,
-                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-4");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content);
     }
     //
     {
@@ -902,12 +835,11 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(labels.mutedWordCount() == 8,
-                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 8);
 
         i = 0;
         QCOMPARE(labels.getMutedWordItem(i).group, 0);
@@ -1239,7 +1171,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1252,7 +1184,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1265,7 +1197,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1275,12 +1207,11 @@ void atprotocol_test::test_ConfigurableLabels_save()
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
         labels.setService(QString("http://localhost:%1/response/labels/save/4").arg(m_listenPort));
-        QVERIFY2(labels.mutedWordCount() == 0,
-                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1291,11 +1222,10 @@ void atprotocol_test::test_ConfigurableLabels_save()
             QSignalSpy spy(&labels, SIGNAL(finished(bool)));
             labels.load();
             spy.wait();
-            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+            QCOMPARE(spy.count(), 1);
             QList<QVariant> arguments = spy.takeFirst();
             QVERIFY(arguments.at(0).toBool());
-            QVERIFY2(labels.mutedWordCount() == 8,
-                     QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+            QCOMPARE(labels.mutedWordCount(), 8);
         }
         labels.setEnableAdultContent(false);
         for (int i = 0; i < labels.count(); i++) {
@@ -1305,7 +1235,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1316,12 +1246,11 @@ void atprotocol_test::test_ConfigurableLabels_save()
         }
         labels.clearMutedWord();
         labels.setService(QString("http://localhost:%1/response/labels/save/6").arg(m_listenPort));
-        QVERIFY2(labels.mutedWordCount() == 0,
-                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1511,7 +1440,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1560,7 +1489,7 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(provider->labelerDids(account)
@@ -1580,14 +1509,13 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(provider->labelerDids(account)
-                     == QStringList() << "__globally__"
-                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
-                                      << "did:plc:original_labeler_did",
-             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+    QCOMPARE(provider->labelerDids(account),
+             QStringList() << "__globally__"
+                           << "did:plc:ar7c4by46qjdydhdevvrndac"
+                           << "did:plc:original_labeler_did");
 
     qDebug().noquote() << "-- 3 ----------------------------------------";
 
@@ -1597,15 +1525,14 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(provider->labelerDids(account)
-                     == QStringList() << "__globally__"
-                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
-                                      << "did:plc:original_labeler_did"
-                                      << "did:plc:original_labeler_did_2",
-             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+    QCOMPARE(provider->labelerDids(account),
+             QStringList() << "__globally__"
+                           << "did:plc:ar7c4by46qjdydhdevvrndac"
+                           << "did:plc:original_labeler_did"
+                           << "did:plc:original_labeler_did_2");
 
     QCOMPARE(provider->visibility(account, "hoge", true), ConfigurableLabelStatus::Show);
     QCOMPARE(provider->visibility(account, "porn", true), ConfigurableLabelStatus::Show);
@@ -1662,30 +1589,28 @@ void atprotocol_test::test_LabelProvider()
                          account, connector2);
         spy.wait();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     labeler_did = "did:plc:original_labeler_did";
     id = "test_label2";
     provider->setLanguage("en");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
-    QVERIFY2(label.avatar
-                     == "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/"
-                        "avatar@jpeg",
-             label.name.toLocal8Bit());
+    QCOMPARE(label.name, "label2");
+    QCOMPARE(label.avatar,
+             "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/avatar@jpeg");
     provider->setLanguage("ja");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "raberu2", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "raberu2");
     provider->setLanguage("unknown");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "label2");
 
     labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
     id = "extremist";
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "Extremist", label.name.toLocal8Bit());
-    QVERIFY2(label.avatar == "", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "Extremist");
+    QCOMPARE(label.avatar, "");
 
     // 3連続で3カ所からリクエストしたときに、下記のようにするとgetServicesが3回発行されて
     // 3回目のリクエスト元に対しては3回コールバック必要
@@ -1709,7 +1634,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
     createrecord.post("hello world");
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 }
@@ -1732,7 +1657,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Nobody, QList<AtProtocolType::ThreadGateAllow>());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1750,7 +1675,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1766,7 +1691,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1783,7 +1708,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1804,7 +1729,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1828,7 +1753,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
                         embeddingRules_DisableRule,
                 QStringList());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1843,7 +1768,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
                 QStringList() << "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/"
                                  "3l44nnbwfcq2q");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1858,7 +1783,7 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
     QSignalSpy spy(&generator, SIGNAL(finished(bool)));
     generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
 
     QVERIFY(generator.view().uri
             == "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
@@ -1882,7 +1807,7 @@ void atprotocol_test::test_ServiceUrl()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1898,29 +1823,25 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
         record.profile("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY2(record.uri() == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self",
-             record.cid().toLocal8Bit());
-    QVERIFY2(record.cid() == "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
-             record.cid().toLocal8Bit());
+    QCOMPARE(record.uri(), "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self");
+    QCOMPARE(record.cid(), "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
     AppBskyActorProfile::Main value =
             LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(record.value());
-    QVERIFY2(value.description == "epub\nLeME", value.description.toLocal8Bit());
-    QVERIFY2(value.displayName == "IoriAYANE", value.displayName.toLocal8Bit());
-    QVERIFY2(value.avatar.cid == "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy",
-             value.avatar.cid.toLocal8Bit());
-    QVERIFY2(value.avatar.alt == "", value.avatar.alt.toLocal8Bit());
-    QVERIFY2(value.avatar.mimeType == "image/jpeg", value.avatar.mimeType.toLocal8Bit());
-    QVERIFY2(value.avatar.size == 68308, QString::number(value.avatar.size).toLocal8Bit());
-    QVERIFY2(value.banner.cid == "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni",
-             value.banner.cid.toLocal8Bit());
-    QVERIFY2(value.banner.alt == "", value.banner.alt.toLocal8Bit());
-    QVERIFY2(value.banner.mimeType == "image/jpeg", value.banner.mimeType.toLocal8Bit());
-    QVERIFY2(value.banner.size == 51567, QString::number(value.banner.size).toLocal8Bit());
+    QCOMPARE(value.description, "epub\nLeME");
+    QCOMPARE(value.displayName, "IoriAYANE");
+    QCOMPARE(value.avatar.cid, "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy");
+    QCOMPARE(value.avatar.alt, "");
+    QCOMPARE(value.avatar.mimeType, "image/jpeg");
+    QCOMPARE(value.avatar.size, 68308);
+    QCOMPARE(value.banner.cid, "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni");
+    QCOMPARE(value.banner.alt, "");
+    QCOMPARE(value.banner.mimeType, "image/jpeg");
+    QCOMPARE(value.banner.size, 51567);
 }
 
 void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
@@ -1942,7 +1863,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
         record.profile(avatar, banner, "description", "display name", QString(), QString(),
                        pinned_post, "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1961,7 +1882,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
         record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(), QString(), pinned_post,
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1986,7 +1907,7 @@ void atprotocol_test::test_ListItemsCache()
     QCOMPARE(cache->getListUris("account1", "user1"), QStringList() << "list1_uri");
 
     ListInfo info = cache->getListInfo("account1", "user1", "list1_uri");
-    QVERIFY2(info.item_uri == "list1_item1_uri", info.item_uri.toLocal8Bit());
+    QCOMPARE(info.item_uri, "list1_item1_uri");
 
     cache->addItem("account1", "user1", "list2", "list2_uri", "list2_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1")
@@ -2143,7 +2064,7 @@ void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.searchActorsTypeahead("hoge", 0);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2165,7 +2086,7 @@ void atprotocol_test::test_AppBskyFeedGetActorFeeds()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getActorFeeds("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2188,7 +2109,7 @@ void atprotocol_test::test_AppBskyFeedGetActorLikes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getActorLikes("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2209,7 +2130,7 @@ void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getAuthorFeed("", 0, QString(), QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2238,7 +2159,7 @@ void atprotocol_test::test_AppBskyFeedGetFeed()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFeed("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2269,7 +2190,7 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerators()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFeedGenerators(QStringList() << "");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2294,7 +2215,7 @@ void atprotocol_test::test_AppBskyGraphGetBlocks()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getBlocks(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2314,7 +2235,7 @@ void atprotocol_test::test_AppBskyGraphGetFollowers()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFollowers("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2337,7 +2258,7 @@ void atprotocol_test::test_AppBskyGraphGetFollows()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFollows("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2361,7 +2282,7 @@ void atprotocol_test::test_AppBskyGraphGetListMutes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getListMutes(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2384,7 +2305,7 @@ void atprotocol_test::test_AppBskyGraphGetListBlocks()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getListBlocks(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2407,7 +2328,7 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getMutes(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -2436,32 +2357,26 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
     dest_object.insert("preferences",
                        pref.updatePreferencesJson(QString(file.readAll()), type, part));
     json_doc.setObject(dest_object);
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.20.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(":data/preferences/app.bsky.actor.putPreferences.20.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"));
     json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"));
     json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), true));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("choice",
                                                             QStringList() << "mentioned"
@@ -2470,10 +2385,9 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
                                                                           << "at://path/to/1"
                                                                           << "at://path/to/2",
                                                             false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"));
 }
 
 void atprotocol_test::test_PlcDirectory()
@@ -2485,7 +2399,7 @@ void atprotocol_test::test_PlcDirectory()
         QSignalSpy spy(&plc, SIGNAL(finished(bool)));
         plc.directory("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(!plc.didDoc().service.isEmpty());
@@ -2508,63 +2422,29 @@ void atprotocol_test::test_DirectoryPlcLogAudit()
         QSignalSpy spy(&audit, SIGNAL(finished(bool)));
         audit.audit("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(audit.plcAuditLog().length() >= 3);
     int i = 0;
-    QVERIFY2(audit.plcAuditLog().at(i).cid
-                     == "bafyreicd2pmbcjlufhrfcvm76vb6ceyhzk77ky66wrew3qhifzgbqkp2we",
-             audit.plcAuditLog().at(i).cid.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
-             audit.plcAuditLog().at(i).did.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-04-13T16:33:31.049Z",
-             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
-             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
-                     == "AtprotoPersonalDataServer",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
-                     == "https://bsky.social",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
-             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
-                     .toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
-                     == "at://ioriayane.bsky.social",
-             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
+    QCOMPARE(audit.plcAuditLog().at(i).cid, "bafyreicd2pmbcjlufhrfcvm76vb6ceyhzk77ky66wrew3qhifzgbqkp2we");
+    QCOMPARE(audit.plcAuditLog().at(i).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(audit.plcAuditLog().at(i).createdAt, "2023-04-13T16:33:31.049Z");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.type, "plc_operation");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type, "AtprotoPersonalDataServer");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint, "https://bsky.social");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length(), 1);
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0), "at://ioriayane.bsky.social");
 
     i = 2;
-    QVERIFY2(audit.plcAuditLog().at(i).cid
-                     == "bafyreigxn7o7fdb4a3rkaqfiqaivvcq4abt2wgjktgtpuicxhzr4qvj64i",
-             audit.plcAuditLog().at(i).cid.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
-             audit.plcAuditLog().at(i).did.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-11-10T05:23:30.519Z",
-             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
-             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
-                     == "AtprotoPersonalDataServer",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
-                     == "https://porcini.us-east.host.bsky.network",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
-             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
-                     .toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
-                     == "at://ioriayane.relog.tech",
-             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
+    QCOMPARE(audit.plcAuditLog().at(i).cid, "bafyreigxn7o7fdb4a3rkaqfiqaivvcq4abt2wgjktgtpuicxhzr4qvj64i");
+    QCOMPARE(audit.plcAuditLog().at(i).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(audit.plcAuditLog().at(i).createdAt, "2023-11-10T05:23:30.519Z");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.type, "plc_operation");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type, "AtprotoPersonalDataServer");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint, "https://porcini.us-east.host.bsky.network");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length(), 1);
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0), "at://ioriayane.relog.tech");
 #endif
 }
 
@@ -2601,7 +2481,7 @@ void atprotocol_test::test_atprotoProxyHttpHeader()
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
     timeline.getTimeline(QString(), 0, QString());
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 }
@@ -2615,10 +2495,8 @@ void atprotocol_test::test_convertVideoThumb()
             "https://video.bsky.app/watch/did%3Aplc%3Aipj5qejfoqu6eukvt72uhyit/"
             "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
 #if 0
-    QVERIFY2(url
-                     == "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
-                        "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg",
-             url.toLocal8Bit());
+    QCOMPARE(url, "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                  "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
 #endif
 }
 
@@ -2631,7 +2509,7 @@ void atprotocol_test::test_facets()
                                          record);
         QString actual = LexiconsTypeUnknown::copyRecordText(record);
         QString expect = json_testasset.toObject().value("expect").toString();
-        QVERIFY2(actual == expect, QString("\n%1\n%2\n").arg(actual).arg(expect).toLocal8Bit());
+        QCOMPARE(actual, expect);
     }
 }
 
@@ -2644,7 +2522,7 @@ void atprotocol_test::test_postText()
                                          record);
         QString actual = LexiconsTypeUnknown::copyRecordText(record);
         QString expect = json_testasset.toObject().value("expect").toString();
-        QVERIFY2(actual == expect, QString("\n%1\n%2\n").arg(actual).arg(expect).toLocal8Bit());
+        QCOMPARE(actual, expect);
     }
 }
 
