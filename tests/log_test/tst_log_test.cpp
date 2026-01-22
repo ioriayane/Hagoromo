@@ -72,15 +72,15 @@ void log_test::test_LogAccess()
 
     access.updateDb(did, QByteArray());
     int ver = access.getVersion(did);
-    QVERIFY2(ver == 1, QString::number(ver).toLocal8Bit());
+    QCOMPARE(ver, 1);
     access.setVersion(did, 100);
     ver = access.getVersion(did);
-    QVERIFY2(ver == 100, QString::number(ver).toLocal8Bit());
+    QCOMPARE(ver, 100);
 
     access.setVersion(did, 0);
     access.updateDb(did, QByteArray());
     ver = access.getVersion(did);
-    QVERIFY2(ver == 1, QString::number(ver).toLocal8Bit());
+    QCOMPARE(ver, 1);
 }
 
 void log_test::test_LogManager()
@@ -94,30 +94,30 @@ void log_test::test_LogManager()
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         manager.update("", "");
         spy.wait(60000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == false);
+        QCOMPARE(arguments.at(0).toBool(), false);
     }
 
     {
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         manager.update(m_service, did);
         spy.wait(60000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     {
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         manager.update(m_service, did);
         spy.wait(60000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -145,23 +145,16 @@ void log_test::test_LogManager_daily()
         QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.dailyTotals(did);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
-        QVERIFY2(max == arguments.at(1).toInt(),
-                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
-        QVERIFY2(except.length() == list.length(),
-                 QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
+        QCOMPARE(max, arguments.at(1).toInt());
+        QCOMPARE(except.length(), list.length());
         for (int i = 0; i < list.length(); i++) {
-            QVERIFY2(except.at(i).name == list.at(i).name,
-                     QString("%1 == %2").arg(except.at(i).name).arg(list.at(0).name).toLocal8Bit());
-            QVERIFY2(except.at(i).count == list.at(i).count,
-                     QString("%1 == %2")
-                             .arg(except.at(i).count)
-                             .arg(list.at(0).count)
-                             .toLocal8Bit());
+            QCOMPARE(except.at(i).name, list.at(i).name);
+            QCOMPARE(except.at(i).count, list.at(i).count);
         }
     }
 }
@@ -190,23 +183,16 @@ void log_test::test_LogManager_monthly()
         QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.monthlyTotals(did);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
-        QVERIFY2(max == arguments.at(1).toInt(),
-                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
-        QVERIFY2(except.length() == list.length(),
-                 QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
+        QCOMPARE(max, arguments.at(1).toInt());
+        QCOMPARE(except.length(), list.length());
         for (int i = 0; i < list.length(); i++) {
-            QVERIFY2(except.at(i).name == list.at(i).name,
-                     QString("%1 == %2").arg(except.at(i).name).arg(list.at(0).name).toLocal8Bit());
-            QVERIFY2(except.at(i).count == list.at(i).count,
-                     QString("%1 == %2")
-                             .arg(except.at(i).count)
-                             .arg(list.at(0).count)
-                             .toLocal8Bit());
+            QCOMPARE(except.at(i).name, list.at(i).name);
+            QCOMPARE(except.at(i).count, list.at(i).count);
         }
     }
 }
@@ -230,8 +216,8 @@ void log_test::test_LogManager_select()
         emit manager.selectRecords(did, 0, "2024/04/18", QString(), 5);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -250,34 +236,23 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 5,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 5);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22");
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b");
         i = 2;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a");
         i = 3;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b");
         i = 4;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r");
     }
 
     manager.setService(account.service + "/posts/2");
@@ -287,8 +262,8 @@ void log_test::test_LogManager_select()
         emit manager.selectRecords(did, 0, "2024/04/18", "2024-04-18T13:38:16.029Z", 5);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -307,34 +282,23 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 5,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 5);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweerkyx27",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweerkyx27");
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvyabmpg2n",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvyabmpg2n");
         i = 2;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvvohpdc2q",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvvohpdc2q");
         i = 3;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvuzmjoc2a",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvuzmjoc2a");
         i = 4;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvsj5wx42r",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvsj5wx42r");
     }
 
     // レコードにポストの情報が正しくフィードバックできていればREST
@@ -346,8 +310,8 @@ void log_test::test_LogManager_select()
         emit manager.selectRecords(did, 0, "2024/04/18", QString(), 5);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -366,34 +330,23 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 5,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 5);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22");
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b");
         i = 2;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a");
         i = 3;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b");
         i = 4;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r");
     }
 
     manager.setService(account.service + "/posts/3");
@@ -403,8 +356,8 @@ void log_test::test_LogManager_select()
         emit manager.selectRecords(did, 1, "2023/07", QString(), 5);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -423,34 +376,23 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 5,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 5);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3qetyacqs2g",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3qetyacqs2g");
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3ofnldrp52u",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3ofnldrp52u");
         i = 2;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3e7aciteg2m",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3e7aciteg2m");
         i = 3;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k34hcgybdx27",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k34hcgybdx27");
         i = 4;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c2xekas2h",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c2xekas2h");
     }
 
     manager.setService(account.service + "/posts/4");
@@ -463,8 +405,8 @@ void log_test::test_LogManager_select()
                 QString(), 5);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -483,19 +425,14 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 2,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 2);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kjvg2xwac32j",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kjvg2xwac32j");
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kdttptwwvb2h",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kdttptwwvb2h");
     }
 
     manager.setService(account.service + "/posts/5");
@@ -505,8 +442,8 @@ void log_test::test_LogManager_select()
         emit manager.selectRecords(did, 0, "2024/02/23", QString(), 0);
         spy.wait();
         spy2.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy2.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -525,39 +462,25 @@ void log_test::test_LogManager_select()
         QVERIFY(check);
 
         qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
-        QVERIFY2(manager.feedViewPosts().length() == 5,
-                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().length(), 5);
 
         i = 0;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3km3dft6axv2e",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
-        QVERIFY2(manager.feedViewPosts().at(i).reason_type
-                         == AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::
-                                 reason_ReasonRepost,
-                 QString::number(static_cast<int>(manager.feedViewPosts().at(i).reason_type))
-                         .toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3km3dft6axv2e");
+        QCOMPARE(manager.feedViewPosts().at(i).reason_type,
+                 AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
         i = 1;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km3dpeckyk2z",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km3dpeckyk2z");
         i = 2;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z");
         i = 3;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z");
         i = 4;
-        QVERIFY2(
-                manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3klyzebwf7k26",
-                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QCOMPARE(manager.feedViewPosts().at(i).post.uri,
+                 "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3klyzebwf7k26");
     }
 }
 
@@ -585,34 +508,17 @@ void log_test::test_LogManager_statistics()
         QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.statistics(did);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
-        QVERIFY2(max == arguments.at(1).toInt(),
-                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
-        QVERIFY2(except.length() == list.length(),
-                 QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
+        QCOMPARE(max, arguments.at(1).toInt());
+        QCOMPARE(except.length(), list.length());
         for (int i = 0; i < list.length(); i++) {
-            QVERIFY2(except.at(i).group == list.at(i).group,
-                     QString("%1, %2 == %3")
-                             .arg(i)
-                             .arg(except.at(i).group)
-                             .arg(list.at(i).group)
-                             .toLocal8Bit());
-            QVERIFY2(except.at(i).name == list.at(i).name,
-                     QString("%1, %2 == %3")
-                             .arg(i)
-                             .arg(except.at(i).name)
-                             .arg(list.at(i).name)
-                             .toLocal8Bit());
-            QVERIFY2(except.at(i).count == list.at(i).count,
-                     QString("%1, %2 == %3")
-                             .arg(i)
-                             .arg(except.at(i).count)
-                             .arg(list.at(i).count)
-                             .toLocal8Bit());
+            QCOMPARE(except.at(i).group, list.at(i).group);
+            QCOMPARE(except.at(i).name, list.at(i).name);
+            QCOMPARE(except.at(i).count, list.at(i).count);
         }
     }
 }
@@ -630,10 +536,10 @@ void log_test::test_LogOperator()
         QSignalSpy spy(&ope, SIGNAL(finished(bool)));
         emit ope.getLatest();
         spy.wait(70 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -646,19 +552,15 @@ void log_test::test_LogStatisticsListModel()
         QSignalSpy spy(&model, SIGNAL(finished()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(model.rowCount() == 16, QString("%1").arg(model.rowCount()).toLocal8Bit());
-    QVERIFY2(model.item(0, LogStatisticsListModel::NameRole).toString() == "Total number of posts",
-             model.item(0, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, LogStatisticsListModel::CountRole).toInt() == 439,
-             model.item(0, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
+    QCOMPARE(model.rowCount(), 16);
+    QCOMPARE(model.item(0, LogStatisticsListModel::NameRole).toString(), "Total number of posts");
+    QCOMPARE(model.item(0, LogStatisticsListModel::CountRole).toInt(), 439);
 
-    QVERIFY2(model.item(3, LogStatisticsListModel::NameRole).toString() == "Total number of likes",
-             model.item(3, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(3, LogStatisticsListModel::CountRole).toInt() == 12,
-             model.item(3, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(3, LogStatisticsListModel::NameRole).toString(), "Total number of likes");
+    QCOMPARE(model.item(3, LogStatisticsListModel::CountRole).toInt(), 12);
 }
 
 void log_test::test_LogFeedListModel()
@@ -686,44 +588,34 @@ void log_test::test_LogFeedListModel()
         QSignalSpy spy(&model, SIGNAL(finished(bool)));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
-    QVERIFY(model.running() == false);
-    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.running(), false);
+    QCOMPARE(model.rowCount(), 5);
 
     i = 1;
-    QVERIFY2(model.item(i, LogFeedListModel::CidRole).toString()
-                     == "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4",
-             model.item(i, LogFeedListModel::CidRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::DisplayNameRole).toString() == "iori2",
-             model.item(i, LogFeedListModel::DisplayNameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::HandleRole).toString() == "ioriayane2.bsky.social",
-             model.item(i, LogFeedListModel::HandleRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::AvatarRole).toString()
-                     == "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                        "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
-             model.item(i, LogFeedListModel::AvatarRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::RecordTextPlainRole).toString() == "tst",
-             model.item(i, LogFeedListModel::RecordTextPlainRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::HasQuoteRecordRole).toBool() == true,
-             model.item(i, LogFeedListModel::HasQuoteRecordRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::QuoteRecordCidRole).toString()
-                     == "bafyreic2q7ofjjen2sgyempgdbpveopqja537j7jauss4epdlmsfplrdsy",
-             model.item(i, LogFeedListModel::QuoteRecordCidRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::QuoteRecordHandleRole).toString()
-                     == "ioriayane.relog.tech",
-             model.item(i, LogFeedListModel::QuoteRecordHandleRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::HasExternalLinkRole).toBool() == true,
-             model.item(i, LogFeedListModel::HasExternalLinkRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::ExternalLinkThumbRole).toString()
-                     == "https://cdn.bsky.app/img/feed_thumbnail/plain/"
-                        "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                        "bafkreicyv4kxm3gjayv2farf4lwhzhh6hdf3l6lsyac2ww3mphgrm6dosq@jpeg",
-             model.item(i, LogFeedListModel::ExternalLinkThumbRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(i, LogFeedListModel::CidRole).toString(),
+             "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4");
+    QCOMPARE(model.item(i, LogFeedListModel::DisplayNameRole).toString(), "iori2");
+    QCOMPARE(model.item(i, LogFeedListModel::HandleRole).toString(), "ioriayane2.bsky.social");
+    QCOMPARE(model.item(i, LogFeedListModel::AvatarRole).toString(),
+             "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+             "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg");
+    QCOMPARE(model.item(i, LogFeedListModel::RecordTextPlainRole).toString(), "tst");
+    QCOMPARE(model.item(i, LogFeedListModel::HasQuoteRecordRole).toBool(), true);
+    QCOMPARE(model.item(i, LogFeedListModel::QuoteRecordCidRole).toString(),
+             "bafyreic2q7ofjjen2sgyempgdbpveopqja537j7jauss4epdlmsfplrdsy");
+    QCOMPARE(model.item(i, LogFeedListModel::QuoteRecordHandleRole).toString(),
+             "ioriayane.relog.tech");
+    QCOMPARE(model.item(i, LogFeedListModel::HasExternalLinkRole).toBool(), true);
+    QCOMPARE(model.item(i, LogFeedListModel::ExternalLinkThumbRole).toString(),
+             "https://cdn.bsky.app/img/feed_thumbnail/plain/"
+             "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+             "bafkreicyv4kxm3gjayv2farf4lwhzhh6hdf3l6lsyac2ww3mphgrm6dosq@jpeg");
 }
 
 QTEST_MAIN(log_test)

@@ -55,7 +55,6 @@ private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
     void test_putNotificationPreferences(const QString &path, const QByteArray &body);
-    void verifyStr(const QString &expect, const QString &actual);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
 
@@ -120,7 +119,7 @@ hagoromo_test::~hagoromo_test() { }
 
 void hagoromo_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
 }
 
 void hagoromo_test::cleanupTestCase() { }
@@ -151,11 +150,11 @@ void hagoromo_test::test_RecordOperator()
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.post();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -171,11 +170,11 @@ void hagoromo_test::test_RecordOperator_profile()
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updateProfile("", "", "description", "display_name", "", "");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     uuid = AccountManager::getInstance()->updateAccount(
@@ -188,11 +187,11 @@ void hagoromo_test::test_RecordOperator_profile()
                 "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n",
                 "cid_after");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 
     uuid = AccountManager::getInstance()->updateAccount(
@@ -203,11 +202,11 @@ void hagoromo_test::test_RecordOperator_profile()
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updatePostPinning(QString(), QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
-        QVERIFY(arguments.at(0).toBool() == true);
+        QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+        QCOMPARE(arguments.at(0).toBool(), true);
     }
 }
 
@@ -224,21 +223,21 @@ void hagoromo_test::test_FeedGeneratorListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
 
-        QVERIFY(model.rowCount() == 8);
-        QVERIFY(model.item(0, FeedGeneratorListModel::SavingRole) == true);
+        QCOMPARE(model.rowCount(), 8);
+        QCOMPARE(model.item(0, FeedGeneratorListModel::SavingRole), true);
         QVERIFY(model.item(1, FeedGeneratorListModel::DisplayNameRole)
                 == QStringLiteral("What's Hot"));
-        QVERIFY(model.item(1, FeedGeneratorListModel::SavingRole) == true);
-        QVERIFY(model.item(2, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(3, FeedGeneratorListModel::SavingRole) == true);
-        QVERIFY(model.item(4, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(5, FeedGeneratorListModel::SavingRole) == false);
-        QVERIFY(model.item(6, FeedGeneratorListModel::SavingRole) == false);
+        QCOMPARE(model.item(1, FeedGeneratorListModel::SavingRole), true);
+        QCOMPARE(model.item(2, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(3, FeedGeneratorListModel::SavingRole), true);
+        QCOMPARE(model.item(4, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(5, FeedGeneratorListModel::SavingRole), false);
+        QCOMPARE(model.item(6, FeedGeneratorListModel::SavingRole), false);
         QVERIFY(model.item(7, FeedGeneratorListModel::DisplayNameRole)
                 == QStringLiteral("mostpop"));
-        QVERIFY(model.item(7, FeedGeneratorListModel::SavingRole) == false);
+        QCOMPARE(model.item(7, FeedGeneratorListModel::SavingRole), false);
     }
     {
         // save
@@ -251,7 +250,7 @@ void hagoromo_test::test_FeedGeneratorListModel()
         model.saveGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic");
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
     {
         // remove
@@ -264,7 +263,7 @@ void hagoromo_test::test_FeedGeneratorListModel()
         model.removeGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot");
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 }
 
@@ -276,28 +275,28 @@ void hagoromo_test::test_FeedGeneratorLink()
 
     FeedGeneratorLink link;
 
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed") == true);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed"), true);
     QVERIFY(link.checkUri("https://staging.bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed")
             == false);
-    QVERIFY(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa", "feed") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed") == true);
-    QVERIFY(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed") == false);
+    QCOMPARE(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa", "feed"), false);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed"), true);
+    QCOMPARE(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed"), false);
 
     link.setAccount(uuid);
     {
         QSignalSpy spy(&link, SIGNAL(runningChanged()));
         link.getFeedGenerator("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa");
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY(link.avatar() == "https://cdn.bsky.social/view_avator.jpeg");
-    QVERIFY(link.displayName() == "view:displayName");
-    QVERIFY(link.creatorHandle() == "creator.bsky.social");
-    QVERIFY(link.likeCount() == 9);
+    QCOMPARE(link.avatar(), "https://cdn.bsky.social/view_avator.jpeg");
+    QCOMPARE(link.displayName(), "view:displayName");
+    QCOMPARE(link.creatorHandle(), "creator.bsky.social");
+    QCOMPARE(link.likeCount(), 9);
 }
 
 void hagoromo_test::test_AccountListModel()
@@ -325,21 +324,17 @@ void hagoromo_test::test_AccountListModel()
         QSignalSpy spy(&model2, SIGNAL(finished()));
         model2.load();
         spy.wait(15 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
-    QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
+    QCOMPARE(model2.rowCount(), 2);
     int row = 0;
-    QVERIFY2(model2.item(row, AccountListModel::DidRole).toString() == "did:plc:account1_refresh",
-             model2.item(row, AccountListModel::DidRole).toString().toLocal8Bit());
-    QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
-                     == "refreshJwt_account1_refresh",
-             model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+    QCOMPARE(model2.item(row, AccountListModel::DidRole).toString(), "did:plc:account1_refresh");
+    QCOMPARE(model2.item(row, AccountListModel::RefreshJwtRole).toString(),
+             "refreshJwt_account1_refresh");
     row = 1;
-    QVERIFY2(model2.item(row, AccountListModel::DidRole).toString() == "did:plc:account2_refresh",
-             model2.item(row, AccountListModel::DidRole).toString().toLocal8Bit());
-    QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
-                     == "refreshJwt_account2_refresh",
-             model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+    QCOMPARE(model2.item(row, AccountListModel::DidRole).toString(), "did:plc:account2_refresh");
+    QCOMPARE(model2.item(row, AccountListModel::RefreshJwtRole).toString(),
+             "refreshJwt_account2_refresh");
 
     // model.update(0, AccountListModel::UuidRole, "UuidRole");
     // model.update(0, AccountListModel::IsMainRole, "IsMainRole");
@@ -364,54 +359,29 @@ void hagoromo_test::test_AccountListModel()
                                << "ThreadGateOptionsRole2");
     model.update(0, AccountListModel::PostGateQuoteEnabledRole, true);
 
-    // QVERIFY2(model.item(0, AccountListModel::UuidRole).toString() == "UuidRole",
-    //          model.item(0, AccountListModel::UuidRole).toString().toLocal8Bit());
-    // QVERIFY2(model.item(0, AccountListModel::IsMainRole).toString() == "IsMainRole",
-    //          model.item(0, AccountListModel::IsMainRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::ServiceRole).toString() == "ServiceRole",
-             model.item(0, AccountListModel::ServiceRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::ServiceEndpointRole).toString()
-                     == "ServiceEndpointRole",
-             model.item(0, AccountListModel::ServiceEndpointRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::IdentifierRole).toString() == "IdentifierRole",
-             model.item(0, AccountListModel::IdentifierRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::PasswordRole).toString() == "PasswordRole",
-             model.item(0, AccountListModel::PasswordRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::DidRole).toString() == "DidRole",
-             model.item(0, AccountListModel::DidRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::HandleRole).toString() == "HandleRole",
-             model.item(0, AccountListModel::HandleRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::EmailRole).toString() == "EmailRole",
-             model.item(0, AccountListModel::EmailRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::AccessJwtRole).toString() == "AccessJwtRole",
-             model.item(0, AccountListModel::AccessJwtRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::RefreshJwtRole).toString() == "RefreshJwtRole",
-             model.item(0, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::DisplayNameRole).toString() == "DisplayNameRole",
-             model.item(0, AccountListModel::DisplayNameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::DescriptionRole).toString() == "DescriptionRole",
-             model.item(0, AccountListModel::DescriptionRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::AvatarRole).toString() == "AvatarRole",
-             model.item(0, AccountListModel::AvatarRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::PostLanguagesRole).toStringList()
-                     == QStringList() << "PostLanguagesRole1"
-                                      << "PostLanguagesRole2",
-             model.item(0, AccountListModel::PostLanguagesRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::ThreadGateTypeRole).toString() == "ThreadGateTypeRole",
-             model.item(0, AccountListModel::ThreadGateTypeRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::ThreadGateOptionsRole).toStringList()
-                     == QStringList() << "ThreadGateOptionsRole1"
-                                      << "ThreadGateOptionsRole2",
-             model.item(0, AccountListModel::ThreadGateOptionsRole)
-                     .toStringList()
-                     .join(",")
-                     .toLocal8Bit());
-    QVERIFY2(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool() == true,
-             QString::number(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool())
-                     .toLocal8Bit());
+    // QCOMPARE(model.item(0, AccountListModel::UuidRole).toString(), "UuidRole");
+    // QCOMPARE(model.item(0, AccountListModel::IsMainRole).toString(), "IsMainRole");
+    QCOMPARE(model.item(0, AccountListModel::ServiceRole).toString(), "ServiceRole");
+    QCOMPARE(model.item(0, AccountListModel::ServiceEndpointRole).toString(),
+             "ServiceEndpointRole");
+    QCOMPARE(model.item(0, AccountListModel::IdentifierRole).toString(), "IdentifierRole");
+    QCOMPARE(model.item(0, AccountListModel::PasswordRole).toString(), "PasswordRole");
+    QCOMPARE(model.item(0, AccountListModel::DidRole).toString(), "DidRole");
+    QCOMPARE(model.item(0, AccountListModel::HandleRole).toString(), "HandleRole");
+    QCOMPARE(model.item(0, AccountListModel::EmailRole).toString(), "EmailRole");
+    QCOMPARE(model.item(0, AccountListModel::AccessJwtRole).toString(), "AccessJwtRole");
+    QCOMPARE(model.item(0, AccountListModel::RefreshJwtRole).toString(), "RefreshJwtRole");
+    QCOMPARE(model.item(0, AccountListModel::DisplayNameRole).toString(), "DisplayNameRole");
+    QCOMPARE(model.item(0, AccountListModel::DescriptionRole).toString(), "DescriptionRole");
+    QCOMPARE(model.item(0, AccountListModel::AvatarRole).toString(), "AvatarRole");
+    QCOMPARE(model.item(0, AccountListModel::PostLanguagesRole).toStringList(),
+             QStringList() << "PostLanguagesRole1"
+                           << "PostLanguagesRole2");
+    QCOMPARE(model.item(0, AccountListModel::ThreadGateTypeRole).toString(), "ThreadGateTypeRole");
+    QCOMPARE(model.item(0, AccountListModel::ThreadGateOptionsRole).toStringList(),
+             QStringList() << "ThreadGateOptionsRole1"
+                           << "ThreadGateOptionsRole2");
+    QCOMPARE(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool(), true);
 }
 
 void hagoromo_test::test_AccountManager()
@@ -435,41 +405,41 @@ void hagoromo_test::test_AccountManager()
 
     QStringList uuids = manager->getUuids();
 
-    QVERIFY(uuids.count() == 2);
+    QCOMPARE(uuids.count(), 2);
 
     account = manager->getAccount(uuids.at(0));
-    QVERIFY(account.service == m_service + "/account/account1");
-    QVERIFY(account.password == "password1");
-    QVERIFY(account.did == "did:plc:account1");
-    QVERIFY(account.handle == "account1.relog.tech");
-    QVERIFY(account.email == "account1@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account1");
-    QVERIFY(account.refreshJwt == "refreshJwt_account1");
+    QCOMPARE(account.service, m_service + "/account/account1");
+    QCOMPARE(account.password, "password1");
+    QCOMPARE(account.did, "did:plc:account1");
+    QCOMPARE(account.handle, "account1.relog.tech");
+    QCOMPARE(account.email, "account1@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account1");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account1");
 
     account = manager->getAccount(uuids.at(1));
-    QVERIFY(account.service == m_service + "/account/account2");
-    QVERIFY(account.password == "password2");
-    QVERIFY(account.did == "did:plc:account2");
-    QVERIFY(account.handle == "account2.relog.tech");
-    QVERIFY(account.email == "account2@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account2");
-    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+    QCOMPARE(account.service, m_service + "/account/account2");
+    QCOMPARE(account.password, "password2");
+    QCOMPARE(account.did, "did:plc:account2");
+    QCOMPARE(account.handle, "account2.relog.tech");
+    QCOMPARE(account.email, "account2@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account2");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account2");
 
-    QVERIFY(manager->checkAllAccountsReady() == false);
+    QCOMPARE(manager->checkAllAccountsReady(), false);
 
     manager->save();
 
     manager->removeAccount(manager->getUuids().at(0));
-    QVERIFY(manager->getUuids().count() == 1);
+    QCOMPARE(manager->getUuids().count(), 1);
 
     account = manager->getAccount(manager->getUuids().at(0));
-    QVERIFY(account.service == m_service + "/account/account2");
-    QVERIFY(account.password == "password2");
-    QVERIFY(account.did == "did:plc:account2");
-    QVERIFY(account.handle == "account2.relog.tech");
-    QVERIFY(account.email == "account2@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account2");
-    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+    QCOMPARE(account.service, m_service + "/account/account2");
+    QCOMPARE(account.password, "password2");
+    QCOMPARE(account.did, "did:plc:account2");
+    QCOMPARE(account.handle, "account2.relog.tech");
+    QCOMPARE(account.email, "account2@relog.tech");
+    QCOMPARE(account.accessJwt, "accessJwt_account2");
+    QCOMPARE(account.refreshJwt, "refreshJwt_account2");
 
     manager->clear();
     QVERIFY(manager->getUuids().isEmpty());
@@ -478,18 +448,18 @@ void hagoromo_test::test_AccountManager()
         QSignalSpy spy(manager, SIGNAL(finished()));
         manager->load();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     uuids = manager->getUuids();
-    QVERIFY(manager->count() == 1);
+    QCOMPARE(manager->count(), 1);
 
     account = manager->getAccount(uuids.at(0));
-    QVERIFY2(account.service == m_service + "/account/account2", account.service.toLocal8Bit());
+    QCOMPARE(account.service, m_service + "/account/account2");
     QVERIFY(account.service_endpoint
             == QString("http://localhost:%1/response/account/account2")
                        .arg(QString::number(m_listenPort)));
-    QVERIFY(account.did == "did:plc:account2_refresh");
+    QCOMPARE(account.did, "did:plc:account2_refresh");
 }
 
 void hagoromo_test::test_ListsListModel()
@@ -506,22 +476,21 @@ void hagoromo_test::test_ListsListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 3,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 3);
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == true);
-    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(1, ListsListModel::MutedRole).toBool(), true);
+    QCOMPARE(model.item(1, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(2, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(2, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(2, ListsListModel::BlockedRole).toBool() == true);
+    QCOMPARE(model.item(2, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(2, ListsListModel::BlockedRole).toBool(), true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
@@ -529,18 +498,17 @@ void hagoromo_test::test_ListsListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 2,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 2);
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == false);
-    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == true);
+    QCOMPARE(model.item(1, ListsListModel::MutedRole).toBool(), false);
+    QCOMPARE(model.item(1, ListsListModel::BlockedRole).toBool(), true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
@@ -548,14 +516,13 @@ void hagoromo_test::test_ListsListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 1,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 1);
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == true);
-    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
+    QCOMPARE(model.item(0, ListsListModel::MutedRole).toBool(), true);
+    QCOMPARE(model.item(0, ListsListModel::BlockedRole).toBool(), false);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
@@ -563,16 +530,15 @@ void hagoromo_test::test_ListsListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 6,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
@@ -606,11 +572,10 @@ void hagoromo_test::test_ListsListModel_search()
         spy.wait();
         spy.wait();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 6, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 6);
     }
 
-    QVERIFY2(model.rowCount() == 6,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
     QVERIFY(model.item(0, ListsListModel::SearchStatusRole).toInt()
             == ListsListModel::SearchStatusTypeNotContains);
     QVERIFY(model.item(1, ListsListModel::SearchStatusRole).toInt()
@@ -624,19 +589,13 @@ void hagoromo_test::test_ListsListModel_search()
     QVERIFY(model.item(5, ListsListModel::SearchStatusRole).toInt()
             == ListsListModel::SearchStatusTypeNotContains);
 
-    QVERIFY2(model.item(0, ListsListModel::ListItemUriRole).toString() == "",
-             model.item(0, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(1, ListsListModel::ListItemUriRole).toString() == "",
-             model.item(1, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(2, ListsListModel::ListItemUriRole).toString()
-                     == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/101",
-             model.item(2, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(3, ListsListModel::ListItemUriRole).toString() == "",
-             model.item(3, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(4, ListsListModel::ListItemUriRole).toString() == "",
-             model.item(4, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(5, ListsListModel::ListItemUriRole).toString() == "",
-             model.item(5, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QCOMPARE(model.item(0, ListsListModel::ListItemUriRole).toString(), "");
+    QCOMPARE(model.item(1, ListsListModel::ListItemUriRole).toString(), "");
+    QCOMPARE(model.item(2, ListsListModel::ListItemUriRole).toString(),
+             "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/101");
+    QCOMPARE(model.item(3, ListsListModel::ListItemUriRole).toString(), "");
+    QCOMPARE(model.item(4, ListsListModel::ListItemUriRole).toString(), "");
+    QCOMPARE(model.item(5, ListsListModel::ListItemUriRole).toString(), "");
 }
 
 void hagoromo_test::test_ListsListModel_error()
@@ -644,8 +603,8 @@ void hagoromo_test::test_ListsListModel_error()
     ListsListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
+    QCOMPARE(model.getLatest(), false);
+    QCOMPARE(model.getNext(), false);
 }
 
 void hagoromo_test::test_ListItemListModel()
@@ -662,10 +621,9 @@ void hagoromo_test::test_ListItemListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 3,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 3);
     QVERIFY(model.item(0, ListItemListModel::DidRole).toString()
             == "did:plc:ipj5qejfoqu6eukvt72uhyit");
     QVERIFY(model.item(1, ListItemListModel::DidRole).toString()
@@ -674,22 +632,21 @@ void hagoromo_test::test_ListItemListModel()
             == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
     QVERIFY(model.uri()
             == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
-    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.name() == "my accounts");
-    QVERIFY(model.avatar() == "");
-    QVERIFY(model.description() == "my accounts list");
-    QVERIFY(model.muted() == false);
-    QVERIFY(model.blocked() == false);
+    QCOMPARE(model.cid(), "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QCOMPARE(model.name(), "my accounts");
+    QCOMPARE(model.avatar(), "");
+    QCOMPARE(model.description(), "my accounts list");
+    QCOMPARE(model.muted(), false);
+    QCOMPARE(model.blocked(), false);
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
-    QVERIFY2(model.rowCount() == 6,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
     QVERIFY(model.item(0, ListItemListModel::DidRole).toString()
             == "did:plc:ipj5qejfoqu6eukvt72uhyit");
     QVERIFY(model.item(1, ListItemListModel::DidRole).toString()
@@ -704,12 +661,12 @@ void hagoromo_test::test_ListItemListModel()
             == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_next");
     QVERIFY(model.uri()
             == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
-    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.name() == "my accounts");
-    QVERIFY(model.avatar() == "");
-    QVERIFY(model.description() == "");
-    QVERIFY(model.muted() == false);
-    QVERIFY(model.blocked() == false);
+    QCOMPARE(model.cid(), "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QCOMPARE(model.name(), "my accounts");
+    QCOMPARE(model.avatar(), "");
+    QCOMPARE(model.description(), "");
+    QCOMPARE(model.muted(), false);
+    QCOMPARE(model.blocked(), false);
 }
 
 void hagoromo_test::test_ListItemListModel_error()
@@ -717,8 +674,8 @@ void hagoromo_test::test_ListItemListModel_error()
     ListItemListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
+    QCOMPARE(model.getLatest(), false);
+    QCOMPARE(model.getNext(), false);
 }
 
 void hagoromo_test::test_ListFeedListModel()
@@ -735,11 +692,10 @@ void hagoromo_test::test_ListFeedListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
-    QVERIFY2(model.rowCount() == 6,
-             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 6);
 }
 
 void hagoromo_test::test_NotificationPreferenceListModel()
@@ -747,7 +703,7 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // テストリソースファイルの存在確認
     QFile resourceFile(
             ":/response/notification/preference/0/xrpc/app.bsky.notification.getPreferences");
-    QVERIFY2(resourceFile.exists(), "Test resource file should exist");
+    QCOMPARE(resourceFile.exists(), true);
 
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/notification/preference/0", "id", "pass",
@@ -758,214 +714,149 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     model.setAccount(uuid);
 
     // 初期状態では13の設定項目があることを確認
-    QVERIFY2(model.rowCount() == 13,
-             QString("Initial model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 13);
 
     {
         QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
         model.loadPreferences();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     // 設定読み込み後も13の設定項目があることを確認
-    QVERIFY2(model.rowCount() == 13,
-             QString("After load model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QCOMPARE(model.rowCount(), 13);
 
     // リソースファイルから読み込まれた実際の設定値の詳細検証
 
     // Follow (Social category) - リソース: include="all", list=true, push=false
     QVERIFY(model.item(0, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::FollowType);
-    QVERIFY(model.item(0, NotificationPreferenceListModel::CategoryRole).toString() == "Social");
-    QVERIFY2(model.item(0, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Follow include expected 'all', got '%1'")
-                     .arg(model.item(0, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(0, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Follow list should be true from resource");
-    QVERIFY2(model.item(0, NotificationPreferenceListModel::PushRole).toBool() == false,
-             "Follow push should be false from resource");
+    QCOMPARE(model.item(0, NotificationPreferenceListModel::CategoryRole).toString(), "Social");
+    QCOMPARE(model.item(0, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(0, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(0, NotificationPreferenceListModel::PushRole).toBool(), false);
 
     // Like (Social category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(1, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::LikeType);
-    QVERIFY(model.item(1, NotificationPreferenceListModel::CategoryRole).toString() == "Social");
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Like include expected 'all', got '%1'")
-                     .arg(model.item(1, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Like list should be true from resource");
-    QVERIFY2(model.item(1, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Like push should be true from resource");
+    QCOMPARE(model.item(1, NotificationPreferenceListModel::CategoryRole).toString(), "Social");
+    QCOMPARE(model.item(1, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(1, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(1, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Repost (Social category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(2, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::RepostType);
-    QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Repost include expected 'all', got '%1'")
-                     .arg(model.item(2, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(2, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Repost list should be true from resource");
-    QVERIFY2(model.item(2, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Repost push should be true from resource");
+    QCOMPARE(model.item(2, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(2, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(2, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // LikeViaRepost - リソース: include="all", list=true, push=true
     QVERIFY(model.item(3, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::LikeViaRepostType);
-    QVERIFY2(model.item(3, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("LikeViaRepost include expected 'all', got '%1'")
-                     .arg(model.item(3, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(3, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "LikeViaRepost list should be true from resource");
-    QVERIFY2(model.item(3, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "LikeViaRepost push should be true from resource");
+    QCOMPARE(model.item(3, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(3, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(3, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // RepostViaRepost - リソース: include="all", list=true, push=true
     QVERIFY(model.item(4, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::RepostViaRepostType);
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("RepostViaRepost include expected 'all', got '%1'")
-                     .arg(model.item(4, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "RepostViaRepost list should be true from resource");
-    QVERIFY2(model.item(4, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "RepostViaRepost push should be true from resource");
+    QCOMPARE(model.item(4, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(4, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(4, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Chat (System category) - リソース: include="all", push=true
     QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::ChatType);
     QVERIFY(model.item(5, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
-    QVERIFY2(model.item(5, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Chat include expected 'all', got '%1'")
-                     .arg(model.item(5, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(5, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Chat push should be true from resource");
+    QCOMPARE(model.item(5, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(5, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Reply (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(6, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::ReplyType);
     QVERIFY(model.item(6, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
-    QVERIFY2(model.item(6, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Reply include expected 'all', got '%1'")
-                     .arg(model.item(6, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(6, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Reply list should be true from resource");
-    QVERIFY2(model.item(6, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Reply push should be true from resource");
+    QCOMPARE(model.item(6, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(6, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(6, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Mention (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(7, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::MentionType);
     QVERIFY(model.item(7, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Mention include expected 'all', got '%1'")
-                     .arg(model.item(7, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Mention list should be true from resource");
-    QVERIFY2(model.item(7, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Mention push should be true from resource");
+    QCOMPARE(model.item(7, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(7, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(7, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Quote (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(8, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::QuoteType);
-    QVERIFY2(model.item(8, NotificationPreferenceListModel::IncludeRole).toString() == "all",
-             QString("Quote include expected 'all', got '%1'")
-                     .arg(model.item(8, NotificationPreferenceListModel::IncludeRole).toString())
-                     .toLocal8Bit());
-    QVERIFY2(model.item(8, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Quote list should be true from resource");
-    QVERIFY2(model.item(8, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Quote push should be true from resource");
+    QCOMPARE(model.item(8, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(8, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(8, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::StarterpackJoinedType);
-    QVERIFY(model.item(9, NotificationPreferenceListModel::CategoryRole).toString() == "Activity");
-    QVERIFY2(model.item(9, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "StarterpackJoined list should be true from resource");
-    QVERIFY2(model.item(9, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "StarterpackJoined push should be true from resource");
+    QCOMPARE(model.item(9, NotificationPreferenceListModel::CategoryRole).toString(), "Activity");
+    QCOMPARE(model.item(9, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(9, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // SubscribedPost (Activity category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(10, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::SubscribedPostType);
-    QVERIFY2(model.item(10, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "SubscribedPost list should be true from resource");
-    QVERIFY2(model.item(10, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "SubscribedPost push should be true from resource");
+    QCOMPARE(model.item(10, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(10, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Unverified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::UnverifiedType);
-    QVERIFY(model.item(11, NotificationPreferenceListModel::CategoryRole).toString() == "System");
-    QVERIFY2(model.item(11, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Unverified list should be true from resource");
-    QVERIFY2(model.item(11, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Unverified push should be true from resource");
+    QCOMPARE(model.item(11, NotificationPreferenceListModel::CategoryRole).toString(), "System");
+    QCOMPARE(model.item(11, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(11, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // Verified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
             == NotificationPreferenceListModel::VerifiedType);
-    QVERIFY(model.item(12, NotificationPreferenceListModel::CategoryRole).toString() == "System");
-    QVERIFY2(model.item(12, NotificationPreferenceListModel::ListRole).toBool() == true,
-             "Verified list should be true from resource");
-    QVERIFY2(model.item(12, NotificationPreferenceListModel::PushRole).toBool() == true,
-             "Verified push should be true from resource");
+    QCOMPARE(model.item(12, NotificationPreferenceListModel::CategoryRole).toString(), "System");
+    QCOMPARE(model.item(12, NotificationPreferenceListModel::ListRole).toBool(), true);
+    QCOMPARE(model.item(12, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // 設定変更のテスト
     {
         // Include設定の変更
         model.updateInclude(2, "follows"); // Likeの設定を"follows"に変更
-        QVERIFY2(model.item(2, NotificationPreferenceListModel::IncludeRole).toString()
-                         == "follows",
-                 "Like include should be updated to 'follows'");
+        QCOMPARE(model.item(2, NotificationPreferenceListModel::IncludeRole).toString(), "follows");
 
         // List設定の変更
         model.updateList(2, false); // Likeのlist設定をfalseに変更
-        QVERIFY2(model.item(2, NotificationPreferenceListModel::ListRole).toBool() == false,
-                 "Like list should be updated to false");
+        QCOMPARE(model.item(2, NotificationPreferenceListModel::ListRole).toBool(), false);
 
         // Push設定の変更
         model.updatePush(2, false); // Likeのpush設定をfalseに変更
-        QVERIFY2(model.item(2, NotificationPreferenceListModel::PushRole).toBool() == false,
-                 "Like push should be updated to false");
+        QCOMPARE(model.item(2, NotificationPreferenceListModel::PushRole).toBool(), false);
     }
 
     // include選択肢のテスト
     QStringList chatOptions =
             model.getAvailableIncludeOptions(NotificationPreferenceListModel::ChatType);
-    QVERIFY2(chatOptions.contains("all"), "Chat should support 'all' option");
-    QVERIFY2(chatOptions.contains("accepted"), "Chat should support 'accepted' option");
-    QVERIFY2(chatOptions.size() == 2,
-             QString("Chat should have 2 options, got %1").arg(chatOptions.size()).toLocal8Bit());
+    QCOMPARE(chatOptions.contains("all"), true);
+    QCOMPARE(chatOptions.contains("accepted"), true);
+    QCOMPARE(chatOptions.size(), 2);
 
     QStringList followOptions =
             model.getAvailableIncludeOptions(NotificationPreferenceListModel::FollowType);
-    QVERIFY2(followOptions.contains("all"), "Follow should support 'all' option");
-    QVERIFY2(followOptions.contains("follows"), "Follow should support 'follows' option");
-    QVERIFY2(followOptions.size() == 2,
-             QString("Follow should have 2 options, got %1")
-                     .arg(followOptions.size())
-                     .toLocal8Bit());
+    QCOMPARE(followOptions.contains("all"), true);
+    QCOMPARE(followOptions.contains("follows"), true);
+    QCOMPARE(followOptions.size(), 2);
 
     // 表示名のテスト
-    QVERIFY2(model.getIncludeDisplayName("all") == "All",
-             "Include display name for 'all' should be 'All'");
-    QVERIFY2(model.getIncludeDisplayName("follows") == "Follows only",
-             "Include display name for 'follows' should be 'Follows only'");
-    QVERIFY2(model.getIncludeDisplayName("accepted") == "Accepted only",
-             "Include display name for 'accepted' should be 'Accepted only'");
+    QCOMPARE(model.getIncludeDisplayName("all"), "All");
+    QCOMPARE(model.getIncludeDisplayName("follows"), "Follows only");
+    QCOMPARE(model.getIncludeDisplayName("accepted"), "Accepted only");
 
     // ShowListRoleのテスト
     // ChatTypeのみshowListがfalseであることを確認
@@ -974,16 +865,9 @@ void hagoromo_test::test_NotificationPreferenceListModel()
         bool showList = model.item(i, NotificationPreferenceListModel::ShowListRole).toBool();
 
         if (type == NotificationPreferenceListModel::ChatType) {
-            QVERIFY2(showList == false,
-                     QString("ChatType showList should be false, got %1")
-                             .arg(showList)
-                             .toLocal8Bit());
+            QCOMPARE(showList, false);
         } else {
-            QVERIFY2(showList == true,
-                     QString("Type %1 showList should be true, got %2")
-                             .arg(type)
-                             .arg(showList)
-                             .toLocal8Bit());
+            QCOMPARE(showList, true);
         }
     }
 
@@ -1004,7 +888,7 @@ void hagoromo_test::test_NotificationPreferenceListModel_save()
 {
     // テストリソースファイルの存在確認
     QFile resourceFile(":/data/notification/preference/save/app.bsky.notification.putPreferences");
-    QVERIFY2(resourceFile.exists(), "Test resource file should exist");
+    QCOMPARE(resourceFile.exists(), true);
 
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/notification/preference/save", "id", "pass",
@@ -1019,8 +903,7 @@ void hagoromo_test::test_NotificationPreferenceListModel_save()
         QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
         model.loadPreferences();
         spy.wait();
-        QVERIFY2(spy.count() == 1,
-                 QString("loadPreferences spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     // 保存処理のテスト - savePreferences()が期待通りのJSONを送信するかを検証
@@ -1028,8 +911,7 @@ void hagoromo_test::test_NotificationPreferenceListModel_save()
         QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
         model.savePreferences();
         spy.wait();
-        QVERIFY2(spy.count() == 1,
-                 QString("savePreferences spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     qDebug() << "=== savePreferences() test completed successfully ===";
@@ -1055,7 +937,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
 
         ope.getPoll(cid, uri, viewer);
 
-        QVERIFY2(spy.wait(10 * 1000), "TokimekiPollOperator::finished was not emitted");
+        QVERIFY(spy.wait(10 * 1000));
         QCOMPARE(spy.count(), 1);
 
         const QList<QVariant> arguments = spy.takeFirst();
@@ -1080,7 +962,7 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
             QSignalSpy spy(&ope, &TokimekiPollOperator::finished);
             ope.vote(cid, uri, option_index);
             spy.wait();
-            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+            QCOMPARE(spy.count(), 1);
 
             QList<QVariant> arguments = spy.takeFirst();
             QVERIFY(arguments.at(0).toBool());
@@ -1089,15 +971,15 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
 
             QVariant v;
             v = ope.item(uri, TokimekiPollOperator::PollMyVoteRole);
-            QVERIFY(v.isValid());
+            QCOMPARE(v.isValid(), true);
             QCOMPARE(v.toString(), option_index);
 
             v = ope.item(uri, TokimekiPollOperator::PollTotalVotesRole);
-            QVERIFY(v.isValid());
+            QCOMPARE(v.isValid(), true);
             QCOMPARE(v.toInt(), 3);
 
             v = ope.item(uri, TokimekiPollOperator::PollCountOfOptionsRole);
-            QVERIFY(v.isValid());
+            QCOMPARE(v.isValid(), true);
             QCOMPARE(v.toStringList(),
                      QStringList() << "2"
                                    << "1");
@@ -1117,12 +999,11 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
         QHash<QString, QJsonObject> hash = UnitTestCommon::loadPostExpectHash(
                 ":/data/com.atproto.repo.createRecord_post.expect");
 
-        QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
-        verifyStr(hash[did].value("record").toObject().value("text").toString(), record);
+        QCOMPARE(hash.contains(did), true);
+        QCOMPARE(hash[did].value("record").toObject().value("text").toString(), record);
         if (!hash[did].value("record").toObject().value("facets").isNull()) {
-            QVERIFY2(json_doc.object().value("record").toObject().value("facets")
-                             == hash[did].value("record").toObject().value("facets"),
-                     did.toLocal8Bit());
+            QCOMPARE(json_doc.object().value("record").toObject().value("facets"),
+                     hash[did].value("record").toObject().value("facets"));
         }
     } else if (collection == "tech.tokimeki.poll.vote") {
         QString did = json_doc.object().value("repo").toString();
@@ -1130,7 +1011,7 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 
         QHash<QString, QJsonObject> hash = UnitTestCommon::loadPostExpectHash(
                 ":/data/com.atproto.repo.createRecord_vote.expect");
-        QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
+        QCOMPARE(hash.contains(did), true);
         {
             QJsonObject tmp = hash[did].value("record").toObject();
             tmp.remove("createdAt");
@@ -1165,7 +1046,7 @@ void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &b
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect2.toJson(), json_doc2.toJson());
     }
-    QVERIFY(json_doc_expect2.object() == json_doc2.object());
+    QCOMPARE(json_doc_expect2.object(), json_doc2.object());
 }
 
 void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
@@ -1187,7 +1068,7 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)
@@ -1200,13 +1081,7 @@ void hagoromo_test::test_putNotificationPreferences(const QString &path, const Q
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
-}
-
-void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
-{
-    QVERIFY2(expect == actual,
-             QString("\nexpect:%1\nactual:%2\n").arg(expect, actual).toLocal8Bit());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList &excludes)

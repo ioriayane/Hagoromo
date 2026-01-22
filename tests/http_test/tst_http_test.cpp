@@ -46,11 +46,8 @@ http_test::http_test()
                         if (key == "PostFile") {
                             QVERIFY(QFile::exists(value));
                             QVERIFY(WebServer::readFile(value, data));
-                            QVERIFY2(request.body().size() == data.size(),
-                                     QString("%1 == %2")
-                                             .arg(request.body().size(), data.size())
-                                             .toLocal8Bit());
-                            QVERIFY(request.body() == data);
+                            QCOMPARE(request.body().size(), data.size());
+                            QCOMPARE(request.body(), data);
                             break;
                         }
                     }
@@ -93,17 +90,17 @@ void http_test::test_get()
         QSignalSpy spy(manager, SIGNAL(finished(HttpReply *)));
         HttpReply *reply = manager->get(request);
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).canConvert<HttpReply *>());
-        QVERIFY(arguments.at(0).value<HttpReply *>()->error() == HttpReply::Success);
+        QCOMPARE(arguments.at(0).value<HttpReply *>()->error(), HttpReply::Success);
 
-        QVERIFY(reply->error() == HttpReply::Success);
+        QCOMPARE(reply->error(), HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.feed.getTimeline", expect_data));
-        QVERIFY(reply->readAll().size() == expect_data.size());
-        QVERIFY(reply->readAll() == expect_data);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
+        QCOMPARE(reply->readAll().size(), expect_data.size());
+        QCOMPARE(reply->readAll(), expect_data);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), expect_data.size());
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/json");
 
         reply->deleteLater();
     }
@@ -120,14 +117,14 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() == HttpReply::Success);
+        QCOMPARE(reply->error(), HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.actor.getPreferences", expect_data));
-        QVERIFY(reply->readAll().size() == expect_data.size());
-        QVERIFY(reply->readAll() == expect_data);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
+        QCOMPARE(reply->readAll().size(), expect_data.size());
+        QCOMPARE(reply->readAll(), expect_data);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), expect_data.size());
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/json");
     }
 
     {
@@ -142,12 +139,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     {
@@ -162,12 +159,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     {
@@ -182,12 +179,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     {
@@ -202,12 +199,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     {
@@ -222,12 +219,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     {
@@ -242,12 +239,12 @@ void http_test::test_get()
         HttpReply *reply = manager->get(request);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() != HttpReply::Success);
-        QVERIFY(reply->readAll().size() == 0);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
-        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+        QCOMPARE_NE(reply->error(), HttpReply::Success);
+        QCOMPARE(reply->readAll().size(), 0);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), 0);
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/x-empty");
     }
 
     delete manager;
@@ -267,14 +264,14 @@ void http_test::test_post()
         HttpReply *reply = manager.post(request, actual_data);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() == HttpReply::Success);
+        QCOMPARE(reply->error(), HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.createRecord", expect_data));
-        QVERIFY(reply->readAll().size() == expect_data.size());
-        QVERIFY(reply->readAll() == expect_data);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
+        QCOMPARE(reply->readAll().size(), expect_data.size());
+        QCOMPARE(reply->readAll(), expect_data);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), expect_data.size());
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/json");
     }
 
     {
@@ -291,14 +288,14 @@ void http_test::test_post()
         HttpReply *reply = manager.post(request, data);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait(10 * 1000);
-        QVERIFY(spy.count() == 1);
+        QCOMPARE(spy.count(), 1);
 
-        QVERIFY(reply->error() == HttpReply::Success);
+        QCOMPARE(reply->error(), HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.uploadBlob", expect_data));
-        QVERIFY(reply->readAll().size() == expect_data.size());
-        QVERIFY(reply->readAll() == expect_data);
-        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
+        QCOMPARE(reply->readAll().size(), expect_data.size());
+        QCOMPARE(reply->readAll(), expect_data);
+        QCOMPARE(reply->rawHeader("Content-Length").toInt(), expect_data.size());
+        QCOMPARE(reply->rawHeader("Content-Type"), "application/json");
     }
 }
 
@@ -311,34 +308,29 @@ void http_test::test_HttpReply()
     reply.setRawHeader("Content-Type", "image/png");
     reply.setRawHeader("Content-Length", "1234");
 
-    QVERIFY2(reply.rawHeader("Accept") == "*/*", reply.rawHeader("Accept"));
-    QVERIFY2(reply.rawHeader("Connection") == "close", reply.rawHeader("Connection"));
-    QVERIFY2(reply.rawHeader("Content-Type") == "image/png", reply.rawHeader("Content-Type"));
-    QVERIFY2(reply.rawHeader("Content-Length") == "1234", reply.rawHeader("Content-Length"));
+    QCOMPARE(reply.rawHeader("Accept"), "*/*");
+    QCOMPARE(reply.rawHeader("Connection"), "close");
+    QCOMPARE(reply.rawHeader("Content-Type"), "image/png");
+    QCOMPARE(reply.rawHeader("Content-Length"), "1234");
 
-    QVERIFY2(reply.rawHeader("accept") == "*/*", reply.rawHeader("Accept"));
-    QVERIFY2(reply.rawHeader("connection") == "close", reply.rawHeader("Connection"));
-    QVERIFY2(reply.rawHeader("content-type") == "image/png", reply.rawHeader("Content-Type"));
-    QVERIFY2(reply.rawHeader("content-length") == "1234", reply.rawHeader("Content-Length"));
+    QCOMPARE(reply.rawHeader("accept"), "*/*");
+    QCOMPARE(reply.rawHeader("connection"), "close");
+    QCOMPARE(reply.rawHeader("content-type"), "image/png");
+    QCOMPARE(reply.rawHeader("content-length"), "1234");
 
     reply.setRawHeader("accept", "application/json");
     reply.setRawHeader("connection", "open");
     reply.setRawHeader("content-type", "application/json");
     reply.setRawHeader("content-length", "4321");
 
-    QVERIFY2(reply.rawHeaderPairs().at(0).first == "accept", reply.rawHeaderPairs().at(0).first);
-    QVERIFY2(reply.rawHeaderPairs().at(0).second == "application/json",
-             reply.rawHeaderPairs().at(0).second);
-    QVERIFY2(reply.rawHeaderPairs().at(1).first == "connection",
-             reply.rawHeaderPairs().at(1).first);
-    QVERIFY2(reply.rawHeaderPairs().at(1).second == "open", reply.rawHeaderPairs().at(1).second);
-    QVERIFY2(reply.rawHeaderPairs().at(2).first == "content-type",
-             reply.rawHeaderPairs().at(2).first);
-    QVERIFY2(reply.rawHeaderPairs().at(2).second == "application/json",
-             reply.rawHeaderPairs().at(2).second);
-    QVERIFY2(reply.rawHeaderPairs().at(3).first == "content-length",
-             reply.rawHeaderPairs().at(3).first);
-    QVERIFY2(reply.rawHeaderPairs().at(3).second == "4321", reply.rawHeaderPairs().at(3).second);
+    QCOMPARE(reply.rawHeaderPairs().at(0).first, "accept");
+    QCOMPARE(reply.rawHeaderPairs().at(0).second, "application/json");
+    QCOMPARE(reply.rawHeaderPairs().at(1).first, "connection");
+    QCOMPARE(reply.rawHeaderPairs().at(1).second, "open");
+    QCOMPARE(reply.rawHeaderPairs().at(2).first, "content-type");
+    QCOMPARE(reply.rawHeaderPairs().at(2).second, "application/json");
+    QCOMPARE(reply.rawHeaderPairs().at(3).first, "content-length");
+    QCOMPARE(reply.rawHeaderPairs().at(3).second, "4321");
 }
 
 QTEST_MAIN(http_test)
