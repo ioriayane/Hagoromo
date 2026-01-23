@@ -1172,6 +1172,7 @@ ApplicationWindow {
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
             onClosedDialog: postDialogRepeater.working = false
+            onViewingProgressChanged: postDialogRepeater.updateViewIndex()
         }
     }
     Repeater {
@@ -1199,7 +1200,7 @@ ApplicationWindow {
             sourceComponent: postDialogComponent
             onLoaded: {
                 item.dialog_no = dialog_no
-                item.viewIndex = index
+                item.viewIndex = -1
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
                 if(item.postType === "reply"){
@@ -1259,9 +1260,18 @@ ApplicationWindow {
                     break
                 }
             }
+            updateViewIndex()
+        }
+        function updateViewIndex(){
+            var vi = 0
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
-                loader_item.item.viewIndex = i
+                if(loader_item.item.viewingProgress){
+                    loader_item.item.viewIndex = vi
+                    vi += 1
+                }else{
+                    loader_item.item.viewIndex = -1
+                }
             }
         }
     }
