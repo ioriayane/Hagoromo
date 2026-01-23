@@ -1227,6 +1227,7 @@ ApplicationWindow {
                 }else{
                     item.openWithFiles(image_urls.split("\n"))
                 }
+                postDialogRepeater.working = false
                 console.timeEnd("post_dialog_open");
             }
         }

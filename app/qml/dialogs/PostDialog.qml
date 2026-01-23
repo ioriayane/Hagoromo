@@ -139,6 +139,10 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.SizeAllCursor
                     drag.target: postDialogPosition
+                    drag.minimumX: 0
+                    drag.minimumY: 0
+                    drag.maximumX: postDialogItem.parentWidth - postDialogPosition.width
+                    drag.maximumY: postDialogItem.parentHeight - postDialogPosition.height
                 }
             }
 
@@ -224,6 +228,10 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.SizeAllCursor
                         drag.target: postDialogPosition
+                        drag.minimumX: 0
+                        drag.minimumY: 0
+                        drag.maximumX: postDialogItem.parentWidth - postDialogPosition.width
+                        drag.maximumY: postDialogItem.parentHeight - postDialogPosition.height
                     }
                     ColumnLayout {
                         id: mainLayout
