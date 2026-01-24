@@ -60,6 +60,7 @@ Item {
     signal errorOccured(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
+    signal changeActiveDialog(int dialog_no)
 
     function open(){
         postDialog.open()
@@ -130,8 +131,15 @@ Item {
             topPadding: 20
             bottomPadding: 20
             rightPadding: 0
+            focus: true
+            onActiveFocusChanged: {
+                console.log("Focus of dialog changed(" + postDialogItem.dialog_no + "):" + activeFocus)
+                postDialogItem.changeActiveDialog(postDialogItem.dialog_no)
+            }
 
             background: Rectangle {
+                border.color: postDialog.activeFocus ? Material.color(Material.Grey, Material.Shade600) : Material.dialogColor
+                // border.width: postDialog.activeFocus ? 1 : 0
                 color: Material.dialogColor
                 radius: Material.dialogRoundedScale
                 MouseArea {

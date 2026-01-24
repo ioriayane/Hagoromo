@@ -1173,6 +1173,7 @@ ApplicationWindow {
             onClosed: postDialogRepeater.remove(dialog_no)
             onClosedDialog: postDialogRepeater.working = false
             onViewingProgressChanged: postDialogRepeater.updateViewIndex()
+            onChangeActiveDialog: (dialog_no) => postDialogRepeater.updateActiveDialog(dialog_no)
         }
     }
     Repeater {
@@ -1273,6 +1274,17 @@ ApplicationWindow {
                 }else{
                     loader_item.item.viewIndex = -1
                 }
+            }
+        }
+        function updateActiveDialog(no){
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                if(no === loader_item.item.dialog_no){
+                    loader_item.item.z = 1
+                }else{
+                    loader_item.item.z = 0
+                }
+                console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no + ", z=" + loader_item.item.z)
             }
         }
     }
