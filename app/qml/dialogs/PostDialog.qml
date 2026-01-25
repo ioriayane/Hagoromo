@@ -23,6 +23,7 @@ Item {
     id: postDialogItem
 
     property int dialog_no: -1
+    property alias dialog_z: postDialog.z
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
@@ -151,6 +152,7 @@ Item {
                     drag.minimumY: 0
                     drag.maximumX: postDialogItem.parentWidth - postDialogPosition.width
                     drag.maximumY: postDialogItem.parentHeight - postDialogPosition.height
+                    onPressed: postText.forceActiveFocus()
                 }
             }
 
@@ -240,6 +242,7 @@ Item {
                         drag.minimumY: 0
                         drag.maximumX: postDialogItem.parentWidth - postDialogPosition.width
                         drag.maximumY: postDialogItem.parentHeight - postDialogPosition.height
+                        onPressed: postText.forceActiveFocus()
                     }
                     ColumnLayout {
                         id: mainLayout

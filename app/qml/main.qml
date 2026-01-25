@@ -1179,6 +1179,7 @@ ApplicationWindow {
     Repeater {
         id: postDialogRepeater
         property int dialog_no: 0
+        property var depth_list: []
         property bool working: false
         model: ListModel {}
         onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
@@ -1236,6 +1237,7 @@ ApplicationWindow {
                       avatar, display_name, handle, indexed_at, text, image_urls) {
             console.time("post_dialog_open");
             working = true
+            postDialogRepeater.depth_list.push(postDialogRepeater.dialog_no)
             postDialogRepeater.model.append({
                                                 "dialog_no": postDialogRepeater.dialog_no++,
                                                 "post_type": post_type,
@@ -1253,15 +1255,24 @@ ApplicationWindow {
                                             })
         }
         function remove(no){
+            var living_dialog = []
+            var remove_index = -1
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
+                console.log("remove : no=" + no + ", Item no=" + loader_item.item.dialog_no)
                 if(no === loader_item.item.dialog_no){
-                    console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
-                    console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
-                    postDialogRepeater.model.remove(i)
-                    break
+                    remove_index = i
+                }else{
+                    living_dialog.push(loader_item.item.dialog_no)
                 }
             }
+            if(remove_index >= 0){
+                postDialogRepeater.model.remove(remove_index)
+            }
+            // 存在しているダイアログのみにする
+            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((t) => living_dialog.indexOf(t) >= 0)
+            console.log(postDialogRepeater.depth_list)
+            // プログレスの表示順の更新
             updateViewIndex()
         }
         function updateViewIndex(){
@@ -1277,15 +1288,36 @@ ApplicationWindow {
             }
         }
         function updateActiveDialog(no){
+            console.log(postDialogRepeater.depth_list)
+            var new_depth_list = postDialogRepeater.depth_list
+            var current_index = new_depth_list.indexOf(no)
+            console.log("current_index="+current_index)
+            if(current_index < 0){
+                return
+            }
+            new_depth_list.splice(current_index, 1)
+            new_depth_list.push(no)
+            postDialogRepeater.depth_list = new_depth_list
+            console.log(postDialogRepeater.depth_list)
+
+            var living_dialog = []
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
-                if(no === loader_item.item.dialog_no){
-                    loader_item.item.z = 1
-                }else{
-                    loader_item.item.z = 0
-                }
-                console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no + ", z=" + loader_item.item.z)
+                loader_item.item.dialog_z = 0
             }
+            postDialogRepeater.depth_list.map((list_no, list_index) => {
+                                                  for(var i=0;i<count;i++){
+                                                      var loader_item = itemAt(i)
+                                                      if(loader_item.item.dialog_no === list_no){
+                                                          living_dialog.push(list_no)
+                                                          // loader_item.z = list_index + 1
+                                                          // loader_item.item.z = list_index + 1
+                                                          loader_item.item.dialog_z = list_index + 1
+                                                      }
+                                                  }
+                                              })
+            // 存在しているダイアログのみにする
+            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((no) => living_dialog.indexOf(no) >= 0)
         }
     }
 

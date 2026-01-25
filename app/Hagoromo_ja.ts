@@ -2692,7 +2692,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="456"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="459"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2705,22 +2705,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="455"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="458"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="658"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="661"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="746"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="749"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="806"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="809"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -4739,7 +4739,7 @@ Who do you want to enable this for?</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1311"/>
+        <location filename="qml/main.qml" line="1343"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
