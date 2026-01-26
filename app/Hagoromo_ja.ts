@@ -2050,12 +2050,12 @@ Please recreate AppPassword in the official application.</source>
         <translation>言語選択</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LanguageSelectionDialog.qml" line="56"/>
+        <location filename="qml/dialogs/LanguageSelectionDialog.qml" line="57"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LanguageSelectionDialog.qml" line="66"/>
+        <location filename="qml/dialogs/LanguageSelectionDialog.qml" line="67"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -2692,7 +2692,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="479"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="477"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2705,22 +2705,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="478"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="476"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="681"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="679"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="769"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="767"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="829"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="827"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>

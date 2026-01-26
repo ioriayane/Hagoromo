@@ -80,6 +80,9 @@ Item {
         }
         postDialogPosition.x = tmp_x
         postDialogPosition.y = tmp_y
+        languageSelectionDialog.setSelectedLanguages(
+            postDialogItem.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+            )
 
         postDialog.open()
     }
@@ -769,7 +772,7 @@ Item {
                                     createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
                                     createRecord.clear()
                                     createRecord.setText(postText.text)
-                                    createRecord.setPostLanguages(postDialogItem.accountModel.item(row, AccountListModel.PostLanguagesRole))
+                                    createRecord.setPostLanguages(languageSelectionDialog.selectedLanguages)
                                     if(postDialogItem.postType !== "reply"){
                                         // replyのときは制限の設定はできない
                                         createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
