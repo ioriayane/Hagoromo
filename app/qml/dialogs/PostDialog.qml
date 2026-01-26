@@ -71,17 +71,12 @@ Item {
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
         var tmp_y = (postDialogItem.parentHeight - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
         var offset = AdjustedValues.s15
-        console.log("d tmp_x=" + tmp_x + ", tmp_y=" + tmp_y)
-        console.log("dialog_default_x=" + dialog_default_x + ", dialog_default_y=" + dialog_default_y)
-        console.log("postDialog.width=" + postDialog.width + ", postDialog.height=" + postDialog.height)
-        console.log("postDialogItem.parentWidth=" + postDialogItem.parentWidth + ", postDialogItem.parentHeight=" + postDialogItem.parentHeight)
         if(postDialogItem.dialog_default_x >= 0 &&
                 postDialogItem.dialog_default_y >= 0 &&
                 (postDialogItem.dialog_default_x + postDialog.width + offset) <= postDialogItem.parentWidth &&
                 (postDialogItem.dialog_default_y + postDialog.height + offset) <= postDialogItem.parentHeight){
             tmp_x = postDialogItem.dialog_default_x + offset
             tmp_y = postDialogItem.dialog_default_y + offset
-            console.log("u tmp_x=" + tmp_x + ", tmp_y=" + tmp_y)
         }
         postDialogPosition.x = tmp_x
         postDialogPosition.y = tmp_y
