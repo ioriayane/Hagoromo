@@ -1186,6 +1186,8 @@ ApplicationWindow {
         Loader {
             required property int index
             required property int dialog_no
+            required property int dialog_default_x
+            required property int dialog_default_y
             required property string post_type
             required property string account_uuid
             required property string cid
@@ -1201,7 +1203,10 @@ ApplicationWindow {
 
             sourceComponent: postDialogComponent
             onLoaded: {
+
                 item.dialog_no = dialog_no
+                item.dialog_default_x = dialog_default_x
+                item.dialog_default_y = dialog_default_y
                 item.viewIndex = -1
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
@@ -1236,11 +1241,15 @@ ApplicationWindow {
         function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
                       avatar, display_name, handle, indexed_at, text, image_urls) {
             console.time("post_dialog_open");
+            var top_pos = postDialogRepeater.getTopPosition()
+            console.log("top_pos=" + top_pos)
             working = true
             postDialogRepeater.depth_list.push(postDialogRepeater.dialog_no)
             postDialogRepeater.model.append({
                                                 "dialog_no": postDialogRepeater.dialog_no++,
                                                 "post_type": post_type,
+                                                "dialog_default_x": top_pos[0],
+                                                "dialog_default_y": top_pos[1],
                                                 "account_uuid": account_uuid,
                                                 "cid": cid,
                                                 "uri": uri,
@@ -1318,6 +1327,20 @@ ApplicationWindow {
                                               })
             // 存在しているダイアログのみにする
             postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((no) => living_dialog.indexOf(no) >= 0)
+        }
+        function getTopPosition(){
+            var l = postDialogRepeater.depth_list.length
+            if(l === 0){
+                return [-1, -1]
+            }
+            var top_dialog_no = postDialogRepeater.depth_list[l-1]
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                if(top_dialog_no === loader_item.item.dialog_no){
+                    return [loader_item.item.dialog_x, loader_item.item.dialog_y]
+                }
+            }
+            return [-1, -1]
         }
     }
 

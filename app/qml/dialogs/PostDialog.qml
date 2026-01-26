@@ -23,7 +23,11 @@ Item {
     id: postDialogItem
 
     property int dialog_no: -1
-    property alias dialog_z: postDialog.z
+    property int dialog_default_x: -1
+    property int dialog_default_y: -1
+    property alias dialog_x: postDialogPosition.x   // xは位置決め用Item
+    property alias dialog_y: postDialogPosition.y   // yは位置決め用Item
+    property alias dialog_z: postDialog.z   // zはダイアログそのもの
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
@@ -64,6 +68,24 @@ Item {
     signal changeActiveDialog(int dialog_no)
 
     function open(){
+        var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
+        var tmp_y = (postDialogItem.parentHeight - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
+        var offset = AdjustedValues.s15
+        console.log("d tmp_x=" + tmp_x + ", tmp_y=" + tmp_y)
+        console.log("dialog_default_x=" + dialog_default_x + ", dialog_default_y=" + dialog_default_y)
+        console.log("postDialog.width=" + postDialog.width + ", postDialog.height=" + postDialog.height)
+        console.log("postDialogItem.parentWidth=" + postDialogItem.parentWidth + ", postDialogItem.parentHeight=" + postDialogItem.parentHeight)
+        if(postDialogItem.dialog_default_x >= 0 &&
+                postDialogItem.dialog_default_y >= 0 &&
+                (postDialogItem.dialog_default_x + postDialog.width + offset) <= postDialogItem.parentWidth &&
+                (postDialogItem.dialog_default_y + postDialog.height + offset) <= postDialogItem.parentHeight){
+            tmp_x = postDialogItem.dialog_default_x + offset
+            tmp_y = postDialogItem.dialog_default_y + offset
+            console.log("u tmp_x=" + tmp_x + ", tmp_y=" + tmp_y)
+        }
+        postDialogPosition.x = tmp_x
+        postDialogPosition.y = tmp_y
+
         postDialog.open()
     }
     function close() {
@@ -74,7 +96,7 @@ Item {
 
     function openWithFiles(urls){
         if(embedImageListModel.append(urls)){
-            postDialog.open()
+            postDialogItem.open()
         }else{
             close()
         }
@@ -121,8 +143,6 @@ Item {
 
     Item {
         id: postDialogPosition
-        x: (postDialogItem.parentWidth - postDialog.width) * 0.5
-        y: (postDialogItem.parentHeight - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
         width: postDialog.width
         height: postDialog.height
         Dialog {
