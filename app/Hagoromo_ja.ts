@@ -909,6 +909,17 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>DraftOperator</name>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="98"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="125"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="155"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="180"/>
+        <source>Another operation is currently in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DragAndDropArea</name>
     <message>
         <location filename="qml/controls/DragAndDropArea.qml" line="27"/>
