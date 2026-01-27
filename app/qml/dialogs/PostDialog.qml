@@ -80,10 +80,6 @@ Item {
         }
         postDialogPosition.x = tmp_x
         postDialogPosition.y = tmp_y
-        languageSelectionDialog.setSelectedLanguages(
-            postDialogItem.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
-            )
-
         postDialog.open()
     }
     function close() {
@@ -333,9 +329,9 @@ Item {
                                         var uuid = postDialogItem.accountModel.item(row, AccountListModel.UuidRole)
                                         accountAvatarLayout.source =
                                         postDialogItem.accountModel.item(row, AccountListModel.AvatarRole)
-                                        postLanguagesButton.setLanguageText(
-                                            postDialogItem.accountModel.item(row, AccountListModel.PostLanguagesRole)
-                                            )
+                                        const langs = postDialogItem.accountModel.item(row, AccountListModel.PostLanguagesRole)
+                                        languageSelectionDialog.setSelectedLanguages(langs)
+                                        postLanguagesButton.setLanguageText(langs)
                                         selectThreadGateDialog.initialQuoteEnabled = postDialogItem.accountModel.item(row, AccountListModel.PostGateQuoteEnabledRole)
                                         selectThreadGateDialog.initialType = postDialogItem.accountModel.item(row, AccountListModel.ThreadGateTypeRole)
                                         selectThreadGateDialog.initialOptions = postDialogItem.accountModel.item(row, AccountListModel.ThreadGateOptionsRole)
