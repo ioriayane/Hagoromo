@@ -10,6 +10,10 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support cash tag
+- Update
+  - Modified to allow other operations while the post dialog is displayed
+  - Modified to allow moving the post dialog
+  - Modified to allow opening multiple post dialogs simultaneously
 - Fix
   - Fix the behavior of the vote button
 

@@ -1171,18 +1171,26 @@ ApplicationWindow {
             accountModel: accountListModel
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
-            onClosedDialog: postDialogRepeater.working = false
+            onViewingProgressChanged: postDialogRepeater.updateViewIndex()
+            onChangeActiveDialog: (dialog_no, active) => {
+                if(active) {
+                    postDialogRepeater.updateActiveDialog(dialog_no)
+                }
+            }
         }
     }
     Repeater {
         id: postDialogRepeater
         property int dialog_no: 0
+        property var depth_list: []
         property bool working: false
         model: ListModel {}
         onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
         Loader {
             required property int index
             required property int dialog_no
+            required property int dialog_default_x
+            required property int dialog_default_y
             required property string post_type
             required property string account_uuid
             required property string cid
@@ -1198,8 +1206,11 @@ ApplicationWindow {
 
             sourceComponent: postDialogComponent
             onLoaded: {
+
                 item.dialog_no = dialog_no
-                item.viewIndex = index
+                item.dialog_default_x = dialog_default_x
+                item.dialog_default_y = dialog_default_y
+                item.viewIndex = -1
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
                 if(item.postType === "reply"){
@@ -1226,16 +1237,21 @@ ApplicationWindow {
                 }else{
                     item.openWithFiles(image_urls.split("\n"))
                 }
+                postDialogRepeater.working = false
                 console.timeEnd("post_dialog_open");
             }
         }
         function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
                       avatar, display_name, handle, indexed_at, text, image_urls) {
             console.time("post_dialog_open");
+            var top_pos = postDialogRepeater.getTopPosition()
             working = true
+            postDialogRepeater.depth_list.push(postDialogRepeater.dialog_no)
             postDialogRepeater.model.append({
                                                 "dialog_no": postDialogRepeater.dialog_no++,
                                                 "post_type": post_type,
+                                                "dialog_default_x": top_pos[0],
+                                                "dialog_default_y": top_pos[1],
                                                 "account_uuid": account_uuid,
                                                 "cid": cid,
                                                 "uri": uri,
@@ -1250,19 +1266,79 @@ ApplicationWindow {
                                             })
         }
         function remove(no){
+            var living_dialog = []
+            var remove_index = -1
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
+                console.log("remove : no=" + no + ", Item no=" + loader_item.item.dialog_no)
                 if(no === loader_item.item.dialog_no){
-                    console.log("no=" + no + ", Item no=" + loader_item.item.dialog_no)
-                    console.log(loader_item.item + postDialogRepeater.model.get(i) + postDialogRepeater.model.get(i).dialog_no)
-                    postDialogRepeater.model.remove(i)
-                    break
+                    remove_index = i
+                }else{
+                    living_dialog.push(loader_item.item.dialog_no)
                 }
             }
+            if(remove_index >= 0){
+                postDialogRepeater.model.remove(remove_index)
+            }
+            // 存在しているダイアログのみにする
+            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((t) => living_dialog.indexOf(t) >= 0)
+            console.log(postDialogRepeater.depth_list)
+            // プログレスの表示順の更新
+            updateViewIndex()
+        }
+        function updateViewIndex(){
+            var vi = 0
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
-                loader_item.item.viewIndex = i
+                if(loader_item.item.viewingProgress){
+                    loader_item.item.viewIndex = vi
+                    vi += 1
+                }else{
+                    loader_item.item.viewIndex = -1
+                }
             }
+        }
+        function updateActiveDialog(no){
+            var new_depth_list = postDialogRepeater.depth_list
+            var current_index = postDialogRepeater.depth_list.indexOf(no)
+            if(current_index < 0 || current_index >= (postDialogRepeater.depth_list.length - 1)){
+                return
+            }
+            postDialogRepeater.depth_list.splice(current_index, 1)
+            postDialogRepeater.depth_list.push(no)
+
+            // いったん0にしないと意図どおり反映されない
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                loader_item.item.dialog_z = 0
+            }
+            // zオーダーを再設定しつつ、管理リストから既に消えているdialog_noを消す
+            var living_dialog = []
+            postDialogRepeater.depth_list.forEach((list_no, list_index) => {
+                                                      for(var i=0;i<count;i++){
+                                                          var loader_item = itemAt(i)
+                                                          if(loader_item.item.dialog_no === list_no){
+                                                              living_dialog.push(list_no)
+                                                              loader_item.item.dialog_z = list_index + 1
+                                                          }
+                                                      }
+                                                  })
+            // 存在しているダイアログのみにする
+            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((no) => living_dialog.indexOf(no) >= 0)
+        }
+        function getTopPosition(){
+            var l = postDialogRepeater.depth_list.length
+            if(l === 0){
+                return [-1, -1]
+            }
+            var top_dialog_no = postDialogRepeater.depth_list[l-1]
+            for(var i=0;i<count;i++){
+                var loader_item = itemAt(i)
+                if(top_dialog_no === loader_item.item.dialog_no){
+                    return [loader_item.item.dialog_x, loader_item.item.dialog_y]
+                }
+            }
+            return [-1, -1]
         }
     }
 
