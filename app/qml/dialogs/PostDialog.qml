@@ -158,7 +158,6 @@ Item {
 
             background: Rectangle {
                 border.color: postDialog.activeFocus ? Material.color(Material.Grey, Material.Shade600) : Material.dialogColor
-                // border.width: postDialog.activeFocus ? 1 : 0
                 color: Material.dialogColor
                 radius: Material.dialogRoundedScale
                 MouseArea {
@@ -187,14 +186,14 @@ Item {
             onClosed: postDialogItem.closedDialog()
 
             Shortcut {  // Post
-                enabled: postDialog.visible && postButton.enabled && postText.focus
+                enabled: postDialog.visible && postButton.enabled && postText.focus && postDialog.activeFocus
                 sequence: "Ctrl+Return"
                 onActivated: postButton.clicked()
             }
             Shortcut {  // Close
                 // DialogのclosePolicyでEscで閉じられるけど、そのうち編集中の確認ダイアログを
                 // 入れたいので別でイベント処理をする。onClosedで閉じるをキャンセルできなさそうなので。
-                enabled: postDialog.visible && ! postButton.enabled
+                enabled: postDialog.visible && ! postButton.enabled && postDialog.activeFocus
                 sequence: "Esc"
                 onActivated: postDialogItem.close()
             }
