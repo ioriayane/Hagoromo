@@ -4739,7 +4739,7 @@ Who do you want to enable this for?</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1366"/>
+        <location filename="qml/main.qml" line="1368"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

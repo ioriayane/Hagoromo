@@ -1171,9 +1171,12 @@ ApplicationWindow {
             accountModel: accountListModel
             onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
-            onClosedDialog: postDialogRepeater.working = false
             onViewingProgressChanged: postDialogRepeater.updateViewIndex()
-            onChangeActiveDialog: (dialog_no) => postDialogRepeater.updateActiveDialog(dialog_no)
+            onChangeActiveDialog: (dialog_no, active) => {
+                if(active) {
+                    postDialogRepeater.updateActiveDialog(dialog_no)
+                }
+            }
         }
     }
     Repeater {
@@ -1242,7 +1245,6 @@ ApplicationWindow {
                       avatar, display_name, handle, indexed_at, text, image_urls) {
             console.time("post_dialog_open");
             var top_pos = postDialogRepeater.getTopPosition()
-            console.log("top_pos=" + top_pos)
             working = true
             postDialogRepeater.depth_list.push(postDialogRepeater.dialog_no)
             postDialogRepeater.model.append({
@@ -1297,34 +1299,30 @@ ApplicationWindow {
             }
         }
         function updateActiveDialog(no){
-            console.log(postDialogRepeater.depth_list)
             var new_depth_list = postDialogRepeater.depth_list
-            var current_index = new_depth_list.indexOf(no)
-            console.log("current_index="+current_index)
-            if(current_index < 0){
+            var current_index = postDialogRepeater.depth_list.indexOf(no)
+            if(current_index < 0 || current_index >= (postDialogRepeater.depth_list.length - 1)){
                 return
             }
-            new_depth_list.splice(current_index, 1)
-            new_depth_list.push(no)
-            postDialogRepeater.depth_list = new_depth_list
-            console.log(postDialogRepeater.depth_list)
+            postDialogRepeater.depth_list.splice(current_index, 1)
+            postDialogRepeater.depth_list.push(no)
 
-            var living_dialog = []
+            // いったん0にしないと意図どおり反映されない
             for(var i=0;i<count;i++){
                 var loader_item = itemAt(i)
                 loader_item.item.dialog_z = 0
             }
-            postDialogRepeater.depth_list.map((list_no, list_index) => {
-                                                  for(var i=0;i<count;i++){
-                                                      var loader_item = itemAt(i)
-                                                      if(loader_item.item.dialog_no === list_no){
-                                                          living_dialog.push(list_no)
-                                                          // loader_item.z = list_index + 1
-                                                          // loader_item.item.z = list_index + 1
-                                                          loader_item.item.dialog_z = list_index + 1
+            // zオーダーを再設定しつつ、管理リストから既に消えているdialog_noを消す
+            var living_dialog = []
+            postDialogRepeater.depth_list.forEach((list_no, list_index) => {
+                                                      for(var i=0;i<count;i++){
+                                                          var loader_item = itemAt(i)
+                                                          if(loader_item.item.dialog_no === list_no){
+                                                              living_dialog.push(list_no)
+                                                              loader_item.item.dialog_z = list_index + 1
+                                                          }
                                                       }
-                                                  }
-                                              })
+                                                  })
             // 存在しているダイアログのみにする
             postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((no) => living_dialog.indexOf(no) >= 0)
         }

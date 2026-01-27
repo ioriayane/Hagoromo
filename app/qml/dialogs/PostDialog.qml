@@ -65,7 +65,7 @@ Item {
     signal errorOccured(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
-    signal changeActiveDialog(int dialog_no)
+    signal changeActiveDialog(int dialog_no, bool active)
 
     function open(){
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
@@ -153,7 +153,7 @@ Item {
             focus: true
             onActiveFocusChanged: {
                 console.log("Focus of dialog changed(" + postDialogItem.dialog_no + "):" + activeFocus)
-                postDialogItem.changeActiveDialog(postDialogItem.dialog_no)
+                postDialogItem.changeActiveDialog(postDialogItem.dialog_no, activeFocus)
             }
 
             background: Rectangle {
