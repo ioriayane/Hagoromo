@@ -2271,12 +2271,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="77"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="24"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="83"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="23"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -2759,6 +2759,16 @@ Please recreate AppPassword in the official application.</source>
         <location filename="qml/dialogs/PostDialog.qml" line="845"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="896"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="897"/>
+        <source>No</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="qml/dialogs/PostDialog.qml" line="694"/>

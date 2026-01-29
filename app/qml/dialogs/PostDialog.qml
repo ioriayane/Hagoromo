@@ -893,6 +893,9 @@ Item {
             MessageDialog {
                 id: draftConfirmationDialog
                 useCancel: true
+                acceptButtonText: qsTr("Yes")
+                rejectButtonText: qsTr("No")
+                onRejected: postDialogItem.close()
                 onAccepted: {
                     postDialog.close()
 
