@@ -68,14 +68,24 @@ void DraftOperator::setSelfLabels(const QStringList &labels)
     m_selfLabels = labels;
 }
 
-void DraftOperator::setThreadGateRules(const QStringList &rules)
+// type = everybody || nobody || choice
+// rules = mentioned || followed || follower || at://uri
+void DraftOperator::setThreadGate(const QString &type, const QStringList &rules)
 {
+    m_threadGateType = type;
     m_threadGateRules = rules;
 }
 
-void DraftOperator::setPostGateRules(const QStringList &rules)
+// rule = disableRule
+// uris = at://uri
+void DraftOperator::setPostGate(const bool quote_enabled, const QStringList &uris)
 {
-    m_postGateRules = rules;
+    Q_UNUSED(uris); // Draft cannot store detached embedding URIs (determined only when quoted)
+    if (quote_enabled) {
+        m_postGateEmbeddingRule.clear();
+    } else {
+        m_postGateEmbeddingRule = "disableRule";
+    }
 }
 
 void DraftOperator::clear()
@@ -88,7 +98,7 @@ void DraftOperator::clear()
     m_postLanguages.clear();
     m_selfLabels.clear();
     m_threadGateRules.clear();
-    m_postGateRules.clear();
+    m_postGateEmbeddingRule.clear();
 }
 
 void DraftOperator::createDraft()
@@ -100,6 +110,7 @@ void DraftOperator::createDraft()
     }
 
     setRunning(true);
+    setProgressMessage(tr("Create draft ..."));
 
     QJsonObject draft = buildDraftJson();
 
@@ -111,6 +122,7 @@ void DraftOperator::createDraft()
             emit errorOccured(create->errorCode(), create->errorMessage());
             emit finishedCreateDraft(false, QString());
         }
+        setProgressMessage(QString());
         setRunning(false);
         create->deleteLater();
     });
@@ -127,6 +139,7 @@ void DraftOperator::updateDraft(const QString &id)
     }
 
     setRunning(true);
+    setProgressMessage(tr("Update draft ..."));
 
     QJsonObject draft = buildDraftJson();
     QJsonObject draftWithId;
@@ -141,6 +154,7 @@ void DraftOperator::updateDraft(const QString &id)
             emit errorOccured(update->errorCode(), update->errorMessage());
             emit finishedUpdateDraft(false);
         }
+        setProgressMessage(QString());
         setRunning(false);
         update->deleteLater();
     });
@@ -157,6 +171,7 @@ void DraftOperator::deleteDraft(const QString &id)
     }
 
     setRunning(true);
+    setProgressMessage(tr("Delete draft ..."));
 
     AppBskyDraftDeleteDraft *del = new AppBskyDraftDeleteDraft(this);
     connect(del, &AppBskyDraftDeleteDraft::finished, this, [=](bool success) {
@@ -166,6 +181,7 @@ void DraftOperator::deleteDraft(const QString &id)
             emit errorOccured(del->errorCode(), del->errorMessage());
             emit finishedDeleteDraft(false);
         }
+        setProgressMessage(QString());
         setRunning(false);
         del->deleteLater();
     });
@@ -182,6 +198,7 @@ void DraftOperator::getDrafts(int limit, const QString &cursor)
     }
 
     setRunning(true);
+    setProgressMessage(tr("Get drafts ..."));
 
     AppBskyDraftGetDrafts *get = new AppBskyDraftGetDrafts(this);
     connect(get, &AppBskyDraftGetDrafts::finished, this, [=](bool success) {
@@ -191,6 +208,7 @@ void DraftOperator::getDrafts(int limit, const QString &cursor)
             emit errorOccured(get->errorCode(), get->errorMessage());
             emit finishedGetDrafts(false, QList<AtProtocolType::AppBskyDraftDefs::DraftView>());
         }
+        setProgressMessage(QString());
         setRunning(false);
         get->deleteLater();
     });
@@ -209,6 +227,19 @@ void DraftOperator::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
+}
+
+QString DraftOperator::progressMessage() const
+{
+    return m_progressMessage;
+}
+
+void DraftOperator::setProgressMessage(const QString &newProgressMessage)
+{
+    if (m_progressMessage == newProgressMessage)
+        return;
+    m_progressMessage = newProgressMessage;
+    emit progressMessageChanged();
 }
 
 QString DraftOperator::handle() const
@@ -290,22 +321,31 @@ QJsonObject DraftOperator::buildDraftJson() const
     }
 
     // Postgate embedding rules
-    if (!m_postGateRules.isEmpty()) {
+    if (m_postGateEmbeddingRule == QStringLiteral("disableRule")) {
         QJsonArray rules;
-        for (const QString &rule : m_postGateRules) {
-            QJsonObject ruleObj;
-            ruleObj["$type"] = QStringLiteral("app.bsky.feed.postgate#disableRule");
-            rules.append(ruleObj);
-        }
+        QJsonObject ruleObj;
+        ruleObj["$type"] = QStringLiteral("app.bsky.feed.postgate#disableRule");
+        rules.append(ruleObj);
         draft["postgateEmbeddingRules"] = rules;
     }
 
     // Threadgate allow rules
-    if (!m_threadGateRules.isEmpty()) {
+    if (m_threadGateType == QStringLiteral("nobody")) {
+        draft["threadgateAllow"] = QJsonArray();
+    } else if (m_threadGateType == QStringLiteral("choice")) {
         QJsonArray allows;
         for (const QString &rule : m_threadGateRules) {
             QJsonObject ruleObj;
-            ruleObj["$type"] = rule;
+            if (rule == QStringLiteral("mentioned")) {
+                ruleObj["$type"] = QStringLiteral("app.bsky.feed.threadgate#mentionRule");
+            } else if (rule == QStringLiteral("followed")) {
+                ruleObj["$type"] = QStringLiteral("app.bsky.feed.threadgate#followingRule");
+            } else if (rule == QStringLiteral("follower")) {
+                ruleObj["$type"] = QStringLiteral("app.bsky.feed.threadgate#followerRule");
+            } else if (rule.startsWith(QStringLiteral("at://"))) {
+                ruleObj["$type"] = QStringLiteral("app.bsky.feed.threadgate#listRule");
+                ruleObj["list"] = rule;
+            }
             allows.append(ruleObj);
         }
         draft["threadgateAllow"] = allows;

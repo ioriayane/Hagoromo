@@ -16,6 +16,8 @@ class DraftOperator : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(QString progressMessage READ progressMessage WRITE setProgressMessage NOTIFY
+                       progressMessageChanged FINAL)
     Q_PROPERTY(QString handle READ handle CONSTANT)
 
 public:
@@ -31,8 +33,8 @@ public:
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
-    Q_INVOKABLE void setThreadGateRules(const QStringList &rules);
-    Q_INVOKABLE void setPostGateRules(const QStringList &rules);
+    Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
+    Q_INVOKABLE void setPostGate(const bool quote_enabled, const QStringList &uris);
 
     Q_INVOKABLE void clear();
 
@@ -43,6 +45,8 @@ public:
 
     bool running() const;
     void setRunning(bool newRunning);
+    QString progressMessage() const;
+    void setProgressMessage(const QString &newProgressMessage);
     QString handle() const;
 
 signals:
@@ -53,6 +57,8 @@ signals:
     void finishedGetDrafts(bool success,
                            const QList<AtProtocolType::AppBskyDraftDefs::DraftView> &drafts);
     void runningChanged();
+
+    void progressMessageChanged();
 
 private:
     QJsonObject buildDraftJson() const;
@@ -67,8 +73,11 @@ private:
     QString m_embedRecordUri;
     QStringList m_postLanguages;
     QStringList m_selfLabels;
+    QString m_threadGateType;
     QStringList m_threadGateRules;
-    QStringList m_postGateRules;
+    QString m_postGateEmbeddingRule;
+
+    QString m_progressMessage;
 };
 
 #endif // DRAFTOPERATOR_H

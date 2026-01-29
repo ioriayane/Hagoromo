@@ -6,6 +6,7 @@ import QtQuick.Controls.Material
 import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.draftoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.controls.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
@@ -102,7 +103,8 @@ Item {
         y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
         contentWidth: progressLayout.width
         contentHeight: progressLayout.height
-        visible: createRecord.running && createRecord.progressMessage.length > 0
+        visible: (createRecord.running && createRecord.progressMessage.length > 0) ||
+                 (draftOperator.running && draftOperator.progressMessage.length > 0)
         background: Rectangle {
             radius: 3
             border.width: 1
@@ -129,7 +131,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.maximumWidth: parent.width
                 font.pointSize: AdjustedValues.f8
-                text: createRecord.progressMessage
+                text: draftOperator.running ? draftOperator.progressMessage : createRecord.progressMessage
                 color: Material.theme === Material.Dark ? Material.foreground : "white"
             }
         }
@@ -211,6 +213,20 @@ Item {
                     postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
                 }
             }
+            DraftOperator {
+                id: draftOperator
+                onFinishedCreateDraft: (success, id) => {
+                    if(success){
+                        postDialogItem.closed()
+                    }
+                }
+                onErrorOccured: (code, message) => {
+                    postDialog.open()
+                    var row = accountCombo.currentIndex;
+                    postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                }
+            }
+
             LanguageListModel {
                 id: languageListModel
             }
@@ -672,7 +688,14 @@ Item {
                                 flat: true
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Cancel")
-                                onClicked: postDialogItem.close()
+                                onClicked: {
+                                    if(postButton.enabled){
+                                        // 下書き保存
+                                        draftConfirmationDialog.show("normal", qsTr("Confirm"), qsTr("Save the draft?"))
+                                    }else{
+                                        postDialogItem.close()
+                                    }
+                                }
                             }
                             Item {
                                 Layout.fillWidth: true
@@ -864,6 +887,36 @@ Item {
                 id: addPollDialog
                 onAccepted: {
 
+                }
+            }
+
+            MessageDialog {
+                id: draftConfirmationDialog
+                useCancel: true
+                onAccepted: {
+                    postDialog.close()
+
+                    var row = accountCombo.currentIndex;
+                    draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                    draftOperator.clear()
+                    draftOperator.setText(postText.text)
+                    draftOperator.setPostLanguages(languageSelectionDialog.selectedLanguages)
+                    if(postDialogItem.postType !== "reply"){
+                        // replyのときは制限の設定はできない
+                        draftOperator.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                        draftOperator.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
+                    }
+                    if(postDialogItem.quoteValid){
+                        draftOperator.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
+                    }
+                    if(selfLabelsButton.value.length > 0){
+                        draftOperator.setSelfLabels([selfLabelsButton.value])
+                    }
+                    draftOperator.setExternalLink(addingExternalLinkUrlText.text)
+                    if(embedImageListModel.count > 0){
+                        draftOperator.setImages(embedImageListModel.uris(), embedImageListModel.alts())
+                    }
+                    draftOperator.createDraft()
                 }
             }
         }
