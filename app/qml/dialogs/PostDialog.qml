@@ -418,7 +418,7 @@ Item {
 
                         ScrollView {
                             z: 99   // MentionSuggetionViewを最前に表示するため
-                            Layout.preferredWidth: 500 * AdjustedValues.ratio
+                            Layout.preferredWidth: 520 * AdjustedValues.ratio
                             Layout.preferredHeight: 150 * AdjustedValues.ratio
                             TextArea {
                                 id: postText
@@ -828,6 +828,14 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 3
                                     visible: createRecord.running
+                                }
+                            }
+                            IconButton {
+                                enabled: !postButton.enabled
+                                iconSource: "../images/draft.png"
+                                iconSize: AdjustedValues.i18
+                                flat: true
+                                onClicked: {
                                 }
                             }
                         }
