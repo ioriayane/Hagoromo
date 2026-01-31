@@ -49,6 +49,8 @@ add_library(HagoromoGuiLib STATIC
     controls/emojilistmodel.h
     controls/languagelistmodel.cpp
     controls/languagelistmodel.h
+    draft/draftlistmodel.cpp
+    draft/draftlistmodel.h
     feedgenerator/actorfeedgeneratorlistmodel.cpp
     feedgenerator/actorfeedgeneratorlistmodel.h
     feedgenerator/feedgeneratorlistmodel.cpp
