@@ -291,9 +291,9 @@ void makeFacets(
 
     QMultiMap<QString, MentionData> mention;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> facets;
-    QRegularExpression rx_facet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
-                                                             .arg(REG_EXP_URL, REG_EXP_MENTION)
-                                                             .arg(REG_EXP_HASH_TAG));
+    QRegularExpression rx_facet = QRegularExpression(
+            QString("(?:%1)|(?:%2)|(?:%3)|(?:%4)")
+                    .arg(REG_EXP_URL, REG_EXP_MENTION, REG_EXP_HASH_TAG, REG_EXP_STOCK_TICKER));
 
     QRegularExpressionMatch match = rx_facet.match(text);
     if (!match.capturedTexts().isEmpty()) {
@@ -326,12 +326,12 @@ void makeFacets(
                 position.start = byte_start;
                 position.end = byte_end;
                 mention.insert(temp, position);
-            } else if (temp.startsWith("#")) {
+            } else if (temp.startsWith("#") || temp.startsWith("$")) {
                 AppBskyRichtextFacet::Main facet;
                 facet.index.byteStart = byte_start;
                 facet.index.byteEnd = byte_end;
                 AppBskyRichtextFacet::Tag tag;
-                tag.tag = temp.mid(1);
+                tag.tag = temp.startsWith("$") ? temp : temp.mid(1);
                 facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
                 facet.features_Tag.append(tag);
                 facets.append(facet);

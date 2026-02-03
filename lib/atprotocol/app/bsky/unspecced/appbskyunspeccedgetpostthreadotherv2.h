@@ -10,7 +10,7 @@ class AppBskyUnspeccedGetPostThreadOtherV2 : public AccessAtProtocol
 public:
     explicit AppBskyUnspeccedGetPostThreadOtherV2(QObject *parent = nullptr);
 
-    void getPostThreadOtherV2(const QString &anchor, const bool prioritizeFollowedUsers);
+    void getPostThreadOtherV2(const QString &anchor);
 
     const QList<AtProtocolType::AppBskyUnspeccedGetPostThreadOtherV2::ThreadItem> &
     threadList() const;

@@ -70,10 +70,6 @@
 
 int main(int argc, char *argv[])
 {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
-
     QGuiApplication app(argc, argv);
 
     QQuickStyle::setStyle("Material");
@@ -81,7 +77,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.57.0"));
+    app.setApplicationVersion(QStringLiteral("0.58.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif

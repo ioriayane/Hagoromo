@@ -56,20 +56,15 @@ oauth_test::oauth_test()
 
                 if (path.endsWith("/oauth/token")) {
                     qDebug().noquote() << "Verify jwt";
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-                    QVERIFY(request.headers().contains("DPoP"));
-                    verify_jwt(request.headers().value("DPoP").toByteArray(), nullptr);
-#else
                     bool exist = false;
-                    for(const auto &header: request.headers().toListOfPairs()){
-                        if(header.first.toLower() == "dpop"){
+                    for (const auto &header : request.headers().toListOfPairs()) {
+                        if (header.first.toLower() == "dpop") {
                             verify_jwt(header.second, nullptr);
                             exist = true;
                             break;
                         }
                     }
                     QVERIFY(exist);
-#endif
                 }
 
                 if (!QFile::exists(path)) {
@@ -133,7 +128,7 @@ void oauth_test::test_oauth_server()
         QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
         oauth.start("https://bsky.social", "ioriayane.bsky.social");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QString request_url = arguments.at(0).toString();
         qDebug().noquote() << "request url:" << request_url;
@@ -142,7 +137,7 @@ void oauth_test::test_oauth_server()
     {
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         spy.wait(5 * 60 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -161,7 +156,7 @@ void oauth_test::test_oauth_server()
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         oauth.requestToken(true);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -184,14 +179,14 @@ void oauth_test::test_oauth()
         QSignalSpy spy(&oauth, SIGNAL(serviceEndpointChanged()));
         oauth.start(pds, handle);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
-    QVERIFY(oauth.serviceEndpoint() == QString("http://localhost:%1/response/1").arg(m_listenPort));
+    QCOMPARE(oauth.serviceEndpoint(), QString("http://localhost:%1/response/1").arg(m_listenPort));
 
     {
         QSignalSpy spy(&oauth, SIGNAL(authorizationServerChanged()));
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
     QVERIFY(oauth.authorizationServer()
             == QString("http://localhost:%1/response/2").arg(m_listenPort));
@@ -199,7 +194,7 @@ void oauth_test::test_oauth()
     {
         QSignalSpy spy(&oauth, SIGNAL(pushedAuthorizationRequestEndpointChanged()));
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
     QVERIFY(oauth.pushedAuthorizationRequestEndpoint()
             == QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort));
@@ -211,25 +206,23 @@ void oauth_test::test_oauth()
     {
         QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         request_url = arguments.at(0).toString();
-        QVERIFY2(request_url
-                         == (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
-                             + QStringLiteral(
-                                     "/response/2/oauth/"
-                                     "authorize?client_id=https%3A%2F%2Foauth.hagoromo.relog.tech%"
-                                     "2Fclient-metadata.json&request_uri=urn%3Aietf%"
-                                     "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
-                                     "05650c01604941dc674f0af9cb032aca")),
-                 request_url.toLocal8Bit());
+        QCOMPARE(request_url,
+                 (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
+                  + QStringLiteral("/response/2/oauth/"
+                                   "authorize?client_id=https%3A%2F%2Foauth.hagoromo.relog.tech%"
+                                   "2Fclient-metadata.json&request_uri=urn%3Aietf%"
+                                   "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
+                                   "05650c01604941dc674f0af9cb032aca")));
     }
 
     {
         // ブラウザで認証ができないのでタイムアウトしてくるのを確認
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         spy.wait(20 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(!arguments.at(0).toBool());
     }
@@ -257,16 +250,13 @@ void oauth_test::test_oauth()
         qDebug().noquote() << "port updated " << redirect_url;
         test_get(redirect_url.toString(), QByteArray()); // ブラウザへのアクセスを模擬
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(oauth.token().access_token == "access token",
-             oauth.token().access_token.toLocal8Bit());
-    QVERIFY2(oauth.token().token_type == "DPoP", oauth.token().token_type.toLocal8Bit());
-    QVERIFY2(oauth.token().refresh_token == "refresh token",
-             oauth.token().refresh_token.toLocal8Bit());
-    QVERIFY2(oauth.token().expires_in == 2677,
-             QString::number(oauth.token().expires_in).toLocal8Bit());
+    QCOMPARE(oauth.token().access_token, "access token");
+    QCOMPARE(oauth.token().token_type, "DPoP");
+    QCOMPARE(oauth.token().refresh_token, "refresh token");
+    QCOMPARE(oauth.token().expires_in, 2677);
 }
 
 void oauth_test::test_jwt()
@@ -325,8 +315,8 @@ void oauth_test::test_get(const QString &url, const QByteArray &except_data)
 
         QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
 
-        QVERIFY(reply->error() == QNetworkReply::NoError);
-        QVERIFY2(reply->readAll() == except_data, json_doc.toJson());
+        QCOMPARE(reply->error(), QNetworkReply::NoError);
+        QCOMPARE(reply->readAll(), except_data);
 
         reply->deleteLater();
         manager->deleteLater();
@@ -339,12 +329,12 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
     EC_KEY *ec_key = nullptr;
 
     const QByteArrayList jwt_parts = jwt.split('.');
-    QVERIFY2(jwt_parts.length() == 3, jwt);
+    QCOMPARE(jwt_parts.length(), 3);
 
     QByteArray message = jwt_parts[0] + '.' + jwt_parts[1];
     QByteArray sig = QByteArray::fromBase64(
             jwt_parts.last(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-    QVERIFY2(sig.length() == 64, QString::number(sig.length()).toLocal8Bit());
+    QCOMPARE(sig.length(), 64);
     QByteArray header = QByteArray::fromBase64(
             jwt_parts.first(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
@@ -394,7 +384,7 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
     QVERIFY(ec_sig_s != NULL);
 
     ECDSA_SIG *ec_sig = ECDSA_SIG_new();
-    QVERIFY(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s) == 1);
+    QCOMPARE(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s), 1);
 
     unsigned char *der_sig = NULL;
     int der_sig_len = i2d_ECDSA_SIG(ec_sig, &der_sig);
@@ -402,7 +392,7 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
 
     // ECDSA署名の検証
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
-    QVERIFY(pkey != nullptr);
+    QCOMPARE_NE(pkey, nullptr);
     QVERIFY(EVP_DigestVerifyInit(mdctx, nullptr, EVP_sha256(), nullptr, pkey) > 0);
     QVERIFY(EVP_DigestVerifyUpdate(mdctx, message.constData(), message.length()) > 0);
     QVERIFY(EVP_DigestVerifyFinal(mdctx, der_sig, der_sig_len) > 0);

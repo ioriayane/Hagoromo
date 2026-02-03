@@ -16,6 +16,7 @@ Dialog {
 
     function setSelectedLanguages(langs){
         languageListModel.setSelectedLanguages(langs)
+        selectedLanguages = languageListModel.selectedLanguages()
     }
 
     ColumnLayout {

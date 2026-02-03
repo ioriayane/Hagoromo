@@ -147,7 +147,7 @@ atprotocol_test::~atprotocol_test() { }
 
 void atprotocol_test::initTestCase()
 {
-    QVERIFY(m_listenPort != 0);
+    QCOMPARE_NE(m_listenPort, 0);
     m_account.accessJwt = "dummy";
 
     m_account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
@@ -176,31 +176,31 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(session.did() == "did:plc:ipj5qejfoqu6eukvt72uhyit");
-    QVERIFY(session.handle() == "ioriayane.relog.tech");
-    QVERIFY(session.email() == "iori.ayane@gmail.com");
-    QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
-    QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
+    QCOMPARE(session.did(), "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(session.handle(), "ioriayane.relog.tech");
+    QCOMPARE(session.email(), "iori.ayane@gmail.com");
+    QCOMPARE(session.accessJwt(), "hoge hoge accessJwt");
+    QCOMPARE(session.refreshJwt(), "hoge hoge refreshJwt");
 
-    QVERIFY(session.did() == session.account().did);
-    QVERIFY(session.handle() == session.account().handle);
-    QVERIFY(session.email() == session.account().email);
-    QVERIFY(session.accessJwt() == session.account().accessJwt);
-    QVERIFY(session.refreshJwt() == session.account().refreshJwt);
+    QCOMPARE(session.did(), session.account().did);
+    QCOMPARE(session.handle(), session.account().handle);
+    QCOMPARE(session.email(), session.account().email);
+    QCOMPARE(session.accessJwt(), session.account().accessJwt);
+    QCOMPARE(session.refreshJwt(), session.account().refreshJwt);
 
     // 後ろのテストで使うアカウント情報
     m_account = session.account();
 
-    QVERIFY(m_account.did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
-    QVERIFY(m_account.handle == "ioriayane.relog.tech");
-    QVERIFY(m_account.email == "iori.ayane@gmail.com");
-    QVERIFY(m_account.accessJwt == "hoge hoge accessJwt");
-    QVERIFY(m_account.refreshJwt == "hoge hoge refreshJwt");
+    QCOMPARE(m_account.did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(m_account.handle, "ioriayane.relog.tech");
+    QCOMPARE(m_account.email, "iori.ayane@gmail.com");
+    QCOMPARE(m_account.accessJwt, "hoge hoge accessJwt");
+    QCOMPARE(m_account.refreshJwt, "hoge hoge refreshJwt");
 
     session.setService(m_service + "/limit");
 
@@ -208,19 +208,18 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool() == false);
+        QCOMPARE(arguments.at(0).toBool(), false);
     }
 
-    QVERIFY2(session.errorCode() == "RateLimitExceeded", session.errorCode().toLocal8Bit());
+    QCOMPARE(session.errorCode(), "RateLimitExceeded");
     QVERIFY(session.errorMessage().contains("ratelimit-limit:30"));
     QVERIFY(session.errorMessage().contains("ratelimit-reset:2023/09/17 10:31:07"));
     QVERIFY(session.errorMessage().contains("ratelimit-remaining:10"));
     QVERIFY(session.errorMessage().contains("ratelimit-policy:30;w=300"));
-    QVERIFY2(session.replyJson().trimmed()
-                     == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
-             session.replyJson().toLocal8Bit());
+    QCOMPARE(session.replyJson().trimmed(),
+             "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}");
 }
 
 void atprotocol_test::test_ComAtprotoServerRefreshSession()
@@ -232,22 +231,22 @@ void atprotocol_test::test_ComAtprotoServerRefreshSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.refreshSession();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(session.did() == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(session.handle() == "ioriayane2.bsky.social");
-    QVERIFY(session.email() == "email");
-    QVERIFY(session.accessJwt() == "access jwt");
-    QVERIFY(session.refreshJwt() == "refresh jwt");
+    QCOMPARE(session.did(), "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(session.handle(), "ioriayane2.bsky.social");
+    QCOMPARE(session.email(), "email");
+    QCOMPARE(session.accessJwt(), "access jwt");
+    QCOMPARE(session.refreshJwt(), "refresh jwt");
 
-    QVERIFY(session.did() == session.account().did);
-    QVERIFY(session.handle() == session.account().handle);
-    QVERIFY(session.email() == session.account().email);
-    QVERIFY(session.accessJwt() == session.account().accessJwt);
-    QVERIFY(session.refreshJwt() == session.account().refreshJwt);
+    QCOMPARE(session.did(), session.account().did);
+    QCOMPARE(session.handle(), session.account().handle);
+    QCOMPARE(session.email(), session.account().email);
+    QCOMPARE(session.accessJwt(), session.account().accessJwt);
+    QCOMPARE(session.refreshJwt(), session.account().refreshJwt);
 }
 
 void atprotocol_test::test_OpenGraphProtocol()
@@ -258,15 +257,15 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file1.html");
-        QVERIFY(ogp.title() == "file1 title");
-        QVERIFY(ogp.description() == "file1 description");
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file1.jpg");
+        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file1.html");
+        QCOMPARE(ogp.title(), "file1 title");
+        QCOMPARE(ogp.description(), "file1 description");
+        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file1.jpg");
     }
     {
         QTemporaryFile temp_file;
@@ -276,7 +275,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -284,30 +283,28 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(QFile::exists(temp_file.fileName()));
         QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
-        QVERIFY(img.width() == 664);
-        QVERIFY(img.height() == 257);
+        QCOMPARE(img.width(), 664);
+        QCOMPARE(img.height(), 257);
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file2.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file2.html");
-        QVERIFY2(ogp.title()
-                         == QString("file2 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file2.gif");
+        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file2.html");
+        QCOMPARE(ogp.title(),
+                 QString("file2 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file2.gif");
     }
     {
         QTemporaryFile temp_file;
@@ -318,7 +315,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -326,30 +323,28 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(QFile::exists(temp_file.fileName()));
         QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
-        QVERIFY(img.width() == 664);
-        QVERIFY(img.height() == 257);
+        QCOMPARE(img.width(), 664);
+        QCOMPARE(img.height(), 257);
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file3.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file3.html");
-        QVERIFY2(ogp.title()
-                         == QString("file3 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
+        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file3.html");
+        QCOMPARE(ogp.title(),
+                 QString("file3 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
     }
     {
         QTemporaryFile temp_file;
@@ -360,7 +355,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -368,33 +363,29 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(QFile::exists(temp_file.fileName()));
         QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
-        QVERIFY(img.width() == 664);
-        QVERIFY(img.height() == 257);
+        QCOMPARE(img.width(), 664);
+        QCOMPARE(img.height(), 257);
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file4.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(
-                ogp.uri()
-                        == QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort),
-                ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title()
-                         == QString("file4 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort));
+        QCOMPARE(ogp.title(),
+                 QString("file4 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
     }
     {
         QTemporaryFile temp_file;
@@ -405,7 +396,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -413,75 +404,66 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(QFile::exists(temp_file.fileName()));
         QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
-        QVERIFY(img.width() == 664);
-        QVERIFY(img.height() == 257);
+        QCOMPARE(img.width(), 664);
+        QCOMPARE(img.height(), 257);
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file5.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html?id=10186&s=720",
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title()
-                         == QString("file5 ")
-                                    .append(QChar(0x30bf))
-                                    .append(QChar(0x30a4))
-                                    .append(QChar(0x30c8))
-                                    .append(QChar(0x30eb)),
-                 ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "");
+        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file5.html?id=10186&s=720");
+        QCOMPARE(ogp.title(),
+                 QString("file5 ")
+                         .append(QChar(0x30bf))
+                         .append(QChar(0x30a4))
+                         .append(QChar(0x30c8))
+                         .append(QChar(0x30eb)));
+        QCOMPARE(ogp.description(), QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(), "");
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file6.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri()
-                         == QString("http://localhost:%1/response/ogp/file6.html")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY2(ogp.thumb()
-                         == QString("http://localhost:%1/response/ogp/images/file6.png")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.thumb().toLocal8Bit());
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file6.html")
+                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.title(), QString("file6 TITLE"));
+        QCOMPARE(ogp.description(), QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(),
+                 QString("http://localhost:%1/response/ogp/images/file6.png")
+                         .arg(QString::number(m_listenPort)));
     }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file7.html");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri()
-                         == QString("http://localhost:%1/response/ogp/file7.html")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.uri().toLocal8Bit());
-        QVERIFY2(ogp.title() == QString("file7 TITLE"), ogp.title().toLocal8Bit());
-        QVERIFY2(ogp.description() == QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
-                 ogp.description().toLocal8Bit());
-        QVERIFY2(ogp.thumb()
-                         == QString("http://localhost:%1/response/ogp/images/file7.png")
-                                    .arg(QString::number(m_listenPort)),
-                 ogp.thumb().toLocal8Bit());
+        QCOMPARE(ogp.uri(),
+                 QString("http://localhost:%1/response/ogp/file7.html")
+                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.title(), QString("file7 TITLE"));
+        QCOMPARE(ogp.description(), QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
+        QCOMPARE(ogp.thumb(),
+                 QString("http://localhost:%1/response/ogp/images/file7.png")
+                         .arg(QString::number(m_listenPort)));
     }
 }
 
@@ -490,22 +472,22 @@ void atprotocol_test::test_ogpDecodeHtml()
     QString actual;
 
     actual = OpenGraphProtocol::decodeHtml("hoge fuga");
-    QVERIFY2(actual == "hoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("hoge&amp;fuga");
-    QVERIFY2(actual == "hoge&fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge&fuga");
 
     actual = OpenGraphProtocol::decodeHtml("hoge fuga&amp;");
-    QVERIFY2(actual == "hoge fuga&", actual.toLocal8Bit());
+    QCOMPARE(actual, "hoge fuga&");
 
     actual = OpenGraphProtocol::decodeHtml("&amp;hoge fuga");
-    QVERIFY2(actual == "&hoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "&hoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("&amphoge fuga");
-    QVERIFY2(actual == "&amphoge fuga", actual.toLocal8Bit());
+    QCOMPARE(actual, "&amphoge fuga");
 
     actual = OpenGraphProtocol::decodeHtml("&amp;hoge&lt;fuga&gt;&quot;foo&apos;&nbsp;bar");
-    QVERIFY2(actual == "&hoge<fuga>\"foo' bar", actual.toLocal8Bit());
+    QCOMPARE(actual, "&hoge<fuga>\"foo' bar");
 }
 
 void atprotocol_test::test_getTimeline()
@@ -516,64 +498,35 @@ void atprotocol_test::test_getTimeline()
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
     timeline.getTimeline(QString(), 0, QString());
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
 
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 
-    QVERIFY(timeline.feedList().count() == 6);
+    QCOMPARE(timeline.feedList().count(), 6);
 
-    QVERIFY(timeline.feedList().at(0).post.author.did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(timeline.feedList().at(0).post.author.did, "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
-    QVERIFY2(timeline.feedList().at(1).post.embed_type
-                     == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View,
-             QString("%1")
-                     .arg(static_cast<int>(timeline.feedList().at(1).post.embed_type))
-                     .toLocal8Bit());
+    QCOMPARE(timeline.feedList().at(1).post.embed_type,
+             AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View);
 
-    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                     == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
-             QString("%1")
-                     .arg(static_cast<int>(
-                             timeline.feedList()
-                                     .at(1)
-                                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
-                     == false,
-             QString("%1")
-                     .arg(timeline.feedList()
-                                  .at(1)
-                                  .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull())
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                     == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord,
-             QString("%1")
-                     .arg(static_cast<int>(timeline.feedList()
-                                                   .at(1)
-                                                   .post.embed_AppBskyEmbedRecordWithMedia_View
-                                                   .record->record_type))
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
-                             .cid
-                     == "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
-             timeline.feedList()
+    QCOMPARE(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type,
+             AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View);
+    QCOMPARE(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull(),
+             false);
+    QCOMPARE(timeline.feedList()
                      .at(1)
-                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
-                             .author.handle
-                     == "ioriayane2.bsky.social",
-             timeline.feedList()
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type,
+             AppBskyEmbedRecord::ViewRecordType::record_ViewRecord);
+    QCOMPARE(timeline.feedList()
+                     .at(1)
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid,
+             "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu");
+    QCOMPARE(timeline.feedList()
                      .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
-                     .handle.toLocal8Bit());
+                     .handle,
+             "ioriayane2.bsky.social");
 
     QVERIFY(LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
                     timeline.feedList()
@@ -607,74 +560,74 @@ void atprotocol_test::test_ConfigurableLabels()
         labels.setStatus(i, ConfigurableLabelStatus::Show);
     }
     for_image = true;
-    QVERIFY(labels.visibility("hoge", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("porn", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("sexual", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("graphic-media", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("hoge", for_image), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("porn", for_image), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("sexual", for_image), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("graphic-media", for_image), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("nudity", for_image), ConfigurableLabelStatus::Show);
 
     labels.setEnableAdultContent(false);
-    QVERIFY(labels.visibility("hoge", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("porn", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("sexual", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("graphic-media", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("hoge", for_image), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.visibility("porn", for_image), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("sexual", for_image), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("graphic-media", for_image), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("nudity", for_image), ConfigurableLabelStatus::Show);
 
     labels.setEnableAdultContent(true);
     for (int i = 0; i < labels.count(); i++) {
         labels.setStatus(i, ConfigurableLabelStatus::Hide);
     }
-    QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Hide);
 
-    QVERIFY(labels.message("porn", true) == "Sexually Explicit");
-    QVERIFY(labels.message("sexual", true) == "Sexually Suggestive");
-    QVERIFY(labels.message("graphic-media", true) == "Graphic Media");
-    QVERIFY(labels.message("nudity", true) == "Non-sexual Nudity");
+    QCOMPARE(labels.message("porn", true), "Sexually Explicit");
+    QCOMPARE(labels.message("sexual", true), "Sexually Suggestive");
+    QCOMPARE(labels.message("graphic-media", true), "Graphic Media");
+    QCOMPARE(labels.message("nudity", true), "Non-sexual Nudity");
 
     labels.setEnableAdultContent(true);
     for (int i = 0; i < labels.count(); i++) {
         labels.setStatus(i, ConfigurableLabelStatus::Warning);
     }
-    QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Warning);
-    QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
-    QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
-    QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
+    QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Warning);
+    QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Warning);
+    QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Warning);
+    QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Warning);
 
-    QVERIFY(labels.message("porn", true) == "Sexually Explicit");
-    QVERIFY(labels.message("sexual", true) == "Sexually Suggestive");
-    QVERIFY(labels.message("graphic-media", true) == "Graphic Media");
-    QVERIFY(labels.message("nudity", true) == "Non-sexual Nudity");
+    QCOMPARE(labels.message("porn", true), "Sexually Explicit");
+    QCOMPARE(labels.message("sexual", true), "Sexually Suggestive");
+    QCOMPARE(labels.message("graphic-media", true), "Graphic Media");
+    QCOMPARE(labels.message("nudity", true), "Non-sexual Nudity");
 
     // 設定変更できない項目を変更していないか確認
     for (int i = 0; i < labels.count(); i++) {
         labels.setStatus(i, ConfigurableLabelStatus::Show);
     }
-    QVERIFY(labels.visibility("!hide", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("doxxing", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("!warn", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(labels.visibility("!warn", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.message("!warn", false) == "Content warning");
-    QVERIFY(labels.message("!warn", true) == QString());
+    QCOMPARE(labels.visibility("!hide", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("doxxing", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("!warn", false), ConfigurableLabelStatus::Warning);
+    QCOMPARE(labels.visibility("!warn", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(labels.message("!warn", false), "Content warning");
+    QCOMPARE(labels.message("!warn", true), QString());
 
-    QVERIFY(labels.visibility("dmca-violation", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("doxxing", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("dmca-violation", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("doxxing", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("gore", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("torture", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("spam", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(labels.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
     QVERIFY(labels.indexOf("sexual", "") >= 0);
-    QVERIFY(labels.indexOf("sexual", "did:plc:hoge") == -1);
+    QCOMPARE(labels.indexOf("sexual", "did:plc:hoge"), -1);
     QVERIFY(labels.indexOf("sexual", "unkown") >= 0);
 }
 
@@ -689,43 +642,43 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(labels.enableAdultContent() == true);
-        QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.enableAdultContent(), true);
+        QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Hide);
 
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("gore", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("torture", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("spam", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
                 == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("rumor", false, labeler_did), ConfigurableLabelStatus::Hide);
         // 以下デフォルト設定
-        QVERIFY(labels.visibility("spam", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("spam", false, labeler_did), ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", false, labeler_did)
                 == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("sexual-figurative", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
 
-        QVERIFY(labels.hasAdultOnly("") == true);
-        QVERIFY(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac") == true);
+        QCOMPARE(labels.hasAdultOnly(""), true);
+        QCOMPARE(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac"), true);
     }
     //
     {
@@ -733,37 +686,37 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(labels.enableAdultContent() == true);
-        QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.enableAdultContent(), true);
+        QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Show);
 
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("gore", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("torture", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("spam", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.visibility("rumor", false, labeler_did), ConfigurableLabelStatus::Show);
 
-        QVERIFY(labels.hasAdultOnly("") == true);
-        QVERIFY(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac") == false);
+        QCOMPARE(labels.hasAdultOnly(""), true);
+        QCOMPARE(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac"), false);
     }
     //
     {
@@ -772,34 +725,34 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(labels.enableAdultContent() == false);
-        QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.enableAdultContent(), false);
+        QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Show);
 
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("gore", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("torture", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("spam", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.visibility("rumor", false, labeler_did), ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -807,34 +760,34 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(labels.enableAdultContent() == true);
-        QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.enableAdultContent(), true);
+        QCOMPARE(labels.visibility("porn", true), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.visibility("sexual", true), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.visibility("graphic-media", true), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.visibility("nudity", true), ConfigurableLabelStatus::Warning);
 
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("gore", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("torture", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("spam", false), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
                 == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.visibility("rumor", false, labeler_did), ConfigurableLabelStatus::Warning);
     }
     //
     {
@@ -844,55 +797,35 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(labels.mutedWordCount() == 4,
-                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 4);
 
         i = 0;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-1",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 2,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>()
-                                 << MutedWordTarget::Content << MutedWordTarget::Tag,
-                 QString("%1,%2")
-                         .arg(int(labels.getMutedWordItem(i).targets.at(0)),
-                              int(labels.getMutedWordItem(i).targets.at(1)))
-                         .toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-1");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 2);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
         i = 1;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-2",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>() << MutedWordTarget::Tag,
-                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-2");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Tag);
         i = 2;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-3",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-3");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 0);
+        QCOMPARE(labels.getMutedWordItem(i).targets, QList<MutedWordTarget>());
         i = 3;
-        QVERIFY2(labels.getMutedWordItem(i).group == 0,
-                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).value == "test1-4",
-                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
-                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
-        QVERIFY2(labels.getMutedWordItem(i).targets
-                         == QList<MutedWordTarget>() << MutedWordTarget::Content,
-                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-4");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content);
     }
     //
     {
@@ -902,211 +835,210 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(labels.mutedWordCount() == 8,
-                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 8);
 
         i = 0;
-        QVERIFY(labels.getMutedWordItem(i).group == 0);
-        QVERIFY(labels.getMutedWordItem(i).value == "test1-1");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 2);
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-1");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 2);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
         i = 1;
-        QVERIFY(labels.getMutedWordItem(i).group == 0);
-        QVERIFY(labels.getMutedWordItem(i).value == "test1-2");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-2");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Tag);
         i = 2;
-        QVERIFY(labels.getMutedWordItem(i).group == 0);
-        QVERIFY(labels.getMutedWordItem(i).value == "test1-3");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
-        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-3");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 0);
+        QCOMPARE(labels.getMutedWordItem(i).targets, QList<MutedWordTarget>());
         i = 3;
-        QVERIFY(labels.getMutedWordItem(i).group == 0);
-        QVERIFY(labels.getMutedWordItem(i).value == "test1-4");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QCOMPARE(labels.getMutedWordItem(i).group, 0);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test1-4");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Content);
 
         i = 4;
-        QVERIFY(labels.getMutedWordItem(i).group == 1);
-        QVERIFY(labels.getMutedWordItem(i).value == "test2-1");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QCOMPARE(labels.getMutedWordItem(i).group, 1);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test2-1");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Content);
         i = 5;
-        QVERIFY(labels.getMutedWordItem(i).group == 1);
-        QVERIFY(labels.getMutedWordItem(i).value == "test2-2");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 2);
+        QCOMPARE(labels.getMutedWordItem(i).group, 1);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test2-2");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 2);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
         i = 6;
-        QVERIFY(labels.getMutedWordItem(i).group == 1);
-        QVERIFY(labels.getMutedWordItem(i).value == "test2-3");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QCOMPARE(labels.getMutedWordItem(i).group, 1);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test2-3");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 1);
         QVERIFY(labels.getMutedWordItem(i).targets
                 == QList<MutedWordTarget>() << MutedWordTarget::Tag);
         i = 7;
-        QVERIFY(labels.getMutedWordItem(i).group == 1);
-        QVERIFY(labels.getMutedWordItem(i).value == "test2-4");
-        QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
-        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+        QCOMPARE(labels.getMutedWordItem(i).group, 1);
+        QCOMPARE(labels.getMutedWordItem(i).value, "test2-4");
+        QCOMPARE(labels.getMutedWordItem(i).targets.length(), 0);
+        QCOMPARE(labels.getMutedWordItem(i).targets, QList<MutedWordTarget>());
 
         // ------------
         labeler_did = "";
-        QVERIFY(labels.count(labeler_did) == 11);
-        QVERIFY(labels.hasAdultOnly(labeler_did) == true);
+        QCOMPARE(labels.count(labeler_did), 11);
+        QCOMPARE(labels.hasAdultOnly(labeler_did), true);
         i = 0;
-        QVERIFY(labels.title(i, labeler_did) == "Content hidden");
-        QVERIFY(labels.description(i, labeler_did) == "Moderator overrides for special cases.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.title(i, labeler_did), "Content hidden");
+        QCOMPARE(labels.description(i, labeler_did), "Moderator overrides for special cases.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 1;
-        QVERIFY(labels.title(i, labeler_did) == "Content warning");
-        QVERIFY(labels.description(i, labeler_did) == "Moderator overrides for special cases.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.title(i, labeler_did), "Content warning");
+        QCOMPARE(labels.description(i, labeler_did), "Moderator overrides for special cases.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 2;
-        QVERIFY(labels.title(i, labeler_did) == "Pornography");
-        QVERIFY(labels.description(i, labeler_did) == "Explicit sexual images.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.title(i, labeler_did), "Pornography");
+        QCOMPARE(labels.description(i, labeler_did), "Explicit sexual images.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), true);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 3;
-        QVERIFY(labels.title(i, labeler_did) == "Sexually Suggestive");
-        QVERIFY(labels.description(i, labeler_did) == "Does not include nudity");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.title(i, labeler_did), "Sexually Suggestive");
+        QCOMPARE(labels.description(i, labeler_did), "Does not include nudity");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), true);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 4;
-        QVERIFY(labels.title(i, labeler_did) == "Graphic Media");
-        QVERIFY(labels.description(i, labeler_did) == "Explicit or potentially disturbing media.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.title(i, labeler_did), "Graphic Media");
+        QCOMPARE(labels.description(i, labeler_did), "Explicit or potentially disturbing media.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), true);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 5;
-        QVERIFY(labels.title(i, labeler_did) == "Non-sexual Nudity");
-        QVERIFY(labels.description(i, labeler_did) == "E.g. artistic nudes.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.title(i, labeler_did), "Non-sexual Nudity");
+        QCOMPARE(labels.description(i, labeler_did), "E.g. artistic nudes.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 6;
-        QVERIFY(labels.title(i, labeler_did) == "Legal");
-        QVERIFY(labels.description(i, labeler_did) == "Content removed for legal reasons.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.title(i, labeler_did), "Legal");
+        QCOMPARE(labels.description(i, labeler_did), "Content removed for legal reasons.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 7;
-        QVERIFY(labels.title(i, labeler_did) == "Violent / Bloody");
-        QVERIFY(labels.description(i, labeler_did) == "Gore, self-harm, torture");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.title(i, labeler_did), "Violent / Bloody");
+        QCOMPARE(labels.description(i, labeler_did), "Gore, self-harm, torture");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), true);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 8;
-        QVERIFY(labels.title(i, labeler_did) == "Hate Group Iconography");
+        QCOMPARE(labels.title(i, labeler_did), "Hate Group Iconography");
         QVERIFY(labels.description(i, labeler_did)
                 == "Images of terror groups, articles covering events, etc.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 9;
-        QVERIFY(labels.title(i, labeler_did) == "Spam");
-        QVERIFY(labels.description(i, labeler_did) == "Excessive unwanted interactions");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.title(i, labeler_did), "Spam");
+        QCOMPARE(labels.description(i, labeler_did), "Excessive unwanted interactions");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
         //
         i = 10;
-        QVERIFY(labels.title(i, labeler_did) == "Impersonation / Scam");
+        QCOMPARE(labels.title(i, labeler_did), "Impersonation / Scam");
         QVERIFY(labels.description(i, labeler_did)
                 == "Accounts falsely claiming to be people or orgs");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == false);
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), false);
 
         // ------------
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
-        QVERIFY(labels.count(labeler_did) == 18);
-        QVERIFY(labels.hasAdultOnly(labeler_did) == true);
+        QCOMPARE(labels.count(labeler_did), 18);
+        QCOMPARE(labels.hasAdultOnly(labeler_did), true);
         i = 0;
-        QVERIFY(labels.title(i, labeler_did) == "Spam");
+        QCOMPARE(labels.title(i, labeler_did), "Spam");
         QVERIFY(labels.description(i, labeler_did)
                 == "Unwanted, repeated, or unrelated actions that bother users.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Hide);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 3;
-        QVERIFY(labels.title(i, labeler_did) == "Intolerance");
-        QVERIFY(labels.description(i, labeler_did) == "Discrimination against protected groups.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.title(i, labeler_did), "Intolerance");
+        QCOMPARE(labels.description(i, labeler_did), "Discrimination against protected groups.");
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), false);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Content);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Warning);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
         //
         i = 17;
-        QVERIFY(labels.title(i, labeler_did) == "Sexually Suggestive (Cartoon)");
+        QCOMPARE(labels.title(i, labeler_did), "Sexually Suggestive (Cartoon)");
         QVERIFY(labels.description(i, labeler_did)
                 == "Art with explicit or suggestive sexual themes, including provocative imagery "
                    "or partial nudity.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
-        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
-        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.configurable(i, labeler_did) == true);
+        QCOMPARE(labels.isAdultImagery(i, labeler_did), true);
+        QCOMPARE(labels.foldableRange(i, labeler_did), ConfigurableLabelFoldableRange::Media);
+        QCOMPARE(labels.status(i, labeler_did), ConfigurableLabelStatus::Show);
+        QCOMPARE(labels.configurable(i, labeler_did), true);
 
         // ------------
         labeler_did = "did:plc:original_labeler_did";
-        QVERIFY(labels.count(labeler_did) == 1);
-        QVERIFY(labels.hasAdultOnly(labeler_did) == false);
+        QCOMPARE(labels.count(labeler_did), 1);
+        QCOMPARE(labels.hasAdultOnly(labeler_did), false);
     }
 
     {
         // loadしないとラベラー情報無いのでコピーテスト
         ConfigurableLabels dest;
         QString did = "did:plc:ar7c4by46qjdydhdevvrndac";
-        QVERIFY(dest.targetLabelerCount() == 0);
-        QVERIFY(dest.labelerCount() == 1);
+        QCOMPARE(dest.targetLabelerCount(), 0);
+        QCOMPARE(dest.labelerCount(), 1);
         dest = labels;
-        QVERIFY(dest.targetLabelerCount() == 2);
-        QVERIFY(dest.targetLabelerDid(0) == "did:plc:ar7c4by46qjdydhdevvrndac");
-        QVERIFY(dest.targetLabelerDid(1) == "did:plc:original_labeler_did");
-        QVERIFY(dest.labelerCount() == 3);
+        QCOMPARE(dest.targetLabelerCount(), 2);
+        QCOMPARE(dest.targetLabelerDid(0), "did:plc:ar7c4by46qjdydhdevvrndac");
+        QCOMPARE(dest.targetLabelerDid(1), "did:plc:original_labeler_did");
+        QCOMPARE(dest.labelerCount(), 3);
         QVERIFY(dest.labelerDids()
                 == QStringList() << "__globally__"
                                  << "did:plc:ar7c4by46qjdydhdevvrndac"
                                  << "did:plc:original_labeler_did");
-        QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");
+        QCOMPARE(dest.labelerHandle(did), "moderation.bsky.app");
         QVERIFY(dest.labelerDescription(did)
                 == "Official Bluesky Moderation Service. Required part of the Bluesky Social app.");
-        QVERIFY(dest.labelerDisplayName(did) == "Bluesky Moderation Service");
+        QCOMPARE(dest.labelerDisplayName(did), "Bluesky Moderation Service");
     }
 }
 
@@ -1128,57 +1060,57 @@ void atprotocol_test::test_ConfigurableLabels_copy()
         dest.setStatus(i, ConfigurableLabelStatus::Hide);
     }
 
-    QVERIFY(dest.enableAdultContent() == false);
-    QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.enableAdultContent(), false);
+    QCOMPARE(dest.visibility("porn", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("sexual", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("graphic-media", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("nudity", true), ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("gore", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("torture", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("spam", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 1);
-    QVERIFY(dest.mutedWordCount() == 0);
+    QCOMPARE(dest.labelerCount(), 1);
+    QCOMPARE(dest.mutedWordCount(), 0);
 
     dest = src;
-    QVERIFY(dest.enableAdultContent() == true);
-    QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+    QCOMPARE(dest.enableAdultContent(), true);
+    QCOMPARE(dest.visibility("porn", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(dest.visibility("sexual", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(dest.visibility("graphic-media", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(dest.visibility("nudity", true), ConfigurableLabelStatus::Show);
 
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("gore", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("torture", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("spam", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 1);
-    QVERIFY(dest.mutedWordCount() == 3);
-    QVERIFY(dest.getMutedWordItem(0).value == "word1");
-    QVERIFY(dest.getMutedWordItem(0).group == 0);
-    QVERIFY(dest.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
-    QVERIFY(dest.getMutedWordItem(1).value == "word2");
-    QVERIFY(dest.getMutedWordItem(1).group == 0);
+    QCOMPARE(dest.labelerCount(), 1);
+    QCOMPARE(dest.mutedWordCount(), 3);
+    QCOMPARE(dest.getMutedWordItem(0).value, "word1");
+    QCOMPARE(dest.getMutedWordItem(0).group, 0);
+    QCOMPARE(dest.getMutedWordItem(0).targets, QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QCOMPARE(dest.getMutedWordItem(1).value, "word2");
+    QCOMPARE(dest.getMutedWordItem(1).group, 0);
     QVERIFY(dest.getMutedWordItem(1).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
-    QVERIFY(dest.getMutedWordItem(2).value == "word3");
-    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QCOMPARE(dest.getMutedWordItem(2).value, "word3");
+    QCOMPARE(dest.getMutedWordItem(2).group, 0);
     QVERIFY(dest.getMutedWordItem(2).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content);
 
@@ -1196,35 +1128,35 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     src.insertMutedWord(1, "word2-2", QList<MutedWordTarget>() << MutedWordTarget::Tag);
 
     dest = src;
-    QVERIFY(dest.enableAdultContent() == false);
-    QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
+    QCOMPARE(dest.enableAdultContent(), false);
+    QCOMPARE(dest.visibility("porn", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("sexual", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("graphic-media", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("nudity", true), ConfigurableLabelStatus::Warning);
 
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("nsfl", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("gore", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("self-harm", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("torture", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("corpse", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-kkk", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-nazi", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("icon-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("behavior-intolerant", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("spam", false), ConfigurableLabelStatus::Hide);
+    QCOMPARE(dest.visibility("impersonation", false), ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 1);
-    QVERIFY(dest.mutedWordCount() == 3);
-    QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
-    QVERIFY(dest.getMutedWordItem(0).group == 0);
+    QCOMPARE(dest.labelerCount(), 1);
+    QCOMPARE(dest.mutedWordCount(), 3);
+    QCOMPARE(dest.getMutedWordItem(0).value, "word1-2");
+    QCOMPARE(dest.getMutedWordItem(0).group, 0);
     QVERIFY(dest.getMutedWordItem(0).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content);
-    QVERIFY(dest.getMutedWordItem(1).value == "word2-2");
-    QVERIFY(dest.getMutedWordItem(1).group == 0);
-    QVERIFY(dest.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
-    QVERIFY(dest.getMutedWordItem(2).value == "word3-2");
-    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QCOMPARE(dest.getMutedWordItem(1).value, "word2-2");
+    QCOMPARE(dest.getMutedWordItem(1).group, 0);
+    QCOMPARE(dest.getMutedWordItem(1).targets, QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QCOMPARE(dest.getMutedWordItem(2).value, "word3-2");
+    QCOMPARE(dest.getMutedWordItem(2).group, 0);
     QVERIFY(dest.getMutedWordItem(2).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
 }
@@ -1239,7 +1171,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1252,7 +1184,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1265,7 +1197,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1275,12 +1207,11 @@ void atprotocol_test::test_ConfigurableLabels_save()
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
         labels.setService(QString("http://localhost:%1/response/labels/save/4").arg(m_listenPort));
-        QVERIFY2(labels.mutedWordCount() == 0,
-                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1291,11 +1222,10 @@ void atprotocol_test::test_ConfigurableLabels_save()
             QSignalSpy spy(&labels, SIGNAL(finished(bool)));
             labels.load();
             spy.wait();
-            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+            QCOMPARE(spy.count(), 1);
             QList<QVariant> arguments = spy.takeFirst();
             QVERIFY(arguments.at(0).toBool());
-            QVERIFY2(labels.mutedWordCount() == 8,
-                     QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+            QCOMPARE(labels.mutedWordCount(), 8);
         }
         labels.setEnableAdultContent(false);
         for (int i = 0; i < labels.count(); i++) {
@@ -1305,7 +1235,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1316,12 +1246,11 @@ void atprotocol_test::test_ConfigurableLabels_save()
         }
         labels.clearMutedWord();
         labels.setService(QString("http://localhost:%1/response/labels/save/6").arg(m_listenPort));
-        QVERIFY2(labels.mutedWordCount() == 0,
-                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1337,28 +1266,28 @@ void atprotocol_test::test_ConfigurableLabels_mutedword()
                            QList<MutedWordTarget>()
                                    << MutedWordTarget::Content << MutedWordTarget::Tag);
 
-    QVERIFY(labels.getMutedWordItem(0).value == "word1");
-    QVERIFY(labels.getMutedWordItem(0).group == 0);
-    QVERIFY(labels.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
-    QVERIFY(labels.getMutedWordItem(1).value == "word2");
-    QVERIFY(labels.getMutedWordItem(1).group == 0);
+    QCOMPARE(labels.getMutedWordItem(0).value, "word1");
+    QCOMPARE(labels.getMutedWordItem(0).group, 0);
+    QCOMPARE(labels.getMutedWordItem(0).targets, QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QCOMPARE(labels.getMutedWordItem(1).value, "word2");
+    QCOMPARE(labels.getMutedWordItem(1).group, 0);
     QVERIFY(labels.getMutedWordItem(1).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
-    QVERIFY(labels.getMutedWordItem(2).value == "word3");
-    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QCOMPARE(labels.getMutedWordItem(2).value, "word3");
+    QCOMPARE(labels.getMutedWordItem(2).group, 0);
     QVERIFY(labels.getMutedWordItem(2).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content);
 
     labels.moveMutedWordItem(2, 0);
-    QVERIFY(labels.getMutedWordItem(1).value == "word1");
-    QVERIFY(labels.getMutedWordItem(1).group == 0);
-    QVERIFY(labels.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
-    QVERIFY(labels.getMutedWordItem(2).value == "word2");
-    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QCOMPARE(labels.getMutedWordItem(1).value, "word1");
+    QCOMPARE(labels.getMutedWordItem(1).group, 0);
+    QCOMPARE(labels.getMutedWordItem(1).targets, QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QCOMPARE(labels.getMutedWordItem(2).value, "word2");
+    QCOMPARE(labels.getMutedWordItem(2).group, 0);
     QVERIFY(labels.getMutedWordItem(2).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
-    QVERIFY(labels.getMutedWordItem(0).value == "word3");
-    QVERIFY(labels.getMutedWordItem(0).group == 0);
+    QCOMPARE(labels.getMutedWordItem(0).value, "word3");
+    QCOMPARE(labels.getMutedWordItem(0).group, 0);
     QVERIFY(labels.getMutedWordItem(0).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content);
 }
@@ -1377,7 +1306,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
                                    << MutedWordTarget::Content << MutedWordTarget::Tag);
     labels2 = labels;
 
-    QVERIFY(labels.containsMutedWords("hoge\nfuga\tpiyo foooo", QStringList(), false) == false);
+    QCOMPARE(labels.containsMutedWords("hoge\nfuga\tpiyo foooo", QStringList(), false), false);
     // word1
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo", QStringList() << "hoge",
                                       false)
@@ -1501,7 +1430,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
             == false);
 
     labels.clearMutedWord();
-    QVERIFY(labels.mutedWordCount() == 0);
+    QCOMPARE(labels.mutedWordCount(), 0);
     {
 
         m_account.accessJwt = "aaaa";
@@ -1511,7 +1440,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1560,7 +1489,7 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(provider->labelerDids(account)
@@ -1580,14 +1509,13 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(provider->labelerDids(account)
-                     == QStringList() << "__globally__"
-                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
-                                      << "did:plc:original_labeler_did",
-             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+    QCOMPARE(provider->labelerDids(account),
+             QStringList() << "__globally__"
+                           << "did:plc:ar7c4by46qjdydhdevvrndac"
+                           << "did:plc:original_labeler_did");
 
     qDebug().noquote() << "-- 3 ----------------------------------------";
 
@@ -1597,30 +1525,29 @@ void atprotocol_test::test_LabelerProvider()
         QSignalSpy spy(connector, SIGNAL(finished(bool)));
         provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
-    QVERIFY2(provider->labelerDids(account)
-                     == QStringList() << "__globally__"
-                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
-                                      << "did:plc:original_labeler_did"
-                                      << "did:plc:original_labeler_did_2",
-             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+    QCOMPARE(provider->labelerDids(account),
+             QStringList() << "__globally__"
+                           << "did:plc:ar7c4by46qjdydhdevvrndac"
+                           << "did:plc:original_labeler_did"
+                           << "did:plc:original_labeler_did_2");
 
-    QVERIFY(provider->visibility(account, "hoge", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(provider->visibility(account, "porn", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(provider->visibility(account, "sexual", true) == ConfigurableLabelStatus::Warning);
-    QVERIFY(provider->visibility(account, "graphic-media", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(provider->visibility(account, "nudity", true) == ConfigurableLabelStatus::Warning);
+    QCOMPARE(provider->visibility(account, "hoge", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(provider->visibility(account, "porn", true), ConfigurableLabelStatus::Show);
+    QCOMPARE(provider->visibility(account, "sexual", true), ConfigurableLabelStatus::Warning);
+    QCOMPARE(provider->visibility(account, "graphic-media", true), ConfigurableLabelStatus::Hide);
+    QCOMPARE(provider->visibility(account, "nudity", true), ConfigurableLabelStatus::Warning);
 
     QString labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
     QVERIFY(provider->visibility(account, "rumor", false, labeler_did)
             == ConfigurableLabelStatus::Hide);
 
-    QVERIFY(provider->message(account, "porn", true) == "Sexually Explicit");
-    QVERIFY(provider->message(account, "sexual", true) == "Sexually Suggestive");
-    QVERIFY(provider->message(account, "graphic-media", true) == "Graphic Media");
-    QVERIFY(provider->message(account, "nudity", true) == "Non-sexual Nudity");
+    QCOMPARE(provider->message(account, "porn", true), "Sexually Explicit");
+    QCOMPARE(provider->message(account, "sexual", true), "Sexually Suggestive");
+    QCOMPARE(provider->message(account, "graphic-media", true), "Graphic Media");
+    QCOMPARE(provider->message(account, "nudity", true), "Non-sexual Nudity");
 
     QVERIFY(provider->containsMutedWords(account, "hoge\ntest3-4 fuga\tpiyo foooo",
                                          QStringList() << "hoge", false)
@@ -1662,30 +1589,28 @@ void atprotocol_test::test_LabelProvider()
                          account, connector2);
         spy.wait();
         spy.wait();
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 2);
     }
 
     labeler_did = "did:plc:original_labeler_did";
     id = "test_label2";
     provider->setLanguage("en");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
-    QVERIFY2(label.avatar
-                     == "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/"
-                        "avatar@jpeg",
-             label.name.toLocal8Bit());
+    QCOMPARE(label.name, "label2");
+    QCOMPARE(label.avatar,
+             "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/avatar@jpeg");
     provider->setLanguage("ja");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "raberu2", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "raberu2");
     provider->setLanguage("unknown");
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "label2");
 
     labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
     id = "extremist";
     label = provider->getLabel(labeler_did, id);
-    QVERIFY2(label.name == "Extremist", label.name.toLocal8Bit());
-    QVERIFY2(label.avatar == "", label.name.toLocal8Bit());
+    QCOMPARE(label.name, "Extremist");
+    QCOMPARE(label.avatar, "");
 
     // 3連続で3カ所からリクエストしたときに、下記のようにするとgetServicesが3回発行されて
     // 3回目のリクエスト元に対しては3回コールバック必要
@@ -1709,7 +1634,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
     createrecord.post("hello world");
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 }
@@ -1732,7 +1657,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Nobody, QList<AtProtocolType::ThreadGateAllow>());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1750,7 +1675,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1766,7 +1691,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1783,7 +1708,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1804,7 +1729,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1828,7 +1753,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
                         embeddingRules_DisableRule,
                 QStringList());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1843,7 +1768,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
                 QStringList() << "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/"
                                  "3l44nnbwfcq2q");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1858,19 +1783,19 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
     QSignalSpy spy(&generator, SIGNAL(finished(bool)));
     generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
 
     QVERIFY(generator.view().uri
             == "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
-    QVERIFY(generator.view().cid == "bafyreib7pgajpklwexy4lidm");
-    QVERIFY(generator.view().did == "did:web:view.bsky.social");
-    QVERIFY(generator.view().displayName == "view:displayName");
-    QVERIFY(generator.view().description == "view:description");
-    QVERIFY(generator.view().avatar == "https://cdn.bsky.social/view_avator.jpeg");
-    QVERIFY(generator.view().creator.did == "did:plc:42fxwa2jeumqzzggxj");
-    QVERIFY(generator.view().creator.handle == "creator.bsky.social");
-    QVERIFY(generator.view().creator.displayName == "creator:displayName");
-    QVERIFY(generator.view().creator.avatar == "https://cdn.bsky.social/creator_avator.jpeg");
+    QCOMPARE(generator.view().cid, "bafyreib7pgajpklwexy4lidm");
+    QCOMPARE(generator.view().did, "did:web:view.bsky.social");
+    QCOMPARE(generator.view().displayName, "view:displayName");
+    QCOMPARE(generator.view().description, "view:description");
+    QCOMPARE(generator.view().avatar, "https://cdn.bsky.social/view_avator.jpeg");
+    QCOMPARE(generator.view().creator.did, "did:plc:42fxwa2jeumqzzggxj");
+    QCOMPARE(generator.view().creator.handle, "creator.bsky.social");
+    QCOMPARE(generator.view().creator.displayName, "creator:displayName");
+    QCOMPARE(generator.view().creator.avatar, "https://cdn.bsky.social/creator_avator.jpeg");
 }
 
 void atprotocol_test::test_ServiceUrl()
@@ -1882,7 +1807,7 @@ void atprotocol_test::test_ServiceUrl()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1898,29 +1823,25 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
         record.profile("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY2(record.uri() == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self",
-             record.cid().toLocal8Bit());
-    QVERIFY2(record.cid() == "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
-             record.cid().toLocal8Bit());
+    QCOMPARE(record.uri(), "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self");
+    QCOMPARE(record.cid(), "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
     AppBskyActorProfile::Main value =
             LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(record.value());
-    QVERIFY2(value.description == "epub\nLeME", value.description.toLocal8Bit());
-    QVERIFY2(value.displayName == "IoriAYANE", value.displayName.toLocal8Bit());
-    QVERIFY2(value.avatar.cid == "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy",
-             value.avatar.cid.toLocal8Bit());
-    QVERIFY2(value.avatar.alt == "", value.avatar.alt.toLocal8Bit());
-    QVERIFY2(value.avatar.mimeType == "image/jpeg", value.avatar.mimeType.toLocal8Bit());
-    QVERIFY2(value.avatar.size == 68308, QString::number(value.avatar.size).toLocal8Bit());
-    QVERIFY2(value.banner.cid == "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni",
-             value.banner.cid.toLocal8Bit());
-    QVERIFY2(value.banner.alt == "", value.banner.alt.toLocal8Bit());
-    QVERIFY2(value.banner.mimeType == "image/jpeg", value.banner.mimeType.toLocal8Bit());
-    QVERIFY2(value.banner.size == 51567, QString::number(value.banner.size).toLocal8Bit());
+    QCOMPARE(value.description, "epub\nLeME");
+    QCOMPARE(value.displayName, "IoriAYANE");
+    QCOMPARE(value.avatar.cid, "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy");
+    QCOMPARE(value.avatar.alt, "");
+    QCOMPARE(value.avatar.mimeType, "image/jpeg");
+    QCOMPARE(value.avatar.size, 68308);
+    QCOMPARE(value.banner.cid, "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni");
+    QCOMPARE(value.banner.alt, "");
+    QCOMPARE(value.banner.mimeType, "image/jpeg");
+    QCOMPARE(value.banner.size, 51567);
 }
 
 void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
@@ -1942,7 +1863,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
         record.profile(avatar, banner, "description", "display name", QString(), QString(),
                        pinned_post, "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1961,7 +1882,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
         record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(), QString(), pinned_post,
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -1971,22 +1892,22 @@ void atprotocol_test::test_ListItemsCache()
 {
     ListItemsCache *cache = ListItemsCache::getInstance();
 
-    QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
+    QCOMPARE(cache->getListNames("hoge", "hoge"), QStringList());
 
-    QVERIFY(cache->has("account1") == false);
-    QVERIFY(cache->has("account2") == false);
-    QVERIFY(cache->has("account3") == false);
+    QCOMPARE(cache->has("account1"), false);
+    QCOMPARE(cache->has("account2"), false);
+    QCOMPARE(cache->has("account3"), false);
 
     cache->addItem("account1", "user1", "list1", "list1_uri", "list1_item1_uri");
-    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
-    QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri");
+    QCOMPARE(cache->getListNames("account1", "user1"), QStringList() << "list1");
+    QCOMPARE(cache->getListUris("account1", "user1"), QStringList() << "list1_uri");
 
     cache->addItem("account1", "user1", "list1", "list1_uri", "list1_itemX_uri");
-    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
-    QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri");
+    QCOMPARE(cache->getListNames("account1", "user1"), QStringList() << "list1");
+    QCOMPARE(cache->getListUris("account1", "user1"), QStringList() << "list1_uri");
 
     ListInfo info = cache->getListInfo("account1", "user1", "list1_uri");
-    QVERIFY2(info.item_uri == "list1_item1_uri", info.item_uri.toLocal8Bit());
+    QCOMPARE(info.item_uri, "list1_item1_uri");
 
     cache->addItem("account1", "user1", "list2", "list2_uri", "list2_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1")
@@ -2008,8 +1929,8 @@ void atprotocol_test::test_ListItemsCache()
 
     cache->addItem("account3", "user1", "account3list1", "account3list1_uri",
                    "account3list1_item1_uri");
-    QVERIFY(cache->getListNames("account3", "user1") == QStringList() << "account3list1");
-    QVERIFY(cache->getListUris("account3", "user1") == QStringList() << "account3list1_uri");
+    QCOMPARE(cache->getListNames("account3", "user1"), QStringList() << "account3list1");
+    QCOMPARE(cache->getListUris("account3", "user1"), QStringList() << "account3list1_uri");
 
     cache->addItem("account3", "user1", "account3list2", "account3list2_uri",
                    "account3list2_item1_uri");
@@ -2022,8 +1943,8 @@ void atprotocol_test::test_ListItemsCache()
 
     cache->addItem("account3", "user2", "account3list1", "account3list1_uri",
                    "account3list1_item1_uri");
-    QVERIFY(cache->getListNames("account3", "user2") == QStringList() << "account3list1");
-    QVERIFY(cache->getListUris("account3", "user2") == QStringList() << "account3list1_uri");
+    QCOMPARE(cache->getListNames("account3", "user2"), QStringList() << "account3list1");
+    QCOMPARE(cache->getListUris("account3", "user2"), QStringList() << "account3list1_uri");
 
     cache->addItem("account3", "user1", "account3list3", "account3list3_uri",
                    "account3list3_item1_uri");
@@ -2037,8 +1958,8 @@ void atprotocol_test::test_ListItemsCache()
                              << "account3list3_uri");
 
     cache->addItem("account2", "user1", "a2list1", "a2list1_uri", "a2list1_item1_uri");
-    QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1");
-    QVERIFY(cache->getListUris("account2", "user1") == QStringList() << "a2list1_uri");
+    QCOMPARE(cache->getListNames("account2", "user1"), QStringList() << "a2list1");
+    QCOMPARE(cache->getListUris("account2", "user1"), QStringList() << "a2list1_uri");
 
     cache->addItem("account2", "user1", "a2list2", "a2list2_uri", "a2list2_item1_uri");
     QVERIFY(cache->getListNames("account2", "user1")
@@ -2049,8 +1970,8 @@ void atprotocol_test::test_ListItemsCache()
                              << "a2list2_uri");
 
     cache->addItem("account2", "user2", "a2list2", "a2list2_uri", "a2list2_item1_uri");
-    QVERIFY(cache->getListNames("account2", "user2") == QStringList() << "a2list2");
-    QVERIFY(cache->getListUris("account2", "user2") == QStringList() << "a2list2_uri");
+    QCOMPARE(cache->getListNames("account2", "user2"), QStringList() << "a2list2");
+    QCOMPARE(cache->getListUris("account2", "user2"), QStringList() << "a2list2_uri");
 
     cache = ListItemsCache::getInstance();
 
@@ -2081,17 +2002,17 @@ void atprotocol_test::test_ListItemsCache()
     // //////////////
 
     cache->clear("account2");
-    QVERIFY(cache->has("account1") == true);
-    QVERIFY(cache->has("account2") == false);
-    QVERIFY(cache->has("account3") == true);
+    QCOMPARE(cache->has("account1"), true);
+    QCOMPARE(cache->has("account2"), false);
+    QCOMPARE(cache->has("account3"), true);
     QVERIFY(cache->getListNames("account1", "user1")
             == QStringList() << "list1"
                              << "list2");
     QVERIFY(cache->getListUris("account1", "user1")
             == QStringList() << "list1_uri"
                              << "list2_uri");
-    QVERIFY(cache->getListNames("account2", "user2") == QStringList());
-    QVERIFY(cache->getListUris("account2", "user2") == QStringList());
+    QCOMPARE(cache->getListNames("account2", "user2"), QStringList());
+    QCOMPARE(cache->getListUris("account2", "user2"), QStringList());
     QVERIFY(cache->getListNames("account3", "user1")
             == QStringList() << "account3list1"
                              << "account3list3");
@@ -2099,24 +2020,24 @@ void atprotocol_test::test_ListItemsCache()
             == QStringList() << "account3list1_uri"
                              << "account3list3_uri");
     cache->clear();
-    QVERIFY(cache->getListNames("account1", "user2") == QStringList());
-    QVERIFY(cache->getListUris("account1", "user2") == QStringList());
-    QVERIFY(cache->getListNames("account2", "user2") == QStringList());
-    QVERIFY(cache->getListUris("account2", "user2") == QStringList());
-    QVERIFY(cache->getListNames("account3", "user2") == QStringList());
-    QVERIFY(cache->getListUris("account3", "user2") == QStringList());
+    QCOMPARE(cache->getListNames("account1", "user2"), QStringList());
+    QCOMPARE(cache->getListUris("account1", "user2"), QStringList());
+    QCOMPARE(cache->getListNames("account2", "user2"), QStringList());
+    QCOMPARE(cache->getListUris("account2", "user2"), QStringList());
+    QCOMPARE(cache->getListNames("account3", "user2"), QStringList());
+    QCOMPARE(cache->getListUris("account3", "user2"), QStringList());
 
-    QVERIFY(cache->has("account1") == false);
-    QVERIFY(cache->has("account2") == false);
-    QVERIFY(cache->has("account3") == false);
+    QCOMPARE(cache->has("account1"), false);
+    QCOMPARE(cache->has("account2"), false);
+    QCOMPARE(cache->has("account3"), false);
 
-    QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
+    QCOMPARE(cache->getListNames("hoge", "hoge"), QStringList());
 }
 
 void atprotocol_test::test_checkPartialMatchLanguage()
 {
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja") == true);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja_JP") == true);
+    QCOMPARE(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja"), true);
+    QCOMPARE(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja_JP"), true);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja"
                                                                          << "en")
             == true);
@@ -2127,9 +2048,9 @@ void atprotocol_test::test_checkPartialMatchLanguage()
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
                                                                          << "en")
             == false);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de") == false);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "") == false);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()) == false);
+    QCOMPARE(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"), false);
+    QCOMPARE(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << ""), false);
+    QCOMPARE(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()), false);
 }
 
 void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
@@ -2143,14 +2064,14 @@ void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.searchActorsTypeahead("hoge", 0);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsList().count() == 2);
-    QVERIFY(api.followsList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(api.followsList().at(1).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(api.followsList().count(), 2);
+    QCOMPARE(api.followsList().at(0).did, "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(api.followsList().at(1).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
 }
 
 void atprotocol_test::test_AppBskyFeedGetActorFeeds()
@@ -2165,12 +2086,12 @@ void atprotocol_test::test_AppBskyFeedGetActorFeeds()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getActorFeeds("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedsList().count() == 2);
+    QCOMPARE(api.feedsList().count(), 2);
     QVERIFY(api.feedsList().at(0).cid
             == "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy");
     QVERIFY(api.feedsList().at(1).cid
@@ -2188,12 +2109,12 @@ void atprotocol_test::test_AppBskyFeedGetActorLikes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getActorLikes("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedList().count() == 1);
+    QCOMPARE(api.feedList().count(), 1);
     QVERIFY(api.feedList().at(0).post.cid
             == "bafyreigkj2ljajuvh5yg4dxnaduxslxftfvbyshdaastjx6iacjuarmxka");
 }
@@ -2209,12 +2130,12 @@ void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getAuthorFeed("", 0, QString(), QString(), false);
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedList().count() == 3);
+    QCOMPARE(api.feedList().count(), 3);
     QVERIFY(api.feedList().at(0).post.cid
             == "bafyreifkt2ejac2rxsj6j3lvslvh6m3pvpcq5l4y5zmisops7hq2g4y5n4");
     QVERIFY(api.feedList().at(1).post.cid
@@ -2238,12 +2159,12 @@ void atprotocol_test::test_AppBskyFeedGetFeed()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFeed("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedList().count() == 6);
+    QCOMPARE(api.feedList().count(), 6);
     QVERIFY(api.feedList().at(0).post.cid
             == "bafyreidmnkhb3ls2t5jog774uncafb5zkzzyjffgs2pd7b2425wqshl2am");
     QVERIFY(api.feedList().at(1).post.cid
@@ -2269,12 +2190,12 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerators()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFeedGenerators(QStringList() << "");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedsList().count() == 3);
+    QCOMPARE(api.feedsList().count(), 3);
     QVERIFY(api.feedsList().at(0).cid
             == "bafyreibffkfh5lnndhpmginso7txws4cmqcjrubb3dtfnnwqt2lyrydkua");
     QVERIFY(api.feedsList().at(1).cid
@@ -2294,13 +2215,13 @@ void atprotocol_test::test_AppBskyGraphGetBlocks()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getBlocks(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsList().count() == 1);
-    QVERIFY(api.followsList().at(0).did == "did:plc:blocked_user_did");
+    QCOMPARE(api.followsList().count(), 1);
+    QCOMPARE(api.followsList().at(0).did, "did:plc:blocked_user_did");
 }
 
 void atprotocol_test::test_AppBskyGraphGetFollowers()
@@ -2314,16 +2235,16 @@ void atprotocol_test::test_AppBskyGraphGetFollowers()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFollowers("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsList().count() == 2);
-    QVERIFY(api.followsList().at(0).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
-    QVERIFY(api.followsList().at(1).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(api.followsList().count(), 2);
+    QCOMPARE(api.followsList().at(0).did, "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QCOMPARE(api.followsList().at(1).did, "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
-    QVERIFY(api.subject().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs1");
+    QCOMPARE(api.subject().did, "did:plc:l4fsx4ujos7uw7n4ijq2ulgs1");
 }
 
 void atprotocol_test::test_AppBskyGraphGetFollows()
@@ -2337,17 +2258,17 @@ void atprotocol_test::test_AppBskyGraphGetFollows()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getFollows("", 0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsList().count() == 3);
-    QVERIFY(api.followsList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(api.followsList().at(1).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
-    QVERIFY(api.followsList().at(2).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(api.followsList().count(), 3);
+    QCOMPARE(api.followsList().at(0).did, "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QCOMPARE(api.followsList().at(1).did, "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QCOMPARE(api.followsList().at(2).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
 
-    QVERIFY(api.subject().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+    QCOMPARE(api.subject().did, "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
 }
 
 void atprotocol_test::test_AppBskyGraphGetListMutes()
@@ -2361,12 +2282,12 @@ void atprotocol_test::test_AppBskyGraphGetListMutes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getListMutes(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.listsList().count() == 2);
+    QCOMPARE(api.listsList().count(), 2);
     QVERIFY(api.listsList().at(0).cid
             == "bafyreiexwt5i5qo4wy6qnn3wxnznjbqjbemmbqq3dwfaf7qbn2wk4cdblm");
     QVERIFY(api.listsList().at(1).cid
@@ -2384,12 +2305,12 @@ void atprotocol_test::test_AppBskyGraphGetListBlocks()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getListBlocks(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.listsList().count() == 2);
+    QCOMPARE(api.listsList().count(), 2);
     QVERIFY(api.listsList().at(0).cid
             == "bafyreif73o7vskbe36slr3zalbvitpcl5scr2d27ts3vmuqkyhj4u4pvm4");
     QVERIFY(api.listsList().at(1).cid
@@ -2407,13 +2328,13 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
         api.getMutes(0, QString());
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsList().count() == 1);
-    QVERIFY(api.followsList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+    QCOMPARE(api.followsList().count(), 1);
+    QCOMPARE(api.followsList().at(0).did, "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
 }
 
 void atprotocol_test::test_AppBskyActorPutPreferencesEx()
@@ -2436,32 +2357,26 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
     dest_object.insert("preferences",
                        pref.updatePreferencesJson(QString(file.readAll()), type, part));
     json_doc.setObject(dest_object);
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.20.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(":data/preferences/app.bsky.actor.putPreferences.20.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"));
     json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"));
     json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), true));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"));
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("choice",
                                                             QStringList() << "mentioned"
@@ -2470,10 +2385,9 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
                                                                           << "at://path/to/1"
                                                                           << "at://path/to/2",
                                                             false));
-    QVERIFY2(json_doc
-                     == UnitTestCommon::loadJson(
-                             ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"),
-             json_doc.toJson());
+    QCOMPARE(json_doc,
+             UnitTestCommon::loadJson(
+                     ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"));
 }
 
 void atprotocol_test::test_PlcDirectory()
@@ -2485,16 +2399,16 @@ void atprotocol_test::test_PlcDirectory()
         QSignalSpy spy(&plc, SIGNAL(finished(bool)));
         plc.directory("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(!plc.didDoc().service.isEmpty());
-    QVERIFY(plc.didDoc().service.at(0).id == "#atproto_pds");
-    QVERIFY(plc.didDoc().service.at(0).type == "AtprotoPersonalDataServer");
+    QCOMPARE(plc.didDoc().service.at(0).id, "#atproto_pds");
+    QCOMPARE(plc.didDoc().service.at(0).type, "AtprotoPersonalDataServer");
     QVERIFY(plc.didDoc().service.at(0).serviceEndpoint
             == "https://porcini.us-east.host.bsky.network");
 
-    QVERIFY(plc.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
+    QCOMPARE(plc.serviceEndpoint(), "https://porcini.us-east.host.bsky.network");
 
 #endif
 }
@@ -2508,88 +2422,54 @@ void atprotocol_test::test_DirectoryPlcLogAudit()
         QSignalSpy spy(&audit, SIGNAL(finished(bool)));
         audit.audit("did:plc:ipj5qejfoqu6eukvt72uhyit");
         spy.wait();
-        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QCOMPARE(spy.count(), 1);
     }
 
     QVERIFY(audit.plcAuditLog().length() >= 3);
     int i = 0;
-    QVERIFY2(audit.plcAuditLog().at(i).cid
-                     == "bafyreicd2pmbcjlufhrfcvm76vb6ceyhzk77ky66wrew3qhifzgbqkp2we",
-             audit.plcAuditLog().at(i).cid.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
-             audit.plcAuditLog().at(i).did.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-04-13T16:33:31.049Z",
-             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
-             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
-                     == "AtprotoPersonalDataServer",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
-                     == "https://bsky.social",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
-             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
-                     .toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
-                     == "at://ioriayane.bsky.social",
-             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
+    QCOMPARE(audit.plcAuditLog().at(i).cid, "bafyreicd2pmbcjlufhrfcvm76vb6ceyhzk77ky66wrew3qhifzgbqkp2we");
+    QCOMPARE(audit.plcAuditLog().at(i).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(audit.plcAuditLog().at(i).createdAt, "2023-04-13T16:33:31.049Z");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.type, "plc_operation");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type, "AtprotoPersonalDataServer");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint, "https://bsky.social");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length(), 1);
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0), "at://ioriayane.bsky.social");
 
     i = 2;
-    QVERIFY2(audit.plcAuditLog().at(i).cid
-                     == "bafyreigxn7o7fdb4a3rkaqfiqaivvcq4abt2wgjktgtpuicxhzr4qvj64i",
-             audit.plcAuditLog().at(i).cid.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
-             audit.plcAuditLog().at(i).did.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-11-10T05:23:30.519Z",
-             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
-             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
-                     == "AtprotoPersonalDataServer",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
-                     == "https://porcini.us-east.host.bsky.network",
-             audit.plcAuditLog()
-                     .at(i)
-                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
-             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
-                     .toLocal8Bit());
-    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
-                     == "at://ioriayane.relog.tech",
-             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
+    QCOMPARE(audit.plcAuditLog().at(i).cid, "bafyreigxn7o7fdb4a3rkaqfiqaivvcq4abt2wgjktgtpuicxhzr4qvj64i");
+    QCOMPARE(audit.plcAuditLog().at(i).did, "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QCOMPARE(audit.plcAuditLog().at(i).createdAt, "2023-11-10T05:23:30.519Z");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.type, "plc_operation");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type, "AtprotoPersonalDataServer");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint, "https://porcini.us-east.host.bsky.network");
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length(), 1);
+    QCOMPARE(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0), "at://ioriayane.relog.tech");
 #endif
 }
 
 void atprotocol_test::test_PinnedPostCache()
 {
-    QVERIFY(PinnedPostCache::getInstance()->pinned("", "") == false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("", ""), false);
     //
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "") == false);
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did1", ""), false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did1", "uri1"), false);
     PinnedPostCache::getInstance()->update("did1", "uri1");
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == true);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did1", "uri1"), true);
     PinnedPostCache::getInstance()->update("did1", "uri1-1");
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1-1") == true);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did1", "uri1"), false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did1", "uri1-1"), true);
     //
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", ""), false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", "uri1"), false);
     PinnedPostCache::getInstance()->update("did2", "uri1");
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == true);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", "uri1"), true);
     PinnedPostCache::getInstance()->update("did2", "uri1-1");
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1-1") == true);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", "uri1"), false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", "uri1-1"), true);
     //
     PinnedPostCache::getInstance()->update("did2", "");
-    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+    QCOMPARE(PinnedPostCache::getInstance()->pinned("did2", ""), false);
 }
 
 void atprotocol_test::test_atprotoProxyHttpHeader()
@@ -2601,7 +2481,7 @@ void atprotocol_test::test_atprotoProxyHttpHeader()
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
     timeline.getTimeline(QString(), 0, QString());
     spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 }
@@ -2615,10 +2495,8 @@ void atprotocol_test::test_convertVideoThumb()
             "https://video.bsky.app/watch/did%3Aplc%3Aipj5qejfoqu6eukvt72uhyit/"
             "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
 #if 0
-    QVERIFY2(url
-                     == "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
-                        "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg",
-             url.toLocal8Bit());
+    QCOMPARE(url, "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                  "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
 #endif
 }
 
@@ -2631,7 +2509,7 @@ void atprotocol_test::test_facets()
                                          record);
         QString actual = LexiconsTypeUnknown::copyRecordText(record);
         QString expect = json_testasset.toObject().value("expect").toString();
-        QVERIFY2(actual == expect, QString("\n%1\n%2\n").arg(actual).arg(expect).toLocal8Bit());
+        QCOMPARE(actual, expect);
     }
 }
 
@@ -2644,7 +2522,7 @@ void atprotocol_test::test_postText()
                                          record);
         QString actual = LexiconsTypeUnknown::copyRecordText(record);
         QString expect = json_testasset.toObject().value("expect").toString();
-        QVERIFY2(actual == expect, QString("\n%1\n%2\n").arg(actual).arg(expect).toLocal8Bit());
+        QCOMPARE(actual, expect);
     }
 }
 
@@ -2683,7 +2561,7 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 void atprotocol_test::test_putRecord(const QString &path, const QByteArray &body)
@@ -2703,7 +2581,7 @@ void atprotocol_test::test_putRecord(const QString &path, const QByteArray &body
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
 void atprotocol_test::test_createRecord(const QString &path, const QByteArray &body)
@@ -2725,7 +2603,7 @@ void atprotocol_test::test_createRecord(const QString &path, const QByteArray &b
                                                 .arg(QJsonDocument(json_expect).toJson(),
                                                      QJsonDocument(json_actual).toJson());
     }
-    QVERIFY(json_expect == json_actual);
+    QCOMPARE(json_expect, json_actual);
 }
 
 void atprotocol_test::updateCreatedAt(QJsonObject &json_obj)

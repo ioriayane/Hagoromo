@@ -396,6 +396,79 @@
             "repo": "post_0037"
         }
     },
+    "post_stock0001": {
+        "text": "Stocks $ABCD and $Z123",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "Stocks $ABCD and $Z123",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 12,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "$ABCD",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 22,
+                            "byteStart": 17
+                        },
+                        "features": [
+                            {
+                                "tag": "$Z123",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_stock0001"
+        }
+    },
+    "post_stock_len5": {
+        "text": "Boundary $ABCDE test",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "Boundary $ABCDE test",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 15,
+                            "byteStart": 9
+                        },
+                        "features": [
+                            {
+                                "tag": "$ABCDE",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_stock_len5"
+        }
+    },
+    "post_stock_len6": {
+        "text": "Boundary $ABCDEF test",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "Boundary $ABCDEF test"
+            },
+            "repo": "post_stock_len6"
+        }
+    },
     "post_0038": {
         "text": "たぐ #たぐ てすと #🐧🐧🐧🐧🐧　絵文字",
         "expect": {

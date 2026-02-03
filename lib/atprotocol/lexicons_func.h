@@ -35,6 +35,7 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
 void copySavedFeed(const QJsonObject &src, AppBskyActorDefs::SavedFeed &dest);
 void copySavedFeedsPrefV2(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPrefV2 &dest);
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
+void copyDeclaredAgePref(const QJsonObject &src, AppBskyActorDefs::DeclaredAgePref &dest);
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
 void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
@@ -50,6 +51,7 @@ void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &de
 void copyPostInteractionSettingsPref(const QJsonObject &src,
                                      AppBskyActorDefs::PostInteractionSettingsPref &dest);
 void copyVerificationPrefs(const QJsonObject &src, AppBskyActorDefs::VerificationPrefs &dest);
+void copyLiveEventPreferences(const QJsonObject &src, AppBskyActorDefs::LiveEventPreferences &dest);
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
 }
 // app.bsky.graph.defs
@@ -119,6 +121,30 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest);
 // app.bsky.actor.status
 namespace AppBskyActorStatus {
 void copyMain(const QJsonObject &src, AppBskyActorStatus::Main &dest);
+}
+// app.bsky.ageassurance.defs
+namespace AppBskyAgeassuranceDefs {
+void copyAccess(const QJsonValue &src, AppBskyAgeassuranceDefs::Access &dest);
+void copyStatus(const QJsonValue &src, AppBskyAgeassuranceDefs::Status &dest);
+void copyState(const QJsonObject &src, AppBskyAgeassuranceDefs::State &dest);
+void copyStateMetadata(const QJsonObject &src, AppBskyAgeassuranceDefs::StateMetadata &dest);
+void copyConfigRegionRuleDefault(const QJsonObject &src,
+                                 AppBskyAgeassuranceDefs::ConfigRegionRuleDefault &dest);
+void copyConfigRegionRuleIfDeclaredOverAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredOverAge &dest);
+void copyConfigRegionRuleIfDeclaredUnderAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfDeclaredUnderAge &dest);
+void copyConfigRegionRuleIfAssuredOverAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredOverAge &dest);
+void copyConfigRegionRuleIfAssuredUnderAge(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAssuredUnderAge &dest);
+void copyConfigRegionRuleIfAccountNewerThan(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountNewerThan &dest);
+void copyConfigRegionRuleIfAccountOlderThan(
+        const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegionRuleIfAccountOlderThan &dest);
+void copyConfigRegion(const QJsonObject &src, AppBskyAgeassuranceDefs::ConfigRegion &dest);
+void copyConfig(const QJsonObject &src, AppBskyAgeassuranceDefs::Config &dest);
+void copyEvent(const QJsonObject &src, AppBskyAgeassuranceDefs::Event &dest);
 }
 // app.bsky.bookmark.defs
 namespace AppBskyBookmarkDefs {
@@ -191,6 +217,26 @@ void copyLabelerViewerState(const QJsonObject &src, AppBskyLabelerDefs::LabelerV
 void copyLabelerView(const QJsonObject &src, AppBskyLabelerDefs::LabelerView &dest);
 void copyLabelerPolicies(const QJsonObject &src, AppBskyLabelerDefs::LabelerPolicies &dest);
 void copyLabelerViewDetailed(const QJsonObject &src, AppBskyLabelerDefs::LabelerViewDetailed &dest);
+}
+// app.bsky.contact.defs
+namespace AppBskyContactDefs {
+void copyMatchAndContactIndex(const QJsonObject &src,
+                              AppBskyContactDefs::MatchAndContactIndex &dest);
+void copySyncStatus(const QJsonObject &src, AppBskyContactDefs::SyncStatus &dest);
+void copyNotification(const QJsonObject &src, AppBskyContactDefs::Notification &dest);
+}
+// app.bsky.draft.defs
+namespace AppBskyDraftDefs {
+void copyDraftEmbedLocalRef(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedLocalRef &dest);
+void copyDraftEmbedImage(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedImage &dest);
+void copyDraftEmbedCaption(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedCaption &dest);
+void copyDraftEmbedVideo(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedVideo &dest);
+void copyDraftEmbedExternal(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedExternal &dest);
+void copyDraftEmbedRecord(const QJsonObject &src, AppBskyDraftDefs::DraftEmbedRecord &dest);
+void copyDraftPost(const QJsonObject &src, AppBskyDraftDefs::DraftPost &dest);
+void copyDraft(const QJsonObject &src, AppBskyDraftDefs::Draft &dest);
+void copyDraftWithId(const QJsonObject &src, AppBskyDraftDefs::DraftWithId &dest);
+void copyDraftView(const QJsonObject &src, AppBskyDraftDefs::DraftView &dest);
 }
 // app.bsky.feed.describeFeedGenerator
 namespace AppBskyFeedDescribeFeedGenerator {
@@ -476,6 +522,13 @@ void copyHandleUpdated(const QJsonObject &src,
                        ToolsOzoneHostingGetAccountHistory::HandleUpdated &dest);
 void copyEvent(const QJsonObject &src, ToolsOzoneHostingGetAccountHistory::Event &dest);
 }
+// tools.ozone.moderation.cancelScheduledActions
+namespace ToolsOzoneModerationCancelScheduledActions {
+void copyFailedCancellation(const QJsonObject &src,
+                            ToolsOzoneModerationCancelScheduledActions::FailedCancellation &dest);
+void copyCancellationResults(const QJsonObject &src,
+                             ToolsOzoneModerationCancelScheduledActions::CancellationResults &dest);
+}
 // tools.ozone.moderation.defs
 namespace ToolsOzoneModerationDefs {
 void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTakedown &dest);
@@ -509,6 +562,10 @@ void copyAgeAssuranceOverrideEvent(const QJsonObject &src,
                                    ToolsOzoneModerationDefs::AgeAssuranceOverrideEvent &dest);
 void copyRevokeAccountCredentialsEvent(
         const QJsonObject &src, ToolsOzoneModerationDefs::RevokeAccountCredentialsEvent &dest);
+void copyScheduleTakedownEvent(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ScheduleTakedownEvent &dest);
+void copyCancelScheduledTakedownEvent(const QJsonObject &src,
+                                      ToolsOzoneModerationDefs::CancelScheduledTakedownEvent &dest);
 void copyModTool(const QJsonObject &src, ToolsOzoneModerationDefs::ModTool &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
 void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::AccountHosting &dest);
@@ -517,6 +574,7 @@ void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
 void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest);
 void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest);
+void copyAccountStrike(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStrike &dest);
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest);
 void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest);
@@ -535,6 +593,8 @@ void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoVi
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
 void copySubjectView(const QJsonObject &src, ToolsOzoneModerationDefs::SubjectView &dest);
 void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::ReporterStats &dest);
+void copyScheduledActionView(const QJsonObject &src,
+                             ToolsOzoneModerationDefs::ScheduledActionView &dest);
 }
 // tools.ozone.moderation.getAccountTimeline
 namespace ToolsOzoneModerationGetAccountTimeline {
@@ -542,6 +602,16 @@ void copyTimelineItemSummary(const QJsonObject &src,
                              ToolsOzoneModerationGetAccountTimeline::TimelineItemSummary &dest);
 void copyTimelineItem(const QJsonObject &src,
                       ToolsOzoneModerationGetAccountTimeline::TimelineItem &dest);
+}
+// tools.ozone.moderation.scheduleAction
+namespace ToolsOzoneModerationScheduleAction {
+void copyTakedown(const QJsonObject &src, ToolsOzoneModerationScheduleAction::Takedown &dest);
+void copySchedulingConfig(const QJsonObject &src,
+                          ToolsOzoneModerationScheduleAction::SchedulingConfig &dest);
+void copyFailedScheduling(const QJsonObject &src,
+                          ToolsOzoneModerationScheduleAction::FailedScheduling &dest);
+void copyScheduledActionResults(const QJsonObject &src,
+                                ToolsOzoneModerationScheduleAction::ScheduledActionResults &dest);
 }
 // tools.ozone.report.defs
 namespace ToolsOzoneReportDefs {
