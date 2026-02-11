@@ -49,6 +49,8 @@ add_library(HagoromoGuiLib STATIC
     controls/emojilistmodel.h
     controls/languagelistmodel.cpp
     controls/languagelistmodel.h
+    draft/draftlistmodel.cpp
+    draft/draftlistmodel.h
     feedgenerator/actorfeedgeneratorlistmodel.cpp
     feedgenerator/actorfeedgeneratorlistmodel.h
     feedgenerator/feedgeneratorlistmodel.cpp
@@ -93,6 +95,8 @@ add_library(HagoromoGuiLib STATIC
     notification/notificationlistmodel.h
     notification/notificationpreferencelistmodel.cpp
     notification/notificationpreferencelistmodel.h
+    operation/draftoperator.cpp
+    operation/draftoperator.h
     operation/recordoperator.cpp
     operation/recordoperator.h
     operation/skybluroperator.cpp

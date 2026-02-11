@@ -20,6 +20,9 @@ Dialog {
     property string status: "normal"    // normal, error
     property bool useCancel: false
 
+    property string acceptButtonText: qsTr("OK")
+    property string rejectButtonText: qsTr("Cancel")
+
     function show(status, title, message){
         messageDialog.status = status
         titleLabel.text = title
@@ -74,13 +77,13 @@ Dialog {
                 visible: messageDialog.useCancel
                 font.pointSize: AdjustedValues.f10
                 flat: true
-                text: qsTr("Cancel")
+                text: messageDialog.rejectButtonText
                 onClicked: messageDialog.reject()
             }
             Button {
                 font.pointSize: AdjustedValues.f10
                 flat: true
-                text: qsTr("OK")
+                text: messageDialog.acceptButtonText
                 onClicked: messageDialog.accept()
             }
         }

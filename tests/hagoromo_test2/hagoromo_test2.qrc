@@ -43,5 +43,9 @@
         <file>data/notification/preference/save/app.bsky.notification.putPreferences</file>
         <file>data/com.atproto.repo.createRecord_vote.expect</file>
         <file>response/tokimeki/no_vote/xrpc/tech.tokimeki.poll.getPoll</file>
+        <file>response/draft/xrpc/app.bsky.draft.createDraft</file>
+        <file>response/draft/xrpc/app.bsky.draft.updateDraft</file>
+        <file>response/draft/xrpc/app.bsky.draft.deleteDraft</file>
+        <file>response/draft/xrpc/app.bsky.draft.getDrafts</file>
     </qresource>
 </RCC>

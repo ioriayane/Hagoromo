@@ -909,6 +909,37 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>DraftOperator</name>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="108"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="137"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="169"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="196"/>
+        <source>Another operation is currently in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="113"/>
+        <source>Create draft ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="142"/>
+        <source>Update draft ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="174"/>
+        <source>Delete draft ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="201"/>
+        <source>Get drafts ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DragAndDropArea</name>
     <message>
         <location filename="qml/controls/DragAndDropArea.qml" line="27"/>
@@ -2240,12 +2271,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="77"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="24"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="83"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="23"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -2692,7 +2723,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="472"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="488"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2705,24 +2736,44 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="471"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="487"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="674"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="690"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="762"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="694"/>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="785"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="822"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="853"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="904"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="905"/>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/PostDialog.qml" line="694"/>
+        <source>Save the draft?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
