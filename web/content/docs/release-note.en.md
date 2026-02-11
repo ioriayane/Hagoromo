@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.58.0 - 2026/2/3
+
 - Add
   - Support cash tag
 - Update
