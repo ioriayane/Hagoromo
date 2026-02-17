@@ -4,6 +4,7 @@
 #include "atprotocol/app/bsky/draft/appbskydraftdeletedraft.h"
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
 #include "tools/accountmanager.h"
+#include "tools/deviceinfo.h"
 
 #include <QJsonArray>
 
@@ -250,6 +251,7 @@ QString DraftOperator::handle() const
 QJsonObject DraftOperator::buildDraftJson() const
 {
     QJsonObject draftPost;
+    draftPost["$type"] = QStringLiteral("app.bsky.draft.defs#draftPost");
     draftPost["text"] = m_text;
 
     // Self labels
@@ -309,7 +311,20 @@ QJsonObject DraftOperator::buildDraftJson() const
     QJsonObject draft;
     QJsonArray posts;
     posts.append(draftPost);
+    draft["$type"] = QStringLiteral("app.bsky.draft.defs#draft");
     draft["posts"] = posts;
+
+    // Device ID (hashed MAC address)
+    QString deviceId = DeviceInfo::getDeviceId();
+    if (!deviceId.isEmpty()) {
+        draft["deviceId"] = deviceId;
+    }
+
+    // Device Name (computer name)
+    QString deviceName = DeviceInfo::getDeviceName();
+    if (!deviceName.isEmpty()) {
+        draft["deviceName"] = deviceName;
+    }
 
     // Languages
     if (!m_postLanguages.isEmpty()) {

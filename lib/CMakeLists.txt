@@ -304,6 +304,8 @@ add_library(HagoromoLib STATIC
     tools/chatlogsubscriber.h
     tools/configurablelabels.cpp
     tools/configurablelabels.h
+    tools/deviceinfo.cpp
+    tools/deviceinfo.h
     tools/encryption.cpp
     tools/encryption.h
     tools/encryption_seed.h
