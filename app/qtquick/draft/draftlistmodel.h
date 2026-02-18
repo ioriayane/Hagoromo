@@ -23,11 +23,21 @@ public:
         CreatedAtRole,
         UpdatedAtRole,
         PrimaryTextRole,
-        PostsRole,
+        PrimaryLabelsRole,
+        PrimaryEmbedImagesPathsRole,
+        PrimaryEmbedImagesAltsRole,
+        PrimaryEmbedVideosPathsRole,
+        PrimaryEmbedVideosAltsRole,
+        PrimaryEmbedVideosCaptionsRole,
+        PrimaryEmbedExternalsRole,
+        PrimaryEmbedRecordsUrisRole,
+        PrimaryEmbedRecordsCidsRole,
         LangsRole,
         PostgateEmbeddingRulesRole,
         ThreadGateTypeRole,
         ThreadGateRulesRole,
+        PostCountRole,
+        IsThreadRole,
     };
     Q_ENUM(DraftListModelRoles)
 

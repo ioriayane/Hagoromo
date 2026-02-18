@@ -3133,6 +3133,8 @@ void hagoromo_test::test_DraftListModel()
     QStringList rules0 = model.item(0, DraftListModel::ThreadGateRulesRole).toStringList();
     QCOMPARE(rules0.count(), 1);
     QCOMPARE(rules0.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(0, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(0, DraftListModel::IsThreadRole).toBool(), false);
 
     // Test second draft (id: 3mf2uylv5vk2r) - has langs
     QCOMPARE(model.item(1, DraftListModel::IdRole).toString(), QStringLiteral("3mf2uylv5vk2r"));
@@ -3144,46 +3146,58 @@ void hagoromo_test::test_DraftListModel()
              true); // quote enabled
     QCOMPARE(model.item(1, DraftListModel::ThreadGateTypeRole).toString(),
              QStringLiteral("choice"));
+    QCOMPARE(model.item(1, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(1, DraftListModel::IsThreadRole).toBool(), false);
 
     // Test third draft (id: 3mf2t7mlnb223) - has images and labels
     QCOMPARE(model.item(2, DraftListModel::IdRole).toString(), QStringLiteral("3mf2t7mlnb223"));
     QCOMPARE(model.item(2, DraftListModel::PrimaryTextRole).toString(),
              QStringLiteral("label_test"));
-    QVariantList posts2 = model.item(2, DraftListModel::PostsRole).toList();
-    QCOMPARE(posts2.count(), 1);
-    QVariantMap post2 = posts2.at(0).toMap();
-    QCOMPARE(post2.value("text").toString(), QStringLiteral("label_test"));
-    QVERIFY(post2.contains("labels"));
-    QVERIFY(post2.contains("embedImages"));
-    QVariantList images2 = post2.value("embedImages").toList();
-    QCOMPARE(images2.count(), 1);
+    QStringList labels2 = model.item(2, DraftListModel::PrimaryLabelsRole).toStringList();
+    QCOMPARE(labels2.count(), 1);
+    QCOMPARE(labels2.at(0), QStringLiteral("sexual"));
+    QStringList imagePaths2 =
+            model.item(2, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths2.count(), 1);
+    QCOMPARE(imagePaths2.at(0), QStringLiteral("image:e-jhhgSLUDGgpVuAlenJl"));
+    QStringList imageAlts2 =
+            model.item(2, DraftListModel::PrimaryEmbedImagesAltsRole).toStringList();
+    QCOMPARE(imageAlts2.count(), 1);
+    QCOMPARE(imageAlts2.at(0), QString()); // No alt text
+    QCOMPARE(model.item(2, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(2, DraftListModel::IsThreadRole).toBool(), false);
 
     // Test fourth draft (id: 3mellc6ahps2o) - multiple posts
     QCOMPARE(model.item(3, DraftListModel::IdRole).toString(), QStringLiteral("3mellc6ahps2o"));
     QCOMPARE(model.item(3, DraftListModel::PrimaryTextRole).toString(), QStringLiteral("test1"));
-    QVariantList posts3 = model.item(3, DraftListModel::PostsRole).toList();
-    QCOMPARE(posts3.count(), 3);
-    QCOMPARE(posts3.at(0).toMap().value("text").toString(), QStringLiteral("test1"));
-    QCOMPARE(posts3.at(1).toMap().value("text").toString(), QStringLiteral("test2"));
-    QCOMPARE(posts3.at(2).toMap().value("text").toString(), QStringLiteral("test3"));
+    // Multiple posts - only primary (first) post data is accessible via roles
+    QStringList imagePaths3 =
+            model.item(3, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths3.count(), 1);
+    QCOMPARE(imagePaths3.at(0), QStringLiteral("image:zQsiEwV7UciTu0fkIL6Po"));
+    QCOMPARE(model.item(3, DraftListModel::PostCountRole).toInt(), 3);
+    QCOMPARE(model.item(3, DraftListModel::IsThreadRole).toBool(), true);
 
     // Test fifth draft (id: 3mdl6vx6l2k2z) - has external link and multiple images
     QCOMPARE(model.item(4, DraftListModel::IdRole).toString(), QStringLiteral("3mdl6vx6l2k2z"));
     QCOMPARE(model.item(4, DraftListModel::PrimaryTextRole).toString(),
              QStringLiteral("draft_test"));
-    QVariantList posts4 = model.item(4, DraftListModel::PostsRole).toList();
-    QCOMPARE(posts4.count(), 1);
-    QVariantMap post4 = posts4.at(0).toMap();
-    QVERIFY(post4.contains("embedExternals"));
-    QVERIFY(post4.contains("embedImages"));
-    QVariantList images4 = post4.value("embedImages").toList();
-    QCOMPARE(images4.count(), 2);
-    QCOMPARE(images4.at(0).toMap().value("alt").toString(), QStringLiteral("alt1"));
-    QCOMPARE(images4.at(1).toMap().value("alt").toString(), QStringLiteral("alt2"));
-    QVariantList externals4 = post4.value("embedExternals").toList();
+    QStringList imagePaths4 =
+            model.item(4, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths4.count(), 2);
+    QCOMPARE(imagePaths4.at(0), QStringLiteral("file:///D:/image1.JPG"));
+    QCOMPARE(imagePaths4.at(1), QStringLiteral("file:///D:/image2.JPG"));
+    QStringList imageAlts4 =
+            model.item(4, DraftListModel::PrimaryEmbedImagesAltsRole).toStringList();
+    QCOMPARE(imageAlts4.count(), 2);
+    QCOMPARE(imageAlts4.at(0), QStringLiteral("alt1"));
+    QCOMPARE(imageAlts4.at(1), QStringLiteral("alt2"));
+    QStringList externals4 =
+            model.item(4, DraftListModel::PrimaryEmbedExternalsRole).toStringList();
     QCOMPARE(externals4.count(), 1);
-    QCOMPARE(externals4.at(0).toMap().value("uri").toString(),
-             QStringLiteral("https://github.com/ioriayane/Hagoromo"));
+    QCOMPARE(externals4.at(0), QStringLiteral("https://github.com/ioriayane/Hagoromo"));
+    QCOMPARE(model.item(4, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(4, DraftListModel::IsThreadRole).toBool(), false);
 
     // Test indexOf
     QCOMPARE(model.indexOf("3mf5aryvgm224"), 0);

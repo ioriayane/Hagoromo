@@ -23,143 +23,94 @@ constexpr auto kFollowerRuleType = "app.bsky.feed.threadgate#followerRule";
 constexpr auto kFollowingRuleType = "app.bsky.feed.threadgate#followingRule";
 constexpr auto kListRuleType = "app.bsky.feed.threadgate#listRule";
 
-QVariantMap labelsToVariant(const ComAtprotoLabelDefs::SelfLabels &labels)
+QStringList labelsToStringList(const ComAtprotoLabelDefs::SelfLabels &labels)
 {
-    QVariantMap map;
-    if (labels.values.isEmpty())
-        return map;
-
-    QVariantList values;
+    QStringList list;
     for (const auto &value : labels.values) {
-        QVariantMap entry;
-        entry["val"] = value.val;
-        values.append(entry);
-    }
-    map["$type"] = QString::fromLatin1(kSelfLabelsType);
-    map["values"] = values;
-    return map;
-}
-
-QVariantMap imageToVariant(const DraftEmbedImage &image)
-{
-    QVariantMap map;
-    map["path"] = image.localRef.path;
-    if (!image.alt.isEmpty()) {
-        map["alt"] = image.alt;
-    }
-    return map;
-}
-
-QVariantMap captionToVariant(const DraftEmbedCaption &caption)
-{
-    QVariantMap map;
-    map["lang"] = caption.lang;
-    map["content"] = caption.content;
-    return map;
-}
-
-QVariantMap videoToVariant(const DraftEmbedVideo &video)
-{
-    QVariantMap map;
-    map["path"] = video.localRef.path;
-    if (!video.alt.isEmpty()) {
-        map["alt"] = video.alt;
-    }
-    if (!video.captions.isEmpty()) {
-        QVariantList captions;
-        for (const auto &caption : video.captions) {
-            captions.append(captionToVariant(caption));
-        }
-        map["captions"] = captions;
-    }
-    return map;
-}
-
-QVariantMap externalToVariant(const DraftEmbedExternal &external)
-{
-    QVariantMap map;
-    map["uri"] = external.uri;
-    return map;
-}
-
-QVariantMap recordToVariant(const DraftEmbedRecord &record)
-{
-    QVariantMap map;
-    map["uri"] = record.record.uri;
-    map["cid"] = record.record.cid;
-    return map;
-}
-
-QVariantList imagesToVariant(const QList<DraftEmbedImage> &images)
-{
-    QVariantList list;
-    for (const auto &image : images) {
-        list.append(imageToVariant(image));
+        list.append(value.val);
     }
     return list;
 }
 
-QVariantList videosToVariant(const QList<DraftEmbedVideo> &videos)
+QStringList imagesToPathsList(const QList<DraftEmbedImage> &images)
+{
+    QStringList list;
+    for (const auto &image : images) {
+        list.append(image.localRef.path);
+    }
+    return list;
+}
+
+QStringList imagesToAltsList(const QList<DraftEmbedImage> &images)
+{
+    QStringList list;
+    for (const auto &image : images) {
+        list.append(image.alt);
+    }
+    return list;
+}
+
+QStringList videosToPathsList(const QList<DraftEmbedVideo> &videos)
+{
+    QStringList list;
+    for (const auto &video : videos) {
+        list.append(video.localRef.path);
+    }
+    return list;
+}
+
+QStringList videosToAltsList(const QList<DraftEmbedVideo> &videos)
+{
+    QStringList list;
+    for (const auto &video : videos) {
+        list.append(video.alt);
+    }
+    return list;
+}
+
+QVariantList videosCaptionsToVariant(const QList<DraftEmbedVideo> &videos)
 {
     QVariantList list;
     for (const auto &video : videos) {
-        list.append(videoToVariant(video));
-    }
-    return list;
-}
-
-QVariantList externalsToVariant(const QList<DraftEmbedExternal> &externals)
-{
-    QVariantList list;
-    for (const auto &external : externals) {
-        list.append(externalToVariant(external));
-    }
-    return list;
-}
-
-QVariantList recordsToVariant(const QList<DraftEmbedRecord> &records)
-{
-    QVariantList list;
-    for (const auto &record : records) {
-        list.append(recordToVariant(record));
-    }
-    return list;
-}
-
-QVariantMap draftPostToVariant(const DraftPost &post)
-{
-    QVariantMap map;
-    map["text"] = post.text;
-
-    if (post.labels_type
-        == AppBskyDraftDefs::DraftPostLabelsType::labels_ComAtprotoLabelDefs_SelfLabels) {
-        auto labels = labelsToVariant(post.labels_ComAtprotoLabelDefs_SelfLabels);
-        if (!labels.isEmpty()) {
-            map["labels"] = labels;
+        if (!video.captions.isEmpty()) {
+            QVariantList captions;
+            for (const auto &caption : video.captions) {
+                QVariantMap map;
+                map["lang"] = caption.lang;
+                map["content"] = caption.content;
+                captions.append(map);
+            }
+            list.append(captions);
+        } else {
+            list.append(QVariantList());
         }
     }
-
-    if (!post.embedImages.isEmpty()) {
-        map["embedImages"] = imagesToVariant(post.embedImages);
-    }
-    if (!post.embedVideos.isEmpty()) {
-        map["embedVideos"] = videosToVariant(post.embedVideos);
-    }
-    if (!post.embedExternals.isEmpty()) {
-        map["embedExternals"] = externalsToVariant(post.embedExternals);
-    }
-    if (!post.embedRecords.isEmpty()) {
-        map["embedRecords"] = recordsToVariant(post.embedRecords);
-    }
-
-    return map;
+    return list;
 }
 
-QVariantList postsToVariant(const Draft &draft)
+QStringList externalsToUrisList(const QList<DraftEmbedExternal> &externals)
 {
-    QVariantList list;
-    for (const auto &post : draft.posts) {
-        list.append(draftPostToVariant(post));
+    QStringList list;
+    for (const auto &external : externals) {
+        list.append(external.uri);
+    }
+    return list;
+}
+
+QStringList recordsToUrisList(const QList<DraftEmbedRecord> &records)
+{
+    QStringList list;
+    for (const auto &record : records) {
+        list.append(record.record.uri);
+    }
+    return list;
+}
+
+QStringList recordsToCidsList(const QList<DraftEmbedRecord> &records)
+{
+    QStringList list;
+    for (const auto &record : records) {
+        list.append(record.record.cid);
     }
     return list;
 }
@@ -264,8 +215,79 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
             return view.draft.posts.constFirst().text;
         }
         return QString();
-    case DraftListModelRoles::PostsRole:
-        return postsToVariant(view.draft);
+    case DraftListModelRoles::PrimaryLabelsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (post.labels_type
+                == AppBskyDraftDefs::DraftPostLabelsType::labels_ComAtprotoLabelDefs_SelfLabels) {
+                return labelsToStringList(post.labels_ComAtprotoLabelDefs_SelfLabels);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedImagesPathsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedImages.isEmpty()) {
+                return imagesToPathsList(post.embedImages);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedImagesAltsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedImages.isEmpty()) {
+                return imagesToAltsList(post.embedImages);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedVideosPathsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedVideos.isEmpty()) {
+                return videosToPathsList(post.embedVideos);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedVideosAltsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedVideos.isEmpty()) {
+                return videosToAltsList(post.embedVideos);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedVideosCaptionsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedVideos.isEmpty()) {
+                return videosCaptionsToVariant(post.embedVideos);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedExternalsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedExternals.isEmpty()) {
+                return externalsToUrisList(post.embedExternals);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedRecordsUrisRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedRecords.isEmpty()) {
+                return recordsToUrisList(post.embedRecords);
+            }
+        }
+        return QVariant();
+    case DraftListModelRoles::PrimaryEmbedRecordsCidsRole:
+        if (!view.draft.posts.isEmpty()) {
+            const auto &post = view.draft.posts.constFirst();
+            if (!post.embedRecords.isEmpty()) {
+                return recordsToCidsList(post.embedRecords);
+            }
+        }
+        return QVariant();
     case DraftListModelRoles::LangsRole:
         return view.draft.langs;
     case DraftListModelRoles::PostgateEmbeddingRulesRole:
@@ -274,6 +296,10 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
         return threadgateTypeFromDraft(view.draft);
     case DraftListModelRoles::ThreadGateRulesRole:
         return threadgateRulesFromDraft(view.draft);
+    case DraftListModelRoles::PostCountRole:
+        return view.draft.posts.count();
+    case DraftListModelRoles::IsThreadRole:
+        return view.draft.posts.count() > 1;
     default:
         break;
     }
@@ -380,11 +406,21 @@ QHash<int, QByteArray> DraftListModel::roleNames() const
     roles[DraftListModelRoles::CreatedAtRole] = "createdAt";
     roles[DraftListModelRoles::UpdatedAtRole] = "updatedAt";
     roles[DraftListModelRoles::PrimaryTextRole] = "primaryText";
-    roles[DraftListModelRoles::PostsRole] = "posts";
+    roles[DraftListModelRoles::PrimaryLabelsRole] = "primaryLabels";
+    roles[DraftListModelRoles::PrimaryEmbedImagesPathsRole] = "primaryEmbedImagesPaths";
+    roles[DraftListModelRoles::PrimaryEmbedImagesAltsRole] = "primaryEmbedImagesAlts";
+    roles[DraftListModelRoles::PrimaryEmbedVideosPathsRole] = "primaryEmbedVideosPaths";
+    roles[DraftListModelRoles::PrimaryEmbedVideosAltsRole] = "primaryEmbedVideosAlts";
+    roles[DraftListModelRoles::PrimaryEmbedVideosCaptionsRole] = "primaryEmbedVideosCaptions";
+    roles[DraftListModelRoles::PrimaryEmbedExternalsRole] = "primaryEmbedExternals";
+    roles[DraftListModelRoles::PrimaryEmbedRecordsUrisRole] = "primaryEmbedRecordsUris";
+    roles[DraftListModelRoles::PrimaryEmbedRecordsCidsRole] = "primaryEmbedRecordsCids";
     roles[DraftListModelRoles::LangsRole] = "langs";
     roles[DraftListModelRoles::PostgateEmbeddingRulesRole] = "postgateEmbeddingRules";
     roles[DraftListModelRoles::ThreadGateTypeRole] = "threadGateType";
     roles[DraftListModelRoles::ThreadGateRulesRole] = "threadGateRules";
+    roles[DraftListModelRoles::PostCountRole] = "postCount";
+    roles[DraftListModelRoles::IsThreadRole] = "isThread";
     return roles;
 }
 
