@@ -1,6 +1,7 @@
 #include "draftlistmodel.h"
 
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::AppBskyDraftGetDrafts;
 using namespace AtProtocolType;
@@ -163,92 +164,67 @@ QVariantList postsToVariant(const Draft &draft)
     return list;
 }
 
-QVariantList postgateRulesToVariant(const Draft &draft)
+bool quoteEnabledFromDraft(const Draft &draft)
 {
-    QVariantList rules;
+    // If disableRule exists, quote is disabled (return false)
+    // Otherwise, quote is enabled (return true)
     if (draft.postgateEmbeddingRules_type
         == AppBskyDraftDefs::DraftPostgateEmbeddingRulesType::
                 postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule) {
-        for (int i = 0; i < draft.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.count();
-             ++i) {
-            QVariantMap rule;
-            rule["$type"] = QString::fromLatin1(kDisableRuleType);
-            rules.append(rule);
+        if (!draft.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.isEmpty()) {
+            return false;
         }
     }
+    return true;
+}
+
+QString threadgateTypeFromDraft(const Draft &draft)
+{
+    if (draft.threadgateAllow_type == AppBskyDraftDefs::DraftThreadgateAllowType::none) {
+        return QStringLiteral("everybody");
+    }
+
+    // Check if all lists are empty (nobody)
+    bool hasRules = false;
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_ListRule.isEmpty()) {
+        hasRules = true;
+    }
+
+    if (!hasRules) {
+        return QStringLiteral("nobody");
+    }
+
+    return QStringLiteral("choice");
+}
+
+QStringList threadgateRulesFromDraft(const Draft &draft)
+{
+    QStringList rules;
+
+    // Check all rule lists since the parser may put data in any of them
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.count(); ++i) {
+        rules.append(QStringLiteral("mentioned"));
+    }
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.count(); ++i) {
+        rules.append(QStringLiteral("follower"));
+    }
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.count(); ++i) {
+        rules.append(QStringLiteral("followed"));
+    }
+    for (const auto &rule : draft.threadgateAllow_AppBskyFeedThreadgate_ListRule) {
+        rules.append(rule.list);
+    }
+
     return rules;
-}
-
-QVariantList threadgateAllowToVariant(const Draft &draft)
-{
-    QVariantList allows;
-    switch (draft.threadgateAllow_type) {
-    case AppBskyDraftDefs::DraftThreadgateAllowType::
-            threadgateAllow_AppBskyFeedThreadgate_MentionRule:
-        for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.count(); ++i) {
-            QVariantMap allow;
-            allow["$type"] = QString::fromLatin1(kMentionRuleType);
-            allows.append(allow);
-        }
-        break;
-    case AppBskyDraftDefs::DraftThreadgateAllowType::
-            threadgateAllow_AppBskyFeedThreadgate_FollowerRule:
-        for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.count(); ++i) {
-            QVariantMap allow;
-            allow["$type"] = QString::fromLatin1(kFollowerRuleType);
-            allows.append(allow);
-        }
-        break;
-    case AppBskyDraftDefs::DraftThreadgateAllowType::
-            threadgateAllow_AppBskyFeedThreadgate_FollowingRule:
-        for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.count();
-             ++i) {
-            QVariantMap allow;
-            allow["$type"] = QString::fromLatin1(kFollowingRuleType);
-            allows.append(allow);
-        }
-        break;
-    case AppBskyDraftDefs::DraftThreadgateAllowType::threadgateAllow_AppBskyFeedThreadgate_ListRule:
-        for (const auto &rule : draft.threadgateAllow_AppBskyFeedThreadgate_ListRule) {
-            QVariantMap allow;
-            allow["$type"] = QString::fromLatin1(kListRuleType);
-            allow["list"] = rule.list;
-            allows.append(allow);
-        }
-        break;
-    default:
-        break;
-    }
-    return allows;
-}
-
-QVariantMap draftToVariant(const Draft &draft)
-{
-    QVariantMap map;
-    map["posts"] = postsToVariant(draft);
-    if (!draft.langs.isEmpty()) {
-        map["langs"] = QVariant::fromValue(draft.langs);
-    }
-    auto postgateRules = postgateRulesToVariant(draft);
-    if (!postgateRules.isEmpty()) {
-        map["postgateEmbeddingRules"] = postgateRules;
-    }
-    auto threadgateAllow = threadgateAllowToVariant(draft);
-    if (!threadgateAllow.isEmpty()) {
-        map["threadgateAllow"] = threadgateAllow;
-    }
-    return map;
-}
-
-QVariantMap draftViewToVariant(const DraftView &view)
-{
-    QVariantMap map;
-    map["id"] = view.id;
-    map["createdAt"] = view.createdAt;
-    map["updatedAt"] = view.updatedAt;
-    map["postCount"] = view.draft.posts.count();
-    map["draft"] = draftToVariant(view.draft);
-    return map;
 }
 }
 
@@ -276,14 +252,13 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
     const auto &view = m_drafts.at(row);
     switch (role) {
     case DraftListModelRoles::ModelData:
-    case DraftListModelRoles::DraftRole:
-        return draftViewToVariant(view);
+        return QVariant();
     case DraftListModelRoles::IdRole:
         return view.id;
     case DraftListModelRoles::CreatedAtRole:
-        return view.createdAt;
+        return LexiconsTypeUnknown::formatDateTime(view.createdAt, true);
     case DraftListModelRoles::UpdatedAtRole:
-        return view.updatedAt;
+        return LexiconsTypeUnknown::formatDateTime(view.updatedAt, true);
     case DraftListModelRoles::PrimaryTextRole:
         if (!view.draft.posts.isEmpty()) {
             return view.draft.posts.constFirst().text;
@@ -292,11 +267,13 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
     case DraftListModelRoles::PostsRole:
         return postsToVariant(view.draft);
     case DraftListModelRoles::LangsRole:
-        return QVariant::fromValue(view.draft.langs);
+        return view.draft.langs;
     case DraftListModelRoles::PostgateEmbeddingRulesRole:
-        return postgateRulesToVariant(view.draft);
-    case DraftListModelRoles::ThreadgateAllowRole:
-        return threadgateAllowToVariant(view.draft);
+        return quoteEnabledFromDraft(view.draft);
+    case DraftListModelRoles::ThreadGateTypeRole:
+        return threadgateTypeFromDraft(view.draft);
+    case DraftListModelRoles::ThreadGateRulesRole:
+        return threadgateRulesFromDraft(view.draft);
     default:
         break;
     }
@@ -406,8 +383,8 @@ QHash<int, QByteArray> DraftListModel::roleNames() const
     roles[DraftListModelRoles::PostsRole] = "posts";
     roles[DraftListModelRoles::LangsRole] = "langs";
     roles[DraftListModelRoles::PostgateEmbeddingRulesRole] = "postgateEmbeddingRules";
-    roles[DraftListModelRoles::ThreadgateAllowRole] = "threadgateAllow";
-    roles[DraftListModelRoles::DraftRole] = "draft";
+    roles[DraftListModelRoles::ThreadGateTypeRole] = "threadGateType";
+    roles[DraftListModelRoles::ThreadGateRulesRole] = "threadGateRules";
     return roles;
 }
 

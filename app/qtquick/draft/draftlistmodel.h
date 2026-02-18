@@ -26,8 +26,8 @@ public:
         PostsRole,
         LangsRole,
         PostgateEmbeddingRulesRole,
-        ThreadgateAllowRole,
-        DraftRole,
+        ThreadGateTypeRole,
+        ThreadGateRulesRole,
     };
     Q_ENUM(DraftListModelRoles)
 

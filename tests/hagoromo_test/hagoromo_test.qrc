@@ -80,5 +80,6 @@
         <file>response/timeline/pinned/3/xrpc/app.bsky.labeler.getServices</file>
         <file>response/tokimeki/with_vote/xrpc/tech.tokimeki.poll.getPoll</file>
         <file>response/tokimeki/no_vote/xrpc/tech.tokimeki.poll.getPoll</file>
+        <file>response/draft/xrpc/app.bsky.draft.getDrafts</file>
     </qresource>
 </RCC>

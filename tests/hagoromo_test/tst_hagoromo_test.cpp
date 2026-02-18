@@ -24,6 +24,7 @@
 #include "tools/accountmanager.h"
 #include "operation/tokimekipolloperator.h"
 #include "tools/tid.h"
+#include "draft/draftlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -78,6 +79,8 @@ private slots:
     void test_TokimekiPollOperator_makePollOgpFile();
     void test_TokimekiPollOperator_makeAltUrl();
     void test_TokimekiPollOperator_getOgp();
+
+    void test_DraftListModel();
 
 private:
     WebServer m_mockServer;
@@ -3098,6 +3101,103 @@ void hagoromo_test::test_TokimekiPollOperator_getOgp()
     // QVERIFY(arguments.at(0).toBool());
 
     // qDebug() << arguments.at(1).toString();
+}
+
+void hagoromo_test::test_DraftListModel()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftListModel model;
+    model.setAccount(uuid);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait(10 * 1000);
+    QCOMPARE(spy.count(), 2);
+
+    // 5 drafts should be loaded
+    QCOMPARE(model.rowCount(), 5);
+
+    // Test first draft (id: 3mf5aryvgm224) - has postgate disable rule
+    QCOMPARE(model.item(0, DraftListModel::IdRole).toString(), QStringLiteral("3mf5aryvgm224"));
+    QCOMPARE(model.item(0, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("quote_disabled"));
+    QVERIFY(!model.item(0, DraftListModel::CreatedAtRole).toString().isEmpty());
+    QVERIFY(!model.item(0, DraftListModel::UpdatedAtRole).toString().isEmpty());
+    QCOMPARE(model.item(0, DraftListModel::PostgateEmbeddingRulesRole).toBool(),
+             false); // quote disabled
+    QCOMPARE(model.item(0, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules0 = model.item(0, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules0.count(), 1);
+    QCOMPARE(rules0.at(0), QStringLiteral("follower"));
+
+    // Test second draft (id: 3mf2uylv5vk2r) - has langs
+    QCOMPARE(model.item(1, DraftListModel::IdRole).toString(), QStringLiteral("3mf2uylv5vk2r"));
+    QCOMPARE(model.item(1, DraftListModel::PrimaryTextRole).toString(), QStringLiteral("stgk"));
+    QStringList langs1 = model.item(1, DraftListModel::LangsRole).toStringList();
+    QCOMPARE(langs1.count(), 1);
+    QCOMPARE(langs1.at(0), QStringLiteral("ja"));
+    QCOMPARE(model.item(1, DraftListModel::PostgateEmbeddingRulesRole).toBool(),
+             true); // quote enabled
+    QCOMPARE(model.item(1, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+
+    // Test third draft (id: 3mf2t7mlnb223) - has images and labels
+    QCOMPARE(model.item(2, DraftListModel::IdRole).toString(), QStringLiteral("3mf2t7mlnb223"));
+    QCOMPARE(model.item(2, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("label_test"));
+    QVariantList posts2 = model.item(2, DraftListModel::PostsRole).toList();
+    QCOMPARE(posts2.count(), 1);
+    QVariantMap post2 = posts2.at(0).toMap();
+    QCOMPARE(post2.value("text").toString(), QStringLiteral("label_test"));
+    QVERIFY(post2.contains("labels"));
+    QVERIFY(post2.contains("embedImages"));
+    QVariantList images2 = post2.value("embedImages").toList();
+    QCOMPARE(images2.count(), 1);
+
+    // Test fourth draft (id: 3mellc6ahps2o) - multiple posts
+    QCOMPARE(model.item(3, DraftListModel::IdRole).toString(), QStringLiteral("3mellc6ahps2o"));
+    QCOMPARE(model.item(3, DraftListModel::PrimaryTextRole).toString(), QStringLiteral("test1"));
+    QVariantList posts3 = model.item(3, DraftListModel::PostsRole).toList();
+    QCOMPARE(posts3.count(), 3);
+    QCOMPARE(posts3.at(0).toMap().value("text").toString(), QStringLiteral("test1"));
+    QCOMPARE(posts3.at(1).toMap().value("text").toString(), QStringLiteral("test2"));
+    QCOMPARE(posts3.at(2).toMap().value("text").toString(), QStringLiteral("test3"));
+
+    // Test fifth draft (id: 3mdl6vx6l2k2z) - has external link and multiple images
+    QCOMPARE(model.item(4, DraftListModel::IdRole).toString(), QStringLiteral("3mdl6vx6l2k2z"));
+    QCOMPARE(model.item(4, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("draft_test"));
+    QVariantList posts4 = model.item(4, DraftListModel::PostsRole).toList();
+    QCOMPARE(posts4.count(), 1);
+    QVariantMap post4 = posts4.at(0).toMap();
+    QVERIFY(post4.contains("embedExternals"));
+    QVERIFY(post4.contains("embedImages"));
+    QVariantList images4 = post4.value("embedImages").toList();
+    QCOMPARE(images4.count(), 2);
+    QCOMPARE(images4.at(0).toMap().value("alt").toString(), QStringLiteral("alt1"));
+    QCOMPARE(images4.at(1).toMap().value("alt").toString(), QStringLiteral("alt2"));
+    QVariantList externals4 = post4.value("embedExternals").toList();
+    QCOMPARE(externals4.count(), 1);
+    QCOMPARE(externals4.at(0).toMap().value("uri").toString(),
+             QStringLiteral("https://github.com/ioriayane/Hagoromo"));
+
+    // Test indexOf
+    QCOMPARE(model.indexOf("3mf5aryvgm224"), 0);
+    QCOMPARE(model.indexOf("3mellc6ahps2o"), 3);
+    QCOMPARE(model.indexOf("nonexistent"), -1);
+
+    // Test getRecordText
+    QCOMPARE(model.getRecordText("3mf5aryvgm224"), QStringLiteral("quote_disabled"));
+    QCOMPARE(model.getRecordText("3mf2uylv5vk2r"), QStringLiteral("stgk"));
+    QCOMPARE(model.getRecordText("nonexistent"), QString());
+
+    // Test ModelData role returns QVariant
+    QVariant modelData = model.item(0, DraftListModel::ModelData);
+    QVERIFY(!modelData.isValid());
 }
 
 QTEST_MAIN(hagoromo_test)
