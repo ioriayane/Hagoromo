@@ -182,6 +182,116 @@
             },
             "createdAt": "2026-01-29T16:19:16.238Z",
             "updatedAt": "2026-01-29T16:19:16.238Z"
+        },
+        {
+            "id": "3maa1aaa1aaa1",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "everybody_can_reply"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T10:00:00.000Z",
+            "updatedAt": "2026-01-20T10:00:00.000Z"
+        },
+        {
+            "id": "3maa2aaa2aaa2",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "nobody_can_reply"
+                    }
+                ],
+                "threadgateAllow": []
+            },
+            "createdAt": "2026-01-20T11:00:00.000Z",
+            "updatedAt": "2026-01-20T11:00:00.000Z"
+        },
+        {
+            "id": "3maa3aaa3aaa3",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "mentioned_only"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#mentionRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T12:00:00.000Z",
+            "updatedAt": "2026-01-20T12:00:00.000Z"
+        },
+        {
+            "id": "3maa4aaa4aaa4",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "following_only"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followingRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T13:00:00.000Z",
+            "updatedAt": "2026-01-20T13:00:00.000Z"
+        },
+        {
+            "id": "3maa5aaa5aaa5",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "multiple_rules"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#mentionRule"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#followingRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T14:00:00.000Z",
+            "updatedAt": "2026-01-20T14:00:00.000Z"
+        },
+        {
+            "id": "3maa6aaa6aaa6",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "list_rule_test"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#listRule",
+                        "list": "at://did:plc:test123/app.bsky.graph.list/selfList1"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#listRule",
+                        "list": "at://did:plc:test123/app.bsky.graph.list/selfList2"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T15:00:00.000Z",
+            "updatedAt": "2026-01-20T15:00:00.000Z"
         }
     ]
 }
