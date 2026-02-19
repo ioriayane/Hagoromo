@@ -3290,6 +3290,21 @@ void hagoromo_test::test_DraftListModel()
     QCOMPARE(model.getRecordText("3maa1aaa1aaa1"), QStringLiteral("everybody_can_reply"));
     QCOMPARE(model.getRecordText("nonexistent"), QString());
 
+    // Test DeviceNameRole
+    QCOMPARE(model.item(0, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("Pixel 10 Pro"));
+    QCOMPARE(model.item(1, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("DESKTOP-69STQ6M"));
+    QCOMPARE(model.item(2, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("Pixel 10 Pro"));
+
+    // Test IsCurrentDeviceRole - check that it returns a boolean value
+    // The actual value depends on the current device, so we just verify it's a bool
+    QVariant isCurrentDevice0 = model.item(0, DraftListModel::IsCurrentDeviceRole);
+    QVERIFY(isCurrentDevice0.canConvert<bool>());
+    QVariant isCurrentDevice1 = model.item(1, DraftListModel::IsCurrentDeviceRole);
+    QVERIFY(isCurrentDevice1.canConvert<bool>());
+
     // Test ModelData role returns QVariant
     QVariant modelData = model.item(0, DraftListModel::ModelData);
     QVERIFY(!modelData.isValid());

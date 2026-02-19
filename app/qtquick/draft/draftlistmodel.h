@@ -38,6 +38,8 @@ public:
         ThreadGateRulesRole,
         PostCountRole,
         IsThreadRole,
+        IsCurrentDeviceRole,
+        DeviceNameRole,
     };
     Q_ENUM(DraftListModelRoles)
 

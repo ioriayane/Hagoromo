@@ -2,6 +2,7 @@
 
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/deviceinfo.h"
 
 using AtProtocolInterface::AppBskyDraftGetDrafts;
 using namespace AtProtocolType;
@@ -300,6 +301,29 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
         return view.draft.posts.count();
     case DraftListModelRoles::IsThreadRole:
         return view.draft.posts.count() > 1;
+    case DraftListModelRoles::IsCurrentDeviceRole: {
+        // Check if both deviceId and deviceName match the current device
+        const QString currentDeviceId = DeviceInfo::getDeviceId();
+        const QString currentDeviceName = DeviceInfo::getDeviceName();
+
+        bool deviceIdMatches = false;
+        bool deviceNameMatches = false;
+
+        // Check if deviceId matches (both must be non-empty)
+        if (!currentDeviceId.isEmpty() && !view.draft.deviceId.isEmpty()) {
+            deviceIdMatches = (currentDeviceId == view.draft.deviceId);
+        }
+
+        // Check if deviceName matches (both must be non-empty)
+        if (!currentDeviceName.isEmpty() && !view.draft.deviceName.isEmpty()) {
+            deviceNameMatches = (currentDeviceName == view.draft.deviceName);
+        }
+
+        // Return true only if both match
+        return deviceIdMatches && deviceNameMatches;
+    }
+    case DraftListModelRoles::DeviceNameRole:
+        return view.draft.deviceName;
     default:
         break;
     }
@@ -421,6 +445,8 @@ QHash<int, QByteArray> DraftListModel::roleNames() const
     roles[DraftListModelRoles::ThreadGateRulesRole] = "threadGateRules";
     roles[DraftListModelRoles::PostCountRole] = "postCount";
     roles[DraftListModelRoles::IsThreadRole] = "isThread";
+    roles[DraftListModelRoles::IsCurrentDeviceRole] = "isCurrentDevice";
+    roles[DraftListModelRoles::DeviceNameRole] = "deviceName";
     return roles;
 }
 

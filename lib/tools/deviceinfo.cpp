@@ -1,7 +1,9 @@
 #include "deviceinfo.h"
 #include <QCryptographicHash>
 #include <QNetworkInterface>
+#include <QSettings>
 #include <QSysInfo>
+#include <QUuid>
 
 namespace DeviceInfo {
 
@@ -22,14 +24,23 @@ QString getMacAddress()
 
 QString getDeviceId()
 {
-    QString macAddress = getMacAddress();
-    if (macAddress.isEmpty()) {
-        return QString();
+    QSettings settings;
+
+    // Try to retrieve existing device ID
+    QString deviceId = settings.value("deviceId").toString();
+
+    if (!deviceId.isEmpty()) {
+        return deviceId;
     }
 
-    // Hash the MAC address using SHA256
-    QByteArray hash = QCryptographicHash::hash(macAddress.toUtf8(), QCryptographicHash::Sha256);
-    return QString::fromLatin1(hash.toHex());
+    // Generate new UUIDv4 if not found
+    deviceId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+    // Save to settings for future use
+    settings.setValue("deviceId", deviceId);
+    settings.sync();
+
+    return deviceId;
 }
 
 QString getDeviceName()
