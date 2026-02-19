@@ -7,179 +7,6 @@
 using AtProtocolInterface::AppBskyDraftGetDrafts;
 using namespace AtProtocolType;
 
-namespace {
-using DraftView = AppBskyDraftDefs::DraftView;
-using Draft = AppBskyDraftDefs::Draft;
-using DraftPost = AppBskyDraftDefs::DraftPost;
-using DraftEmbedImage = AppBskyDraftDefs::DraftEmbedImage;
-using DraftEmbedVideo = AppBskyDraftDefs::DraftEmbedVideo;
-using DraftEmbedCaption = AppBskyDraftDefs::DraftEmbedCaption;
-using DraftEmbedExternal = AppBskyDraftDefs::DraftEmbedExternal;
-using DraftEmbedRecord = AppBskyDraftDefs::DraftEmbedRecord;
-
-constexpr auto kSelfLabelsType = "com.atproto.label.defs#selfLabels";
-constexpr auto kDisableRuleType = "app.bsky.feed.postgate#disableRule";
-constexpr auto kMentionRuleType = "app.bsky.feed.threadgate#mentionRule";
-constexpr auto kFollowerRuleType = "app.bsky.feed.threadgate#followerRule";
-constexpr auto kFollowingRuleType = "app.bsky.feed.threadgate#followingRule";
-constexpr auto kListRuleType = "app.bsky.feed.threadgate#listRule";
-
-QStringList labelsToStringList(const ComAtprotoLabelDefs::SelfLabels &labels)
-{
-    QStringList list;
-    for (const auto &value : labels.values) {
-        list.append(value.val);
-    }
-    return list;
-}
-
-QStringList imagesToPathsList(const QList<DraftEmbedImage> &images)
-{
-    QStringList list;
-    for (const auto &image : images) {
-        list.append(image.localRef.path);
-    }
-    return list;
-}
-
-QStringList imagesToAltsList(const QList<DraftEmbedImage> &images)
-{
-    QStringList list;
-    for (const auto &image : images) {
-        list.append(image.alt);
-    }
-    return list;
-}
-
-QStringList videosToPathsList(const QList<DraftEmbedVideo> &videos)
-{
-    QStringList list;
-    for (const auto &video : videos) {
-        list.append(video.localRef.path);
-    }
-    return list;
-}
-
-QStringList videosToAltsList(const QList<DraftEmbedVideo> &videos)
-{
-    QStringList list;
-    for (const auto &video : videos) {
-        list.append(video.alt);
-    }
-    return list;
-}
-
-QVariantList videosCaptionsToVariant(const QList<DraftEmbedVideo> &videos)
-{
-    QVariantList list;
-    for (const auto &video : videos) {
-        if (!video.captions.isEmpty()) {
-            QVariantList captions;
-            for (const auto &caption : video.captions) {
-                QVariantMap map;
-                map["lang"] = caption.lang;
-                map["content"] = caption.content;
-                captions.append(map);
-            }
-            list.append(captions);
-        } else {
-            list.append(QVariantList());
-        }
-    }
-    return list;
-}
-
-QStringList externalsToUrisList(const QList<DraftEmbedExternal> &externals)
-{
-    QStringList list;
-    for (const auto &external : externals) {
-        list.append(external.uri);
-    }
-    return list;
-}
-
-QStringList recordsToUrisList(const QList<DraftEmbedRecord> &records)
-{
-    QStringList list;
-    for (const auto &record : records) {
-        list.append(record.record.uri);
-    }
-    return list;
-}
-
-QStringList recordsToCidsList(const QList<DraftEmbedRecord> &records)
-{
-    QStringList list;
-    for (const auto &record : records) {
-        list.append(record.record.cid);
-    }
-    return list;
-}
-
-bool quoteEnabledFromDraft(const Draft &draft)
-{
-    // If disableRule exists, quote is disabled (return false)
-    // Otherwise, quote is enabled (return true)
-    if (draft.postgateEmbeddingRules_type
-        == AppBskyDraftDefs::DraftPostgateEmbeddingRulesType::
-                postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule) {
-        if (!draft.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.isEmpty()) {
-            return false;
-        }
-    }
-    return true;
-}
-
-QString threadgateTypeFromDraft(const Draft &draft)
-{
-    if (draft.threadgateAllow_type == AppBskyDraftDefs::DraftThreadgateAllowType::none) {
-        return QStringLiteral("everybody");
-    }
-
-    // Check if all lists are empty (nobody)
-    bool hasRules = false;
-    if (!draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.isEmpty()) {
-        hasRules = true;
-    }
-    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.isEmpty()) {
-        hasRules = true;
-    }
-    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.isEmpty()) {
-        hasRules = true;
-    }
-    if (!draft.threadgateAllow_AppBskyFeedThreadgate_ListRule.isEmpty()) {
-        hasRules = true;
-    }
-
-    if (!hasRules) {
-        return QStringLiteral("nobody");
-    }
-
-    return QStringLiteral("choice");
-}
-
-QStringList threadgateRulesFromDraft(const Draft &draft)
-{
-    QStringList rules;
-
-    // Check all rule lists since the parser may put data in any of them
-    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.count(); ++i) {
-        rules.append(QStringLiteral("mentioned"));
-    }
-    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.count(); ++i) {
-        rules.append(QStringLiteral("follower"));
-    }
-    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.count(); ++i) {
-        rules.append(QStringLiteral("followed"));
-    }
-    for (const auto &rule : draft.threadgateAllow_AppBskyFeedThreadgate_ListRule) {
-        rules.append(rule.list);
-    }
-
-    return rules;
-}
-}
-
 DraftListModel::DraftListModel(QObject *parent)
     : AtpAbstractListModel { parent }, m_pageSize(25) { }
 
@@ -504,4 +331,171 @@ void DraftListModel::requestDrafts(const QString &cursorValue, bool append)
     });
     get->setAccount(account());
     get->getDrafts(m_pageSize, cursorValue);
+}
+
+QStringList DraftListModel::labelsToStringList(
+        const AtProtocolType::ComAtprotoLabelDefs::SelfLabels &labels) const
+{
+    QStringList list;
+    for (const auto &value : labels.values) {
+        list.append(value.val);
+    }
+    return list;
+}
+
+QStringList DraftListModel::imagesToPathsList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedImage> &images) const
+{
+    QStringList list;
+    for (const auto &image : images) {
+        list.append(image.localRef.path);
+    }
+    return list;
+}
+
+QStringList DraftListModel::imagesToAltsList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedImage> &images) const
+{
+    QStringList list;
+    for (const auto &image : images) {
+        list.append(image.alt);
+    }
+    return list;
+}
+
+QStringList DraftListModel::videosToPathsList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const
+{
+    QStringList list;
+    for (const auto &video : videos) {
+        list.append(video.localRef.path);
+    }
+    return list;
+}
+
+QStringList DraftListModel::videosToAltsList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const
+{
+    QStringList list;
+    for (const auto &video : videos) {
+        list.append(video.alt);
+    }
+    return list;
+}
+
+QVariantList DraftListModel::videosCaptionsToVariant(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const
+{
+    QVariantList list;
+    for (const auto &video : videos) {
+        if (!video.captions.isEmpty()) {
+            QVariantList captions;
+            for (const auto &caption : video.captions) {
+                QVariantMap map;
+                map["lang"] = caption.lang;
+                map["content"] = caption.content;
+                captions.append(map);
+            }
+            list.append(captions);
+        } else {
+            list.append(QVariantList());
+        }
+    }
+    return list;
+}
+
+QStringList DraftListModel::externalsToUrisList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedExternal> &externals) const
+{
+    QStringList list;
+    for (const auto &external : externals) {
+        list.append(external.uri);
+    }
+    return list;
+}
+
+QStringList DraftListModel::recordsToUrisList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedRecord> &records) const
+{
+    QStringList list;
+    for (const auto &record : records) {
+        list.append(record.record.uri);
+    }
+    return list;
+}
+
+QStringList DraftListModel::recordsToCidsList(
+        const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedRecord> &records) const
+{
+    QStringList list;
+    for (const auto &record : records) {
+        list.append(record.record.cid);
+    }
+    return list;
+}
+
+bool DraftListModel::quoteEnabledFromDraft(
+        const AtProtocolType::AppBskyDraftDefs::Draft &draft) const
+{
+    // If disableRule exists, quote is disabled (return false)
+    // Otherwise, quote is enabled (return true)
+    if (draft.postgateEmbeddingRules_type
+        == AppBskyDraftDefs::DraftPostgateEmbeddingRulesType::
+                postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule) {
+        if (!draft.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.isEmpty()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+QString
+DraftListModel::threadgateTypeFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const
+{
+    if (draft.threadgateAllow_type == AppBskyDraftDefs::DraftThreadgateAllowType::none) {
+        return QStringLiteral("everybody");
+    }
+
+    // Check if all lists are empty (nobody)
+    bool hasRules = false;
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.isEmpty()) {
+        hasRules = true;
+    }
+    if (!draft.threadgateAllow_AppBskyFeedThreadgate_ListRule.isEmpty()) {
+        hasRules = true;
+    }
+
+    if (!hasRules) {
+        return QStringLiteral("nobody");
+    }
+
+    return QStringLiteral("choice");
+}
+
+QStringList
+DraftListModel::threadgateRulesFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const
+{
+    QStringList rules;
+
+    // Check all rule lists since the parser may put data in any of them
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_MentionRule.count(); ++i) {
+        rules.append(QStringLiteral("mentioned"));
+    }
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowerRule.count(); ++i) {
+        rules.append(QStringLiteral("follower"));
+    }
+    for (int i = 0; i < draft.threadgateAllow_AppBskyFeedThreadgate_FollowingRule.count(); ++i) {
+        rules.append(QStringLiteral("followed"));
+    }
+    for (const auto &rule : draft.threadgateAllow_AppBskyFeedThreadgate_ListRule) {
+        rules.append(rule.list);
+    }
+
+    return rules;
 }

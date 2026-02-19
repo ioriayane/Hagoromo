@@ -75,6 +75,29 @@ signals:
 private:
     void requestDrafts(const QString &cursor, bool append);
 
+    QStringList
+    labelsToStringList(const AtProtocolType::ComAtprotoLabelDefs::SelfLabels &labels) const;
+    QStringList
+    imagesToPathsList(const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedImage> &images) const;
+    QStringList
+    imagesToAltsList(const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedImage> &images) const;
+    QStringList
+    videosToPathsList(const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const;
+    QStringList
+    videosToAltsList(const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const;
+    QVariantList videosCaptionsToVariant(
+            const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedVideo> &videos) const;
+    QStringList externalsToUrisList(
+            const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedExternal> &externals) const;
+    QStringList recordsToUrisList(
+            const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedRecord> &records) const;
+    QStringList recordsToCidsList(
+            const QList<AtProtocolType::AppBskyDraftDefs::DraftEmbedRecord> &records) const;
+    bool quoteEnabledFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const;
+    QString threadgateTypeFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const;
+    QStringList
+    threadgateRulesFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const;
+
     QList<AtProtocolType::AppBskyDraftDefs::DraftView> m_drafts;
     int m_pageSize;
 };
