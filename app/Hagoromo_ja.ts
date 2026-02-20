@@ -3926,6 +3926,14 @@ Why should this message be reviewed?</source>
     </message>
 </context>
 <context>
+    <name>SelectDraftDialog</name>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="18"/>
+        <source>Draft</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SelectThreadGateDialog</name>
     <message>
         <source>Who can reply</source>

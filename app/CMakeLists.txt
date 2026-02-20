@@ -147,6 +147,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/BlockedAccountsDialog.qml
         qml/dialogs/AddListDialog.qml
         qml/dialogs/AddPollDialog.qml
+        qml/dialogs/SelectDraftDialog.qml
         qml/controls/ComboBoxEx.qml
         qml/controls/IconLabelFrame.qml
         qml/controls/CalendarPicker.qml
