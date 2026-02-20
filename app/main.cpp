@@ -218,7 +218,11 @@ int main(int argc, char *argv[])
 
     engine.addImageProvider(QStringLiteral("thumbnail"), new ThumbnailProvider);
 
+#ifdef HAGOROMO_LAYOUT_TEST
+    const QUrl url("qrc:/tech/relog/hagoromo/qml/layout_test_main.qml");
+#else
     const QUrl url("qrc:/tech/relog/hagoromo/qml/main.qml");
+#endif
     QObject::connect(
             &engine, &QQmlApplicationEngine::objectCreated, &app,
             [url](QObject *obj, const QUrl &objUrl) {
