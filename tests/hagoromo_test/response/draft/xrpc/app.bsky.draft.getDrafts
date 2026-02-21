@@ -1,0 +1,297 @@
+{
+    "cursor": "",
+    "drafts": [
+        {
+            "id": "3mf5aryvgm224",
+            "draft": {
+                "$type": "app.bsky.draft.defs#draft",
+                "deviceId": "271c051f-edbc-4424-b3f0-8f1224b98b86",
+                "deviceName": "Pixel 10 Pro",
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "quote_disabled"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    }
+                ],
+                "postgateEmbeddingRules": [
+                    {
+                        "$type": "app.bsky.feed.postgate#disableRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-02-18T14:05:58.198Z",
+            "updatedAt": "2026-02-18T14:05:58.198Z"
+        },
+        {
+            "id": "3mf2uylv5vk2r",
+            "draft": {
+                "$type": "app.bsky.draft.defs#draft",
+                "deviceId": "5fe1a1b3831c8b520e378a86ae16c7a94490bceac14033f2681b07af23221d2c",
+                "deviceName": "DESKTOP-69STQ6M",
+                "langs": [
+                    "ja"
+                ],
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "stgk"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-02-17T15:29:35.026Z",
+            "updatedAt": "2026-02-17T15:29:35.026Z"
+        },
+        {
+            "id": "3mf2t7mlnb223",
+            "draft": {
+                "$type": "app.bsky.draft.defs#draft",
+                "deviceId": "271c051f-edbc-4424-b3f0-8f1224b98b86",
+                "deviceName": "Pixel 10 Pro",
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "label_test",
+                        "labels": {
+                            "$type": "com.atproto.label.defs#selfLabels",
+                            "values": [
+                                {
+                                    "val": "sexual"
+                                }
+                            ]
+                        },
+                        "embedImages": [
+                            {
+                                "$type": "app.bsky.draft.defs#draftEmbedImage",
+                                "localRef": {
+                                    "$type": "app.bsky.draft.defs#draftEmbedLocalRef",
+                                    "path": "image:e-jhhgSLUDGgpVuAlenJl"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-02-17T14:57:43.192Z",
+            "updatedAt": "2026-02-17T14:57:43.192Z"
+        },
+        {
+            "id": "3mellc6ahps2o",
+            "draft": {
+                "$type": "app.bsky.draft.defs#draft",
+                "deviceId": "271c051f-edbc-4424-b3f0-8f1224b98b86",
+                "deviceName": "Pixel 10 Pro",
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "test1",
+                        "embedImages": [
+                            {
+                                "$type": "app.bsky.draft.defs#draftEmbedImage",
+                                "localRef": {
+                                    "$type": "app.bsky.draft.defs#draftEmbedLocalRef",
+                                    "path": "image:zQsiEwV7UciTu0fkIL6Po"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "test2",
+                        "embedImages": [
+                            {
+                                "$type": "app.bsky.draft.defs#draftEmbedImage",
+                                "localRef": {
+                                    "$type": "app.bsky.draft.defs#draftEmbedLocalRef",
+                                    "path": "image:Q9PO2ZK0Y-snZAw4I1-Qn"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "test3"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-02-11T13:26:02.799Z",
+            "updatedAt": "2026-02-11T13:26:02.799Z"
+        },
+        {
+            "id": "3mdl6vx6l2k2z",
+            "draft": {
+                "langs": [
+                    "ja"
+                ],
+                "posts": [
+                    {
+                        "embedExternals": [
+                            {
+                                "uri": "https://github.com/ioriayane/Hagoromo"
+                            }
+                        ],
+                        "embedImages": [
+                            {
+                                "alt": "alt1",
+                                "localRef": {
+                                    "path": "file:///D:/image1.JPG"
+                                }
+                            },
+                            {
+                                "alt": "alt2",
+                                "localRef": {
+                                    "path": "file:///D:/image2.JPG"
+                                }
+                            }
+                        ],
+                        "labels": {
+                            "$type": "com.atproto.label.defs#selfLabels",
+                            "values": [
+                                {
+                                    "val": "sexual"
+                                }
+                            ]
+                        },
+                        "text": "draft_test"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-29T16:19:16.238Z",
+            "updatedAt": "2026-01-29T16:19:16.238Z"
+        },
+        {
+            "id": "3maa1aaa1aaa1",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "everybody_can_reply"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T10:00:00.000Z",
+            "updatedAt": "2026-01-20T10:00:00.000Z"
+        },
+        {
+            "id": "3maa2aaa2aaa2",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "nobody_can_reply"
+                    }
+                ],
+                "threadgateAllow": []
+            },
+            "createdAt": "2026-01-20T11:00:00.000Z",
+            "updatedAt": "2026-01-20T11:00:00.000Z"
+        },
+        {
+            "id": "3maa3aaa3aaa3",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "mentioned_only"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#mentionRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T12:00:00.000Z",
+            "updatedAt": "2026-01-20T12:00:00.000Z"
+        },
+        {
+            "id": "3maa4aaa4aaa4",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "following_only"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#followingRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T13:00:00.000Z",
+            "updatedAt": "2026-01-20T13:00:00.000Z"
+        },
+        {
+            "id": "3maa5aaa5aaa5",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "multiple_rules"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#mentionRule"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#followerRule"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#followingRule"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T14:00:00.000Z",
+            "updatedAt": "2026-01-20T14:00:00.000Z"
+        },
+        {
+            "id": "3maa6aaa6aaa6",
+            "draft": {
+                "posts": [
+                    {
+                        "$type": "app.bsky.draft.defs#draftPost",
+                        "text": "list_rule_test"
+                    }
+                ],
+                "threadgateAllow": [
+                    {
+                        "$type": "app.bsky.feed.threadgate#listRule",
+                        "list": "at://did:plc:test123/app.bsky.graph.list/selfList1"
+                    },
+                    {
+                        "$type": "app.bsky.feed.threadgate#listRule",
+                        "list": "at://did:plc:test123/app.bsky.graph.list/selfList2"
+                    }
+                ]
+            },
+            "createdAt": "2026-01-20T15:00:00.000Z",
+            "updatedAt": "2026-01-20T15:00:00.000Z"
+        }
+    ]
+}

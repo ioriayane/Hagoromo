@@ -71,5 +71,7 @@
         <file>qml/images/repost_via_repost.png</file>
         <file>qml/images/bookmark.png</file>
         <file>qml/images/chart.png</file>
+        <file>qml/images/draft.png</file>
+        <file>qml/images/warning.png</file>
     </qresource>
 </RCC>

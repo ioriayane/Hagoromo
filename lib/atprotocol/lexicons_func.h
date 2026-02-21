@@ -20,6 +20,8 @@ void copyProfileAssociatedChat(const QJsonObject &src,
                                AppBskyActorDefs::ProfileAssociatedChat &dest);
 void copyProfileAssociatedActivitySubscription(
         const QJsonObject &src, AppBskyActorDefs::ProfileAssociatedActivitySubscription &dest);
+void copyProfileAssociatedGerm(const QJsonObject &src,
+                               AppBskyActorDefs::ProfileAssociatedGerm &dest);
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
 void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest);
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
@@ -503,6 +505,11 @@ void copySuggestion(const QJsonObject &src,
                     ComAtprotoTempCheckHandleAvailability::Suggestion &dest);
 void copyResultUnavailable(const QJsonObject &src,
                            ComAtprotoTempCheckHandleAvailability::ResultUnavailable &dest);
+}
+// com.germnetwork.declaration
+namespace ComGermnetworkDeclaration {
+void copyMessageMe(const QJsonObject &src, ComGermnetworkDeclaration::MessageMe &dest);
+void copyMain(const QJsonObject &src, ComGermnetworkDeclaration::Main &dest);
 }
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {

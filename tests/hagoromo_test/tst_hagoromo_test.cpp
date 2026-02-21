@@ -24,6 +24,7 @@
 #include "tools/accountmanager.h"
 #include "operation/tokimekipolloperator.h"
 #include "tools/tid.h"
+#include "draft/draftlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -78,6 +79,8 @@ private slots:
     void test_TokimekiPollOperator_makePollOgpFile();
     void test_TokimekiPollOperator_makeAltUrl();
     void test_TokimekiPollOperator_getOgp();
+
+    void test_DraftListModel();
 
 private:
     WebServer m_mockServer;
@@ -3098,6 +3101,213 @@ void hagoromo_test::test_TokimekiPollOperator_getOgp()
     // QVERIFY(arguments.at(0).toBool());
 
     // qDebug() << arguments.at(1).toString();
+}
+
+void hagoromo_test::test_DraftListModel()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftListModel model;
+    model.setAccount(uuid);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait(10 * 1000);
+    QCOMPARE(spy.count(), 2);
+
+    // 11 drafts should be loaded
+    QCOMPARE(model.rowCount(), 11);
+
+    // Test first draft (id: 3mf5aryvgm224) - has postgate disable rule
+    QCOMPARE(model.item(0, DraftListModel::IdRole).toString(), QStringLiteral("3mf5aryvgm224"));
+    QCOMPARE(model.item(0, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("quote_disabled"));
+    QVERIFY(!model.item(0, DraftListModel::CreatedAtRole).toString().isEmpty());
+    QVERIFY(!model.item(0, DraftListModel::UpdatedAtRole).toString().isEmpty());
+    QCOMPARE(model.item(0, DraftListModel::PostgateEmbeddingRulesRole).toBool(),
+             false); // quote disabled
+    QCOMPARE(model.item(0, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules0 = model.item(0, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules0.count(), 1);
+    QCOMPARE(rules0.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(0, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(0, DraftListModel::IsThreadRole).toBool(), false);
+
+    // Test second draft (id: 3mf2uylv5vk2r) - has langs
+    QCOMPARE(model.item(1, DraftListModel::IdRole).toString(), QStringLiteral("3mf2uylv5vk2r"));
+    QCOMPARE(model.item(1, DraftListModel::PrimaryTextRole).toString(), QStringLiteral("stgk"));
+    QStringList langs1 = model.item(1, DraftListModel::LangsRole).toStringList();
+    QCOMPARE(langs1.count(), 1);
+    QCOMPARE(langs1.at(0), QStringLiteral("ja"));
+    QCOMPARE(model.item(1, DraftListModel::PostgateEmbeddingRulesRole).toBool(),
+             true); // quote enabled
+    QCOMPARE(model.item(1, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules1 = model.item(1, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules1.count(), 1);
+    QCOMPARE(rules1.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(1, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(1, DraftListModel::IsThreadRole).toBool(), false);
+
+    // Test third draft (id: 3mf2t7mlnb223) - has images and labels
+    QCOMPARE(model.item(2, DraftListModel::IdRole).toString(), QStringLiteral("3mf2t7mlnb223"));
+    QCOMPARE(model.item(2, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("label_test"));
+    QStringList labels2 = model.item(2, DraftListModel::PrimaryLabelsRole).toStringList();
+    QCOMPARE(labels2.count(), 1);
+    QCOMPARE(labels2.at(0), QStringLiteral("sexual"));
+    QStringList imagePaths2 =
+            model.item(2, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths2.count(), 1);
+    QCOMPARE(imagePaths2.at(0), QStringLiteral("image:e-jhhgSLUDGgpVuAlenJl"));
+    QStringList imageAlts2 =
+            model.item(2, DraftListModel::PrimaryEmbedImagesAltsRole).toStringList();
+    QCOMPARE(imageAlts2.count(), 1);
+    QCOMPARE(imageAlts2.at(0), QString()); // No alt text
+    QCOMPARE(model.item(2, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules2 = model.item(2, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules2.count(), 1);
+    QCOMPARE(rules2.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(2, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(2, DraftListModel::IsThreadRole).toBool(), false);
+
+    // Test fourth draft (id: 3mellc6ahps2o) - multiple posts
+    QCOMPARE(model.item(3, DraftListModel::IdRole).toString(), QStringLiteral("3mellc6ahps2o"));
+    QCOMPARE(model.item(3, DraftListModel::PrimaryTextRole).toString(), QStringLiteral("test1"));
+    // Multiple posts - only primary (first) post data is accessible via roles
+    QStringList imagePaths3 =
+            model.item(3, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths3.count(), 1);
+    QCOMPARE(imagePaths3.at(0), QStringLiteral("image:zQsiEwV7UciTu0fkIL6Po"));
+    QCOMPARE(model.item(3, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules3 = model.item(3, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules3.count(), 1);
+    QCOMPARE(rules3.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(3, DraftListModel::PostCountRole).toInt(), 3);
+    QCOMPARE(model.item(3, DraftListModel::IsThreadRole).toBool(), true);
+
+    // Test fifth draft (id: 3mdl6vx6l2k2z) - has external link and multiple images
+    QCOMPARE(model.item(4, DraftListModel::IdRole).toString(), QStringLiteral("3mdl6vx6l2k2z"));
+    QCOMPARE(model.item(4, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("draft_test"));
+    QStringList imagePaths4 =
+            model.item(4, DraftListModel::PrimaryEmbedImagesPathsRole).toStringList();
+    QCOMPARE(imagePaths4.count(), 2);
+    QCOMPARE(imagePaths4.at(0), QStringLiteral("file:///D:/image1.JPG"));
+    QCOMPARE(imagePaths4.at(1), QStringLiteral("file:///D:/image2.JPG"));
+    QStringList imageAlts4 =
+            model.item(4, DraftListModel::PrimaryEmbedImagesAltsRole).toStringList();
+    QCOMPARE(imageAlts4.count(), 2);
+    QCOMPARE(imageAlts4.at(0), QStringLiteral("alt1"));
+    QCOMPARE(imageAlts4.at(1), QStringLiteral("alt2"));
+    QStringList externals4 =
+            model.item(4, DraftListModel::PrimaryEmbedExternalsRole).toStringList();
+    QCOMPARE(externals4.count(), 1);
+    QCOMPARE(externals4.at(0), QStringLiteral("https://github.com/ioriayane/Hagoromo"));
+    QCOMPARE(model.item(4, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules4 = model.item(4, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules4.count(), 1);
+    QCOMPARE(rules4.at(0), QStringLiteral("follower"));
+    QCOMPARE(model.item(4, DraftListModel::PostCountRole).toInt(), 1);
+    QCOMPARE(model.item(4, DraftListModel::IsThreadRole).toBool(), false);
+
+    // Test sixth draft (id: 3maa1aaa1aaa1) - threadgate type "everybody"
+    QCOMPARE(model.item(5, DraftListModel::IdRole).toString(), QStringLiteral("3maa1aaa1aaa1"));
+    QCOMPARE(model.item(5, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("everybody_can_reply"));
+    QCOMPARE(model.item(5, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("everybody"));
+    QStringList rules5 = model.item(5, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules5.count(), 0);
+
+    // Test seventh draft (id: 3maa2aaa2aaa2) - threadgate type "nobody"
+    QCOMPARE(model.item(6, DraftListModel::IdRole).toString(), QStringLiteral("3maa2aaa2aaa2"));
+    QCOMPARE(model.item(6, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("nobody_can_reply"));
+    QCOMPARE(model.item(6, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("nobody"));
+    QStringList rules6 = model.item(6, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules6.count(), 0);
+
+    // Test eighth draft (id: 3maa3aaa3aaa3) - threadgate rule "mentioned"
+    QCOMPARE(model.item(7, DraftListModel::IdRole).toString(), QStringLiteral("3maa3aaa3aaa3"));
+    QCOMPARE(model.item(7, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("mentioned_only"));
+    QCOMPARE(model.item(7, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules7 = model.item(7, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules7.count(), 1);
+    QCOMPARE(rules7.at(0), QStringLiteral("mentioned"));
+
+    // Test ninth draft (id: 3maa4aaa4aaa4) - threadgate rule "followed"
+    QCOMPARE(model.item(8, DraftListModel::IdRole).toString(), QStringLiteral("3maa4aaa4aaa4"));
+    QCOMPARE(model.item(8, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("following_only"));
+    QCOMPARE(model.item(8, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules8 = model.item(8, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules8.count(), 1);
+    QCOMPARE(rules8.at(0), QStringLiteral("followed"));
+
+    // Test tenth draft (id: 3maa5aaa5aaa5) - multiple threadgate rules
+    QCOMPARE(model.item(9, DraftListModel::IdRole).toString(), QStringLiteral("3maa5aaa5aaa5"));
+    QCOMPARE(model.item(9, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("multiple_rules"));
+    QCOMPARE(model.item(9, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules9 = model.item(9, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules9.count(), 3);
+    QCOMPARE(rules9.at(0), QStringLiteral("mentioned"));
+    QCOMPARE(rules9.at(1), QStringLiteral("follower"));
+    QCOMPARE(rules9.at(2), QStringLiteral("followed"));
+
+    // Test eleventh draft (id: 3maa6aaa6aaa6) - list rules
+    QCOMPARE(model.item(10, DraftListModel::IdRole).toString(), QStringLiteral("3maa6aaa6aaa6"));
+    QCOMPARE(model.item(10, DraftListModel::PrimaryTextRole).toString(),
+             QStringLiteral("list_rule_test"));
+    QCOMPARE(model.item(10, DraftListModel::ThreadGateTypeRole).toString(),
+             QStringLiteral("choice"));
+    QStringList rules10 = model.item(10, DraftListModel::ThreadGateRulesRole).toStringList();
+    QCOMPARE(rules10.count(), 2);
+    QCOMPARE(rules10.at(0), QStringLiteral("at://did:plc:test123/app.bsky.graph.list/selfList1"));
+    QCOMPARE(rules10.at(1), QStringLiteral("at://did:plc:test123/app.bsky.graph.list/selfList2"));
+
+    // Test indexOf
+    QCOMPARE(model.indexOf("3mf5aryvgm224"), 0);
+    QCOMPARE(model.indexOf("3mellc6ahps2o"), 3);
+    QCOMPARE(model.indexOf("3maa1aaa1aaa1"), 5);
+    QCOMPARE(model.indexOf("nonexistent"), -1);
+
+    // Test getRecordText
+    QCOMPARE(model.getRecordText("3mf5aryvgm224"), QStringLiteral("quote_disabled"));
+    QCOMPARE(model.getRecordText("3mf2uylv5vk2r"), QStringLiteral("stgk"));
+    QCOMPARE(model.getRecordText("3maa1aaa1aaa1"), QStringLiteral("everybody_can_reply"));
+    QCOMPARE(model.getRecordText("nonexistent"), QString());
+
+    // Test DeviceNameRole
+    QCOMPARE(model.item(0, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("Pixel 10 Pro"));
+    QCOMPARE(model.item(1, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("DESKTOP-69STQ6M"));
+    QCOMPARE(model.item(2, DraftListModel::DeviceNameRole).toString(),
+             QStringLiteral("Pixel 10 Pro"));
+
+    // Test IsCurrentDeviceRole - check that it returns a boolean value
+    // The actual value depends on the current device, so we just verify it's a bool
+    QVariant isCurrentDevice0 = model.item(0, DraftListModel::IsCurrentDeviceRole);
+    QVERIFY(isCurrentDevice0.canConvert<bool>());
+    QVariant isCurrentDevice1 = model.item(1, DraftListModel::IsCurrentDeviceRole);
+    QVERIFY(isCurrentDevice1.canConvert<bool>());
+
+    // Test ModelData role returns QVariant
+    QVariant modelData = model.item(0, DraftListModel::ModelData);
+    QVERIFY(!modelData.isValid());
 }
 
 QTEST_MAIN(hagoromo_test)

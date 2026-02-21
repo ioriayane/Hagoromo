@@ -8,6 +8,7 @@
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
 #include "operation/recordoperator.h"
+#include "operation/draftoperator.h"
 #include "feedgenerator/feedgeneratorlistmodel.h"
 #include "link/feedgeneratorlink.h"
 #include "account/accountlistmodel.h"
@@ -45,6 +46,11 @@ private slots:
     void test_NotificationPreferenceListModel_save();
 
     void test_TokimekiPollOperator_getPoll_vote();
+
+    void test_DraftOperator_createDraft();
+    void test_DraftOperator_updateDraft();
+    void test_DraftOperator_deleteDraft();
+    void test_DraftOperator_getDrafts();
 
 private:
     WebServer m_mockServer;
@@ -94,6 +100,20 @@ hagoromo_test::hagoromo_test()
                     test_putNotificationPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
+                } else if (request.url().path().endsWith("/xrpc/app.bsky.draft.createDraft")
+                           || request.url().path().endsWith("/xrpc/app.bsky.draft.updateDraft")
+                           || request.url().path().endsWith("/xrpc/app.bsky.draft.deleteDraft")) {
+                    QFileInfo file_info(request.url().path());
+                    QString path = ":" + file_info.filePath();
+                    QFile file(path);
+                    if (file.open(QFile::ReadOnly)) {
+                        json = file.readAll();
+                        file.close();
+                        result = true;
+                    } else {
+                        json = "{}";
+                        result = false;
+                    }
                 } else if (request.url().path().endsWith(
                                    "/xrpc/com.atproto.server.refreshSession")) {
                     QFileInfo file_info(request.url().path());
@@ -985,6 +1005,98 @@ void hagoromo_test::test_TokimekiPollOperator_getPoll_vote()
                                    << "1");
         }
     }
+}
+
+void hagoromo_test::test_DraftOperator_createDraft()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftOperator ope;
+    ope.setAccount(uuid);
+    ope.setText("Test draft text");
+    ope.setPostLanguages(QStringList() << "ja"
+                                       << "en");
+    ope.setSelfLabels(QStringList() << "sexual");
+    ope.setThreadGate("choice", QStringList() << "follower");
+    ope.setPostGate(false, QStringList());
+    ope.setImages(QStringList() << "/path/to/file1"
+                                << "/path/to/file2",
+                  QStringList() << "alt1"
+                                << "alt2");
+
+    QSignalSpy spyFinished(&ope, SIGNAL(finishedCreateDraft(bool, const QString &)));
+    ope.createDraft();
+    spyFinished.wait();
+    QCOMPARE(spyFinished.count(), 1);
+
+    QList<QVariant> arguments = spyFinished.takeFirst();
+    QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+    QCOMPARE(arguments.at(0).toBool(), true);
+    QCOMPARE(arguments.at(1).typeId(), QMetaType::QString);
+    QCOMPARE(arguments.at(1).toString(), QString("draft-001"));
+}
+
+void hagoromo_test::test_DraftOperator_updateDraft()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftOperator ope;
+    ope.setAccount(uuid);
+    ope.setText("Updated draft text");
+
+    QSignalSpy spyFinished(&ope, SIGNAL(finishedUpdateDraft(bool)));
+    ope.updateDraft("draft-001");
+    spyFinished.wait();
+    QCOMPARE(spyFinished.count(), 1);
+
+    QList<QVariant> arguments = spyFinished.takeFirst();
+    QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+    QCOMPARE(arguments.at(0).toBool(), true);
+}
+
+void hagoromo_test::test_DraftOperator_deleteDraft()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftOperator ope;
+    ope.setAccount(uuid);
+
+    QSignalSpy spyFinished(&ope, SIGNAL(finishedDeleteDraft(bool)));
+    ope.deleteDraft("draft-001");
+    spyFinished.wait();
+    QCOMPARE(spyFinished.count(), 1);
+
+    QList<QVariant> arguments = spyFinished.takeFirst();
+    QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+    QCOMPARE(arguments.at(0).toBool(), true);
+}
+
+void hagoromo_test::test_DraftOperator_getDrafts()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/draft", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    DraftOperator ope;
+    ope.setAccount(uuid);
+
+    QSignalSpy spyFinished(
+            &ope,
+            SIGNAL(finishedGetDrafts(bool,
+                                     const QList<AtProtocolType::AppBskyDraftDefs::DraftView> &)));
+    ope.getDrafts(10, QString());
+    spyFinished.wait();
+    QCOMPARE(spyFinished.count(), 1);
+
+    QList<QVariant> arguments = spyFinished.takeFirst();
+    QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
+    QCOMPARE(arguments.at(0).toBool(), true);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

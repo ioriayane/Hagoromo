@@ -49,6 +49,8 @@ add_library(HagoromoGuiLib STATIC
     controls/emojilistmodel.h
     controls/languagelistmodel.cpp
     controls/languagelistmodel.h
+    draft/draftlistmodel.cpp
+    draft/draftlistmodel.h
     feedgenerator/actorfeedgeneratorlistmodel.cpp
     feedgenerator/actorfeedgeneratorlistmodel.h
     feedgenerator/feedgeneratorlistmodel.cpp
@@ -93,6 +95,8 @@ add_library(HagoromoGuiLib STATIC
     notification/notificationlistmodel.h
     notification/notificationpreferencelistmodel.cpp
     notification/notificationpreferencelistmodel.h
+    operation/draftoperator.cpp
+    operation/draftoperator.h
     operation/recordoperator.cpp
     operation/recordoperator.h
     operation/skybluroperator.cpp
@@ -166,4 +170,8 @@ if(HAGOROMO_UNIT_TEST_BUILD)
     target_compile_definitions(HagoromoGuiLib PUBLIC
         HAGOROMO_UNIT_TEST
     )
+endif()
+
+if(HAGOROMO_LAYOUT_TEST)
+    target_compile_definitions(HagoromoGuiLib PRIVATE HAGOROMO_LAYOUT_TEST)
 endif()

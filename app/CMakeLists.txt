@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.19)
 
 project(Hagoromo VERSION 0.1 LANGUAGES CXX C)
 
+# Option for layout test mode
+option(HAGOROMO_LAYOUT_TEST "Build with layout test mode" OFF)
+
 add_subdirectory(qtquick)
 
 set(CMAKE_AUTOUIC ON)
@@ -52,6 +55,14 @@ qt_add_executable(Hagoromo
 
 set_source_files_properties(qml/data/AdjustedValues.qml
     PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
+# Select main QML file based on build mode
+if(HAGOROMO_LAYOUT_TEST)
+    set(MAIN_QML_FILE qml/layout_test_main.qml)
+    message(STATUS "Building with layout test mode: ${MAIN_QML_FILE}")
+else()
+    set(MAIN_QML_FILE qml/main.qml)
+endif()
 
 qt_add_qml_module(Hagoromo
     URI tech.relog.hagoromo
@@ -136,6 +147,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/BlockedAccountsDialog.qml
         qml/dialogs/AddListDialog.qml
         qml/dialogs/AddPollDialog.qml
+        qml/dialogs/SelectDraftDialog.qml
         qml/controls/ComboBoxEx.qml
         qml/controls/IconLabelFrame.qml
         qml/controls/CalendarPicker.qml
@@ -149,7 +161,7 @@ qt_add_qml_module(Hagoromo
         qml/controls/MoreButton.qml
         qml/controls/ProgressCircle.qml
         qml/controls/RadioButtonEx.qml
-        qml/main.qml
+        ${MAIN_QML_FILE}
         qml/compat/GlowC.qml
         qml/compat/SettingsC.qml
         qml/compat/OpacityMaskC.qml
@@ -198,6 +210,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     if(HAGOROMO_RELEASE_BUILD)
         target_compile_definitions(Hagoromo PRIVATE HAGOROMO_RELEASE_BUILD)
     endif()
+endif()
+
+if(HAGOROMO_LAYOUT_TEST)
+    target_compile_definitions(Hagoromo PRIVATE HAGOROMO_LAYOUT_TEST)
 endif()
 
 qt_add_translations(Hagoromo
