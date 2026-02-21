@@ -98,6 +98,10 @@ private:
     QStringList
     threadgateRulesFromDraft(const AtProtocolType::AppBskyDraftDefs::Draft &draft) const;
 
+#ifdef HAGOROMO_LAYOUT_TEST
+    void addDummyDataForLayoutTest();
+#endif
+
     QList<AtProtocolType::AppBskyDraftDefs::DraftView> m_drafts;
     int m_pageSize;
 };

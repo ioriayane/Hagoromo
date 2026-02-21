@@ -171,3 +171,7 @@ if(HAGOROMO_UNIT_TEST_BUILD)
         HAGOROMO_UNIT_TEST
     )
 endif()
+
+if(HAGOROMO_LAYOUT_TEST)
+    target_compile_definitions(HagoromoGuiLib PRIVATE HAGOROMO_LAYOUT_TEST)
+endif()
