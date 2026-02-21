@@ -51,7 +51,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return labelsToStringList(post.labels_ComAtprotoLabelDefs_SelfLabels);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedImagesPathsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -59,7 +59,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return imagesToPathsList(post.embedImages);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedImagesAltsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -67,7 +67,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return imagesToAltsList(post.embedImages);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedVideosPathsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -75,7 +75,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return videosToPathsList(post.embedVideos);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedVideosAltsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -83,7 +83,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return videosToAltsList(post.embedVideos);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedVideosCaptionsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -99,7 +99,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return externalsToUrisList(post.embedExternals);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedRecordsUrisRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -107,7 +107,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return recordsToUrisList(post.embedRecords);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::PrimaryEmbedRecordsCidsRole:
         if (!view.draft.posts.isEmpty()) {
             const auto &post = view.draft.posts.constFirst();
@@ -115,7 +115,7 @@ QVariant DraftListModel::item(int row, DraftListModelRoles role) const
                 return recordsToCidsList(post.embedRecords);
             }
         }
-        return QVariant();
+        return QStringList();
     case DraftListModelRoles::LangsRole:
         return view.draft.langs;
     case DraftListModelRoles::PostgateEmbeddingRulesRole:
