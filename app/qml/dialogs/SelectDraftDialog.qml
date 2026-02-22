@@ -15,7 +15,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    title: qsTr("Draft")
+    title: qsTr("Drafts")
 
     property alias account: account
     Account {
@@ -24,96 +24,155 @@ Dialog {
 
     onOpened: {
         console.log("SelectDraftDialog : " + account.uuid)
+        draftListView.currentIndex = -1
         draftListModel.clear()
         draftListModel.setAccount(account.uuid)
         draftListModel.getLatest()
     }
 
     ColumnLayout {
-        ListView {
-            id: draftListView
+        ScrollView {
+            id: draftScrollView
             Layout.preferredWidth: 500 * AdjustedValues.ratio
             Layout.preferredHeight: 300 * AdjustedValues.ratio
-            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+            //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             clip: true
-            spacing: AdjustedValues.s5
-            model: DraftListModel {
-                id: draftListModel
-            }
 
-            delegate: ClickableFrame {
-                id: contentRootFrame
-                contentWidth: contentRootLayout.implicitWidth
-                contentHeight: contentRootLayout.implicitHeight
-                topPadding: 10
-                leftPadding: 10
-                rightPadding: 10
-                bottomPadding: 10
+            ListView {
+                id: draftListView
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+                clip: true
+                spacing: AdjustedValues.s5
+                model: DraftListModel {
+                    id: draftListModel
+                }
+                footer: BusyIndicator {
+                    id: busyIndicator
+                    width: draftListView.width - draftScrollView.ScrollBar.vertical.width
+                    height: AdjustedValues.i32
+                    visible: draftListView.model ? draftListView.model.running : false
+                }
 
-                ColumnLayout {
-                    id: contentRootLayout
-                    implicitWidth: basisWidth
-                    property real basisWidth: draftListView.width - contentRootFrame.leftPadding - contentRootFrame.rightPadding
+                delegate: ClickableFrame {
+                    id: contentRootFrame
+                    contentWidth: contentRootLayout.implicitWidth
+                    contentHeight: contentRootLayout.implicitHeight
+                    topPadding: 10
+                    leftPadding: 10
+                    rightPadding: 10
+                    bottomPadding: 10
 
-                    Label {
-                        Layout.topMargin: 5
-                        font.pointSize: AdjustedValues.f8
-                        text: model.updatedAt
+                    // 動画投稿できないので暫定で読み込めなくする
+                    enabled: model.primaryEmbedVideosPaths.length === 0
+
+                    onClicked: {
+                        draftListView.currentIndex = model.index
+                        console.log("draftListView.currentIndex=" + draftListView.currentIndex)
                     }
-                    Label {
-                        Layout.preferredWidth: parent.width
-                        textFormat: Text.StyledText
-                        wrapMode: Text.Wrap
-                        font.pointSize: AdjustedValues.f10
-                        lineHeight: 1.3
-                        text: model.primaryText
+
+                    Rectangle {
+                        x: 0 - contentRootFrame.leftPadding
+                        y: 0 - contentRootFrame.topPadding
+                        width: contentRootFrame.width + contentRootFrame.leftPadding + contentRootFrame.rightPadding
+                        height: contentRootFrame.height + contentRootFrame.topPadding + contentRootFrame.bottomPadding
+                        color: draftListView.currentIndex === model.index ? Material.highlightedRippleColor : "transparent"
+                        radius: 2
                     }
-                    RowLayout {
-                        visible: model.primaryEmbedRecordsUris.length > 0
-                        Image {
-                            Layout.preferredWidth: mediaStoredOnLabel.contentHeight
-                            Layout.preferredHeight: mediaStoredOnLabel.contentHeight
-                            source: "../images/quote.png"
+
+                    ColumnLayout {
+                        id: contentRootLayout
+                        implicitWidth: basisWidth
+                        property real basisWidth: draftScrollView.width -
+                                                  contentRootFrame.leftPadding -
+                                                  contentRootFrame.rightPadding -
+                                                  draftScrollView.ScrollBar.vertical.width
+
+                        Label {
+                            Layout.topMargin: 5
+                            font.pointSize: AdjustedValues.f8
+                            text: model.updatedAt
                         }
                         Label {
-                            id: quoteIndicatorLabel
-                            font.pointSize: AdjustedValues.f8
-                            text: qsTr("Quote")
+                            Layout.preferredWidth: parent.width
+                            textFormat: Text.StyledText
+                            wrapMode: Text.Wrap
+                            font.pointSize: AdjustedValues.f10
+                            lineHeight: 1.3
+                            text: model.primaryText
                         }
-                    }
-                    RowLayout {
-                        visible: model.isCurrentDevice &&
-                                 model.primaryEmbedImagesPaths.length > 0
-                        property var imagePathList: model.primaryEmbedImagesPaths
-                        Repeater {
-                            model: parent.imagePathList
+                        RowLayout {
+                            visible: model.primaryEmbedRecordsUris.length > 0
                             Image {
-                                Layout.preferredWidth: AdjustedValues.i36
-                                Layout.preferredHeight: AdjustedValues.i36
-                                source: model.isCurrentDevice ? model.modelData : ""
+                                Layout.preferredWidth: quoteIndicatorLabel.contentHeight
+                                Layout.preferredHeight: quoteIndicatorLabel.contentHeight
+                                source: "../images/quote.png"
+                            }
+                            Label {
+                                id: quoteIndicatorLabel
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Quote")
+                            }
+                        }
+                        RowLayout {
+                            id: imagePreviewLayout
+                            visible: model.isCurrentDevice &&
+                                     model.primaryEmbedImagesPaths.length > 0
+                            property var imagePathList: model.primaryEmbedImagesPaths
+                            Repeater {
+                                model: imagePreviewLayout.imagePathList
+                                Image {
+                                    Layout.preferredWidth: contentRootLayout.basisWidth / 4 - imagePreviewLayout.spacing * 3
+                                    Layout.preferredHeight: Layout.preferredWidth
+                                    source: imagePreviewLayout.visible ? model.modelData : ""
+                                }
+                            }
+                        }
+                        RowLayout {
+                            visible: (model.primaryEmbedVideosPaths.length > 0)
+                            Image {
+                                Layout.preferredWidth: mediaStoredOnLabel.contentHeight
+                                Layout.preferredHeight: mediaStoredOnLabel.contentHeight
+                                source: "../images/warning.png"
+                            }
+                            Label {
+                                id: mediaStoredOnLabel
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Video uploads are not supported.")
+                            }
+                        }
+                        RowLayout {
+                            visible: !model.isCurrentDevice &&
+                                     (model.primaryEmbedImagesPaths.length > 0 ||
+                                      model.primaryEmbedVideosPaths.length > 0)
+                            Image {
+                                Layout.preferredWidth: videoLabel.contentHeight
+                                Layout.preferredHeight: videoLabel.contentHeight
+                                source: "../images/warning.png"
+                            }
+                            Label {
+                                id: videoLabel
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("Media stored on %s.").replace("%s", model.deviceName)
+                            }
+                        }
+                        RowLayout {
+                            visible: model.postCount > 1
+                            Image {
+                                Layout.preferredWidth: morePostsLabel.contentHeight
+                                Layout.preferredHeight: morePostsLabel.contentHeight
+                                source: "../images/add_circle.png"
+                            }
+                            Label {
+                                id: morePostsLabel
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("%s more posts.").replace("%s", model.postCount)
                             }
                         }
                     }
-                    RowLayout {
-                        visible: !model.isCurrentDevice &&
-                                 (model.primaryEmbedImagesPaths.length > 0 ||
-                                  model.primaryEmbedVideosPaths.length > 0)
-                        Image {
-                            Layout.preferredWidth: mediaStoredOnLabel.contentHeight
-                            Layout.preferredHeight: mediaStoredOnLabel.contentHeight
-                            source: "../images/warning.png"
-                        }
-                        Label {
-                            id: mediaStoredOnLabel
-                            font.pointSize: AdjustedValues.f8
-                            text: qsTr("Media stored on %s.").replace("%s", model.deviceName)
-                        }
-                    }
-
                 }
             }
         }
-
         RowLayout {
             Button {
                 flat: true
@@ -142,6 +201,5 @@ Dialog {
                 }
             }
         }
-
     }
 }

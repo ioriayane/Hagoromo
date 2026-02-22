@@ -20,6 +20,7 @@ ApplicationWindow {
     title: "Hagoromo - Layout Test Mode"
 
     Material.theme: Material.Light
+    // Material.theme: Material.Dark
     Material.accent: Material.Blue
 
     QtObject {
