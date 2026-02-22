@@ -101,18 +101,10 @@ Dialog {
                             lineHeight: 1.3
                             text: model.primaryText
                         }
-                        RowLayout {
+                        IconMessage {
                             visible: model.primaryEmbedRecordsUris.length > 0
-                            Image {
-                                Layout.preferredWidth: quoteIndicatorLabel.contentHeight
-                                Layout.preferredHeight: quoteIndicatorLabel.contentHeight
-                                source: "../images/quote.png"
-                            }
-                            Label {
-                                id: quoteIndicatorLabel
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("Quote")
-                            }
+                            source: "../images/quote.png"
+                            text: qsTr("Quote")
                         }
                         RowLayout {
                             id: imagePreviewLayout
@@ -128,46 +120,22 @@ Dialog {
                                 }
                             }
                         }
-                        RowLayout {
+                        IconMessage {
                             visible: (model.primaryEmbedVideosPaths.length > 0)
-                            Image {
-                                Layout.preferredWidth: mediaStoredOnLabel.contentHeight
-                                Layout.preferredHeight: mediaStoredOnLabel.contentHeight
-                                source: "../images/warning.png"
-                            }
-                            Label {
-                                id: mediaStoredOnLabel
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("Video uploads are not supported.")
-                            }
+                            source: "../images/warning.png"
+                            text: qsTr("Video uploads are not supported.")
                         }
-                        RowLayout {
+                        IconMessage {
                             visible: !model.isCurrentDevice &&
                                      (model.primaryEmbedImagesPaths.length > 0 ||
                                       model.primaryEmbedVideosPaths.length > 0)
-                            Image {
-                                Layout.preferredWidth: videoLabel.contentHeight
-                                Layout.preferredHeight: videoLabel.contentHeight
-                                source: "../images/warning.png"
-                            }
-                            Label {
-                                id: videoLabel
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("Media stored on %s.").replace("%s", model.deviceName)
-                            }
+                            source: "../images/warning.png"
+                            text: qsTr("Media stored on %s.").replace("%s", model.deviceName)
                         }
-                        RowLayout {
+                        IconMessage {
                             visible: model.postCount > 1
-                            Image {
-                                Layout.preferredWidth: morePostsLabel.contentHeight
-                                Layout.preferredHeight: morePostsLabel.contentHeight
-                                source: "../images/add_circle.png"
-                            }
-                            Label {
-                                id: morePostsLabel
-                                font.pointSize: AdjustedValues.f8
-                                text: qsTr("%s more posts.").replace("%s", model.postCount)
-                            }
+                            source: "../images/add_circle.png"
+                            text: qsTr("%s more posts.").replace("%s", model.postCount)
                         }
                     }
                 }
