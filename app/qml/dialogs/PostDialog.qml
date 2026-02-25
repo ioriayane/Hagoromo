@@ -7,6 +7,7 @@ import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.draftoperator 1.0
+import tech.relog.hagoromo.draftlistmodel 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.controls.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
@@ -836,6 +837,11 @@ Item {
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 onClicked: {
+                                    var row = accountCombo.currentIndex;
+                                    if(selectDraftDialog.account.set(postDialogItem.accountModel,
+                                                                     postDialogItem.accountModel.item(row, AccountListModel.UuidRole))){
+                                        selectDraftDialog.open()
+                                    }
                                 }
                             }
                         }
@@ -895,6 +901,81 @@ Item {
                 id: addPollDialog
                 onAccepted: {
 
+                }
+            }
+
+            SelectDraftDialog {
+                id: selectDraftDialog
+                onAccepted: {
+                    var idx = selectDraftDialog.selectedIndex
+                    if(idx >= 0){
+                        // テキスト
+                        postText.text = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryTextRole)
+
+                        // 言語設定
+                        var langs = selectDraftDialog.draftModel.item(idx, DraftListModel.LangsRole)
+                        languageSelectionDialog.setSelectedLanguages(langs)
+                        postLanguagesButton.setLanguageText(langs)
+
+                        // セルフラベル
+                        var labels = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryLabelsRole)
+                        if(labels.length > 0){
+                            selfLabelsButton.value = labels[0]
+                            // ラベルテキストの設定（ラベル値に基づいて表示テキストを設定）
+                            // Note: ラベルの表示名を取得するロジックが必要な場合は追加が必要
+                        }
+
+                        // 画像のクリアと追加
+                        embedImageListModel.clear()
+                        var imagePaths = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedImagesPathsRole)
+                        var imageAlts = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedImagesAltsRole)
+                        if(imagePaths.length > 0){
+                            embedImageListModel.append(imagePaths)
+                            // Altテキストの設定
+                            for(var i=0; i<imagePaths.length && i<imageAlts.length; i++){
+                                embedImageListModel.updateAlt(i, imageAlts[i])
+                            }
+                        }
+
+                        // 外部リンク
+                        var externals = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedExternalsRole)
+                        if(externals.length > 0){
+                            addingExternalLinkUrlText.text = externals[0]
+                        } else {
+                            addingExternalLinkUrlText.text = ""
+                        }
+
+                        // 引用ポスト
+                        var recordUris = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsUrisRole)
+                        var recordCids = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsCidsRole)
+                        if(recordUris.length > 0 && recordCids.length > 0){
+                            postDialogItem.quoteCid = recordCids[0]
+                            postDialogItem.quoteUri = recordUris[0]
+                            // 引用ポストの詳細情報を取得
+                            var row = accountCombo.currentIndex
+                            if(row >= 0){
+                                postLink.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                postLink.getPost(recordUris[0])
+                            }
+                        } else if(postDialogItem.postType !== "quote"){
+                            // 引用がない場合はクリア（ただし、postTypeがquoteの場合は既存の引用を保持）
+                            postDialogItem.quoteCid = ""
+                            postDialogItem.quoteUri = ""
+                            postDialogItem.quoteAvatar = ""
+                            postDialogItem.quoteDisplayName = ""
+                            postDialogItem.quoteHandle = ""
+                            postDialogItem.quoteIndexedAt = ""
+                            postDialogItem.quoteText = ""
+                        }
+
+                        // ThreadGateとPostGateの設定
+                        var quoteEnabled = selectDraftDialog.draftModel.item(idx, DraftListModel.PostgateEmbeddingRulesRole)
+                        var threadGateType = selectDraftDialog.draftModel.item(idx, DraftListModel.ThreadGateTypeRole)
+                        var threadGateRules = selectDraftDialog.draftModel.item(idx, DraftListModel.ThreadGateRulesRole)
+                        selectThreadGateDialog.selectedQuoteEnabled = quoteEnabled
+                        selectThreadGateDialog.selectedType = threadGateType
+                        selectThreadGateDialog.selectedOptions = threadGateRules
+                    }
                 }
             }
 

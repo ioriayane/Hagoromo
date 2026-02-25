@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.accountlistmodel 1.0
+
 import tech.relog.hagoromo.singleton 1.0
 
 import "controls"
@@ -40,11 +42,26 @@ ApplicationWindow {
 
     Button {
         text: "open"
-        onClicked: selectDraftDialog.open()
+        // onClicked: selectDraftDialog.open()
+        onClicked: postDialog.open()
     }
 
-    SelectDraftDialog {
-        id: selectDraftDialog
+    Component.onCompleted: {
+        accountListModel.load()
     }
+    AccountListModel {
+        id: accountListModel
+        onFinished: {
+            console.log("!!!!!! Finish account load. !!!!!!")
+        }
+    }
+    PostDialog {
+        id: postDialog
+        accountModel: accountListModel
+    }
+
+    // SelectDraftDialog {
+    //     id: selectDraftDialog
+    // }
 
 }

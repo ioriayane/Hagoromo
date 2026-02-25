@@ -46,6 +46,12 @@ bool FeedGeneratorLink::checkUri(const QString &uri, const QString &type) const
 void FeedGeneratorLink::convertToAtUri(const QString &base_at_uri, const QString &uri,
                                        std::function<void(const QString &)> callback)
 {
+    // If uri is already an AT URI, return it as-is
+    if (uri.startsWith("at://")) {
+        callback(uri);
+        return;
+    }
+
     QStringList items = uri.split("/");
     if (items.length() != 7) {
         callback(QString());

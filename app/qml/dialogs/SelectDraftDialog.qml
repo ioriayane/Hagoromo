@@ -18,6 +18,9 @@ Dialog {
     title: qsTr("Drafts")
 
     property alias account: account
+    property int selectedIndex: -1
+    property alias draftModel: draftListModel
+
     Account {
         id: account
     }
@@ -116,6 +119,7 @@ Dialog {
                                 Image {
                                     Layout.preferredWidth: contentRootLayout.basisWidth / 4 - imagePreviewLayout.spacing * 3
                                     Layout.preferredHeight: Layout.preferredWidth
+                                    fillMode: Image.PreserveAspectFit
                                     source: imagePreviewLayout.visible ? model.modelData : ""
                                 }
                             }
@@ -157,14 +161,14 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
-                // enabled: selectThreadGateDialog.ready
+                enabled: draftListView.currentIndex >= 0
                 BusyIndicator {
                     anchors.fill: parent
                     anchors.margins: 3
                     visible: !parent.enabled
                 }
                 onClicked: {
-
+                    selectDraftDialog.selectedIndex = draftListView.currentIndex
                     selectDraftDialog.accept()
                 }
             }

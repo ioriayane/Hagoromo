@@ -2723,7 +2723,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="488"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="489"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2736,42 +2736,42 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="487"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="488"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="690"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="691"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="694"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="695"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="785"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="786"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="853"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="859"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="904"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="985"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="905"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="986"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="694"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="695"/>
         <source>Save the draft?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3929,8 +3929,39 @@ Why should this message be reviewed?</source>
     <name>SelectDraftDialog</name>
     <message>
         <location filename="qml/dialogs/SelectDraftDialog.qml" line="18"/>
-        <source>Draft</source>
+        <source>Drafts</source>
+        <oldsource>Draft</oldsource>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="110"/>
+        <source>Quote</source>
+        <translation type="unfinished">引用</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="130"/>
+        <source>Video uploads are not supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="137"/>
+        <source>Media stored on %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="142"/>
+        <source>%s more posts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="152"/>
+        <source>Cancel</source>
+        <translation type="unfinished">キャンセル</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="163"/>
+        <source>Apply</source>
+        <translation type="unfinished">適用</translation>
     </message>
 </context>
 <context>
