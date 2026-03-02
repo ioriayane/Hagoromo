@@ -6,7 +6,10 @@ description: This is a multi-column Bluesky client.
 
 # Release note
 
-## 2025
+## 2026
+
+- Add
+  - Suppot draft
 
 ### v0.58.0 - 2026/2/3
 
@@ -23,6 +26,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Supports TOKIMEKI Poll
+
+## 2025
 
 ### v0.56.1 - 2025/12/30
 
