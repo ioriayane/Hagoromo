@@ -941,6 +941,7 @@ Item {
 
             SelectDraftDialog {
                 id: selectDraftDialog
+                parentHeight: postDialogItem.parentHeight
                 property string appliedDraftId: ""
 
                 onAccepted: {

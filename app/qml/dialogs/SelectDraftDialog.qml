@@ -17,6 +17,7 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Drafts")
 
+    property int parentHeight: parent.height
     property alias account: account
     property int selectedIndex: -1
     property alias draftModel: draftListModel
@@ -41,7 +42,7 @@ Dialog {
         ScrollView {
             id: draftScrollView
             Layout.preferredWidth: 500 * AdjustedValues.ratio
-            Layout.preferredHeight: 300 * AdjustedValues.ratio
+            Layout.preferredHeight: selectDraftDialog.parentHeight * 0.5
             //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             clip: true
@@ -51,6 +52,13 @@ Dialog {
                 maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
                 clip: true
                 spacing: AdjustedValues.s5
+
+                onMovementEnded: {
+                    if(atYEnd){
+                        draftListModel.getNext()
+                    }
+                }
+
                 model: DraftListModel {
                     id: draftListModel
                 }
