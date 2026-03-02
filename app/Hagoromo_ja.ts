@@ -2774,7 +2774,7 @@ Please recreate AppPassword in the official application.</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="882"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="889"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>

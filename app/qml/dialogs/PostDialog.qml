@@ -811,6 +811,13 @@ Item {
                                     postDialog.close()
 
                                     var row = accountCombo.currentIndex;
+
+                                    // 下書きを適用していたら消す
+                                    if(selectDraftDialog.appliedDraftId.length > 0){
+                                        draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                        draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
+                                    }
+                                    // 投稿
                                     createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
                                     createRecord.clear()
                                     createRecord.setText(postText.text)
@@ -929,9 +936,14 @@ Item {
 
             SelectDraftDialog {
                 id: selectDraftDialog
+                property string appliedDraftId: ""
+
                 onAccepted: {
                     var idx = selectDraftDialog.selectedIndex
                     if(idx >= 0){
+                        // 適用したID
+                        selectDraftDialog.appliedDraftId = selectDraftDialog.draftModel.item(idx, DraftListModel.IdRole)
+
                         // テキスト
                         postText.text = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryTextRole)
 
