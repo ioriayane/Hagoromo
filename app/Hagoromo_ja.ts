@@ -2741,7 +2741,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="505"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="510"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2754,22 +2754,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="504"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="509"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="713"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="718"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="808"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="813"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="888"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="894"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -3932,48 +3932,48 @@ Why should this message be reviewed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="111"/>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="198"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="115"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="202"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="114"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="118"/>
         <source>Discard draft?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="114"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="118"/>
         <source>This draft will be permanently deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="132"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="136"/>
         <source>Quote</source>
         <translation type="unfinished">引用</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="152"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="156"/>
         <source>Video uploads are not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="159"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="163"/>
         <source>Media stored on %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="164"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="168"/>
         <source>%s more posts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="174"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="178"/>
         <source>Cancel</source>
         <translation type="unfinished">キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="185"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="189"/>
         <source>Apply</source>
         <translation type="unfinished">適用</translation>
     </message>
@@ -4118,21 +4118,25 @@ Why should this message be reviewed?</source>
     <name>SelfLabelPopup</name>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="12"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="22"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="17"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="13"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="27"/>
         <source>Nudity</source>
         <translation>ヌード（芸術など）</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="22"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="14"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="32"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="27"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="15"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="37"/>
         <source>Gore</source>
         <translation>ゴア表現</translation>
     </message>
@@ -4145,7 +4149,7 @@ Why should this message be reviewed?</source>
         <translation type="vanished">閲覧警告</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="33"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="43"/>
         <source>Remove</source>
         <translation>解除</translation>
     </message>

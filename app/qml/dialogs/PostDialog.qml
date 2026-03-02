@@ -872,6 +872,7 @@ Item {
                                 flat: true
                                 onClicked: {
                                     var row = accountCombo.currentIndex;
+                                    selectDraftDialog.clear()
                                     if(selectDraftDialog.account.set(postDialogItem.accountModel,
                                                                      postDialogItem.accountModel.item(row, AccountListModel.UuidRole))){
                                         selectDraftDialog.open()
@@ -960,8 +961,7 @@ Item {
                         var labels = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryLabelsRole)
                         if(labels.length > 0){
                             selfLabelsButton.value = labels[0]
-                            // ラベルテキストの設定（ラベル値に基づいて表示テキストを設定）
-                            // Note: ラベルの表示名を取得するロジックが必要な場合は追加が必要
+                            selfLabelsButton.iconText = selfLabelPopup.getText(labels[0])
                         }
 
                         // 画像のクリアと追加

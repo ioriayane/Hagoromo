@@ -33,6 +33,10 @@ Dialog {
         draftListModel.getLatest()
     }
 
+    function clear(){
+        draftListModel.clear()
+    }
+
     ColumnLayout {
         ScrollView {
             id: draftScrollView
