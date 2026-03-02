@@ -913,22 +913,22 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="17"/>
         <source>Save draft?</source>
-        <translation type="unfinished"></translation>
+        <translation>下書きを保存しますか？</translation>
     </message>
     <message>
         <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="23"/>
         <source>Keep editing</source>
-        <translation type="unfinished"></translation>
+        <translation>編集を継続</translation>
     </message>
     <message>
         <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="28"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translation>破棄</translation>
     </message>
     <message>
         <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="37"/>
         <source>Save draft</source>
-        <translation type="unfinished"></translation>
+        <translation>下書きを保存</translation>
     </message>
 </context>
 <context>
@@ -939,22 +939,22 @@ Please recreate AppPassword in the official application.</source>
         <location filename="qtquick/operation/draftoperator.cpp" line="170"/>
         <location filename="qtquick/operation/draftoperator.cpp" line="197"/>
         <source>Another operation is currently in progress</source>
-        <translation type="unfinished"></translation>
+        <translation>他の操作中です。</translation>
     </message>
     <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="114"/>
         <source>Create draft ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="143"/>
         <source>Update draft ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="202"/>
         <source>Get drafts ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -3929,53 +3929,53 @@ Why should this message be reviewed?</source>
         <location filename="qml/dialogs/SelectDraftDialog.qml" line="18"/>
         <source>Drafts</source>
         <oldsource>Draft</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>下書き</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="115"/>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="202"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="123"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="210"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translation>削除</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="118"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="126"/>
         <source>Discard draft?</source>
-        <translation type="unfinished"></translation>
+        <translation>下書きを削除しますか？</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="118"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="126"/>
         <source>This draft will be permanently deleted.</source>
-        <translation type="unfinished"></translation>
+        <translation>この下書きは完全に削除されます。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="136"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="144"/>
         <source>Quote</source>
-        <translation type="unfinished">引用</translation>
+        <translation>引用</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="156"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="164"/>
         <source>Video uploads are not supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>ビデオを含む下書きには対応していません。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="163"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="171"/>
         <source>Media stored on %s.</source>
-        <translation type="unfinished"></translation>
+        <translation>メディアは%sに保存されています。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="168"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="176"/>
         <source>%s more posts.</source>
-        <translation type="unfinished"></translation>
+        <translation>さらに%s件の投稿</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="178"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="186"/>
         <source>Cancel</source>
-        <translation type="unfinished">キャンセル</translation>
+        <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/SelectDraftDialog.qml" line="189"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="197"/>
         <source>Apply</source>
-        <translation type="unfinished">適用</translation>
+        <translation>適用</translation>
     </message>
 </context>
 <context>
