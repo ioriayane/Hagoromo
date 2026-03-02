@@ -172,7 +172,7 @@ void DraftOperator::deleteDraft(const QString &id)
     }
 
     setRunning(true);
-    setProgressMessage(tr("Delete draft ..."));
+    // setProgressMessage(tr("Delete draft ..."));
 
     AppBskyDraftDeleteDraft *del = new AppBskyDraftDeleteDraft(this);
     connect(del, &AppBskyDraftDeleteDraft::finished, this, [=](bool success) {
@@ -182,7 +182,7 @@ void DraftOperator::deleteDraft(const QString &id)
             emit errorOccured(del->errorCode(), del->errorMessage());
             emit finishedDeleteDraft(false);
         }
-        setProgressMessage(QString());
+        // setProgressMessage(QString());
         setRunning(false);
         del->deleteLater();
     });

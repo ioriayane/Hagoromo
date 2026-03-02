@@ -1,9 +1,11 @@
 #include "draftlistmodel.h"
 
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
+#include "atprotocol/app/bsky/draft/appbskydraftdeletedraft.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/deviceinfo.h"
 
+using AtProtocolInterface::AppBskyDraftDeleteDraft;
 using AtProtocolInterface::AppBskyDraftGetDrafts;
 using namespace AtProtocolType;
 
@@ -201,6 +203,43 @@ void DraftListModel::clear()
     if (hadMore != hasMore()) {
         emit hasMoreChanged();
     }
+}
+
+void DraftListModel::deleteDraft(const QString &id)
+{
+    if (running())
+        return;
+
+    if (account().uuid.isEmpty())
+        return;
+
+    // Find the index of the draft to delete
+    int row = indexOf(id);
+    if (row < 0) {
+        // Draft not found in the model
+        return;
+    }
+
+    setRunning(true);
+
+    AppBskyDraftDeleteDraft *del = new AppBskyDraftDeleteDraft(this);
+    connect(del, &AppBskyDraftDeleteDraft::finished, this, [=](bool success) {
+        if (success) {
+            // Remove the draft from the model
+            int currentRow = indexOf(id);
+            if (currentRow >= 0) {
+                beginRemoveRows(QModelIndex(), currentRow, currentRow);
+                m_drafts.removeAt(currentRow);
+                endRemoveRows();
+            }
+        } else {
+            emit errorOccured(del->errorCode(), del->errorMessage());
+        }
+        setRunning(false);
+        del->deleteLater();
+    });
+    del->setAccount(account());
+    del->deleteDraft(id);
 }
 
 int DraftListModel::pageSize() const

@@ -91,10 +91,32 @@ Dialog {
                                                   contentRootFrame.rightPadding -
                                                   draftScrollView.ScrollBar.vertical.width
 
-                        Label {
-                            Layout.topMargin: 5
-                            font.pointSize: AdjustedValues.f8
-                            text: model.updatedAt
+                        RowLayout {
+                            Label {
+                                Layout.topMargin: 5
+                                font.pointSize: AdjustedValues.f8
+                                text: model.updatedAt
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 1
+                            }
+                            IconButton {
+                                Layout.preferredHeight: AdjustedValues.b26
+                                iconSource: "../images/more.png"
+                                onClicked: moreMenu.open()
+                                MenuEx {
+                                    id: moreMenu
+                                    Action {
+                                        text: qsTr("Discard")
+                                        onTriggered: {
+                                            dicardConfirmationDialog.draftId = model.id
+                                            dicardConfirmationDialog.show("normal", qsTr("Discard draft?"), qsTr("This draft will be permanently deleted."))
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                         Label {
                             Layout.preferredWidth: parent.width
@@ -161,11 +183,24 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
-                enabled: draftListView.currentIndex >= 0
+                enabled: draftListView.currentIndex >= 0 && !draftListModel.running
                 onClicked: {
                     selectDraftDialog.selectedIndex = draftListView.currentIndex
                     selectDraftDialog.accept()
                 }
+            }
+        }
+    }
+
+    MessageDialog {
+        id: dicardConfirmationDialog
+        useCancel: true
+        acceptButtonText: qsTr("Discard")
+        property string draftId: ""
+        onAccepted: {
+            if(dicardConfirmationDialog.draftId.length > 0){
+                console.log("Delete draft:" + dicardConfirmationDialog.draftId)
+                draftListModel.deleteDraft(dicardConfirmationDialog.draftId)
             }
         }
     }

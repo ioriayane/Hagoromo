@@ -132,7 +132,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.maximumWidth: parent.width
                 font.pointSize: AdjustedValues.f8
-                text: draftOperator.running ? draftOperator.progressMessage : createRecord.progressMessage
+                text: createRecord.progressMessage.length > 0 ?
+                          createRecord.progressMessage :
+                          (draftOperator.running ?
+                               draftOperator.progressMessage :
+                               createRecord.progressMessage)
                 color: Material.theme === Material.Dark ? Material.foreground : "white"
             }
         }

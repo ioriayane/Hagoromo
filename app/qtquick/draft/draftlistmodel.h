@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE bool getLatest() override;
     Q_INVOKABLE bool getNext() override;
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void deleteDraft(const QString &id);
 
     int pageSize() const;
     void setPageSize(int newPageSize);
