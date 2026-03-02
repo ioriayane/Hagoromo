@@ -713,7 +713,7 @@ Item {
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Cancel")
                                 onClicked: {
-                                    if(postButton.enabled){
+                                    if(postButton.enabled && postDialogItem.postType !== "reply"){
                                         // 下書き保存
                                         draftConfirmationDialog.open()
                                     }else{
@@ -969,6 +969,13 @@ Item {
                         }
 
                         // 引用ポスト
+                        postDialogItem.quoteCid = ""
+                        postDialogItem.quoteUri = ""
+                        postDialogItem.quoteAvatar = ""
+                        postDialogItem.quoteDisplayName = ""
+                        postDialogItem.quoteHandle = ""
+                        postDialogItem.quoteIndexedAt = ""
+                        postDialogItem.quoteText = ""
                         var recordUris = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsUrisRole)
                         var recordCids = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsCidsRole)
                         if(recordUris.length > 0 && recordCids.length > 0){
@@ -985,13 +992,6 @@ Item {
                         } else if(postDialogItem.postType !== "quote"){
                             // 引用がない場合はクリア（ただし、postTypeがquoteの場合は既存の引用を保持）
                             postDialogItem.postType = "normal"
-                            postDialogItem.quoteCid = ""
-                            postDialogItem.quoteUri = ""
-                            postDialogItem.quoteAvatar = ""
-                            postDialogItem.quoteDisplayName = ""
-                            postDialogItem.quoteHandle = ""
-                            postDialogItem.quoteIndexedAt = ""
-                            postDialogItem.quoteText = ""
                         }
 
                         // ThreadGateとPostGateの設定
