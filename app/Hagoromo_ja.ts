@@ -909,6 +909,29 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>DraftConfirmationDialog</name>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="17"/>
+        <source>Save draft?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="23"/>
+        <source>Keep editing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="28"/>
+        <source>Discard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="37"/>
+        <source>Save draft</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DraftOperator</name>
     <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="109"/>
@@ -2723,7 +2746,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="489"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="506"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2736,44 +2759,24 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="488"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="505"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="691"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="714"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="695"/>
-        <source>Confirm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="786"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="809"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="859"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="882"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
-    </message>
-    <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="985"/>
-        <source>Yes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="986"/>
-        <source>No</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="695"/>
-        <source>Save the draft?</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -242,6 +242,7 @@ Item {
             }
             PostLink {
                 id: postLink
+                // リンクにポストのURLを入れて取得して引用になるケース用
                 onValidChanged: {
                     if(postLink.valid){
                         postDialogItem.quoteCid = postLink.cid
@@ -254,6 +255,22 @@ Item {
                     }
                 }
             }
+            PostLink {
+                id: postLinkbyDraft
+                // ドラフトから引用を復元したとき用
+                onValidChanged: {
+                    if(postLinkbyDraft.valid){
+                        postDialogItem.quoteCid = postLinkbyDraft.cid
+                        postDialogItem.quoteUri = postLinkbyDraft.uri
+                        postDialogItem.quoteAvatar = postLinkbyDraft.avatar
+                        postDialogItem.quoteDisplayName = postLinkbyDraft.displayName
+                        postDialogItem.quoteHandle = postLinkbyDraft.creatorHandle
+                        postDialogItem.quoteIndexedAt = postLinkbyDraft.indexedAt
+                        postDialogItem.quoteText = postLinkbyDraft.text
+                    }
+                }
+            }
+
 
             ScrollView {
                 id: scrollView
@@ -678,6 +695,12 @@ Item {
                                     wrapMode: Text.Wrap
                                     font.pointSize: AdjustedValues.f8
                                     text: postDialogItem.quoteText
+                                    BusyIndicator {
+                                        implicitWidth: AdjustedValues.i36
+                                        implicitHeight: AdjustedValues.i36
+                                        anchors.centerIn: parent
+                                        visible: postLinkbyDraft.running && postDialogItem.quoteHandle.length === 0
+                                    }
                                 }
                             }
                         }
@@ -692,7 +715,7 @@ Item {
                                 onClicked: {
                                     if(postButton.enabled){
                                         // 下書き保存
-                                        draftConfirmationDialog.show("normal", qsTr("Confirm"), qsTr("Save the draft?"))
+                                        draftConfirmationDialog.open()
                                     }else{
                                         postDialogItem.close()
                                     }
@@ -954,11 +977,14 @@ Item {
                             // 引用ポストの詳細情報を取得
                             var row = accountCombo.currentIndex
                             if(row >= 0){
-                                postLink.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
-                                postLink.getPost(recordUris[0])
+                                postDialogItem.postType = "quote"
+                                postLinkbyDraft.clear()
+                                postLinkbyDraft.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                postLinkbyDraft.getPost(recordUris[0])
                             }
                         } else if(postDialogItem.postType !== "quote"){
                             // 引用がない場合はクリア（ただし、postTypeがquoteの場合は既存の引用を保持）
+                            postDialogItem.postType = "normal"
                             postDialogItem.quoteCid = ""
                             postDialogItem.quoteUri = ""
                             postDialogItem.quoteAvatar = ""
@@ -979,12 +1005,10 @@ Item {
                 }
             }
 
-            MessageDialog {
+            DraftConfirmationDialog {
                 id: draftConfirmationDialog
-                useCancel: true
-                acceptButtonText: qsTr("Yes")
-                rejectButtonText: qsTr("No")
-                onRejected: postDialogItem.close()
+                onDiscarded: postDialogItem.close()
+                onRejected: {}
                 onAccepted: {
                     postDialog.close()
 

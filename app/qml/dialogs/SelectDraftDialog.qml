@@ -162,11 +162,6 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
                 enabled: draftListView.currentIndex >= 0
-                BusyIndicator {
-                    anchors.fill: parent
-                    anchors.margins: 3
-                    visible: !parent.enabled
-                }
                 onClicked: {
                     selectDraftDialog.selectedIndex = draftListView.currentIndex
                     selectDraftDialog.accept()
