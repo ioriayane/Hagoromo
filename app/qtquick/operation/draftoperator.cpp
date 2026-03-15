@@ -314,7 +314,7 @@ QJsonObject DraftOperator::buildDraftJson() const
     draft["$type"] = QStringLiteral("app.bsky.draft.defs#draft");
     draft["posts"] = posts;
 
-    // Device ID (hashed MAC address)
+    // Device ID (persisted UUIDv4)
     QString deviceId = DeviceInfo::getDeviceId();
     if (!deviceId.isEmpty()) {
         draft["deviceId"] = deviceId;

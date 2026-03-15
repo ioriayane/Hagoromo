@@ -173,7 +173,7 @@ Dialog {
                         IconMessage {
                             visible: model.postCount > 1
                             source: "../images/add_circle.png"
-                            text: qsTr("%s more posts.").replace("%s", model.postCount)
+                            text: qsTr("%s more posts.").replace("%s", model.postCount - 1)
                         }
                     }
                 }

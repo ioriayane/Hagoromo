@@ -15,7 +15,8 @@ MenuEx {
         "graphic-media": qsTr("Gore")
     }
     function getText(value){
-        return valueToText[value]
+        var text = valueToText[value];
+        return text !== undefined ? text : "";
     }
 
     Action {
