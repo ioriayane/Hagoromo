@@ -50,7 +50,7 @@ public:
     QString handle() const;
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void finishedCreateDraft(bool success, const QString &id);
     void finishedUpdateDraft(bool success);
     void finishedDeleteDraft(bool success);

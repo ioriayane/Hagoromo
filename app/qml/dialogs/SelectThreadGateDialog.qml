@@ -35,7 +35,7 @@ Dialog {
         id: account
     }
 
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
     signal requestSaveSettings()
 
     onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled

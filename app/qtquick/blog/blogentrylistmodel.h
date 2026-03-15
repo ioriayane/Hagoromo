@@ -54,7 +54,7 @@ public:
     void setTargetHandle(const QString &newTargetHandle);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
     void targetDidChanged();
     void countChanged();

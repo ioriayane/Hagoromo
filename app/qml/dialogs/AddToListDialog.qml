@@ -23,7 +23,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
     signal requestAddList()
 
     onOpened: {

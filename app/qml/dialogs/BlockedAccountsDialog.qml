@@ -23,7 +23,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -61,7 +61,7 @@ Dialog {
             viewMode: 1
             model: BlocksListModel {
                 id: blocksListModel
-                onErrorOccured: (code, message) => blockedAccountsDialog.errorOccured(blockedAccountsDialog.account.uuid, code, message)
+                onErrorOccured: (code, message) => blockedAccountsDialog.errorOccurred(blockedAccountsDialog.account.uuid, code, message)
             }
         }
         RowLayout {

@@ -59,7 +59,7 @@ void UserPost::getPost(const QString &uri)
                     setCid(post.cid);
                 }
             } else {
-                emit errorOccured(posts->errorCode(), posts->errorMessage());
+                emit errorOccurred(posts->errorCode(), posts->errorMessage());
             }
             setRunning(false);
             posts->deleteLater();

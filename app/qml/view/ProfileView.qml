@@ -62,7 +62,7 @@ ColumnLayout {
     signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var callback)
     signal requestSubscribeToPosts(string did, bool post, bool reply)
 
-    signal errorOccured(string code, string message)
+    signal errorOccurred(string code, string message)
     signal back()
 
     states: [
@@ -702,7 +702,7 @@ ColumnLayout {
                                      getLatest()
                                  }
                              }
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             blogModel: BlogEntryListModel {
                 id: authorBlogEntryListModel
@@ -757,7 +757,7 @@ ColumnLayout {
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.RepostFeedType
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             accountDid: profileView.accountDid
             imageLayoutType: profileView.imageLayoutType
@@ -798,7 +798,7 @@ ColumnLayout {
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.LikeFeedType
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             accountDid: profileView.accountDid
             imageLayoutType: profileView.imageLayoutType
@@ -838,7 +838,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             accountDid: profileView.accountDid
             imageLayoutType: profileView.imageLayoutType
@@ -878,7 +878,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithVideo
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             accountDid: profileView.accountDid
             imageLayoutType: profileView.imageLayoutType
@@ -947,7 +947,7 @@ ColumnLayout {
                 displayInterval: 0
                 targetDid: profileView.userDid
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -970,7 +970,7 @@ ColumnLayout {
                 displayInterval: 0
                 targetDid: profileView.userDid
 
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+                onErrorOccured: (code, message) => profileView.errorOccurred(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){

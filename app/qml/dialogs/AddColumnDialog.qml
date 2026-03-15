@@ -28,7 +28,7 @@ Dialog {
     signal openSatisticsAndLogs(string account_uid)
     signal openDiscoverFeeds(string account_uuid)
     signal openRealtimeFeedEditor(string account_uuid, string display_name, string condition)
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(accountList.currentIndex === -1){
@@ -145,7 +145,7 @@ Dialog {
                                 model: FeedTypeListModel {
                                     onErrorOccured: (code, message) => {
                                                         var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
-                                                        addColumnDialog.errorOccured(uuid, code, message)
+                                                        addColumnDialog.errorOccurred(uuid, code, message)
                                                     }
                                 }
                                 footer: BusyIndicator {

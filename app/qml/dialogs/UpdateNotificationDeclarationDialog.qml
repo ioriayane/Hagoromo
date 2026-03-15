@@ -23,7 +23,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -40,7 +40,7 @@ Dialog {
     RecordOperator {
         id: recordOperator
         onErrorOccured: (code, message) => {
-            notificationDeclarationDialog.errorOccured(account.did, code, message)
+            notificationDeclarationDialog.errorOccurred(account.did, code, message)
         }
         onFinished: (success, uri, cid) => {
             if(success){

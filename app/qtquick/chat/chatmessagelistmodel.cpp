@@ -31,7 +31,7 @@ ChatMessageListModel::ChatMessageListModel(QObject *parent)
 {
     connect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
             &ChatMessageListModel::receiveLogs);
-    connect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+    connect(&m_chatLogConnector, &ChatLogConnector::errorOccurred, this,
             &ChatMessageListModel::errorLogs);
 }
 
@@ -39,7 +39,7 @@ ChatMessageListModel::~ChatMessageListModel()
 {
     disconnect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
                &ChatMessageListModel::receiveLogs);
-    disconnect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+    disconnect(&m_chatLogConnector, &ChatLogConnector::errorOccurred, this,
                &ChatMessageListModel::errorLogs);
     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
     log->stop(account());
@@ -203,7 +203,7 @@ bool ChatMessageListModel::getLatest()
                             updateRead(convoId(), QString());
                             setReady(true);
                         } else {
-                            emit errorOccured(messages->errorCode(), messages->errorMessage());
+                            emit errorOccurred(messages->errorCode(), messages->errorMessage());
                             checkScopeError(messages->errorCode(), messages->errorMessage());
                         }
                         setRunning(false);
@@ -244,7 +244,7 @@ bool ChatMessageListModel::getNext()
                          messages->messagesDeletedMessageViewList(),
                          QList<AtProtocolType::ChatBskyConvoDefs::MessageView>(), false);
             } else {
-                emit errorOccured(messages->errorCode(), messages->errorMessage());
+                emit errorOccurred(messages->errorCode(), messages->errorMessage());
             }
             setRunning(false);
             messages->deleteLater();
@@ -292,7 +292,7 @@ void ChatMessageListModel::send(const QString &message, const QString &embed_uri
                         //          QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
                         //          true);
                     } else {
-                        emit errorOccured(convo->errorCode(), convo->errorMessage());
+                        emit errorOccurred(convo->errorCode(), convo->errorMessage());
                     }
                     finishSent(success);
                     setRunSending(false);
@@ -318,7 +318,7 @@ void ChatMessageListModel::deleteMessage(int row)
     connect(convo, &ChatBskyConvoDeleteMessageForSelf::finished, this, [=](bool success) {
         if (success) {
         } else {
-            emit errorOccured(convo->errorCode(), convo->errorMessage());
+            emit errorOccurred(convo->errorCode(), convo->errorMessage());
         }
         update(row, RunningRole, false);
         convo->deleteLater();
@@ -342,7 +342,7 @@ void ChatMessageListModel::addReaction(int row, const QString &emoji)
     connect(convo, &ChatBskyConvoAddReaction::finished, this, [=](bool success) {
         if (success) {
         } else {
-            emit errorOccured(convo->errorCode(), convo->errorMessage());
+            emit errorOccurred(convo->errorCode(), convo->errorMessage());
         }
         update(row, RunningRole, false);
         convo->deleteLater();
@@ -366,7 +366,7 @@ void ChatMessageListModel::removeReaction(int row, const QString &emoji)
     connect(convo, &ChatBskyConvoRemoveReaction::finished, this, [=](bool success) {
         if (success) {
         } else {
-            emit errorOccured(convo->errorCode(), convo->errorMessage());
+            emit errorOccurred(convo->errorCode(), convo->errorMessage());
         }
         update(row, RunningRole, false);
         convo->deleteLater();
@@ -488,7 +488,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
                 setMembers(m_convo);
             } else {
                 m_convo.id.clear();
-                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                emit errorOccurred(convo->errorCode(), convo->errorMessage());
                 checkScopeError(convo->errorCode(), convo->errorMessage());
             }
             callback();
@@ -507,7 +507,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
                 setMembers(m_convo);
             } else {
                 m_convo.id.clear();
-                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                emit errorOccurred(convo->errorCode(), convo->errorMessage());
                 checkScopeError(convo->errorCode(), convo->errorMessage());
             }
             qDebug() << "in" << m_convo.id;
@@ -657,7 +657,7 @@ void ChatMessageListModel::errorLogs(const QString &code, const QString &message
 {
     qDebug().quote() << "errorLogs" << this << account().did << code << message;
 
-    emit errorOccured(code, message);
+    emit errorOccurred(code, message);
 }
 
 QStringList ChatMessageListModel::memberAvatars() const

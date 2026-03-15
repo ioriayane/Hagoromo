@@ -65,7 +65,7 @@ public:
     QHash<QString, QString> nsidsReceivePerSecond() const;
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void connectedToService();
     void disconnectFromService();
     void receivingChanged(bool status);

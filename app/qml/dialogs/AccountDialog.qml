@@ -18,7 +18,7 @@ Dialog {
     title: qsTr("Account management")
 
     property alias accountModel: accountList.model
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     signal requestAddMutedWords(string account_uuid)
     signal requestStatisticsAndLogs(string account_uuid)
@@ -32,7 +32,7 @@ Dialog {
                                        session.authorized)
             accountModel.updateAccountProfile(session.service, session.identifier)
         }
-        onErrorOccured: (code, message) => accountDialog.errorOccured("", code, message)
+        onErrorOccured: (code, message) => accountDialog.errorOccurred("", code, message)
     }
     ContentFilterSettingDialog {
         id: contentFilter
@@ -42,7 +42,7 @@ Dialog {
     }
     UpdateNotificationDeclarationDialog {
         id: updateNotificationDeclarationDialog
-        onErrorOccured: (code, message) => accountDialog.errorOccured(account.did, code, message)
+        onErrorOccured: (code, message) => accountDialog.errorOccurred(account.did, code, message)
     }
     BlockedAccountsDialog {
         id: blockedAccountsDialog

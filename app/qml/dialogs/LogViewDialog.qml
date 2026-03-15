@@ -22,7 +22,7 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Statistics and logs")
 
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     signal requestReply(string account_uuid,
                         string cid, string uri,
@@ -68,7 +68,7 @@ Dialog {
             logDailyListModel.getLatest()
             logMonthlyListModel.getLatest()
         }
-        onErrorOccured: (code, message) => logViewDialog.errorOccured(account.uuid, code, message)
+        onErrorOccured: (code, message) => logViewDialog.errorOccurred(account.uuid, code, message)
     }
     Shortcut {  // Search
         enabled: logViewDialog.visible && searchButton.enabled && searchText.focus && tabBar.currentIndex == 1

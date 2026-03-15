@@ -31,7 +31,7 @@ bool PostThreadListModel::getLatest()
                 m_postThreadCid = thread->threadViewPost().post.cid;
                 copyFrom(&thread->threadViewPost());
             } else {
-                emit errorOccured(thread->errorCode(), thread->errorMessage());
+                emit errorOccurred(thread->errorCode(), thread->errorMessage());
             }
             QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
             thread->deleteLater();

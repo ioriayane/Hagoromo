@@ -21,7 +21,7 @@ bool ActorLikeListModel::getLatest()
                 }
                 copyFrom(likes->feedList());
             } else {
-                emit errorOccured(likes->errorCode(), likes->errorMessage());
+                emit errorOccurred(likes->errorCode(), likes->errorMessage());
             }
             QTimer::singleShot(100, this, &ActorLikeListModel::displayQueuedPosts);
             likes->deleteLater();
@@ -46,7 +46,7 @@ bool ActorLikeListModel::getNext()
                 m_cursor = likes->cursor();
                 copyFromNext(likes->feedList());
             } else {
-                emit errorOccured(likes->errorCode(), likes->errorMessage());
+                emit errorOccurred(likes->errorCode(), likes->errorMessage());
             }
             QTimer::singleShot(10, this, &ActorLikeListModel::displayQueuedPostsNext);
             likes->deleteLater();

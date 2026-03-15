@@ -35,7 +35,7 @@ bool AnyProfileListModel::getLatest()
                     }
                 }
             } else {
-                emit errorOccured(likes->errorCode(), likes->errorMessage());
+                emit errorOccurred(likes->errorCode(), likes->errorMessage());
             }
             setRunning(false);
             likes->deleteLater();
@@ -62,7 +62,7 @@ bool AnyProfileListModel::getLatest()
                     }
                 }
             } else {
-                emit errorOccured(reposts->errorCode(), reposts->errorMessage());
+                emit errorOccurred(reposts->errorCode(), reposts->errorMessage());
             }
             setRunning(false);
             reposts->deleteLater();
@@ -101,7 +101,7 @@ bool AnyProfileListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(likes->errorCode(), likes->errorMessage());
+                emit errorOccurred(likes->errorCode(), likes->errorMessage());
             }
             setRunning(false);
             likes->deleteLater();
@@ -131,7 +131,7 @@ bool AnyProfileListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(reposts->errorCode(), reposts->errorMessage());
+                emit errorOccurred(reposts->errorCode(), reposts->errorMessage());
             }
             setRunning(false);
             reposts->deleteLater();

@@ -16,7 +16,7 @@ public:
 
 signals:
     void receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log);
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
 };
 
 class ChatLogSubscriber : public QObject

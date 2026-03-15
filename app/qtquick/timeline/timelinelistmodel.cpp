@@ -606,7 +606,7 @@ bool TimelineListModel::getLatest()
                 }
                 copyFrom(timeline->feedList());
             } else {
-                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+                emit errorOccurred(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
             timeline->deleteLater();
@@ -632,7 +632,7 @@ bool TimelineListModel::getNext()
 
                 copyFromNext(timeline->feedList());
             } else {
-                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+                emit errorOccurred(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(10, this, &TimelineListModel::displayQueuedPostsNext);
             timeline->deleteLater();
@@ -654,7 +654,7 @@ bool TimelineListModel::deletePost(int row)
     setRunningdeletePost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
@@ -694,7 +694,7 @@ bool TimelineListModel::repost(int row, bool do_count_up)
     }
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -753,7 +753,7 @@ bool TimelineListModel::like(int row, bool do_count_up)
     }
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -810,7 +810,7 @@ bool TimelineListModel::pin(int row)
     setRunningPostPinning(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
@@ -860,7 +860,7 @@ bool TimelineListModel::muteThread(int row)
                 getPostThreadCids(root_uri,
                                   [=](const QStringList &cids) { updateMuteThread(cids, false); });
             } else {
-                emit errorOccured(thread->errorCode(), thread->errorMessage());
+                emit errorOccurred(thread->errorCode(), thread->errorMessage());
             }
             setRunningOtherPrcessing(row, false);
             thread->deleteLater();
@@ -875,7 +875,7 @@ bool TimelineListModel::muteThread(int row)
                 getPostThreadCids(root_uri,
                                   [=](const QStringList &cids) { updateMuteThread(cids, true); });
             } else {
-                emit errorOccured(thread->errorCode(), thread->errorMessage());
+                emit errorOccurred(thread->errorCode(), thread->errorMessage());
             }
             setRunningOtherPrcessing(row, false);
             thread->deleteLater();
@@ -897,7 +897,7 @@ bool TimelineListModel::detachQuote(int row)
     setRunningOtherPrcessing(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
@@ -946,7 +946,7 @@ bool TimelineListModel::bookmark(int row)
     const QString target_uri = item(row, UriRole).toString();
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &TimelineListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)

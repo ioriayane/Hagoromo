@@ -99,7 +99,7 @@ void ChatLogSubscriber::Private::getLatest()
                     if (!connector) {
                         // already deleted
                     } else {
-                        emit connector->errorOccured(log->errorCode(), log->errorMessage());
+                        emit connector->errorOccurred(log->errorCode(), log->errorMessage());
                     }
                 }
             }

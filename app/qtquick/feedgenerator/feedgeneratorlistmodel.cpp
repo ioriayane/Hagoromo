@@ -110,7 +110,7 @@ bool FeedGeneratorListModel::getLatest()
             m_cursor = generators->cursor();
             getSavedGenerators();
         } else {
-            emit errorOccured(generators->errorCode(), generators->errorMessage());
+            emit errorOccurred(generators->errorCode(), generators->errorMessage());
             setRunning(false);
         }
         generators->deleteLater();
@@ -143,7 +143,7 @@ bool FeedGeneratorListModel::getNext()
             // getSavedGenerators();
         } else {
             m_cursor.clear();
-            emit errorOccured(generators->errorCode(), generators->errorMessage());
+            emit errorOccurred(generators->errorCode(), generators->errorMessage());
         }
         setRunning(false);
         generators->deleteLater();
@@ -165,7 +165,7 @@ void FeedGeneratorListModel::saveGenerator(const QString &uri)
         if (success) {
             putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
             setRunning(false);
         }
         pref->deleteLater();
@@ -185,7 +185,7 @@ void FeedGeneratorListModel::removeGenerator(const QString &uri)
         if (success) {
             putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
             setRunning(false);
         }
         pref->deleteLater();
@@ -247,7 +247,7 @@ void FeedGeneratorListModel::getSavedGenerators()
             emit dataChanged(index(0), index(m_cidList.count() - 1),
                              QVector<int>() << static_cast<int>(SavingRole));
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
         }
         setRunning(false);
         pref->deleteLater();
@@ -264,7 +264,7 @@ void FeedGeneratorListModel::putPreferences(const QJsonArray &json)
             qDebug() << "finish put preferences.";
             getSavedGenerators();
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
             setRunning(false);
         }
         pref->deleteLater();

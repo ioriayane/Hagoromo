@@ -105,8 +105,8 @@ void DraftOperator::clear()
 void DraftOperator::createDraft()
 {
     if (running()) {
-        emit errorOccured(QStringLiteral("InProgress"),
-                          tr("Another operation is currently in progress"));
+        emit errorOccurred(QStringLiteral("InProgress"),
+                           tr("Another operation is currently in progress"));
         return;
     }
 
@@ -120,7 +120,7 @@ void DraftOperator::createDraft()
         if (success) {
             emit finishedCreateDraft(true, create->id());
         } else {
-            emit errorOccured(create->errorCode(), create->errorMessage());
+            emit errorOccurred(create->errorCode(), create->errorMessage());
             emit finishedCreateDraft(false, QString());
         }
         setProgressMessage(QString());
@@ -134,8 +134,8 @@ void DraftOperator::createDraft()
 void DraftOperator::updateDraft(const QString &id)
 {
     if (running()) {
-        emit errorOccured(QStringLiteral("InProgress"),
-                          tr("Another operation is currently in progress"));
+        emit errorOccurred(QStringLiteral("InProgress"),
+                           tr("Another operation is currently in progress"));
         return;
     }
 
@@ -152,7 +152,7 @@ void DraftOperator::updateDraft(const QString &id)
         if (success) {
             emit finishedUpdateDraft(true);
         } else {
-            emit errorOccured(update->errorCode(), update->errorMessage());
+            emit errorOccurred(update->errorCode(), update->errorMessage());
             emit finishedUpdateDraft(false);
         }
         setProgressMessage(QString());
@@ -166,8 +166,8 @@ void DraftOperator::updateDraft(const QString &id)
 void DraftOperator::deleteDraft(const QString &id)
 {
     if (running()) {
-        emit errorOccured(QStringLiteral("InProgress"),
-                          tr("Another operation is currently in progress"));
+        emit errorOccurred(QStringLiteral("InProgress"),
+                           tr("Another operation is currently in progress"));
         return;
     }
 
@@ -179,7 +179,7 @@ void DraftOperator::deleteDraft(const QString &id)
         if (success) {
             emit finishedDeleteDraft(true);
         } else {
-            emit errorOccured(del->errorCode(), del->errorMessage());
+            emit errorOccurred(del->errorCode(), del->errorMessage());
             emit finishedDeleteDraft(false);
         }
         // setProgressMessage(QString());
@@ -193,8 +193,8 @@ void DraftOperator::deleteDraft(const QString &id)
 void DraftOperator::getDrafts(int limit, const QString &cursor)
 {
     if (running()) {
-        emit errorOccured(QStringLiteral("InProgress"),
-                          tr("Another operation is currently in progress"));
+        emit errorOccurred(QStringLiteral("InProgress"),
+                           tr("Another operation is currently in progress"));
         return;
     }
 
@@ -206,7 +206,7 @@ void DraftOperator::getDrafts(int limit, const QString &cursor)
         if (success) {
             emit finishedGetDrafts(true, get->draftsList());
         } else {
-            emit errorOccured(get->errorCode(), get->errorMessage());
+            emit errorOccurred(get->errorCode(), get->errorMessage());
             emit finishedGetDrafts(false, QList<AtProtocolType::AppBskyDraftDefs::DraftView>());
         }
         setProgressMessage(QString());

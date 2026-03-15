@@ -73,7 +73,7 @@ public:
     void setEmbedImagesAlt(const QStringList &newEmbedImagesAlt);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
 
     void runningChanged();
     void cidChanged();

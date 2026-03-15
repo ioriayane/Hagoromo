@@ -68,7 +68,7 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     Shortcut {
         enabled: columnView.selected
@@ -109,7 +109,7 @@ ColumnLayout {
                 visibleRepostByMe: settings.visibleRepostByMe
                 visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -161,7 +161,7 @@ ColumnLayout {
                 updateSeenNotification: settings.updateSeenNotification
                 aggregateReactions: settings.aggregateReactions
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             imageLayoutType: settings.imageLayoutType
 
@@ -197,7 +197,7 @@ ColumnLayout {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 postThreadUri: postThreadView.postUri
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -243,7 +243,7 @@ ColumnLayout {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 postUri: quotedPostsView.postUri
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -324,7 +324,7 @@ ColumnLayout {
             onRequestSubscribeToPosts: (did, post, reply) => columnView.requestSubscribeToPosts(account.uuid, did, post, reply)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -342,7 +342,7 @@ ColumnLayout {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 text: settings.columnValue
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -382,7 +382,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 text: settings.columnValue
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -401,7 +401,7 @@ ColumnLayout {
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
                 }
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -443,7 +443,7 @@ ColumnLayout {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 authorDid: settings.columnValue
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -481,7 +481,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Like
 
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -498,7 +498,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Repost
 
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -518,7 +518,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileListView.userDid
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -531,7 +531,7 @@ ColumnLayout {
             onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestEditList: (uri, avatar, name, description) => columnView.requestEditList(account.uuid, uri, avatar, name, description)
 
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
@@ -551,7 +551,7 @@ ColumnLayout {
                 uri: settings.columnValue
                 visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -592,7 +592,7 @@ ColumnLayout {
                                           settings.columnValueList = dids
                                           columnStackView.push(chatMessageListComponent)
                                       }
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
         }
     }
     Component {
@@ -609,7 +609,7 @@ ColumnLayout {
                                     if(code === "InvalidToken" && message === "Bad token scope"){
                                         chatMesssageListView.errorMessageOnChatMessageList.visible = true
                                     }else{
-                                        columnView.errorOccured(columnView.account.uuid, code, message)
+                                        columnView.errorOccurred(columnView.account.uuid, code, message)
                                     }
                                 }
                 onFinishSent: (success) => chatMesssageListView.finishSent(success)
@@ -635,7 +635,7 @@ ColumnLayout {
             model: RealtimeFeedListModel {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 selectorJson: settings.columnValue
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
                 onReceivingChanged: {
                     autoIconImage.iconColor = Material.color(Material.Green)
                     autoIconImage.enabled = receiving
@@ -679,7 +679,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType

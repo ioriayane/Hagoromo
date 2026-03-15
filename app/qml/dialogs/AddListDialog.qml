@@ -31,7 +31,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -71,7 +71,7 @@ Dialog {
                             addListDialog.accept()
                         }
                     }
-        onErrorOccured: (code, message) => addListDialog.errorOccured(account.uuid, code, message)
+        onErrorOccured: (code, message) => addListDialog.errorOccurred(account.uuid, code, message)
     }
 
     ColumnLayout {

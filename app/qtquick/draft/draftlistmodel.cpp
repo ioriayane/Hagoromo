@@ -233,7 +233,7 @@ void DraftListModel::deleteDraft(const QString &id)
                 endRemoveRows();
             }
         } else {
-            emit errorOccured(del->errorCode(), del->errorMessage());
+            emit errorOccurred(del->errorCode(), del->errorMessage());
         }
         setRunning(false);
         del->deleteLater();
@@ -368,7 +368,7 @@ void DraftListModel::requestDrafts(const QString &cursorValue, bool append)
                 emit hasMoreChanged();
             }
         } else {
-            emit errorOccured(get->errorCode(), get->errorMessage());
+            emit errorOccurred(get->errorCode(), get->errorMessage());
         }
         setRunning(false);
         get->deleteLater();

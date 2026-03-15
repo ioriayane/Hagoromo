@@ -101,7 +101,7 @@ public:
     QString handle() const;
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
     void finishedRequestPostGate(bool success, const bool quote_enabled, const QStringList &uris);
     void finishedRequestNotificationDeclaration(bool success, const QString &declaration);

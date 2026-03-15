@@ -214,7 +214,7 @@ public:
     setEnableNotificationsForReactionsOnReposts(bool newEnableNotificationsForReactionsOnReposts);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
     void autoLoadingChanged();
     void loadingIntervalChanged();

@@ -21,7 +21,7 @@ Dialog {
     property string targetUri: ""
     property string targetCid: ""
     property alias account: account
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: labelerDidComboBox.load()
     onClosed: {
@@ -47,7 +47,7 @@ Dialog {
             id: reportingOptions
             Layout.fillWidth: true
             reporter.onFinished: (success) => reportDialog.accept()
-            reporter.onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
+            reporter.onErrorOccured: (code, message) => reportDialog.errorOccurred(reportDialog.account.uuid, code, message)
         }
 
         Label {
@@ -68,7 +68,7 @@ Dialog {
                 //     contentFilterSettingListModel.labelerDid = currentValue
                 // }
             }
-            onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
+            onErrorOccured: (code, message) => reportDialog.errorOccurred(reportDialog.account.uuid, code, message)
         }
 
         Label {

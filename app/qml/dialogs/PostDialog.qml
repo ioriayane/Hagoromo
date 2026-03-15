@@ -64,7 +64,7 @@ Item {
     property alias postText: postText
     property alias recordOperator: createRecord
 
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
     signal changeActiveDialog(int dialog_no, bool active)
@@ -215,7 +215,7 @@ Item {
                 onErrorOccured: (code, message) => {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
-                    postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                    postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
                 }
             }
             DraftOperator {
@@ -228,7 +228,7 @@ Item {
                 onErrorOccured: (code, message) => {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
-                    postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                    postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
                 }
             }
 
