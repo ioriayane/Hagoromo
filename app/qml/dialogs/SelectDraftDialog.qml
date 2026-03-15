@@ -122,8 +122,8 @@ Dialog {
                                     Action {
                                         text: qsTr("Discard")
                                         onTriggered: {
-                                            dicardConfirmationDialog.draftId = model.id
-                                            dicardConfirmationDialog.show("normal", qsTr("Discard draft?"), qsTr("This draft will be permanently deleted."))
+                                            discardConfirmationDialog.draftId = model.id
+                                            discardConfirmationDialog.show("normal", qsTr("Discard draft?"), qsTr("This draft will be permanently deleted."))
                                         }
                                     }
                                 }
@@ -205,14 +205,14 @@ Dialog {
     }
 
     MessageDialog {
-        id: dicardConfirmationDialog
+        id: discardConfirmationDialog
         useCancel: true
         acceptButtonText: qsTr("Discard")
         property string draftId: ""
         onAccepted: {
-            if(dicardConfirmationDialog.draftId.length > 0){
-                console.log("Delete draft:" + dicardConfirmationDialog.draftId)
-                draftListModel.deleteDraft(dicardConfirmationDialog.draftId)
+            if(discardConfirmationDialog.draftId.length > 0){
+                console.log("Delete draft:" + discardConfirmationDialog.draftId)
+                draftListModel.deleteDraft(discardConfirmationDialog.draftId)
             }
         }
     }
