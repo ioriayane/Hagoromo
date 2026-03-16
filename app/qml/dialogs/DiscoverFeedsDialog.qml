@@ -97,7 +97,7 @@ Dialog {
             model: FeedGeneratorListModel {
                 id: feedGeneratorListModel
                 query: searchText.text
-                onErrorOccured: (code, message) => discoverFeedsDialog.errorOccurred(discoverFeedsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => discoverFeedsDialog.errorOccurred(discoverFeedsDialog.account.uuid, code, message)
             }
             onClicked: (display_name, uri) => {
                            discoverFeedsDialog.selectedName = display_name

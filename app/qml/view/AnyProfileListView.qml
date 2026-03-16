@@ -56,7 +56,7 @@ ColumnLayout {
 
         model: AnyProfileListModel {
             id: anyProfileListModel
-            onErrorOccured: (code, message) => anyProfileListView.errorOccurred(code, message)
+            onErrorOccurred: (code, message) => anyProfileListView.errorOccurred(code, message)
         }
 
         onRequestViewProfile: (did) => anyProfileListView.requestViewProfile(did)

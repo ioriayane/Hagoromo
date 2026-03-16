@@ -51,7 +51,7 @@ Dialog {
             id: reportingOptions
             Layout.fillWidth: true
             reporter.onFinished: (success) => reportDialog.accept()
-            reporter.onErrorOccured: (code, message) => reportDialog.errorOccurred(reportDialog.account.uuid, code, message)
+            reporter.onErrorOccurred: (code, message) => reportDialog.errorOccurred(reportDialog.account.uuid, code, message)
         }
 
         Label {

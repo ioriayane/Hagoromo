@@ -4118,25 +4118,25 @@ Why should this message be reviewed?</source>
     <name>SelfLabelPopup</name>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="12"/>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="22"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="23"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="13"/>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="27"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="28"/>
         <source>Nudity</source>
         <translation>ヌード（芸術など）</translation>
     </message>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="14"/>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="32"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="33"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="15"/>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="37"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="38"/>
         <source>Gore</source>
         <translation>ゴア表現</translation>
     </message>
@@ -4149,7 +4149,7 @@ Why should this message be reviewed?</source>
         <translation type="vanished">閲覧警告</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="43"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="44"/>
         <source>Remove</source>
         <translation>解除</translation>
     </message>

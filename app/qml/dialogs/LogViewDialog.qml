@@ -68,7 +68,7 @@ Dialog {
             logDailyListModel.getLatest()
             logMonthlyListModel.getLatest()
         }
-        onErrorOccured: (code, message) => logViewDialog.errorOccurred(account.uuid, code, message)
+        onErrorOccurred: (code, message) => logViewDialog.errorOccurred(account.uuid, code, message)
     }
     Shortcut {  // Search
         enabled: logViewDialog.visible && searchButton.enabled && searchText.focus && tabBar.currentIndex == 1

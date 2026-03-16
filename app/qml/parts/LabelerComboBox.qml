@@ -29,7 +29,7 @@ ComboBox {
             }
         }
 
-        onErrorOccured: (code, message) => labelerDidComboBox.errorOccurred(code, message)
+        onErrorOccurred: (code, message) => labelerDidComboBox.errorOccurred(code, message)
     }
     delegate: ItemDelegate {
         width: labelerDidComboBox.width

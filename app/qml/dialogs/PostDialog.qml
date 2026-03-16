@@ -212,7 +212,7 @@ Item {
                         postDialogItem.closed()
                     }
                 }
-                onErrorOccured: (code, message) => {
+                onErrorOccurred: (code, message) => {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
                     postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
@@ -225,7 +225,7 @@ Item {
                         postDialogItem.closed()
                     }
                 }
-                onErrorOccured: (code, message) => {
+                onErrorOccurred: (code, message) => {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
                     postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)

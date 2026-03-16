@@ -60,7 +60,7 @@ Dialog {
             viewMode: 2
             model: MutesListModel {
                 id: mutesListModel
-                onErrorOccured: (code, message) => mutedAccountsDialog.errorOccurred(mutedAccountsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => mutedAccountsDialog.errorOccurred(mutedAccountsDialog.account.uuid, code, message)
             }
         }
         RowLayout {

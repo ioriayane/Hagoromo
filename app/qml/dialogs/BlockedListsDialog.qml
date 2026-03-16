@@ -60,7 +60,7 @@ Dialog {
             mode: 2
             model: ListBlocksListModel {
                 id: listBlocksListModel
-                onErrorOccured: (code, message) => mutedListsDialog.errorOccurred(mutedListsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => mutedListsDialog.errorOccurred(mutedListsDialog.account.uuid, code, message)
             }
         }
         RowLayout {

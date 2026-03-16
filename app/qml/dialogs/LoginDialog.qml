@@ -39,7 +39,7 @@ Dialog {
                           // NG
                       }
                   }
-        onErrorOccured: (code, message) => {
+        onErrorOccurred: (code, message) => {
                             if(code === "AuthFactorTokenRequired"){
                                 mfaCodeTextInput.text = ""
                                 mfaCodeTextInput.visible = true

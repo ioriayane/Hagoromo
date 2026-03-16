@@ -143,7 +143,7 @@ Dialog {
                                 id: typeList
                                 maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
                                 model: FeedTypeListModel {
-                                    onErrorOccured: (code, message) => {
+                                    onErrorOccurred: (code, message) => {
                                                         var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
                                                         addColumnDialog.errorOccurred(uuid, code, message)
                                                     }

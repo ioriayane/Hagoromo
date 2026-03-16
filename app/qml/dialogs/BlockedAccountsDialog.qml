@@ -61,7 +61,7 @@ Dialog {
             viewMode: 1
             model: BlocksListModel {
                 id: blocksListModel
-                onErrorOccured: (code, message) => blockedAccountsDialog.errorOccurred(blockedAccountsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => blockedAccountsDialog.errorOccurred(blockedAccountsDialog.account.uuid, code, message)
             }
         }
         RowLayout {

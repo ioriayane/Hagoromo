@@ -43,7 +43,7 @@ Dialog {
 
     RecordOperator {
         id: recordOperator
-        onErrorOccured: (code, message) => {
+        onErrorOccurred: (code, message) => {
             updateActivitySubscriptionDialog.errorOccurred(account.did, code, message)
         }
         onFinished: (success, uri, cid) => {

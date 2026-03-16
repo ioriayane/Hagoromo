@@ -71,7 +71,7 @@ Dialog {
                             addListDialog.accept()
                         }
                     }
-        onErrorOccured: (code, message) => addListDialog.errorOccurred(account.uuid, code, message)
+        onErrorOccurred: (code, message) => addListDialog.errorOccurred(account.uuid, code, message)
     }
 
     ColumnLayout {

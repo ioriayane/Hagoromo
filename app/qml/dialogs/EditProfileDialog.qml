@@ -78,7 +78,7 @@ Dialog {
                                 )
                         }
                     }
-        onErrorOccured: (code, message) => editProfileDialog.errorOccurred(account.uuid, code, message)
+        onErrorOccurred: (code, message) => editProfileDialog.errorOccurred(account.uuid, code, message)
     }
 
     ColumnLayout {

@@ -64,7 +64,7 @@ Item {
             model: ChatListModel {
                 autoLoading: true
                 loadingInterval: 30000  // 30s
-                onErrorOccured: (code, message) => {
+                onErrorOccurred: (code, message) => {
                                     if(code === "InvalidToken" && message === "Bad token scope"){
                                         errorMessageOnChatList.visible = true
                                     }else{
@@ -318,7 +318,7 @@ Item {
                 model: SearchProfileListModel {
                     id: searchProfileListModel
                     enabledSuggestion: true
-                    onErrorOccured: (code, message) => chatListView.errorOccurred(code, message)
+                    onErrorOccurred: (code, message) => chatListView.errorOccurred(code, message)
                 }
                 onSelectedProfile: (did) => {
                                        startNewChatLayout.close()
