@@ -21,7 +21,7 @@ bool KnownFollowersListModel::getLatest()
                 }
                 copyProfiles(profiles);
             } else {
-                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+                emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
             profiles->deleteLater();
@@ -46,7 +46,7 @@ bool KnownFollowersListModel::getNext()
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);
             } else {
-                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+                emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
             profiles->deleteLater();

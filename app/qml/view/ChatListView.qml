@@ -21,7 +21,7 @@ Item {
     property string requestedConvoId: ""
 
     signal requestViewChatMessage(string convo_id, var dids)
-    signal errorOccured(string code, string message)
+    signal errorOccurred(string code, string message)
 
     function resume(){
         console.log("chatListView: resume from " + requestedConvoId)
@@ -64,11 +64,11 @@ Item {
             model: ChatListModel {
                 autoLoading: true
                 loadingInterval: 30000  // 30s
-                onErrorOccured: (code, message) => {
+                onErrorOccurred: (code, message) => {
                                     if(code === "InvalidToken" && message === "Bad token scope"){
                                         errorMessageOnChatList.visible = true
                                     }else{
-                                        chatListView.errorOccured(code, message)
+                                        chatListView.errorOccurred(code, message)
                                     }
                                 }
                 onFinishUpdateRead: (success) => getLatest()
@@ -318,7 +318,7 @@ Item {
                 model: SearchProfileListModel {
                     id: searchProfileListModel
                     enabledSuggestion: true
-                    onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
+                    onErrorOccurred: (code, message) => chatListView.errorOccurred(code, message)
                 }
                 onSelectedProfile: (did) => {
                                        startNewChatLayout.close()

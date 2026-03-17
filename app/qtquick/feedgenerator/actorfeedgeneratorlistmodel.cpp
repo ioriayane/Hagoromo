@@ -34,7 +34,7 @@ bool ActorFeedGeneratorListModel::getLatest()
                 setRunning(false);
             }
         } else {
-            emit errorOccured(feeds->errorCode(), feeds->errorMessage());
+            emit errorOccurred(feeds->errorCode(), feeds->errorMessage());
             setRunning(false);
         }
         feeds->deleteLater();

@@ -24,7 +24,7 @@ Dialog {
     }
     property string selectedName: ""
     property string selectedUri: ""
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -97,7 +97,7 @@ Dialog {
             model: FeedGeneratorListModel {
                 id: feedGeneratorListModel
                 query: searchText.text
-                onErrorOccured: (code, message) => discoverFeedsDialog.errorOccured(discoverFeedsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => discoverFeedsDialog.errorOccurred(discoverFeedsDialog.account.uuid, code, message)
             }
             onClicked: (display_name, uri) => {
                            discoverFeedsDialog.selectedName = display_name

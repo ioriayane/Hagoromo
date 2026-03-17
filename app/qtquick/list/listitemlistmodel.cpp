@@ -151,7 +151,7 @@ bool ListItemListModel::getLatest()
             copyFrom(list);
             QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPosts);
         } else {
-            emit errorOccured(list->errorCode(), list->errorMessage());
+            emit errorOccurred(list->errorCode(), list->errorMessage());
             setRunning(false);
             emit finished(false);
         }
@@ -175,7 +175,7 @@ bool ListItemListModel::getNext()
             copyFrom(list);
             QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPostsNext);
         } else {
-            emit errorOccured(list->errorCode(), list->errorMessage());
+            emit errorOccurred(list->errorCode(), list->errorMessage());
             setRunning(false);
             emit finished(false);
         }

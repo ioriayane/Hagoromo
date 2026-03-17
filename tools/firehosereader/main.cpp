@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
              << "chat.bsky.actor.declaration";
 
     ComAtprotoSyncSubscribeReposEx client;
-    QObject::connect(&client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
+    QObject::connect(&client, &ComAtprotoSyncSubscribeReposEx::errorOccurred,
                      [](const QString &error, const QString &message) {
                          qDebug().noquote() << "Error:" << error << message;
                          QCoreApplication::quit();

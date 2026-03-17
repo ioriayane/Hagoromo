@@ -6,6 +6,8 @@ import QtQuick.Controls.Material
 import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.draftoperator 1.0
+import tech.relog.hagoromo.draftlistmodel 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.controls.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
@@ -62,7 +64,7 @@ Item {
     property alias postText: postText
     property alias recordOperator: createRecord
 
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
     signal changeActiveDialog(int dialog_no, bool active)
@@ -102,7 +104,8 @@ Item {
         y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
         contentWidth: progressLayout.width
         contentHeight: progressLayout.height
-        visible: createRecord.running && createRecord.progressMessage.length > 0
+        visible: (createRecord.running && createRecord.progressMessage.length > 0) ||
+                 (draftOperator.running && draftOperator.progressMessage.length > 0)
         background: Rectangle {
             radius: 3
             border.width: 1
@@ -129,7 +132,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.maximumWidth: parent.width
                 font.pointSize: AdjustedValues.f8
-                text: createRecord.progressMessage
+                text: createRecord.progressMessage.length > 0 ?
+                          createRecord.progressMessage :
+                          (draftOperator.running ?
+                               draftOperator.progressMessage :
+                               createRecord.progressMessage)
                 color: Material.theme === Material.Dark ? Material.foreground : "white"
             }
         }
@@ -205,12 +212,26 @@ Item {
                         postDialogItem.closed()
                     }
                 }
-                onErrorOccured: (code, message) => {
+                onErrorOccurred: (code, message) => {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
-                    postDialogItem.errorOccured(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                    postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
                 }
             }
+            DraftOperator {
+                id: draftOperator
+                onFinishedCreateDraft: (success, id) => {
+                    if(success){
+                        postDialogItem.closed()
+                    }
+                }
+                onErrorOccurred: (code, message) => {
+                    postDialog.open()
+                    var row = accountCombo.currentIndex;
+                    postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                }
+            }
+
             LanguageListModel {
                 id: languageListModel
             }
@@ -225,6 +246,7 @@ Item {
             }
             PostLink {
                 id: postLink
+                // リンクにポストのURLを入れて取得して引用になるケース用
                 onValidChanged: {
                     if(postLink.valid){
                         postDialogItem.quoteCid = postLink.cid
@@ -237,6 +259,22 @@ Item {
                     }
                 }
             }
+            PostLink {
+                id: postLinkbyDraft
+                // ドラフトから引用を復元したとき用
+                onValidChanged: {
+                    if(postLinkbyDraft.valid){
+                        postDialogItem.quoteCid = postLinkbyDraft.cid
+                        postDialogItem.quoteUri = postLinkbyDraft.uri
+                        postDialogItem.quoteAvatar = postLinkbyDraft.avatar
+                        postDialogItem.quoteDisplayName = postLinkbyDraft.displayName
+                        postDialogItem.quoteHandle = postLinkbyDraft.creatorHandle
+                        postDialogItem.quoteIndexedAt = postLinkbyDraft.indexedAt
+                        postDialogItem.quoteText = postLinkbyDraft.text
+                    }
+                }
+            }
+
 
             ScrollView {
                 id: scrollView
@@ -402,7 +440,7 @@ Item {
 
                         ScrollView {
                             z: 99   // MentionSuggetionViewを最前に表示するため
-                            Layout.preferredWidth: 500 * AdjustedValues.ratio
+                            Layout.preferredWidth: 520 * AdjustedValues.ratio
                             Layout.preferredHeight: 150 * AdjustedValues.ratio
                             TextArea {
                                 id: postText
@@ -661,6 +699,12 @@ Item {
                                     wrapMode: Text.Wrap
                                     font.pointSize: AdjustedValues.f8
                                     text: postDialogItem.quoteText
+                                    BusyIndicator {
+                                        implicitWidth: AdjustedValues.i36
+                                        implicitHeight: AdjustedValues.i36
+                                        anchors.centerIn: parent
+                                        visible: postLinkbyDraft.running && postDialogItem.quoteHandle.length === 0
+                                    }
                                 }
                             }
                         }
@@ -672,7 +716,14 @@ Item {
                                 flat: true
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Cancel")
-                                onClicked: postDialogItem.close()
+                                onClicked: {
+                                    if(postButton.enabled && postDialogItem.postType !== "reply"){
+                                        // 下書き保存
+                                        draftConfirmationDialog.open()
+                                    }else{
+                                        postDialogItem.close()
+                                    }
+                                }
                             }
                             Item {
                                 Layout.fillWidth: true
@@ -764,6 +815,13 @@ Item {
                                     postDialog.close()
 
                                     var row = accountCombo.currentIndex;
+
+                                    // 下書きを適用していたら消す
+                                    if(selectDraftDialog.appliedDraftId.length > 0){
+                                        draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                        draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
+                                    }
+                                    // 投稿
                                     createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
                                     createRecord.clear()
                                     createRecord.setText(postText.text)
@@ -805,6 +863,20 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 3
                                     visible: createRecord.running
+                                }
+                            }
+                            IconButton {
+                                enabled: !postButton.enabled
+                                iconSource: "../images/draft.png"
+                                iconSize: AdjustedValues.i18
+                                flat: true
+                                onClicked: {
+                                    var row = accountCombo.currentIndex;
+                                    selectDraftDialog.clear()
+                                    if(selectDraftDialog.account.set(postDialogItem.accountModel,
+                                                                     postDialogItem.accountModel.item(row, AccountListModel.UuidRole))){
+                                        selectDraftDialog.open()
+                                    }
                                 }
                             }
                         }
@@ -864,6 +936,120 @@ Item {
                 id: addPollDialog
                 onAccepted: {
 
+                }
+            }
+
+            SelectDraftDialog {
+                id: selectDraftDialog
+                parentHeight: postDialogItem.parentHeight
+                property string appliedDraftId: ""
+
+                onAccepted: {
+                    var idx = selectDraftDialog.selectedIndex
+                    if(idx >= 0){
+                        // 適用したID
+                        selectDraftDialog.appliedDraftId = selectDraftDialog.draftModel.item(idx, DraftListModel.IdRole)
+
+                        // テキスト
+                        postText.text = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryTextRole)
+
+                        // 言語設定
+                        var langs = selectDraftDialog.draftModel.item(idx, DraftListModel.LangsRole)
+                        languageSelectionDialog.setSelectedLanguages(langs)
+                        postLanguagesButton.setLanguageText(langs)
+
+                        // セルフラベル
+                        var labels = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryLabelsRole)
+                        if(labels.length > 0){
+                            selfLabelsButton.value = labels[0]
+                            selfLabelsButton.iconText = selfLabelPopup.getText(labels[0])
+                        }
+
+                        // 画像のクリアと追加
+                        embedImageListModel.clear()
+                        var imagePaths = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedImagesPathsRole)
+                        var imageAlts = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedImagesAltsRole)
+                        if(imagePaths.length > 0){
+                            embedImageListModel.append(imagePaths)
+                            // Altテキストの設定
+                            for(var i=0; i<imagePaths.length && i<imageAlts.length; i++){
+                                embedImageListModel.updateAlt(i, imageAlts[i])
+                            }
+                        }
+
+                        // 外部リンク
+                        var externals = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedExternalsRole)
+                        if(externals.length > 0){
+                            addingExternalLinkUrlText.text = externals[0]
+                        } else {
+                            addingExternalLinkUrlText.text = ""
+                        }
+
+                        // 引用ポスト
+                        postDialogItem.quoteCid = ""
+                        postDialogItem.quoteUri = ""
+                        postDialogItem.quoteAvatar = ""
+                        postDialogItem.quoteDisplayName = ""
+                        postDialogItem.quoteHandle = ""
+                        postDialogItem.quoteIndexedAt = ""
+                        postDialogItem.quoteText = ""
+                        var recordUris = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsUrisRole)
+                        var recordCids = selectDraftDialog.draftModel.item(idx, DraftListModel.PrimaryEmbedRecordsCidsRole)
+                        if(recordUris.length > 0 && recordCids.length > 0){
+                            postDialogItem.quoteCid = recordCids[0]
+                            postDialogItem.quoteUri = recordUris[0]
+                            // 引用ポストの詳細情報を取得
+                            var row = accountCombo.currentIndex
+                            if(row >= 0){
+                                postDialogItem.postType = "quote"
+                                postLinkbyDraft.clear()
+                                postLinkbyDraft.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                                postLinkbyDraft.getPost(recordUris[0])
+                            }
+                        } else if(postDialogItem.postType !== "quote"){
+                            // 引用がない場合はクリア（ただし、postTypeがquoteの場合は既存の引用を保持）
+                            postDialogItem.postType = "normal"
+                        }
+
+                        // ThreadGateとPostGateの設定
+                        var quoteEnabled = selectDraftDialog.draftModel.item(idx, DraftListModel.PostgateEmbeddingRulesRole)
+                        var threadGateType = selectDraftDialog.draftModel.item(idx, DraftListModel.ThreadGateTypeRole)
+                        var threadGateRules = selectDraftDialog.draftModel.item(idx, DraftListModel.ThreadGateRulesRole)
+                        selectThreadGateDialog.selectedQuoteEnabled = quoteEnabled
+                        selectThreadGateDialog.selectedType = threadGateType
+                        selectThreadGateDialog.selectedOptions = threadGateRules
+                    }
+                }
+            }
+
+            DraftConfirmationDialog {
+                id: draftConfirmationDialog
+                onDiscarded: postDialogItem.close()
+                onRejected: {}
+                onAccepted: {
+                    postDialog.close()
+
+                    var row = accountCombo.currentIndex;
+                    draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+                    draftOperator.clear()
+                    draftOperator.setText(postText.text)
+                    draftOperator.setPostLanguages(languageSelectionDialog.selectedLanguages)
+                    if(postDialogItem.postType !== "reply"){
+                        // replyのときは制限の設定はできない
+                        draftOperator.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                        draftOperator.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
+                    }
+                    if(postDialogItem.quoteValid){
+                        draftOperator.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
+                    }
+                    if(selfLabelsButton.value.length > 0){
+                        draftOperator.setSelfLabels([selfLabelsButton.value])
+                    }
+                    draftOperator.setExternalLink(addingExternalLinkUrlText.text)
+                    if(embedImageListModel.count > 0){
+                        draftOperator.setImages(embedImageListModel.uris(), embedImageListModel.alts())
+                    }
+                    draftOperator.createDraft()
                 }
             }
         }

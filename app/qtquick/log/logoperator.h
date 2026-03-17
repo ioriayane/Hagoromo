@@ -28,7 +28,7 @@ public:
     void setProgressMessage(const QString &newProgressMessage);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void finished(bool success);
     void runningChanged();
     void serviceChanged();

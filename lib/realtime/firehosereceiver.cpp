@@ -33,11 +33,11 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     m_wdgTimer.setInterval(10 * 1000);
     m_analysisTimer.start();
 
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccurred,
             [this](const QString &error, const QString &message) {
                 qDebug().noquote() << "Error:" << error << message;
                 setStatus(FirehoseReceiverStatus::Error);
-                emit errorOccured(error, message);
+                emit errorOccurred(error, message);
                 emit receivingChanged(false);
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,

@@ -87,7 +87,7 @@ ApplicationWindow {
     RecordOperator {
         id: recordOperator
         onFinished: (success) => {}
-        onErrorOccured: (code, message) => appWindow.errorHandler(recordOperator.accountUuid(), code, message)
+        onErrorOccurred: (code, message) => appWindow.errorHandler(recordOperator.accountUuid(), code, message)
     }
 
     ApplicationShortcut {
@@ -175,7 +175,7 @@ ApplicationWindow {
             }
         }
 
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     AccountDialog {
@@ -201,7 +201,7 @@ ApplicationWindow {
                 accountListModel.syncColumn()
             }
         }
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onRequestAddMutedWords: (account_uuid) => {
             if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
                 addMutedWordDialog.open()
@@ -222,7 +222,7 @@ ApplicationWindow {
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     ColumnSettingDialog {
@@ -298,28 +298,28 @@ ApplicationWindow {
 
     ReportPostDialog {
         id: reportDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     ReportAccountDialog {
         id: reportAccountDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     ReportMessageDialog {
         id: reportMessageDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     AddToListDialog {
         id: addToListDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     AddListDialog {
         id: addListDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     EditProfileDialog {
         id: editProfileDialog
         property var callback
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
         onUpdatedProfile: (did, avatar, banner, display_name, description, pronouns, website) => {
             if(editProfileDialog.callback){
@@ -330,7 +330,7 @@ ApplicationWindow {
     }
     UpdateActivitySubscriptionDialog {
         id: updateActivitySubscriptionDialog
-        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     AddMutedWordDialog {
         id: addMutedWordDialog
@@ -426,7 +426,7 @@ ApplicationWindow {
     LogViewDialog {
         id: logViewDialog
         parentHeight: parent.height
-        onErrorOccured: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
+        onErrorOccurred: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
 
         onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
             console.log(account_uuid + ",\n" +
@@ -503,7 +503,7 @@ ApplicationWindow {
             }
         }
 
-        onErrorOccured: (code, message) => appWindow.errorHandler("", code, message)
+        onErrorOccurred: (code, message) => appWindow.errorHandler("", code, message)
 
         function syncColumn(){
             // アカウント一覧にないものを消す
@@ -727,7 +727,7 @@ ApplicationWindow {
             }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
-            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+            onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         }
     }
 
@@ -1169,7 +1169,7 @@ ApplicationWindow {
             parentHeight: appWindow.height
             bottomLine: notificationLayout.y
             accountModel: accountListModel
-            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+            onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
             onViewingProgressChanged: postDialogRepeater.updateViewIndex()
             onChangeActiveDialog: (dialog_no, active) => {

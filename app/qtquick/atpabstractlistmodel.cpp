@@ -198,7 +198,7 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
     qDebug().noquote() << "finishedRestoreBluredText" << this << success << cid << text;
 
     if (!success) {
-        emit errorOccured("", text);
+        emit errorOccurred("", text);
     }
 
     const auto rows = indexsOf(cid);
@@ -1240,7 +1240,7 @@ void AtpAbstractListModel::getPostThreadCids(const QString &root_uri,
             cids << copyPostThreadCids(thread->threadViewPost().replies_ThreadViewPost);
             callback(cids);
         } else {
-            emit errorOccured(thread->errorCode(), thread->errorMessage());
+            emit errorOccurred(thread->errorCode(), thread->errorMessage());
         }
         thread->deleteLater();
     });

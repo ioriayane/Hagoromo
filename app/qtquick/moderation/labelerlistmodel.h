@@ -48,7 +48,7 @@ public:
 
 signals:
     void finished();
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
     void serviceChanged();
     void handleChanged();

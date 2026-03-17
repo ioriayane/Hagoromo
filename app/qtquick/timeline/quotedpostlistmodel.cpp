@@ -26,7 +26,7 @@ bool QuotedPostListModel::getLatest()
                 }
                 copyFrom(feed_view_post_list);
             } else {
-                emit errorOccured(posts->errorCode(), posts->errorMessage());
+                emit errorOccurred(posts->errorCode(), posts->errorMessage());
             }
             QTimer::singleShot(100, this, &QuotedPostListModel::displayQueuedPosts);
             posts->deleteLater();
@@ -57,7 +57,7 @@ bool QuotedPostListModel::getNext()
                 }
                 copyFromNext(feed_view_post_list);
             } else {
-                emit errorOccured(posts->errorCode(), posts->errorMessage());
+                emit errorOccurred(posts->errorCode(), posts->errorMessage());
             }
             QTimer::singleShot(10, this, &QuotedPostListModel::displayQueuedPostsNext);
             posts->deleteLater();

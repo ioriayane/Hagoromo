@@ -369,6 +369,11 @@ struct ProfileAssociatedActivitySubscription
 {
     QString allowSubscriptions;
 };
+struct ProfileAssociatedGerm
+{
+    QString messageMeUrl; // uri
+    QString showButtonTo;
+};
 struct ProfileAssociated
 {
     int lists = 0;
@@ -377,6 +382,7 @@ struct ProfileAssociated
     bool labeler = false;
     ProfileAssociatedChat chat;
     ProfileAssociatedActivitySubscription activitySubscription;
+    ProfileAssociatedGerm germ;
 };
 struct KnownFollowers
 {
@@ -909,6 +915,7 @@ struct View
     QString thumbnail; // uri
     QString alt;
     AppBskyEmbedDefs::AspectRatio aspectRatio;
+    QString presentation; // A hint to the client about how to present the video.
 };
 struct Caption
 {
@@ -921,6 +928,7 @@ struct Main
     QList<Caption> captions;
     QString alt; // Alt text description of the video, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
+    QString presentation; // A hint to the client about how to present the video.
 };
 // A video embedded in a Bluesky record (eg, a post).
 }
@@ -1431,7 +1439,8 @@ struct DraftEmbedRecord
 };
 struct DraftPost
 {
-    QString text; // The primary post content.
+    QString text; // The primary post content. It has a higher limit than post contents to allow
+                  // storing a larger text that can later be refined into smaller posts.
     // union start : labels
     DraftPostLabelsType labels_type = DraftPostLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels
@@ -1445,6 +1454,8 @@ struct DraftPost
 };
 struct Draft
 {
+    QString deviceId; // UUIDv4 identifier of the device that created this draft.
+    QString deviceName; // The device and/or platform on which the draft was created.
     QList<DraftPost> posts; // Array of draft posts that compose this draft.
     QList<QString> langs; // Indicates human language of posts primary text content.
     // union start : postgateEmbeddingRules
@@ -2494,6 +2505,26 @@ struct Suggestion
 struct ResultUnavailable
 {
     QList<Suggestion> suggestions; // List of suggested handles based on the provided inputs.
+};
+}
+
+// com.germnetwork.declaration
+namespace ComGermnetworkDeclaration {
+struct MessageMe
+{
+    QString messageMeUrl; // uri , A URL to present to an account that does not have its own
+                          // com.germnetwork.declaration record, must have an empty fragment
+                          // component, where the app should fill in the fragment component with the
+                          // DIDs of the two accounts who wish to message each other
+    QString showButtonTo; // The policy of who can message the account, this value is included in
+                          // the keyPackage, but is duplicated here to allow applications to decide
+                          // if they should show a 'Message on Germ' button to the viewer.
+};
+struct Main
+{
+    QString version; // Semver version number, without pre-release or build information, for the
+                     // format of opaque content
+    MessageMe messageMe; // Controls who can message this account
 };
 }
 

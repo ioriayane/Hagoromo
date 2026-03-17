@@ -99,7 +99,7 @@ void LogManager::update(const QString &service, const QString &did)
         if (success) {
             emit updateDb(did, repo->repo());
         } else {
-            emit errorOccured(repo->errorCode(), repo->errorMessage());
+            emit errorOccurred(repo->errorCode(), repo->errorMessage());
             emit finished(false);
         }
         repo->deleteLater();
@@ -197,7 +197,7 @@ void LogManager::getPosts()
                 m_postViewsJson.append(post_val);
             }
         } else {
-            emit errorOccured(posts->errorCode(), posts->errorMessage());
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(10, this, &LogManager::getPosts);

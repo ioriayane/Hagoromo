@@ -66,7 +66,7 @@ Rectangle {
             id: searchProfileListModel
             autoLoading: false
             enabledSuggestion: mentionSuggestionView.handlePart.length > 0
-            onErrorOccured: (code, message) => console.log(code + " : " + message)
+            onErrorOccurred: (code, message) => console.log(code + " : " + message)
         }
         delegate: ItemDelegate {
             width: mentionSuggestionView.width

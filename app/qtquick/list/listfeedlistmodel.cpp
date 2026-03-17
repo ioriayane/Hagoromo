@@ -21,7 +21,7 @@ bool ListFeedListModel::getLatest()
                 }
                 copyFrom(list->feedList());
             } else {
-                emit errorOccured(list->errorCode(), list->errorMessage());
+                emit errorOccurred(list->errorCode(), list->errorMessage());
             }
             QTimer::singleShot(100, this, &ListFeedListModel::displayQueuedPosts);
             list->deleteLater();
@@ -47,7 +47,7 @@ bool ListFeedListModel::getNext()
 
                 copyFromNext(list->feedList());
             } else {
-                emit errorOccured(list->errorCode(), list->errorMessage());
+                emit errorOccurred(list->errorCode(), list->errorMessage());
             }
             QTimer::singleShot(10, this, &ListFeedListModel::displayQueuedPostsNext);
             list->deleteLater();

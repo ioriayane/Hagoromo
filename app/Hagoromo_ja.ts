@@ -909,6 +909,55 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>DraftConfirmationDialog</name>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="17"/>
+        <source>Save draft?</source>
+        <translation>下書きを保存しますか？</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="23"/>
+        <source>Keep editing</source>
+        <translation>編集を継続</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="28"/>
+        <source>Discard</source>
+        <translation>破棄</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/DraftConfirmationDialog.qml" line="37"/>
+        <source>Save draft</source>
+        <translation>下書きを保存</translation>
+    </message>
+</context>
+<context>
+    <name>DraftOperator</name>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="109"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="138"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="170"/>
+        <location filename="qtquick/operation/draftoperator.cpp" line="197"/>
+        <source>Another operation is currently in progress</source>
+        <translation>他の操作中です。</translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="114"/>
+        <source>Create draft ...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="143"/>
+        <source>Update draft ...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="202"/>
+        <source>Get drafts ...</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>DragAndDropArea</name>
     <message>
         <location filename="qml/controls/DragAndDropArea.qml" line="27"/>
@@ -2240,12 +2289,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="77"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="24"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/MessageDialog.qml" line="83"/>
+        <location filename="qml/dialogs/MessageDialog.qml" line="23"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -2692,7 +2741,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="472"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="510"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2705,22 +2754,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="471"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="509"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="674"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="718"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="762"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="813"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="822"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="894"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -3875,6 +3924,61 @@ Why should this message be reviewed?</source>
     </message>
 </context>
 <context>
+    <name>SelectDraftDialog</name>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="18"/>
+        <source>Drafts</source>
+        <oldsource>Draft</oldsource>
+        <translation>下書き</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="123"/>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="210"/>
+        <source>Discard</source>
+        <translation>削除</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="126"/>
+        <source>Discard draft?</source>
+        <translation>下書きを削除しますか？</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="126"/>
+        <source>This draft will be permanently deleted.</source>
+        <translation>この下書きは完全に削除されます。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="144"/>
+        <source>Quote</source>
+        <translation>引用</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="164"/>
+        <source>Video uploads are not supported.</source>
+        <translation>ビデオを含む下書きには対応していません。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="171"/>
+        <source>Media stored on %s.</source>
+        <translation>メディアは%sに保存されています。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="176"/>
+        <source>%s more posts.</source>
+        <translation>さらに%s件の投稿</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="186"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/SelectDraftDialog.qml" line="197"/>
+        <source>Apply</source>
+        <translation>適用</translation>
+    </message>
+</context>
+<context>
     <name>SelectThreadGateDialog</name>
     <message>
         <source>Who can reply</source>
@@ -4014,21 +4118,25 @@ Why should this message be reviewed?</source>
     <name>SelfLabelPopup</name>
     <message>
         <location filename="qml/parts/SelfLabelPopup.qml" line="12"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="23"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="17"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="13"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="28"/>
         <source>Nudity</source>
         <translation>ヌード（芸術など）</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="22"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="14"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="33"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="27"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="15"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="38"/>
         <source>Gore</source>
         <translation>ゴア表現</translation>
     </message>
@@ -4041,7 +4149,7 @@ Why should this message be reviewed?</source>
         <translation type="vanished">閲覧警告</translation>
     </message>
     <message>
-        <location filename="qml/parts/SelfLabelPopup.qml" line="33"/>
+        <location filename="qml/parts/SelfLabelPopup.qml" line="44"/>
         <source>Remove</source>
         <translation>解除</translation>
     </message>

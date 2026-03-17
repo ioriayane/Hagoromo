@@ -80,7 +80,7 @@ void LabelerListModel::load()
                     endInsertRows();
                     emit finished();
                 } else {
-                    emit errorOccured(services->errorCode(), services->errorMessage());
+                    emit errorOccurred(services->errorCode(), services->errorMessage());
                 }
                 setRunning(false);
                 services->deleteLater();
@@ -88,7 +88,7 @@ void LabelerListModel::load()
             services->setAccount(account);
             services->getServices(dids, false);
         } else {
-            emit errorOccured(preferences->errorCode(), preferences->errorMessage());
+            emit errorOccurred(preferences->errorCode(), preferences->errorMessage());
             setRunning(false);
         }
         preferences->deleteLater();

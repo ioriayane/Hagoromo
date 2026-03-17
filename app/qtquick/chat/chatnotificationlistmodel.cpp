@@ -136,7 +136,7 @@ void ChatNotificationListModel::getChatList()
                 appendData(data);
             }
         } else {
-            emit errorOccured(convos->errorCode(), convos->errorMessage());
+            emit errorOccurred(convos->errorCode(), convos->errorMessage());
             // checkScopeError(convos->errorCode(), convos->errorMessage());
             if (convos->errorCode() == "InvalidToken") {
                 AccountManager::getInstance()->removeScope(
