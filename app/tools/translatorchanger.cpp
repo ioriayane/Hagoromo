@@ -58,9 +58,11 @@ void TranslatorChanger::connect()
     if (!root)
         return;
     QObject *obj = root->findChild<QObject *>("translatorChanger");
-    qDebug() << obj << obj->metaObject()->indexOfSignal("triggered(QString)");
     if (!obj)
         return;
+#if defined(QT_DEBUG)
+    qDebug() << obj << obj->metaObject()->indexOfSignal("triggered(QString)");
+#endif
     QObject::connect(obj, SIGNAL(triggered(QString)), this, SLOT(change(const QString &)));
 }
 

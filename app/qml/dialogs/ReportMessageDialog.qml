@@ -22,7 +22,7 @@ Dialog {
     property string targetConvoId: ""
     property string targetMessageId: ""
     property alias account: account
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onClosed: {
         reportTextArea.text = ""
@@ -51,7 +51,7 @@ Dialog {
             id: reportingOptions
             Layout.fillWidth: true
             reporter.onFinished: (success) => reportDialog.accept()
-            reporter.onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
+            reporter.onErrorOccurred: (code, message) => reportDialog.errorOccurred(reportDialog.account.uuid, code, message)
         }
 
         Label {

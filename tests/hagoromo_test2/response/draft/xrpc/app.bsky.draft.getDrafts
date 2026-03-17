@@ -1,0 +1,28 @@
+{
+  "cursor": "",
+  "drafts": [
+    {
+      "id": "draft-001",
+      "draft": {
+        "posts": [
+          {
+            "text": "Test draft post"
+          }
+        ]
+      },
+      "createdAt": "2026-01-28T12:00:00.000Z"
+    },
+    {
+      "id": "draft-002",
+      "draft": {
+        "posts": [
+          {
+            "text": "Another draft"
+          }
+        ],
+        "langs": ["ja", "en"]
+      },
+      "createdAt": "2026-01-28T11:00:00.000Z"
+    }
+  ]
+}

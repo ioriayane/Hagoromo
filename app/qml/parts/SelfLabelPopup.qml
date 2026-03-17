@@ -8,6 +8,17 @@ MenuEx {
 
     signal triggered(string value, string text)
 
+    property var valueToText: {
+        "porn": qsTr("Sexually Explicit"),
+        "nudity": qsTr("Nudity"),
+        "sexual": qsTr("Sexually Suggestive"),
+        "graphic-media": qsTr("Gore")
+    }
+    function getText(value){
+        var text = valueToText[value];
+        return text !== undefined ? text : "";
+    }
+
     Action {
         text: qsTr("Sexually Explicit")
         property string value: "porn"

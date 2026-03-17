@@ -32,7 +32,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
     signal updatedProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website)
 
     onOpened: {
@@ -78,7 +78,7 @@ Dialog {
                                 )
                         }
                     }
-        onErrorOccured: (code, message) => editProfileDialog.errorOccured(account.uuid, code, message)
+        onErrorOccurred: (code, message) => editProfileDialog.errorOccurred(account.uuid, code, message)
     }
 
     ColumnLayout {

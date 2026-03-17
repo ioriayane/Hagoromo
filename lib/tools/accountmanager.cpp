@@ -303,7 +303,7 @@ void AccountManager::Private::createSession()
         } else {
             qDebug() << "Fail createSession.";
             m_account.status = AccountStatus::Unauthorized;
-            emit q->errorOccured(session->errorCode(), session->errorMessage());
+            emit q->errorOccurred(session->errorCode(), session->errorMessage());
 
             q->checkAllAccountsReady();
             if (q->allAccountTried()) {
@@ -341,7 +341,7 @@ void AccountManager::Private::refreshSession(bool initial)
                 createSession();
             } else {
                 m_account.status = AccountStatus::Unauthorized;
-                emit q->errorOccured(session->errorCode(), session->errorMessage());
+                emit q->errorOccurred(session->errorCode(), session->errorMessage());
 
                 q->checkAllAccountsReady();
                 if (q->allAccountTried()) {
@@ -385,7 +385,7 @@ void AccountManager::Private::getProfile()
                     qDebug() << "Update pinned post" << detail.pinnedPost.uri;
                     PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
                 } else {
-                    emit q->errorOccured(profile->errorCode(), profile->errorMessage());
+                    emit q->errorOccurred(profile->errorCode(), profile->errorMessage());
                 }
 
                 q->checkAllAccountsReady();

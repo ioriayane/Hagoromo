@@ -16,7 +16,7 @@ ComboBox {
     property alias handle: labelerListModel.handle
     property alias accessJwt: labelerListModel.accessJwt
 
-    signal errorOccured(string code, string message)
+    signal errorOccurred(string code, string message)
     function load(){
         labelerListModel.load()
     }
@@ -29,7 +29,7 @@ ComboBox {
             }
         }
 
-        onErrorOccured: (code, message) => labelerDidComboBox.errorOccured(code, message)
+        onErrorOccurred: (code, message) => labelerDidComboBox.errorOccurred(code, message)
     }
     delegate: ItemDelegate {
         width: labelerDidComboBox.width

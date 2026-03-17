@@ -36,7 +36,7 @@ public:
     void setLoadingInterval(int newLoadingInterval);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void finishUpdateRead(bool success);
     void runningChanged();
     void autoLoadingChanged();

@@ -19,8 +19,10 @@ void LogOperator::getLatest()
         setRunning(false);
         manager->deleteLater();
     });
-    connect(manager, &LogManager::errorOccured, this,
-            [=](const QString &code, const QString &message) { emit errorOccured(code, message); });
+    connect(manager, &LogManager::errorOccurred, this,
+            [=](const QString &code, const QString &message) {
+                emit errorOccurred(code, message);
+            });
     connect(manager, &LogManager::progressMessage, this, &LogOperator::setProgressMessage);
     manager->update(service(), did());
 }

@@ -26,7 +26,7 @@ ColumnLayout {
     signal requestViewListFeed(string uri, string name)
     signal requestEditList(string uri, string avatar, string name, string description)
 
-    signal errorOccured(string code, string message)
+    signal errorOccurred(string code, string message)
     signal back()
 
 
@@ -37,7 +37,7 @@ ColumnLayout {
                             listDetailView.back()
                         }
                     }
-        onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
+        onErrorOccurred: (code, message) => listDetailView.errorOccurred(code, message)
     }
 
     SystemTool {
@@ -231,7 +231,7 @@ ColumnLayout {
                 autoLoading: false
                 uri: listDetailView.listUri
                 property bool mine: (creatorHandle === recordOperator.handle) &&  recordOperator.handle.length > 0
-                onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
+                onErrorOccurred: (code, message) => listDetailView.errorOccurred(code, message)
             }
 
             onMovementEnded: {

@@ -216,7 +216,7 @@ void RealtimeFeedListModel::getFollowing()
             }
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
         } else {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
         }
         profiles->deleteLater();
@@ -256,7 +256,7 @@ void RealtimeFeedListModel::getFollowers()
             }
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowers);
         } else {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
         }
         profiles->deleteLater();
@@ -303,7 +303,7 @@ void RealtimeFeedListModel::getListMembers()
             }
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getListMembers);
         } else {
-            emit errorOccured(list->errorCode(), list->errorMessage());
+            emit errorOccurred(list->errorCode(), list->errorMessage());
             setRunning(false);
         }
         list->deleteLater();
@@ -441,7 +441,7 @@ void RealtimeFeedListModel::getPostThread()
                 qDebug().noquote()
                         << "Error:" << post_thread->errorCode() << post_thread->errorMessage();
             } else {
-                emit errorOccured(post_thread->errorCode(), post_thread->errorMessage());
+                emit errorOccurred(post_thread->errorCode(), post_thread->errorMessage());
             }
         }
         // 残ってたらもう1回

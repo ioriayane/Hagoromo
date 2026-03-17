@@ -83,7 +83,7 @@ public:
     void getProfile(int row);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void updatedAccount(const QString &uuid);
     void loadedPostInteractionSettings(const QString &uuid);
     void savedPostInteractionSettings(const QString &uuid);

@@ -18,7 +18,7 @@ Dialog {
     property alias idText: idTextInput.text
     property alias passwordText: passwordTextInput.text
 
-    signal errorOccured(string code, string message)
+    signal errorOccurred(string code, string message)
 
     onClosed: {
         mfaCodeTextInput.visible = false
@@ -39,12 +39,12 @@ Dialog {
                           // NG
                       }
                   }
-        onErrorOccured: (code, message) => {
+        onErrorOccurred: (code, message) => {
                             if(code === "AuthFactorTokenRequired"){
                                 mfaCodeTextInput.text = ""
                                 mfaCodeTextInput.visible = true
                             }else{
-                                loginDialog.errorOccured(code, message)
+                                loginDialog.errorOccurred(code, message)
                             }
                         }
     }

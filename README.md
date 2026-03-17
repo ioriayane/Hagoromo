@@ -142,6 +142,16 @@ $ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
 
 ---
 
+## 開発サポート
+
+### レイアウト確認モード
+
+cmake実行時に下記のオプションを追加するとレイアウト確認用の軽量な[app\qml\layout_test_main.qml](app\qml\layout_test_main.qml)が実行時に読み込まれます。
+
+```
+-DHAGOROMO_LAYOUT_TEST=ON
+```
+
 ## Overview
 
 This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
@@ -281,4 +291,14 @@ $ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/
 Mac
 ```bash
 $ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
+```
+
+## Development Support
+
+### Layout Verification Mode
+
+Adding the following option when running CMake will load a lightweight layout verification application, [app\qml\layout_test_main.qml](app\qml\layout_test_main.qml), at runtime.
+
+```
+-DHAGOROMO_LAYOUT_TEST=ON
 ```

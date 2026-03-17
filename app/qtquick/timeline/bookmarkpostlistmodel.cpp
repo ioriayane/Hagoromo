@@ -26,7 +26,7 @@ bool BookmarkPostListModel::getLatest()
                 }
                 copyFrom(feed_view_post_list);
             } else {
-                emit errorOccured(bookmarks->errorCode(), bookmarks->errorMessage());
+                emit errorOccurred(bookmarks->errorCode(), bookmarks->errorMessage());
             }
             QTimer::singleShot(0, this, &BookmarkPostListModel::displayQueuedPosts);
             bookmarks->deleteLater();
@@ -57,7 +57,7 @@ bool BookmarkPostListModel::getNext()
                 }
                 copyFromNext(feed_view_post_list);
             } else {
-                emit errorOccured(bookmarks->errorCode(), bookmarks->errorMessage());
+                emit errorOccurred(bookmarks->errorCode(), bookmarks->errorMessage());
             }
             QTimer::singleShot(0, this, &BookmarkPostListModel::displayQueuedPostsNext);
             bookmarks->deleteLater();

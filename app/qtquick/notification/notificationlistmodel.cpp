@@ -792,7 +792,7 @@ bool NotificationListModel::getLatest()
                 // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
                 // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
             } else {
-                emit errorOccured(notification->errorCode(), notification->errorMessage());
+                emit errorOccurred(notification->errorCode(), notification->errorMessage());
             }
             QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPosts);
             notification->deleteLater();
@@ -868,7 +868,7 @@ bool NotificationListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(notification->errorCode(), notification->errorMessage());
+                emit errorOccurred(notification->errorCode(), notification->errorMessage());
             }
             QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
             notification->deleteLater();
@@ -892,7 +892,7 @@ bool NotificationListModel::repost(int row)
     setRunningRepost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -924,7 +924,7 @@ bool NotificationListModel::like(int row)
     setRunningLike(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -975,7 +975,7 @@ bool NotificationListModel::muteThread(int row)
                 getPostThreadCids(root_uri,
                                   [=](const QStringList &cids) { updateMuteThread(cids, false); });
             } else {
-                emit errorOccured(thread->errorCode(), thread->errorMessage());
+                emit errorOccurred(thread->errorCode(), thread->errorMessage());
             }
             setRunningOtherPrcessing(row, false);
             thread->deleteLater();
@@ -990,7 +990,7 @@ bool NotificationListModel::muteThread(int row)
                 getPostThreadCids(root_uri,
                                   [=](const QStringList &cids) { updateMuteThread(cids, true); });
             } else {
-                emit errorOccured(thread->errorCode(), thread->errorMessage());
+                emit errorOccurred(thread->errorCode(), thread->errorMessage());
             }
             setRunningOtherPrcessing(row, false);
             thread->deleteLater();
@@ -1012,7 +1012,7 @@ bool NotificationListModel::detachQuote(int row)
     setRunningOtherPrcessing(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
@@ -1056,7 +1056,7 @@ bool NotificationListModel::bookmark(int row)
     setRunningBookmark(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -1594,7 +1594,7 @@ void NotificationListModel::getPosts()
             // Tokimekiの投票を取得
             getTokimekiPoll();
         } else {
-            emit errorOccured(posts->errorCode(), posts->errorMessage());
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(10, this, &NotificationListModel::getPosts);
@@ -1640,7 +1640,7 @@ void NotificationListModel::getFeedGenerators()
                 }
             }
         } else {
-            emit errorOccured(generators->errorCode(), generators->errorMessage());
+            emit errorOccurred(generators->errorCode(), generators->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(10, this, &NotificationListModel::getFeedGenerators);
@@ -1665,7 +1665,7 @@ void NotificationListModel::updateSeen()
     AppBskyNotificationUpdateSeen *seen = new AppBskyNotificationUpdateSeen(this);
     connect(seen, &AppBskyNotificationUpdateSeen::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(seen->errorCode(), seen->errorMessage());
+            emit errorOccurred(seen->errorCode(), seen->errorMessage());
         }
         setRunning(false);
         seen->deleteLater();

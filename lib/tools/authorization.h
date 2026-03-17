@@ -54,7 +54,7 @@ public:
     QByteArray state() const;
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void serviceEndpointChanged();
     void authorizationServerChanged();
     void pushedAuthorizationRequestEndpointChanged();

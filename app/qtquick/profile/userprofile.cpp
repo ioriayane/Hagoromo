@@ -178,7 +178,7 @@ void UserProfile::getProfile(const QString &did)
                 getRawProfile();
                 getVerifier(detail.verification);
             } else {
-                emit errorOccured(profile->errorCode(), profile->errorMessage());
+                emit errorOccurred(profile->errorCode(), profile->errorMessage());
                 setRunning(false);
             }
             profile->deleteLater();
@@ -641,7 +641,7 @@ void UserProfile::getVerifier(
             }
             setVerifierList(verifier_list);
         } else {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
         }
         profiles->deleteLater();
     });

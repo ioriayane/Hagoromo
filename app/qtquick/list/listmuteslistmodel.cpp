@@ -20,7 +20,7 @@ bool ListMutesListModel::getLatest()
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListMutesListModel::displayQueuedPosts);
         } else {
-            emit errorOccured(lists->errorCode(), lists->errorMessage());
+            emit errorOccurred(lists->errorCode(), lists->errorMessage());
             setRunning(false);
         }
         lists->deleteLater();
@@ -47,7 +47,7 @@ bool ListMutesListModel::getNext()
             QTimer::singleShot(10, this, &ListMutesListModel::displayQueuedPostsNext);
         } else {
             m_cursor.clear();
-            emit errorOccured(lists->errorCode(), lists->errorMessage());
+            emit errorOccurred(lists->errorCode(), lists->errorMessage());
             setRunning(false);
         }
         lists->deleteLater();

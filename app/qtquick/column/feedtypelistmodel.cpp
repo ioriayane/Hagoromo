@@ -184,7 +184,7 @@ bool FeedTypeListModel::getLatest()
                 m_cueUri = feed.saved;
             }
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
         }
         QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         pref->deleteLater();
@@ -315,7 +315,7 @@ void FeedTypeListModel::getFeedDetails()
                 }
             }
         } else {
-            emit errorOccured(generators->errorCode(), generators->errorMessage());
+            emit errorOccurred(generators->errorCode(), generators->errorMessage());
         }
         QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         generators->deleteLater();
@@ -345,7 +345,7 @@ void FeedTypeListModel::getLists()
                 endInsertRows();
             }
         } else {
-            emit errorOccured(lists->errorCode(), lists->errorMessage());
+            emit errorOccurred(lists->errorCode(), lists->errorMessage());
         }
 
         setRunning(false);

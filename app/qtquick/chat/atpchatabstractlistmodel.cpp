@@ -38,7 +38,7 @@ void AtpChatAbstractListModel::updateRead(const QString &convoId, const QString 
         if (success) {
             qDebug() << "updateRead" << read->convo().unreadCount;
         } else {
-            emit errorOccured(read->errorCode(), read->errorMessage());
+            emit errorOccurred(read->errorCode(), read->errorMessage());
         }
         emit finishUpdateRead(success);
         read->deleteLater();

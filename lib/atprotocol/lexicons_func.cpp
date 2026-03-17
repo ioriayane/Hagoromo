@@ -24,6 +24,14 @@ void copyProfileAssociatedActivitySubscription(
         dest.allowSubscriptions = src.value("allowSubscriptions").toString();
     }
 }
+void copyProfileAssociatedGerm(const QJsonObject &src,
+                               AppBskyActorDefs::ProfileAssociatedGerm &dest)
+{
+    if (!src.isEmpty()) {
+        dest.messageMeUrl = src.value("messageMeUrl").toString();
+        dest.showButtonTo = src.value("showButtonTo").toString();
+    }
+}
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest)
 {
     if (!src.isEmpty()) {
@@ -34,6 +42,7 @@ void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAsso
         copyProfileAssociatedChat(src.value("chat").toObject(), dest.chat);
         copyProfileAssociatedActivitySubscription(src.value("activitySubscription").toObject(),
                                                   dest.activitySubscription);
+        copyProfileAssociatedGerm(src.value("germ").toObject(), dest.germ);
     }
 }
 void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest)
@@ -1540,6 +1549,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedVideo::View &dest)
         dest.thumbnail = src.value("thumbnail").toString();
         dest.alt = src.value("alt").toString();
         AppBskyEmbedDefs::copyAspectRatio(src.value("aspectRatio").toObject(), dest.aspectRatio);
+        dest.presentation = src.value("presentation").toString();
     }
 }
 void copyCaption(const QJsonObject &src, AppBskyEmbedVideo::Caption &dest)
@@ -1560,6 +1570,7 @@ void copyMain(const QJsonObject &src, AppBskyEmbedVideo::Main &dest)
         }
         dest.alt = src.value("alt").toString();
         AppBskyEmbedDefs::copyAspectRatio(src.value("aspectRatio").toObject(), dest.aspectRatio);
+        dest.presentation = src.value("presentation").toString();
     }
 }
 }
@@ -2013,6 +2024,8 @@ void copyDraftPost(const QJsonObject &src, AppBskyDraftDefs::DraftPost &dest)
 void copyDraft(const QJsonObject &src, AppBskyDraftDefs::Draft &dest)
 {
     if (!src.isEmpty()) {
+        dest.deviceId = src.value("deviceId").toString();
+        dest.deviceName = src.value("deviceName").toString();
         for (const auto &s : src.value("posts").toArray()) {
             DraftPost child;
             copyDraftPost(s.toObject(), child);
@@ -3357,6 +3370,23 @@ void copyResultUnavailable(const QJsonObject &src,
             copySuggestion(s.toObject(), child);
             dest.suggestions.append(child);
         }
+    }
+}
+}
+// com.germnetwork.declaration
+namespace ComGermnetworkDeclaration {
+void copyMessageMe(const QJsonObject &src, ComGermnetworkDeclaration::MessageMe &dest)
+{
+    if (!src.isEmpty()) {
+        dest.messageMeUrl = src.value("messageMeUrl").toString();
+        dest.showButtonTo = src.value("showButtonTo").toString();
+    }
+}
+void copyMain(const QJsonObject &src, ComGermnetworkDeclaration::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.version = src.value("version").toString();
+        copyMessageMe(src.value("messageMe").toObject(), dest.messageMe);
     }
 }
 }

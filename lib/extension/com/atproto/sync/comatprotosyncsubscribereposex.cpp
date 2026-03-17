@@ -45,14 +45,14 @@ ComAtprotoSyncSubscribeReposEx::ComAtprotoSyncSubscribeReposEx(QObject *parent)
                 for (const auto &error : errors) {
                     messages.append(error.errorString());
                 }
-                emit errorOccured("SslError", messages.join("\n"));
+                emit errorOccurred("SslError", messages.join("\n"));
             });
     connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this,
             [this](QAbstractSocket::SocketError error) {
                 // qDebug().noquote() << "error" << error;
                 const QMetaObject &mo = QAbstractSocket::staticMetaObject;
                 QMetaEnum metaEnum = mo.enumerator(mo.indexOfEnumerator("SocketError"));
-                emit errorOccured("SocketError", QString(metaEnum.valueToKey(error)));
+                emit errorOccurred("SocketError", QString(metaEnum.valueToKey(error)));
             });
     connect(&m_webSocket, &QWebSocket::stateChanged, this,
             [this](QAbstractSocket::SocketState state) {
@@ -128,7 +128,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
         } else if (is_error_frame && json.contains("error")) {
             // error payload
             qDebug().noquote() << QJsonDocument(json).toJson();
-            emit errorOccured(json.value("error").toString(), json.value("message").toString());
+            emit errorOccurred(json.value("error").toString(), json.value("message").toString());
             m_webSocket.close();
         } else if (json.contains("seq")) {
             if (!m_payloadTypeList.contains(payload_type)) {
@@ -143,15 +143,15 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
         } else {
             // decode error
             qDebug().noquote() << QJsonDocument(json).toJson();
-            emit errorOccured("DecodeError", "Unknown data format.");
+            emit errorOccurred("DecodeError", "Unknown data format.");
             m_webSocket.close();
         }
     }
 
     if (offset != message.length()) {
         qDebug().noquote() << "Invalid offset ?";
-        emit errorOccured("InvalidDataSize",
-                          "The size of the decoded data does not match the total.");
+        emit errorOccurred("InvalidDataSize",
+                           "The size of the decoded data does not match the total.");
         m_webSocket.close();
     }
 }
@@ -171,7 +171,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
     if (doc.isNull() || json_src.isEmpty()) {
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
-        emit errorOccured("InvalidData", "Unreadable JSON data.");
+        emit errorOccurred("InvalidData", "Unreadable JSON data.");
         m_webSocket.close();
     } else if (!json_src.contains("kind") || !json_src.contains("did")
                || !json_src.contains("commit")) {

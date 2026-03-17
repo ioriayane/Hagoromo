@@ -194,7 +194,7 @@ void BlogEntryListModel::getLatestFromWhiteWind(std::function<void(const bool &)
                 }
             }
         } else {
-            emit errorOccured(record->errorCode(), record->errorMessage());
+            emit errorOccurred(record->errorCode(), record->errorMessage());
         }
         callback(success);
         record->deleteLater();
@@ -222,7 +222,7 @@ void BlogEntryListModel::getLatestFromLinkat(std::function<void(const bool &)> c
                 }
             }
         } else {
-            emit errorOccured(record->errorCode(), record->errorMessage());
+            emit errorOccurred(record->errorCode(), record->errorMessage());
         }
         callback(success);
         record->deleteLater();

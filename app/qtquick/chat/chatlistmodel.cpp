@@ -139,7 +139,7 @@ bool ChatListModel::getLatest()
 
                     copyFrom(convos, true);
                 } else {
-                    emit errorOccured(convos->errorCode(), convos->errorMessage());
+                    emit errorOccurred(convos->errorCode(), convos->errorMessage());
                     checkScopeError(convos->errorCode(), convos->errorMessage());
                 }
                 setRunning(false);
@@ -169,7 +169,7 @@ bool ChatListModel::getNext()
 
                 copyFrom(convos, false);
             } else {
-                emit errorOccured(convos->errorCode(), convos->errorMessage());
+                emit errorOccurred(convos->errorCode(), convos->errorMessage());
             }
             setRunning(false);
             convos->deleteLater();
@@ -198,7 +198,7 @@ void ChatListModel::mute(int row)
             if (success) {
                 update(row, MutedRole, false);
             } else {
-                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                emit errorOccurred(convo->errorCode(), convo->errorMessage());
             }
             update(row, RunningRole, false);
             convo->deleteLater();
@@ -213,7 +213,7 @@ void ChatListModel::mute(int row)
             if (success) {
                 update(row, MutedRole, true);
             } else {
-                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                emit errorOccurred(convo->errorCode(), convo->errorMessage());
             }
             update(row, RunningRole, false);
             convo->deleteLater();
@@ -243,7 +243,7 @@ void ChatListModel::leave(int row)
             m_idList.removeAt(row);
             endRemoveRows();
         } else {
-            emit errorOccured(convo->errorCode(), convo->errorMessage());
+            emit errorOccurred(convo->errorCode(), convo->errorMessage());
         }
         convo->deleteLater();
     });

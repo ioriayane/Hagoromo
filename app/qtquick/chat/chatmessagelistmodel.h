@@ -94,7 +94,7 @@ public:
 
 signals:
     void finishSent(bool success);
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void convoIdChanged();
     void runSendingChanged();
     void memberDidsChanged();

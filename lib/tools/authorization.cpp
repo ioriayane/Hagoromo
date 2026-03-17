@@ -77,12 +77,12 @@ void Authorization::start(const QString &pds, const QString &handle)
                 // next step
                 requestOauthProtectedResource();
             } else {
-                emit errorOccured("Invalid oauth-protected-resource",
-                                  "authorization_servers is empty.");
+                emit errorOccurred("Invalid oauth-protected-resource",
+                                   "authorization_servers is empty.");
                 emit finished(false);
             }
         } else {
-            emit errorOccured(repo->errorCode(), repo->errorMessage());
+            emit errorOccurred(repo->errorCode(), repo->errorMessage());
             emit finished(false);
         }
         repo->deleteLater();
@@ -108,12 +108,12 @@ void Authorization::requestOauthProtectedResource()
                 // next step
                 requestOauthAuthorizationServer();
             } else {
-                emit errorOccured("Invalid oauth-protected-resource",
-                                  "authorization_servers is empty.");
+                emit errorOccurred("Invalid oauth-protected-resource",
+                                   "authorization_servers is empty.");
                 emit finished(false);
             }
         } else {
-            emit errorOccured(resource->errorCode(), resource->errorMessage());
+            emit errorOccurred(resource->errorCode(), resource->errorMessage());
             emit finished(false);
         }
         resource->deleteLater();
@@ -154,11 +154,11 @@ void Authorization::requestOauthAuthorizationServer()
                 par();
             } else {
                 qDebug().noquote() << error_message;
-                emit errorOccured("Invalid oauth-authorization-server", error_message);
+                emit errorOccurred("Invalid oauth-authorization-server", error_message);
                 emit finished(false);
             }
         } else {
-            emit errorOccured(server->errorCode(), server->errorMessage());
+            emit errorOccurred(server->errorCode(), server->errorMessage());
             emit finished(false);
         }
         server->deleteLater();
@@ -298,12 +298,12 @@ void Authorization::par()
                 setDPopNonce(req->dPopNonce());
                 authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
-                emit errorOccured("Invalid Pushed Authorization Request",
-                                  "'request_uri' is empty.");
+                emit errorOccurred("Invalid Pushed Authorization Request",
+                                   "'request_uri' is empty.");
                 emit finished(false);
             }
         } else {
-            emit errorOccured(req->errorCode(), req->errorMessage());
+            emit errorOccurred(req->errorCode(), req->errorMessage());
             emit finished(false);
         }
         req->deleteLater();
@@ -456,10 +456,10 @@ void Authorization::requestToken(bool refresh)
                 // finish oauth sequence
                 ret = true;
             } else {
-                emit errorOccured("Invalid token response", req->replyJson());
+                emit errorOccurred("Invalid token response", req->replyJson());
             }
         } else {
-            emit errorOccured(req->errorCode(), req->errorMessage());
+            emit errorOccurred(req->errorCode(), req->errorMessage());
         }
         emit finished(ret);
         req->deleteLater();

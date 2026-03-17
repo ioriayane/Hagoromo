@@ -68,7 +68,7 @@ bool AnyFeedListModel::getLatest()
                     }
                 }
             } else {
-                emit errorOccured(records->errorCode(), records->errorMessage());
+                emit errorOccurred(records->errorCode(), records->errorMessage());
             }
             QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
             records->deleteLater();
@@ -140,7 +140,7 @@ bool AnyFeedListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(records->errorCode(), records->errorMessage());
+                emit errorOccurred(records->errorCode(), records->errorMessage());
             }
             QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPostsNext);
             records->deleteLater();
@@ -270,7 +270,7 @@ void AnyFeedListModel::getPosts()
                 }
             }
         } else {
-            emit errorOccured(posts->errorCode(), posts->errorMessage());
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);

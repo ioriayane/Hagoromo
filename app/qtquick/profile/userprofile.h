@@ -197,7 +197,7 @@ public:
     void setPronouns(const QString &newPronouns);
 
 signals:
-    void errorOccured(const QString &code, const QString &message);
+    void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
     void didChanged();
     void handleChanged();

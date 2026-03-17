@@ -34,7 +34,7 @@ bool CustomFeedListModel::getLatest()
             if (success) {
                 copyFrom(feed->feedList());
             } else {
-                emit errorOccured(feed->errorCode(), feed->errorMessage());
+                emit errorOccurred(feed->errorCode(), feed->errorMessage());
             }
             QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
             feed->deleteLater();
@@ -62,7 +62,7 @@ void CustomFeedListModel::updateFeedSaveStatus()
             }
             setSaving(exist);
         } else {
-            emit errorOccured(pref->errorCode(), pref->errorMessage());
+            emit errorOccurred(pref->errorCode(), pref->errorMessage());
         }
         pref->deleteLater();
     });

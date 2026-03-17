@@ -23,7 +23,7 @@ Dialog {
     Account {
         id: account
     }
-    signal errorOccured(string account_uuid, string code, string message)
+    signal errorOccurred(string account_uuid, string code, string message)
 
     onOpened: {
         if(account.uuid.length === 0){
@@ -60,7 +60,7 @@ Dialog {
             viewMode: 2
             model: MutesListModel {
                 id: mutesListModel
-                onErrorOccured: (code, message) => mutedAccountsDialog.errorOccured(mutedAccountsDialog.account.uuid, code, message)
+                onErrorOccurred: (code, message) => mutedAccountsDialog.errorOccurred(mutedAccountsDialog.account.uuid, code, message)
             }
         }
         RowLayout {

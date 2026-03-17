@@ -58,7 +58,7 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
 
     AccountManager *manager = AccountManager::getInstance();
 
-    connect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
+    connect(manager, &AccountManager::errorOccurred, this, &AccountListModel::errorOccurred);
     connect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
     connect(manager, &AccountManager::loadedPostInteractionSettings, this,
             &AccountListModel::loadedPostInteractionSettings);
@@ -82,7 +82,7 @@ AccountListModel::~AccountListModel()
 {
     AccountManager *manager = AccountManager::getInstance();
 
-    disconnect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
+    disconnect(manager, &AccountManager::errorOccurred, this, &AccountListModel::errorOccurred);
     disconnect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
     disconnect(manager, &AccountManager::loadedPostInteractionSettings, this,
                &AccountListModel::loadedPostInteractionSettings);
