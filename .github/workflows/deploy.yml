@@ -87,7 +87,7 @@ jobs:
           # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
           # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
           tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
-          release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
+          name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
           draft: false
           prerelease: false
           body: |
