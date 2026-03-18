@@ -45,12 +45,13 @@ jobs:
         id: build
         env:
           VERSION_NO: ${{ inputs.VERSION_NO }}
+          ENCRYPT_SEED: ${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}
         run: |
           echo "::group::Build hagoromo"
           $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
           echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
           echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
-          echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPT_SEED ""$env:ENCRYPT_SEED""" >> .\lib\tools\encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
           $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
           $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")

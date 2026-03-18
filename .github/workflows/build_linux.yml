@@ -42,11 +42,12 @@ jobs:
         id: build
         env:
           VERSION_NO: ${{ inputs.VERSION_NO }}
+          ENCRYPT_SEED: ${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_LINUX }}
         run: |
           echo "::group::Build hagoromo"
           echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
           echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
-          echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_LINUX }}\"" >> ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPT_SEED \"$ENCRYPT_SEED\"" >> ./lib/tools/encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
           scripts/build.sh linux ${QT_ROOT_DIR}
           echo "::endgroup::"
