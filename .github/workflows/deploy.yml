@@ -74,7 +74,7 @@ jobs:
     needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
     steps:
       - name: Download archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
       - name: Information
         run: |
           find . -type f
