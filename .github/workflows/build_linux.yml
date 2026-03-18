@@ -19,6 +19,8 @@ on:
 jobs:
   build-for-linux:
     runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:

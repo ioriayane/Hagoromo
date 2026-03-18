@@ -13,6 +13,8 @@ concurrency:
 jobs:
   prepare:
     runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     outputs:
       VERSION_NO: ${{ steps.tag_check.outputs.VERSION_NO }}
     steps:
@@ -71,6 +73,8 @@ jobs:
 
   make-release:
     runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
     steps:
       - name: Download archives
