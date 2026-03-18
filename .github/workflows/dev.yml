@@ -6,11 +6,12 @@ on:
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   prepare:
     runs-on: ubuntu-22.04
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     outputs:
       VERSION_NO: ${{ steps.get_version.outputs.VERSION_NO }}
     steps:
@@ -53,8 +54,6 @@ jobs:
 
   result:
     runs-on: ubuntu-22.04
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     needs: [linux, windows, mac]
     steps:
       - name: Information

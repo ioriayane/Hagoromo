@@ -15,12 +15,12 @@ on:
     outputs:
       ARCHIVE_NAME:
         value: ${{ jobs.build-for-mac.outputs.ARCHIVE_NAME }}
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-for-mac:
     runs-on: macos-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
