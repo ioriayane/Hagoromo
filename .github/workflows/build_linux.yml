@@ -34,7 +34,7 @@ jobs:
           arch: 'linux_gcc_64'
           modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0

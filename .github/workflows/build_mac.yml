@@ -33,7 +33,7 @@ jobs:
           modules: 'qt5compat qthttpserver qtimageformats qtscxml qtshadertools qtwebsockets'
           tools: 'tools_ninja'
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
