@@ -6,12 +6,14 @@ on:
 concurrency:
     group: release_check
     cancel-in-progress: true
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 jobs:
   release_check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name : Check documents
         env:
           TZ: "Asia/Tokyo"
@@ -25,8 +27,10 @@ jobs:
           python3 scripts/validate_releasenote.py web/content/docs/release-note.en.md $VERSION_NO
           python3 scripts/validate_releasenote.py web/content/docs/release-note.ja.md $VERSION_NO
       - name : Check pullrequest title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          name="${{ github.event.pull_request.title }}"
+          name="$PR_TITLE"
           pattern="^Release/v[0-9]+\.[0-9]+\.[0-9]+$"
           if [[ $name =~ $pattern ]]; then
               ret=0
