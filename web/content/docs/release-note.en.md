@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.59.0 - 2026/3/17
+
 - Add
   - Suppot draft
 
