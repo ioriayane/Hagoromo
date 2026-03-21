@@ -184,6 +184,9 @@ Item {
                 } else {
                     accountCombo.currentIndex = postDialogItem.accountModel.getMainAccountIndex()
                 }
+                if(postText.text.length > 0){
+                    postText.cursorPosition = postText.text.length
+                }
                 postText.forceActiveFocus()
             }
             onClosed: postDialogItem.closedDialog()

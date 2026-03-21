@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Fix
+  - Fix an issue where the handle was not pre-filled in the post dialog when selecting “Send Mention” from the profile screen menu
+
 ### v0.59.0 - 2026/3/17
 
 - Add

@@ -1231,6 +1231,8 @@ ApplicationWindow {
                     item.quoteHandle = handle
                     item.quoteIndexedAt = indexed_at
                     item.quoteText = text
+                }else if(handle.length > 0){
+                    item.postText.text = handle + " "
                 }
                 if(image_urls.length === 0){
                     item.open()
