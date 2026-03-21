@@ -309,15 +309,16 @@ bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &sr
             }
             QString content = OpenGraphProtocol::decodeHtml(element.attribute("content"));
             if (property == "og:url") {
-                if (content.startsWith("/")) {
-                    QUrl uri(src_uri);
-                    setUri(uri.toString(QUrl::FullyEncoded | QUrl::RemovePath) + content);
-                } else if (content.isEmpty()) {
-                    // あえてタグを用意しているのに空はそのまま
-                } else {
-                    QUrl uri(content);
-                    setUri(uri.toString(QUrl::FullyEncoded));
-                }
+                // 必ずしもユーザーが意図したリンク先に飛べるURLではないことがあるので使用しない。
+                //  if (content.startsWith("/")) {
+                //      QUrl uri(src_uri);
+                //      setUri(uri.toString(QUrl::FullyEncoded | QUrl::RemovePath) + content);
+                //  } else if (content.isEmpty()) {
+                //      // あえてタグを用意しているのに空はそのまま
+                //  } else {
+                //      QUrl uri(content);
+                //      setUri(uri.toString(QUrl::FullyEncoded));
+                //  }
             } else if (property == "og:title") {
                 setTitle(content);
             } else if (property == "title") {
