@@ -262,7 +262,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file1.html");
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file1.html");
         QCOMPARE(ogp.title(), "file1 title");
         QCOMPARE(ogp.description(), "file1 description");
         QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file1.jpg");
@@ -296,7 +296,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file2.html");
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file2.html");
         QCOMPARE(ogp.title(),
                  QString("file2 ")
                          .append(QChar(0x30bf))
@@ -336,7 +336,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file3.html");
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file3.html");
         QCOMPARE(ogp.title(),
                  QString("file3 ")
                          .append(QChar(0x30bf))
@@ -376,8 +376,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(),
-                 QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort));
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file4.html");
         QCOMPARE(ogp.title(),
                  QString("file4 ")
                          .append(QChar(0x30bf))
@@ -417,7 +416,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(), "http://localhost/response/ogp/file5.html?id=10186&s=720");
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file5.html");
         QCOMPARE(ogp.title(),
                  QString("file5 ")
                          .append(QChar(0x30bf))
@@ -437,9 +436,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(),
-                 QString("http://localhost:%1/response/ogp/file6.html")
-                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file6.html");
         QCOMPARE(ogp.title(), QString("file6 TITLE"));
         QCOMPARE(ogp.description(), QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(),
@@ -456,9 +453,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QCOMPARE(ogp.uri(),
-                 QString("http://localhost:%1/response/ogp/file7.html")
-                         .arg(QString::number(m_listenPort)));
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file7.html");
         QCOMPARE(ogp.title(), QString("file7 TITLE"));
         QCOMPARE(ogp.description(), QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(),
