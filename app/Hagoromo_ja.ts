@@ -952,6 +952,11 @@ Please recreate AppPassword in the official application.</source>
         <translation></translation>
     </message>
     <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="175"/>
+        <source>Delete draft ...</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="202"/>
         <source>Get drafts ...</source>
         <translation></translation>
@@ -2741,7 +2746,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="513"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="496"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2754,22 +2759,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="512"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="495"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="721"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="704"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="816"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="799"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="897"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="880"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -4832,7 +4837,7 @@ Who do you want to enable this for?</source>
         <translation>投稿への反応の設定を更新中 ...</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="554"/>
+        <location filename="qml/main.qml" line="555"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
@@ -4842,12 +4847,12 @@ Who do you want to enable this for?</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1127"/>
+        <location filename="qml/main.qml" line="1131"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1366"/>
+        <location filename="qml/main.qml" line="1330"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
