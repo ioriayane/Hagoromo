@@ -10,6 +10,7 @@ Frame {
 
     property string headerText: ""
     property string message: ""
+    property bool fixedWidth: false
 
     contentWidth: progressLayout.width
     contentHeight: progressLayout.height
@@ -21,7 +22,9 @@ Frame {
     }
     ColumnLayout {
         id: progressLayout
-        width: Math.max(300 * AdjustedValues.ratio, headerLabel.implicitWidth, progressLabel.implicitWidth)
+        width: operationProgressFrame.fixedWidth
+               ? 300 * AdjustedValues.ratio
+               : Math.max(300 * AdjustedValues.ratio, headerLabel.implicitWidth, progressLabel.implicitWidth)
         Label {
             id: headerLabel
             Layout.fillWidth: true

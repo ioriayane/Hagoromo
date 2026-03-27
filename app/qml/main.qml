@@ -1106,6 +1106,10 @@ ApplicationWindow {
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
+        OperationProgressManager {
+            id: operationProgressManager
+            Layout.alignment: Qt.AlignRight
+        }
         ChatNotificationFrame {
             id: chatNotificationFrame
             Layout.alignment: Qt.AlignRight
@@ -1134,10 +1138,6 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignRight
             visible: settingDialog.settings.displayRealtimeFeedStatus
             theme: settingDialog.settings.theme
-        }
-        OperationProgressManager {
-            id: operationProgressManager
-            Layout.alignment: Qt.AlignRight
         }
     }
 

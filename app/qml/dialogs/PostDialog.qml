@@ -172,7 +172,7 @@ Item {
                     if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
                         postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "createRecord",
-                                                              postText.text, progressMessage)
+                                                              postText.text, progressMessage, true)
                     } else {
                         postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "createRecord")
                     }
@@ -198,7 +198,7 @@ Item {
                     if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
                         postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "draftOperator",
-                                                              postText.text, progressMessage)
+                                                              postText.text, progressMessage, true)
                     } else {
                         postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                     }
