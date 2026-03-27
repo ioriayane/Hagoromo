@@ -1159,6 +1159,10 @@ ApplicationWindow {
                 }
             }
         }
+        OperationProgressManager {
+            id: operationProgressManager
+            Layout.alignment: Qt.AlignRight
+        }
     }
 
     Component {
@@ -1167,11 +1171,10 @@ ApplicationWindow {
             id: postDialog
             parentWidth: appWindow.width
             parentHeight: appWindow.height
-            bottomLine: notificationLayout.y
             accountModel: accountListModel
+            progressManager: operationProgressManager
             onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
             onClosed: postDialogRepeater.remove(dialog_no)
-            onViewingProgressChanged: postDialogRepeater.updateViewIndex()
             onChangeActiveDialog: (dialog_no, active) => {
                 if(active) {
                     postDialogRepeater.updateActiveDialog(dialog_no)
@@ -1210,7 +1213,6 @@ ApplicationWindow {
                 item.dialog_no = dialog_no
                 item.dialog_default_x = dialog_default_x
                 item.dialog_default_y = dialog_default_y
-                item.viewIndex = -1
                 item.postType = post_type
                 item.defaultAccountUuid = account_uuid
                 if(item.postType === "reply"){
@@ -1285,20 +1287,6 @@ ApplicationWindow {
             // 存在しているダイアログのみにする
             postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((t) => living_dialog.indexOf(t) >= 0)
             console.log(postDialogRepeater.depth_list)
-            // プログレスの表示順の更新
-            updateViewIndex()
-        }
-        function updateViewIndex(){
-            var vi = 0
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                if(loader_item.item.viewingProgress){
-                    loader_item.item.viewIndex = vi
-                    vi += 1
-                }else{
-                    loader_item.item.viewIndex = -1
-                }
-            }
         }
         function updateActiveDialog(no){
             var new_depth_list = postDialogRepeater.depth_list

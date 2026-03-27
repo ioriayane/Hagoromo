@@ -33,9 +33,24 @@ Item {
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
-    property int viewIndex: 0
-    property int bottomLine: 600
-    property bool viewingProgress: progressFrame.visible
+    property var progressManager: null
+
+    property string computedProgressMessage: {
+        if (createRecord.running && createRecord.progressMessage.length > 0)
+            return createRecord.progressMessage
+        if (draftOperator.running && draftOperator.progressMessage.length > 0)
+            return draftOperator.progressMessage
+        return ""
+    }
+
+    onComputedProgressMessageChanged: {
+        if (progressManager === null || dialog_no < 0) return
+        if (computedProgressMessage.length > 0) {
+            progressManager.notify(dialog_no, postText.text, computedProgressMessage)
+        } else {
+            progressManager.clear(dialog_no)
+        }
+    }
 
     property alias accountModel: accountCombo.model
 
@@ -85,6 +100,9 @@ Item {
         postDialog.open()
     }
     function close() {
+        if (progressManager !== null && dialog_no >= 0) {
+            progressManager.clear(dialog_no)
+        }
         visible = false
         closedDialog()
         closed()
@@ -98,16 +116,7 @@ Item {
         }
     }
 
-    OperationProgressFrame {
-        id: progressFrame
-        x: postDialogItem.parentWidth - width - 5
-        y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
-        headerText: postText.text
-        primaryRunning: createRecord.running
-        primaryProgressMessage: createRecord.progressMessage
-        secondaryRunning: draftOperator.running
-        secondaryProgressMessage: draftOperator.progressMessage
-    }
+
 
     Item {
         id: postDialogPosition

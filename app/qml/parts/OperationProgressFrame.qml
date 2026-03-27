@@ -9,15 +9,10 @@ Frame {
     id: operationProgressFrame
 
     property string headerText: ""
-    property bool primaryRunning: false
-    property string primaryProgressMessage: ""
-    property bool secondaryRunning: false
-    property string secondaryProgressMessage: ""
+    property string message: ""
 
     contentWidth: progressLayout.width
     contentHeight: progressLayout.height
-    visible: (primaryRunning && primaryProgressMessage.length > 0) ||
-             (secondaryRunning && secondaryProgressMessage.length > 0)
     background: Rectangle {
         radius: 3
         border.width: 1
@@ -44,11 +39,7 @@ Frame {
             Layout.fillWidth: true
             Layout.maximumWidth: parent.width
             font.pointSize: AdjustedValues.f8
-            text: operationProgressFrame.primaryProgressMessage.length > 0 ?
-                      operationProgressFrame.primaryProgressMessage :
-                      (operationProgressFrame.secondaryRunning ?
-                           operationProgressFrame.secondaryProgressMessage :
-                           operationProgressFrame.primaryProgressMessage)
+            text: operationProgressFrame.message
             color: Material.theme === Material.Dark ? Material.foreground : "white"
         }
     }
