@@ -133,6 +133,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/ImageClipDialog.qml
         qml/dialogs/BlockedListsDialog.qml
         qml/dialogs/PostDialog.qml
+        qml/dialogs/PostDialogManager.qml
         qml/dialogs/MessageDialog.qml
         qml/dialogs/AltEditDialog.qml
         qml/dialogs/LoginDialog.qml
