@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Update
   - Change the settings so that the URL entered by the user is used as-is in the link card
+  - Improvement of the progress display in the bottom right
 - Fix
   - Fix an issue where the handle was not pre-filled in the post dialog when selecting “Send Mention” from the profile screen menu
 
