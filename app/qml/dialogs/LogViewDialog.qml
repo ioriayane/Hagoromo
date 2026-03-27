@@ -38,13 +38,29 @@ Dialog {
     property string hoveredLink: ""
     property int parentHeight: parent.height
     property alias account: account
+    property var progressManager: null
+    property bool minimized: false
 
     onOpened: {
-        logStatisticsListModel.getLatest()
-        logDailyListModel.getLatest()
-        logMonthlyListModel.getLatest()
+        if (progressManager) {
+            progressManager.clear("logViewDialog", "running")
+        }
+        if (!minimized) {
+            logStatisticsListModel.getLatest()
+            logDailyListModel.getLatest()
+            logMonthlyListModel.getLatest()
+        }
+        minimized = false
     }
     onClosed: {
+        if (minimized) {
+            if (progressManager) {
+                progressManager.notify("logViewDialog", "running",
+                    qsTr("Statistics: %1").arg(account.handle),
+                    logOperator.progressMessage)
+            }
+            return
+        }
         tabBar.currentIndex = 0
         logStatisticsListModel.clear()
         logDailyListModel.clear()
@@ -69,6 +85,25 @@ Dialog {
             logMonthlyListModel.getLatest()
         }
         onErrorOccurred: (code, message) => logViewDialog.errorOccurred(account.uuid, code, message)
+    }
+    Connections {
+        target: logOperator
+        function onProgressMessageChanged() {
+            if (logViewDialog.minimized && logViewDialog.progressManager) {
+                logViewDialog.progressManager.notify("logViewDialog", "running",
+                    qsTr("Statistics: %1").arg(account.handle),
+                    logOperator.progressMessage)
+            }
+        }
+        function onRunningChanged() {
+            if (!logOperator.running && logViewDialog.minimized) {
+                if (logViewDialog.progressManager) {
+                    logViewDialog.progressManager.clear("logViewDialog", "running")
+                }
+                logViewDialog.open()
+                // minimized は onOpened でリセットされる
+            }
+        }
     }
     Shortcut {  // Search
         enabled: logViewDialog.visible && searchButton.enabled && searchText.focus && tabBar.currentIndex == 1
@@ -356,6 +391,16 @@ Dialog {
                 text: qsTr("Close")
                 flat: true
                 onClicked: logViewDialog.close()
+            }
+            Button {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Minimize")
+                flat: true
+                visible: logOperator.running
+                onClicked: {
+                    logViewDialog.minimized = true
+                    logViewDialog.close()
+                }
             }
             Item {
                 Layout.fillWidth: true

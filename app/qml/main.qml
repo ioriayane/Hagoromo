@@ -426,6 +426,7 @@ ApplicationWindow {
     LogViewDialog {
         id: logViewDialog
         parentHeight: parent.height
+        progressManager: operationProgressManager
         onErrorOccurred: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
 
         onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
