@@ -84,7 +84,7 @@ Item {
     }
     function close() {
         if (progressManager !== null && dialog_no >= 0) {
-            progressManager.clearAll(dialog_no)
+            progressManager.clearAll("postDialog_" + dialog_no)
         }
         visible = false
         closedDialog()
@@ -171,14 +171,17 @@ Item {
                 onProgressMessageChanged: {
                     if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
-                        postDialogItem.progressManager.notify(postDialogItem.dialog_no, "createRecord",
+                        postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "createRecord",
                                                               postText.text, progressMessage)
                     } else {
-                        postDialogItem.progressManager.clear(postDialogItem.dialog_no, "createRecord")
+                        postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "createRecord")
                     }
                 }
                 onFinished: (success) => {
                     if(success){
+                        if (postDialogItem.progressManager !== null && postDialogItem.dialog_no >= 0) {
+                            postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "createRecord")
+                        }
                         // postText.clear()
                         postDialogItem.closed()
                     }
@@ -194,14 +197,17 @@ Item {
                 onProgressMessageChanged: {
                     if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
-                        postDialogItem.progressManager.notify(postDialogItem.dialog_no, "draftOperator",
+                        postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "draftOperator",
                                                               postText.text, progressMessage)
                     } else {
-                        postDialogItem.progressManager.clear(postDialogItem.dialog_no, "draftOperator")
+                        postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                     }
                 }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
+                        if (postDialogItem.progressManager !== null && postDialogItem.dialog_no >= 0) {
+                            postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "draftOperator")
+                        }
                         postDialogItem.closed()
                     }
                 }
