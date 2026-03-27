@@ -35,23 +35,6 @@ Item {
     property int parentHeight: 600
     property var progressManager: null
 
-    property string computedProgressMessage: {
-        if (createRecord.running && createRecord.progressMessage.length > 0)
-            return createRecord.progressMessage
-        if (draftOperator.running && draftOperator.progressMessage.length > 0)
-            return draftOperator.progressMessage
-        return ""
-    }
-
-    onComputedProgressMessageChanged: {
-        if (progressManager === null || dialog_no < 0) return
-        if (computedProgressMessage.length > 0) {
-            progressManager.notify(dialog_no, postText.text, computedProgressMessage)
-        } else {
-            progressManager.clear(dialog_no)
-        }
-    }
-
     property alias accountModel: accountCombo.model
 
     property string defaultAccountUuid: ""
@@ -101,7 +84,7 @@ Item {
     }
     function close() {
         if (progressManager !== null && dialog_no >= 0) {
-            progressManager.clear(dialog_no)
+            progressManager.clearAll(dialog_no)
         }
         visible = false
         closedDialog()
@@ -185,6 +168,15 @@ Item {
             }
             RecordOperator {
                 id: createRecord
+                onProgressMessageChanged: {
+                    if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
+                    if (progressMessage.length > 0) {
+                        postDialogItem.progressManager.notify(postDialogItem.dialog_no, "createRecord",
+                                                              postText.text, progressMessage)
+                    } else {
+                        postDialogItem.progressManager.clear(postDialogItem.dialog_no, "createRecord")
+                    }
+                }
                 onFinished: (success) => {
                     if(success){
                         // postText.clear()
@@ -199,6 +191,15 @@ Item {
             }
             DraftOperator {
                 id: draftOperator
+                onProgressMessageChanged: {
+                    if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
+                    if (progressMessage.length > 0) {
+                        postDialogItem.progressManager.notify(postDialogItem.dialog_no, "draftOperator",
+                                                              postText.text, progressMessage)
+                    } else {
+                        postDialogItem.progressManager.clear(postDialogItem.dialog_no, "draftOperator")
+                    }
+                }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
                         postDialogItem.closed()
