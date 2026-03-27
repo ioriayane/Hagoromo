@@ -386,12 +386,12 @@ ApplicationWindow {
                                                 threadgateUri,
                                                 selectedType,
                                                 selectedOptions)
-                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+                operationProgressManager.notify("threadgate", "progress", qsTr("Updating 'Edit interaction settings' ..."), "")
             }else if(updateSequence === "postgate"){
                 console.log("Update postgate")
                 recordOperator.updateQuoteEnabled(postUri,
                                                   selectedQuoteEnabled)
-                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+                operationProgressManager.notify("threadgate", "progress", qsTr("Updating 'Edit interaction settings' ..."), "")
             }
         }
         Connections {
@@ -405,7 +405,7 @@ ApplicationWindow {
                         recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
                                                           selectThreadGateDialog.selectedQuoteEnabled)
                     }else{
-                        globalProgressFrame.text = ""
+                        operationProgressManager.clear("threadgate", "progress")
                         selectThreadGateDialog.postUri = ""
                         selectThreadGateDialog.threadgateUri = ""
                         selectThreadGateDialog.updateSequence = ""
@@ -483,7 +483,7 @@ ApplicationWindow {
         id: accountListModel
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
-            globalProgressFrame.text = ""
+            operationProgressManager.clear("accounts", "progress")
             if(accountDialog.visible === true){
                 // ダイアログが開いているときはアカウント追加のたびに呼ばれるので何もしない
             }else if(rowCount() === 0){
@@ -532,12 +532,12 @@ ApplicationWindow {
                 currentAccountIndex = accountListModel.count - 1
             }
             if(currentAccountIndex < 0){
-                globalProgressFrame.text = ""
+                operationProgressManager.clear("lists", "progress")
                 return
             }
             var row = accountListModel.count - currentAccountIndex - 1
             if(row < 0){
-                globalProgressFrame.text = ""
+                operationProgressManager.clear("lists", "progress")
                 return
             }
             var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
@@ -551,10 +551,10 @@ ApplicationWindow {
                 actor = did
                 searchTarget = "#cache"
                 if(listsListModel.getLatest()){
-                    globalProgressFrame.text = qsTr("Loading lists") +
-                            " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
+                    operationProgressManager.notify("lists", "progress",
+                            qsTr("Loading lists") + " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count, "")
                 }else{
-                    globalProgressFrame.text = ""
+                    operationProgressManager.clear("lists", "progress")
                 }
             }
         }
@@ -1135,30 +1135,6 @@ ApplicationWindow {
             visible: settingDialog.settings.displayRealtimeFeedStatus
             theme: settingDialog.settings.theme
         }
-        Frame {
-            // 何かの読み込み中の表示
-            id: globalProgressFrame
-            Layout.alignment: Qt.AlignRight
-            visible: globalProgressFrame.text.length > 0
-            background: Rectangle {
-                radius: 3
-                border.width: 1
-                border.color: Material.frameColor
-                color: Material.backgroundColor
-            }
-            property string text: ""
-            RowLayout {
-                BusyIndicator {
-                    Layout.preferredWidth: AdjustedValues.i24
-                    Layout.preferredHeight: AdjustedValues.i24
-                    // running: globalProgressFrame.visible
-                }
-                Label {
-                    font.pointSize: AdjustedValues.f10
-                    text: globalProgressFrame.text
-                }
-            }
-        }
         OperationProgressManager {
             id: operationProgressManager
             Layout.alignment: Qt.AlignRight
@@ -1351,7 +1327,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if(accountListModel.count === 0){
-            globalProgressFrame.text = qsTr("Loading account(s) ...")
+            operationProgressManager.notify("accounts", "progress", qsTr("Loading account(s) ..."), "")
         }
         accountListModel.load()
     }

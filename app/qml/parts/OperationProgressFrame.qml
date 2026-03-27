@@ -21,10 +21,10 @@ Frame {
     }
     ColumnLayout {
         id: progressLayout
-        width: 300 * AdjustedValues.ratio
+        width: Math.max(300 * AdjustedValues.ratio, headerLabel.implicitWidth, progressLabel.implicitWidth)
         Label {
+            id: headerLabel
             Layout.fillWidth: true
-            Layout.maximumWidth: parent.width
             font.pointSize: AdjustedValues.f10
             elide: Text.ElideRight
             text: operationProgressFrame.headerText.split("\n")[0]
@@ -37,10 +37,10 @@ Frame {
         Label {
             id: progressLabel
             Layout.fillWidth: true
-            Layout.maximumWidth: parent.width
             font.pointSize: AdjustedValues.f8
             text: operationProgressFrame.message
             color: Material.theme === Material.Dark ? Material.foreground : "white"
+            visible: operationProgressFrame.message.length > 0
         }
     }
 }
