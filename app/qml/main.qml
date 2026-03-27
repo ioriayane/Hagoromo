@@ -157,6 +157,7 @@ ApplicationWindow {
             console.log("onOpenSatisticsAndLogs:" + account_uuid)
             if(logViewDialog.account.set(accountListModel, account_uuid)){
                 logViewDialog.open()
+                addColumnDialog.reject()
             }
         }
         onOpenDiscoverFeeds: (account_uuid) => {
@@ -210,6 +211,7 @@ ApplicationWindow {
         onRequestStatisticsAndLogs: (account_uuid) => {
             if(logViewDialog.account.set(accountListModel, account_uuid)){
                 logViewDialog.open()
+                accountDialog.close()
             }
         }
     }
