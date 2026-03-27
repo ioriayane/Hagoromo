@@ -98,48 +98,15 @@ Item {
         }
     }
 
-    Frame {
+    OperationProgressFrame {
         id: progressFrame
         x: postDialogItem.parentWidth - width - 5
         y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
-        contentWidth: progressLayout.width
-        contentHeight: progressLayout.height
-        visible: (createRecord.running && createRecord.progressMessage.length > 0) ||
-                 (draftOperator.running && draftOperator.progressMessage.length > 0)
-        background: Rectangle {
-            radius: 3
-            border.width: 1
-            border.color: Material.frameColor
-            color: Material.backgroundColor
-        }
-        ColumnLayout {
-            id: progressLayout
-            width: 300 * AdjustedValues.ratio
-            Label {
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width
-                font.pointSize: AdjustedValues.f10
-                elide: Text.ElideRight
-                text: postText.text.split("\n")[0]
-                clip: true
-            }
-            ProgressBar {
-                Layout.fillWidth: true
-                indeterminate: true
-            }
-            Label {
-                id: progressLabel
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width
-                font.pointSize: AdjustedValues.f8
-                text: createRecord.progressMessage.length > 0 ?
-                          createRecord.progressMessage :
-                          (draftOperator.running ?
-                               draftOperator.progressMessage :
-                               createRecord.progressMessage)
-                color: Material.theme === Material.Dark ? Material.foreground : "white"
-            }
-        }
+        headerText: postText.text
+        primaryRunning: createRecord.running
+        primaryProgressMessage: createRecord.progressMessage
+        secondaryRunning: draftOperator.running
+        secondaryProgressMessage: draftOperator.progressMessage
     }
 
     Item {
