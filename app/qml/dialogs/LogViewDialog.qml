@@ -38,13 +38,13 @@ Dialog {
     property string hoveredLink: ""
     property int parentHeight: parent.height
     property alias account: account
-    property var progressManager: null
     property bool minimized: false
 
+    signal requestNotifyProgress(string itemId, string contentId, string headerText, string message)
+    signal requestClearProgress(string itemId, string contentId)
+
     onOpened: {
-        if (progressManager) {
-            progressManager.clear("logViewDialog", "running")
-        }
+        requestClearProgress("logViewDialog", "running")
         if (!minimized) {
             logStatisticsListModel.getLatest()
             logDailyListModel.getLatest()
@@ -54,11 +54,9 @@ Dialog {
     }
     onClosed: {
         if (minimized) {
-            if (progressManager) {
-                progressManager.notify("logViewDialog", "running",
-                    qsTr("Statistics: %1").arg(account.handle),
-                    logOperator.progressMessage)
-            }
+            requestNotifyProgress("logViewDialog", "running",
+                qsTr("Statistics: %1").arg(account.handle),
+                logOperator.progressMessage)
             return
         }
         tabBar.currentIndex = 0
@@ -89,17 +87,15 @@ Dialog {
     Connections {
         target: logOperator
         function onProgressMessageChanged() {
-            if (logViewDialog.minimized && logViewDialog.progressManager) {
-                logViewDialog.progressManager.notify("logViewDialog", "running",
+            if (logViewDialog.minimized) {
+                logViewDialog.requestNotifyProgress("logViewDialog", "running",
                     qsTr("Statistics: %1").arg(account.handle),
                     logOperator.progressMessage)
             }
         }
         function onRunningChanged() {
             if (!logOperator.running && logViewDialog.minimized) {
-                if (logViewDialog.progressManager) {
-                    logViewDialog.progressManager.clear("logViewDialog", "running")
-                }
+                logViewDialog.requestClearProgress("logViewDialog", "running")
                 logViewDialog.open()
                 // minimized は onOpened でリセットされる
             }

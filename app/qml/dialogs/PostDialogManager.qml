@@ -6,10 +6,12 @@ Item {
     property int parentWidth: 0
     property int parentHeight: 0
     property var accountModel: null
-    property var progressManager: null
     property bool working: repeater.working
 
     signal errorOccurred(string account_uuid, string code, string message)
+    signal requestNotifyProgress(string itemId, string contentId, string headerText, string message, bool fixedWidth)
+    signal requestClearProgress(string itemId, string contentId)
+    signal requestClearAllProgress(string itemId)
 
     function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
                   avatar, display_name, handle, indexed_at, text, image_urls) {
@@ -24,7 +26,6 @@ Item {
             parentWidth: postDialogManager.parentWidth
             parentHeight: postDialogManager.parentHeight
             accountModel: postDialogManager.accountModel
-            progressManager: postDialogManager.progressManager
             onErrorOccurred: (account_uuid, code, message) => postDialogManager.errorOccurred(account_uuid, code, message)
             onClosed: repeater.remove(dialog_no)
             onChangeActiveDialog: (dialog_no, active) => {
@@ -61,6 +62,9 @@ Item {
 
             sourceComponent: postDialogComponent
             onLoaded: {
+                item.requestNotifyProgress.connect(postDialogManager.requestNotifyProgress)
+                item.requestClearProgress.connect(postDialogManager.requestClearProgress)
+                item.requestClearAllProgress.connect(postDialogManager.requestClearAllProgress)
 
                 item.dialog_no = dialog_no
                 item.dialog_default_x = dialog_default_x

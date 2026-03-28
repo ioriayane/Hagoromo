@@ -434,8 +434,9 @@ ApplicationWindow {
     LogViewDialog {
         id: logViewDialog
         parentHeight: parent.height
-        progressManager: operationProgressManager
         onErrorOccurred: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
+        onRequestNotifyProgress: (itemId, contentId, headerText, message) => operationProgressManager.notify(itemId, contentId, headerText, message)
+        onRequestClearProgress: (itemId, contentId) => operationProgressManager.clear(itemId, contentId)
 
         onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
             console.log(account_uuid + ",\n" +
@@ -1155,8 +1156,10 @@ ApplicationWindow {
         parentWidth: appWindow.width
         parentHeight: appWindow.height
         accountModel: accountListModel
-        progressManager: operationProgressManager
         onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onRequestNotifyProgress: (itemId, contentId, headerText, message, fixedWidth) => operationProgressManager.notify(itemId, contentId, headerText, message, fixedWidth)
+        onRequestClearProgress: (itemId, contentId) => operationProgressManager.clear(itemId, contentId)
+        onRequestClearAllProgress: (itemId) => operationProgressManager.clearAll(itemId)
     }
 
     ImageFullView {
