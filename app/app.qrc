@@ -74,5 +74,6 @@
         <file>qml/images/draft.png</file>
         <file>qml/images/warning.png</file>
         <file>qml/images/add_circle.png</file>
+        <file>qml/images/minimize.png</file>
     </qresource>
 </RCC>

@@ -147,6 +147,17 @@ Dialog {
                     visible: logOperator.running
                 }
             }
+            IconButton {
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b24
+                iconSource: "../images/minimize.png"
+                iconSize: AdjustedValues.i16
+                visible: logOperator.running
+                onClicked: {
+                    logViewDialog.minimized = true
+                    logViewDialog.close()
+                }
+            }
         }
         TabBar {
             id: tabBar
@@ -387,16 +398,6 @@ Dialog {
                 text: qsTr("Close")
                 flat: true
                 onClicked: logViewDialog.close()
-            }
-            Button {
-                font.pointSize: AdjustedValues.f10
-                text: qsTr("Minimize")
-                flat: true
-                visible: logOperator.running
-                onClicked: {
-                    logViewDialog.minimized = true
-                    logViewDialog.close()
-                }
             }
             Item {
                 Layout.fillWidth: true
