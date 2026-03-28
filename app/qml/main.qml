@@ -155,7 +155,10 @@ ApplicationWindow {
         }
         onOpenSatisticsAndLogs: (account_uuid) => {
             console.log("onOpenSatisticsAndLogs:" + account_uuid)
-            if(logViewDialog.account.set(accountListModel, account_uuid)){
+            if(logViewDialog.minimized) {
+                logViewDialog.open()
+                addColumnDialog.reject()
+            }else if(logViewDialog.account.set(accountListModel, account_uuid)){
                 logViewDialog.open()
                 addColumnDialog.reject()
             }
@@ -209,7 +212,10 @@ ApplicationWindow {
             }
         }
         onRequestStatisticsAndLogs: (account_uuid) => {
-            if(logViewDialog.account.set(accountListModel, account_uuid)){
+            if(logViewDialog.minimized) {
+                logViewDialog.open()
+                accountDialog.close()
+            }else if(logViewDialog.account.set(accountListModel, account_uuid)){
                 logViewDialog.open()
                 accountDialog.close()
             }
