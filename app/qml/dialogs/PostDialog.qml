@@ -33,7 +33,6 @@ Item {
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
-    property var progressManager: null
 
     property alias accountModel: accountCombo.model
 
@@ -66,6 +65,9 @@ Item {
     signal closed()
     signal closedDialog()
     signal changeActiveDialog(int dialog_no, bool active)
+    signal requestNotifyProgress(string itemId, string contentId, string headerText, string message, bool fixedWidth)
+    signal requestClearProgress(string itemId, string contentId)
+    signal requestClearAllProgress(string itemId)
 
     function open(){
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
@@ -83,8 +85,8 @@ Item {
         postDialog.open()
     }
     function close() {
-        if (progressManager !== null && dialog_no >= 0) {
-            progressManager.clearAll("postDialog_" + dialog_no)
+        if (dialog_no >= 0) {
+            requestClearAllProgress("postDialog_" + dialog_no)
         }
         visible = false
         closedDialog()
@@ -169,18 +171,18 @@ Item {
             RecordOperator {
                 id: createRecord
                 onProgressMessageChanged: {
-                    if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
+                    if (postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
-                        postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "createRecord",
-                                                              postText.text, progressMessage, true)
+                        postDialogItem.requestNotifyProgress("postDialog_" + postDialogItem.dialog_no, "createRecord",
+                                                             postText.text, progressMessage, true)
                     } else {
-                        postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "createRecord")
+                        postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "createRecord")
                     }
                 }
                 onFinished: (success) => {
                     if(success){
-                        if (postDialogItem.progressManager !== null && postDialogItem.dialog_no >= 0) {
-                            postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "createRecord")
+                        if (postDialogItem.dialog_no >= 0) {
+                            postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "createRecord")
                         }
                         // postText.clear()
                         postDialogItem.closed()
@@ -195,18 +197,18 @@ Item {
             DraftOperator {
                 id: draftOperator
                 onProgressMessageChanged: {
-                    if (postDialogItem.progressManager === null || postDialogItem.dialog_no < 0) return
+                    if (postDialogItem.dialog_no < 0) return
                     if (progressMessage.length > 0) {
-                        postDialogItem.progressManager.notify("postDialog_" + postDialogItem.dialog_no, "draftOperator",
-                                                              postText.text, progressMessage, true)
+                        postDialogItem.requestNotifyProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator",
+                                                             postText.text, progressMessage, true)
                     } else {
-                        postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "draftOperator")
+                        postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                     }
                 }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
-                        if (postDialogItem.progressManager !== null && postDialogItem.dialog_no >= 0) {
-                            postDialogItem.progressManager.clear("postDialog_" + postDialogItem.dialog_no, "draftOperator")
+                        if (postDialogItem.dialog_no >= 0) {
+                            postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                         }
                         postDialogItem.closed()
                     }
