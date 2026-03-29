@@ -33,9 +33,6 @@ Item {
     property real basisHeight: parentHeight * 0.9 - postDialog.topPadding - postDialog.bottomPadding
     property int parentWidth: 800
     property int parentHeight: 600
-    property int viewIndex: 0
-    property int bottomLine: 600
-    property bool viewingProgress: progressFrame.visible
 
     property alias accountModel: accountCombo.model
 
@@ -68,6 +65,9 @@ Item {
     signal closed()
     signal closedDialog()
     signal changeActiveDialog(int dialog_no, bool active)
+    signal requestNotifyProgress(string itemId, string contentId, string headerText, string message, bool fixedWidth)
+    signal requestClearProgress(string itemId, string contentId)
+    signal requestClearAllProgress(string itemId)
 
     function open(){
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
@@ -85,6 +85,9 @@ Item {
         postDialog.open()
     }
     function close() {
+        if (dialog_no >= 0) {
+            requestClearAllProgress("postDialog_" + dialog_no)
+        }
         visible = false
         closedDialog()
         closed()
@@ -98,49 +101,7 @@ Item {
         }
     }
 
-    Frame {
-        id: progressFrame
-        x: postDialogItem.parentWidth - width - 5
-        y: postDialogItem.bottomLine - ((height + 5) * (postDialogItem.viewIndex + 1))
-        contentWidth: progressLayout.width
-        contentHeight: progressLayout.height
-        visible: (createRecord.running && createRecord.progressMessage.length > 0) ||
-                 (draftOperator.running && draftOperator.progressMessage.length > 0)
-        background: Rectangle {
-            radius: 3
-            border.width: 1
-            border.color: Material.frameColor
-            color: Material.backgroundColor
-        }
-        ColumnLayout {
-            id: progressLayout
-            width: 300 * AdjustedValues.ratio
-            Label {
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width
-                font.pointSize: AdjustedValues.f10
-                elide: Text.ElideRight
-                text: postText.text.split("\n")[0]
-                clip: true
-            }
-            ProgressBar {
-                Layout.fillWidth: true
-                indeterminate: true
-            }
-            Label {
-                id: progressLabel
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width
-                font.pointSize: AdjustedValues.f8
-                text: createRecord.progressMessage.length > 0 ?
-                          createRecord.progressMessage :
-                          (draftOperator.running ?
-                               draftOperator.progressMessage :
-                               createRecord.progressMessage)
-                color: Material.theme === Material.Dark ? Material.foreground : "white"
-            }
-        }
-    }
+
 
     Item {
         id: postDialogPosition
@@ -184,6 +145,9 @@ Item {
                 } else {
                     accountCombo.currentIndex = postDialogItem.accountModel.getMainAccountIndex()
                 }
+                if(postText.text.length > 0){
+                    postText.cursorPosition = postText.text.length
+                }
                 postText.forceActiveFocus()
             }
             onClosed: postDialogItem.closedDialog()
@@ -206,8 +170,20 @@ Item {
             }
             RecordOperator {
                 id: createRecord
+                onProgressMessageChanged: {
+                    if (postDialogItem.dialog_no < 0) return
+                    if (progressMessage.length > 0) {
+                        postDialogItem.requestNotifyProgress("postDialog_" + postDialogItem.dialog_no, "createRecord",
+                                                             postText.text, progressMessage, true)
+                    } else {
+                        postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "createRecord")
+                    }
+                }
                 onFinished: (success) => {
                     if(success){
+                        if (postDialogItem.dialog_no >= 0) {
+                            postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "createRecord")
+                        }
                         // postText.clear()
                         postDialogItem.closed()
                     }
@@ -220,8 +196,20 @@ Item {
             }
             DraftOperator {
                 id: draftOperator
+                onProgressMessageChanged: {
+                    if (postDialogItem.dialog_no < 0) return
+                    if (progressMessage.length > 0) {
+                        postDialogItem.requestNotifyProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator",
+                                                             postText.text, progressMessage, true)
+                    } else {
+                        postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
+                    }
+                }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
+                        if (postDialogItem.dialog_no >= 0) {
+                            postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
+                        }
                         postDialogItem.closed()
                     }
                 }

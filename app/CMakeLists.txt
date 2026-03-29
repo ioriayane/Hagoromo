@@ -116,6 +116,8 @@ qt_add_qml_module(Hagoromo
         qml/parts/LiveIconCover.qml
         qml/parts/PollContent.qml
         qml/parts/PollOptions.qml
+        qml/parts/OperationProgressFrame.qml
+        qml/parts/OperationProgressManager.qml
         qml/parts/IconMessage.qml
         qml/dialogs/SelectThreadGateDialog.qml
         qml/dialogs/SearchDialog.qml
@@ -131,6 +133,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/ImageClipDialog.qml
         qml/dialogs/BlockedListsDialog.qml
         qml/dialogs/PostDialog.qml
+        qml/dialogs/PostDialogManager.qml
         qml/dialogs/MessageDialog.qml
         qml/dialogs/AltEditDialog.qml
         qml/dialogs/LoginDialog.qml

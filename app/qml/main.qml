@@ -155,8 +155,12 @@ ApplicationWindow {
         }
         onOpenSatisticsAndLogs: (account_uuid) => {
             console.log("onOpenSatisticsAndLogs:" + account_uuid)
-            if(logViewDialog.account.set(accountListModel, account_uuid)){
+            if(logViewDialog.minimized) {
                 logViewDialog.open()
+                addColumnDialog.reject()
+            }else if(logViewDialog.account.set(accountListModel, account_uuid)){
+                logViewDialog.open()
+                addColumnDialog.reject()
             }
         }
         onOpenDiscoverFeeds: (account_uuid) => {
@@ -208,8 +212,12 @@ ApplicationWindow {
             }
         }
         onRequestStatisticsAndLogs: (account_uuid) => {
-            if(logViewDialog.account.set(accountListModel, account_uuid)){
+            if(logViewDialog.minimized) {
                 logViewDialog.open()
+                accountDialog.close()
+            }else if(logViewDialog.account.set(accountListModel, account_uuid)){
+                logViewDialog.open()
+                accountDialog.close()
             }
         }
     }
@@ -386,12 +394,12 @@ ApplicationWindow {
                                                 threadgateUri,
                                                 selectedType,
                                                 selectedOptions)
-                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+                operationProgressManager.notify("threadgate", "progress", qsTr("Updating 'Edit interaction settings' ..."), "")
             }else if(updateSequence === "postgate"){
                 console.log("Update postgate")
                 recordOperator.updateQuoteEnabled(postUri,
                                                   selectedQuoteEnabled)
-                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+                operationProgressManager.notify("threadgate", "progress", qsTr("Updating 'Edit interaction settings' ..."), "")
             }
         }
         Connections {
@@ -405,7 +413,7 @@ ApplicationWindow {
                         recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
                                                           selectThreadGateDialog.selectedQuoteEnabled)
                     }else{
-                        globalProgressFrame.text = ""
+                        operationProgressManager.clear("threadgate", "progress")
                         selectThreadGateDialog.postUri = ""
                         selectThreadGateDialog.threadgateUri = ""
                         selectThreadGateDialog.updateSequence = ""
@@ -427,6 +435,8 @@ ApplicationWindow {
         id: logViewDialog
         parentHeight: parent.height
         onErrorOccurred: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
+        onRequestNotifyProgress: (itemId, contentId, headerText, message) => operationProgressManager.notify(itemId, contentId, headerText, message)
+        onRequestClearProgress: (itemId, contentId) => operationProgressManager.clear(itemId, contentId)
 
         onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
             console.log(account_uuid + ",\n" +
@@ -483,7 +493,7 @@ ApplicationWindow {
         id: accountListModel
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
-            globalProgressFrame.text = ""
+            operationProgressManager.clear("accounts", "progress")
             if(accountDialog.visible === true){
                 // ダイアログが開いているときはアカウント追加のたびに呼ばれるので何もしない
             }else if(rowCount() === 0){
@@ -532,12 +542,12 @@ ApplicationWindow {
                 currentAccountIndex = accountListModel.count - 1
             }
             if(currentAccountIndex < 0){
-                globalProgressFrame.text = ""
+                operationProgressManager.clear("lists", "progress")
                 return
             }
             var row = accountListModel.count - currentAccountIndex - 1
             if(row < 0){
-                globalProgressFrame.text = ""
+                operationProgressManager.clear("lists", "progress")
                 return
             }
             var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
@@ -551,10 +561,10 @@ ApplicationWindow {
                 actor = did
                 searchTarget = "#cache"
                 if(listsListModel.getLatest()){
-                    globalProgressFrame.text = qsTr("Loading lists") +
-                            " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
+                    operationProgressManager.notify("lists", "progress",
+                            qsTr("Loading lists") + " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count, "")
                 }else{
-                    globalProgressFrame.text = ""
+                    operationProgressManager.clear("lists", "progress")
                 }
             }
         }
@@ -1106,6 +1116,10 @@ ApplicationWindow {
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
+        OperationProgressManager {
+            id: operationProgressManager
+            Layout.alignment: Qt.AlignRight
+        }
         ChatNotificationFrame {
             id: chatNotificationFrame
             Layout.alignment: Qt.AlignRight
@@ -1135,211 +1149,17 @@ ApplicationWindow {
             visible: settingDialog.settings.displayRealtimeFeedStatus
             theme: settingDialog.settings.theme
         }
-        Frame {
-            // 何かの読み込み中の表示
-            id: globalProgressFrame
-            Layout.alignment: Qt.AlignRight
-            visible: globalProgressFrame.text.length > 0
-            background: Rectangle {
-                radius: 3
-                border.width: 1
-                border.color: Material.frameColor
-                color: Material.backgroundColor
-            }
-            property string text: ""
-            RowLayout {
-                BusyIndicator {
-                    Layout.preferredWidth: AdjustedValues.i24
-                    Layout.preferredHeight: AdjustedValues.i24
-                    // running: globalProgressFrame.visible
-                }
-                Label {
-                    font.pointSize: AdjustedValues.f10
-                    text: globalProgressFrame.text
-                }
-            }
-        }
     }
 
-    Component {
-        id: postDialogComponent
-        PostDialog {
-            id: postDialog
-            parentWidth: appWindow.width
-            parentHeight: appWindow.height
-            bottomLine: notificationLayout.y
-            accountModel: accountListModel
-            onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
-            onClosed: postDialogRepeater.remove(dialog_no)
-            onViewingProgressChanged: postDialogRepeater.updateViewIndex()
-            onChangeActiveDialog: (dialog_no, active) => {
-                if(active) {
-                    postDialogRepeater.updateActiveDialog(dialog_no)
-                }
-            }
-        }
-    }
-    Repeater {
+    PostDialogManager {
         id: postDialogRepeater
-        property int dialog_no: 0
-        property var depth_list: []
-        property bool working: false
-        model: ListModel {}
-        onWorkingChanged: console.log("!!!!!!! working = " + working + "  !!!!!!!!!")
-        Loader {
-            required property int index
-            required property int dialog_no
-            required property int dialog_default_x
-            required property int dialog_default_y
-            required property string post_type
-            required property string account_uuid
-            required property string cid
-            required property string uri
-            required property string reply_root_cid
-            required property string reply_root_uri
-            required property string avatar
-            required property string display_name
-            required property string handle
-            required property string indexed_at
-            required property string text
-            required property string image_urls
-
-            sourceComponent: postDialogComponent
-            onLoaded: {
-
-                item.dialog_no = dialog_no
-                item.dialog_default_x = dialog_default_x
-                item.dialog_default_y = dialog_default_y
-                item.viewIndex = -1
-                item.postType = post_type
-                item.defaultAccountUuid = account_uuid
-                if(item.postType === "reply"){
-                    item.replyCid = cid
-                    item.replyUri = uri
-                    item.replyRootCid = reply_root_cid
-                    item.replyRootUri = reply_root_uri
-                    item.replyAvatar = avatar
-                    item.replyDisplayName = display_name
-                    item.replyHandle = handle
-                    item.replyIndexedAt = indexed_at
-                    item.replyText = text
-                }else if(item.postType === "quote"){
-                    item.quoteCid = cid
-                    item.quoteUri = uri
-                    item.quoteAvatar = avatar
-                    item.quoteDisplayName = display_name
-                    item.quoteHandle = handle
-                    item.quoteIndexedAt = indexed_at
-                    item.quoteText = text
-                }
-                if(image_urls.length === 0){
-                    item.open()
-                }else{
-                    item.openWithFiles(image_urls.split("\n"))
-                }
-                postDialogRepeater.working = false
-                console.timeEnd("post_dialog_open");
-            }
-        }
-        function open(post_type, account_uuid, cid, uri, reply_root_cid, reply_root_uri,
-                      avatar, display_name, handle, indexed_at, text, image_urls) {
-            console.time("post_dialog_open");
-            var top_pos = postDialogRepeater.getTopPosition()
-            working = true
-            postDialogRepeater.depth_list.push(postDialogRepeater.dialog_no)
-            postDialogRepeater.model.append({
-                                                "dialog_no": postDialogRepeater.dialog_no++,
-                                                "post_type": post_type,
-                                                "dialog_default_x": top_pos[0],
-                                                "dialog_default_y": top_pos[1],
-                                                "account_uuid": account_uuid,
-                                                "cid": cid,
-                                                "uri": uri,
-                                                "reply_root_cid": reply_root_cid,
-                                                "reply_root_uri": reply_root_uri,
-                                                "avatar": avatar,
-                                                "display_name": display_name,
-                                                "handle": handle,
-                                                "indexed_at": indexed_at,
-                                                "text": text,
-                                                "image_urls": image_urls.join("\n")
-                                            })
-        }
-        function remove(no){
-            var living_dialog = []
-            var remove_index = -1
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                console.log("remove : no=" + no + ", Item no=" + loader_item.item.dialog_no)
-                if(no === loader_item.item.dialog_no){
-                    remove_index = i
-                }else{
-                    living_dialog.push(loader_item.item.dialog_no)
-                }
-            }
-            if(remove_index >= 0){
-                postDialogRepeater.model.remove(remove_index)
-            }
-            // 存在しているダイアログのみにする
-            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((t) => living_dialog.indexOf(t) >= 0)
-            console.log(postDialogRepeater.depth_list)
-            // プログレスの表示順の更新
-            updateViewIndex()
-        }
-        function updateViewIndex(){
-            var vi = 0
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                if(loader_item.item.viewingProgress){
-                    loader_item.item.viewIndex = vi
-                    vi += 1
-                }else{
-                    loader_item.item.viewIndex = -1
-                }
-            }
-        }
-        function updateActiveDialog(no){
-            var new_depth_list = postDialogRepeater.depth_list
-            var current_index = postDialogRepeater.depth_list.indexOf(no)
-            if(current_index < 0 || current_index >= (postDialogRepeater.depth_list.length - 1)){
-                return
-            }
-            postDialogRepeater.depth_list.splice(current_index, 1)
-            postDialogRepeater.depth_list.push(no)
-
-            // いったん0にしないと意図どおり反映されない
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                loader_item.item.dialog_z = 0
-            }
-            // zオーダーを再設定しつつ、管理リストから既に消えているdialog_noを消す
-            var living_dialog = []
-            postDialogRepeater.depth_list.forEach((list_no, list_index) => {
-                                                      for(var i=0;i<count;i++){
-                                                          var loader_item = itemAt(i)
-                                                          if(loader_item.item.dialog_no === list_no){
-                                                              living_dialog.push(list_no)
-                                                              loader_item.item.dialog_z = list_index + 1
-                                                          }
-                                                      }
-                                                  })
-            // 存在しているダイアログのみにする
-            postDialogRepeater.depth_list = postDialogRepeater.depth_list.filter((no) => living_dialog.indexOf(no) >= 0)
-        }
-        function getTopPosition(){
-            var l = postDialogRepeater.depth_list.length
-            if(l === 0){
-                return [-1, -1]
-            }
-            var top_dialog_no = postDialogRepeater.depth_list[l-1]
-            for(var i=0;i<count;i++){
-                var loader_item = itemAt(i)
-                if(top_dialog_no === loader_item.item.dialog_no){
-                    return [loader_item.item.dialog_x, loader_item.item.dialog_y]
-                }
-            }
-            return [-1, -1]
-        }
+        parentWidth: appWindow.width
+        parentHeight: appWindow.height
+        accountModel: accountListModel
+        onErrorOccurred: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onRequestNotifyProgress: (itemId, contentId, headerText, message, fixedWidth) => operationProgressManager.notify(itemId, contentId, headerText, message, fixedWidth)
+        onRequestClearProgress: (itemId, contentId) => operationProgressManager.clear(itemId, contentId)
+        onRequestClearAllProgress: (itemId) => operationProgressManager.clearAll(itemId)
     }
 
     ImageFullView {
@@ -1361,7 +1181,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if(accountListModel.count === 0){
-            globalProgressFrame.text = qsTr("Loading account(s) ...")
+            operationProgressManager.notify("accounts", "progress", qsTr("Loading account(s) ..."), "")
         }
         accountListModel.load()
     }

@@ -10,6 +10,8 @@ permissions:
 concurrency:
     group: deploy_app
     cancel-in-progress: true
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 jobs:
   prepare:
     runs-on: ubuntu-22.04
@@ -17,13 +19,15 @@ jobs:
       VERSION_NO: ${{ steps.tag_check.outputs.VERSION_NO }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Tag check
         id: tag_check
+        env:
+          TAG_NAME: ${{ github.ref_name }}
         run: |
-          tag="${{ github.ref_name }}"
+          tag="$TAG_NAME"
           # tag="v0.43.0" # debug
           version_no=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
           echo "VERSION_NO=${version_no}" >> "$GITHUB_OUTPUT"
@@ -72,7 +76,7 @@ jobs:
     needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
     steps:
       - name: Download archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
       - name: Information
         run: |
           find . -type f
@@ -85,7 +89,7 @@ jobs:
           # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
           # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
           tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
-          release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
+          name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
           draft: false
           prerelease: false
           body: |

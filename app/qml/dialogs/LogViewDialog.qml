@@ -38,13 +38,27 @@ Dialog {
     property string hoveredLink: ""
     property int parentHeight: parent.height
     property alias account: account
+    property bool minimized: false
+
+    signal requestNotifyProgress(string itemId, string contentId, string headerText, string message)
+    signal requestClearProgress(string itemId, string contentId)
 
     onOpened: {
-        logStatisticsListModel.getLatest()
-        logDailyListModel.getLatest()
-        logMonthlyListModel.getLatest()
+        requestClearProgress("logViewDialog", "running")
+        if (!minimized) {
+            logStatisticsListModel.getLatest()
+            logDailyListModel.getLatest()
+            logMonthlyListModel.getLatest()
+        }
+        minimized = false
     }
     onClosed: {
+        if (minimized) {
+            requestNotifyProgress("logViewDialog", "running",
+                qsTr("Statistics: %1").arg(account.handle),
+                logOperator.progressMessage)
+            return
+        }
         tabBar.currentIndex = 0
         logStatisticsListModel.clear()
         logDailyListModel.clear()
@@ -69,6 +83,23 @@ Dialog {
             logMonthlyListModel.getLatest()
         }
         onErrorOccurred: (code, message) => logViewDialog.errorOccurred(account.uuid, code, message)
+    }
+    Connections {
+        target: logOperator
+        function onProgressMessageChanged() {
+            if (logViewDialog.minimized) {
+                logViewDialog.requestNotifyProgress("logViewDialog", "running",
+                    qsTr("Statistics: %1").arg(account.handle),
+                    logOperator.progressMessage)
+            }
+        }
+        function onRunningChanged() {
+            if (!logOperator.running && logViewDialog.minimized) {
+                logViewDialog.requestClearProgress("logViewDialog", "running")
+                logViewDialog.open()
+                // minimized は onOpened でリセットされる
+            }
+        }
     }
     Shortcut {  // Search
         enabled: logViewDialog.visible && searchButton.enabled && searchText.focus && tabBar.currentIndex == 1
@@ -114,6 +145,17 @@ Dialog {
                 BusyIndicator {
                     anchors.fill: parent
                     visible: logOperator.running
+                }
+            }
+            IconButton {
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b24
+                iconSource: "../images/minimize.png"
+                iconSize: AdjustedValues.i16
+                visible: logOperator.running
+                onClicked: {
+                    logViewDialog.minimized = true
+                    logViewDialog.close()
                 }
             }
         }

@@ -952,6 +952,11 @@ Please recreate AppPassword in the official application.</source>
         <translation></translation>
     </message>
     <message>
+        <location filename="qtquick/operation/draftoperator.cpp" line="175"/>
+        <source>Delete draft ...</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="qtquick/operation/draftoperator.cpp" line="202"/>
         <source>Get drafts ...</source>
         <translation></translation>
@@ -2222,35 +2227,46 @@ Please recreate AppPassword in the official application.</source>
         <translation>統計とログ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="128"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="58"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="92"/>
+        <source>Statistics: %1</source>
+        <translation>統計: %1</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="159"/>
         <source>Statistics</source>
         <translation>統計</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="134"/>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="194"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="165"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="225"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="140"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="171"/>
         <source>Daily</source>
         <translation>日毎</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="146"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="177"/>
         <source>Monthly</source>
         <translation>月毎</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="239"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="270"/>
         <source>Not found.</source>
         <translation>見つかりませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="356"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="387"/>
         <source>Close</source>
         <translation>閉じる</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="393"/>
+        <source>Minimize</source>
+        <translation>最小化</translation>
     </message>
 </context>
 <context>
@@ -2741,7 +2757,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="510"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="498"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2754,22 +2770,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="509"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="497"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="718"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="706"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="813"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="801"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="894"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="882"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -4802,7 +4818,7 @@ Who do you want to enable this for?</source>
     </message>
     <message>
         <location filename="qml/main.qml" line="131"/>
-        <location filename="qml/main.qml" line="621"/>
+        <location filename="qml/main.qml" line="631"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -4816,38 +4832,38 @@ Who do you want to enable this for?</source>
         <translation type="vanished">リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="187"/>
+        <location filename="qml/main.qml" line="191"/>
         <source>Authentication error</source>
         <translation>認証エラー</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="188"/>
+        <location filename="qml/main.qml" line="192"/>
         <source>Some accounts require you to log in again.</source>
         <translation>いくつかのアカウントでログインが必要です。</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="389"/>
-        <location filename="qml/main.qml" line="394"/>
+        <location filename="qml/main.qml" line="397"/>
+        <location filename="qml/main.qml" line="402"/>
         <source>Updating &apos;Edit interaction settings&apos; ...</source>
         <translation>投稿への反応の設定を更新中 ...</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="554"/>
+        <location filename="qml/main.qml" line="565"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="601"/>
+        <location filename="qml/main.qml" line="611"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1127"/>
+        <location filename="qml/main.qml" line="1141"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="qml/main.qml" line="1364"/>
+        <location filename="qml/main.qml" line="1184"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
