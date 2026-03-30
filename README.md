@@ -152,6 +152,22 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
 -DHAGOROMO_LAYOUT_TEST=ON
 ```
 
+### Qt C++ Extension Packを使用する場合
+
+`.vscode/settings.json`にQtのインストールパスを設定してください。
+
+```json
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/home/iori/Qt/6.11.0/gcc_64"
+    ]
+}
+```
+
+`CMake: Configure`を実行してください。
+
+VSCodeのOUTPUTの`CMake/Build`にてcmakeの実行コマンドとともに`CMAKE_PREFIX_PATH`が設定できていることを確認できます。
+
 ## Overview
 
 This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
@@ -302,3 +318,19 @@ Adding the following option when running CMake will load a lightweight layout ve
 ```
 -DHAGOROMO_LAYOUT_TEST=ON
 ```
+
+### When using the Qt C++ Extension Pack
+
+Please set the Qt installation path in `.vscode/settings.json`.
+
+```json
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/home/iori/Qt/6.11.0/gcc_64"
+    ]
+}
+```
+
+Please run `CMake: Configure`.
+
+You can verify that `CMAKE_PREFIX_PATH` has been set along with the CMake command in the `CMake/Build` section of VSCode's OUTPUT.
