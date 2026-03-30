@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.60.0 - 2026/3/29
+
 - Update
   - Change the settings so that the URL entered by the user is used as-is in the link card
   - Improvement of the progress display in the bottom right
