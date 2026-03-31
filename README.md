@@ -156,10 +156,15 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
 
 `.vscode/settings.json`にQtのインストールパスを設定してください。
 
+`Ninja`へのパスを指定する場合は、
+`CMAKE_MAKE_PROGRAM`を使用します。
+
+例:
 ```json
 {
     "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=/home/iori/Qt/6.11.0/gcc_64"
+        "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
+        "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
     ]
 }
 ```
@@ -323,10 +328,16 @@ Adding the following option when running CMake will load a lightweight layout ve
 
 Please set the Qt installation path in `.vscode/settings.json`.
 
+To specify the path to `Ninja`,
+use `CMAKE_MAKE_PROGRAM`.
+
+example:
+
 ```json
 {
     "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=/home/iori/Qt/6.11.0/gcc_64"
+        "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
+        "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
     ]
 }
 ```
