@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Update
+  - Change Qt version to 6.11.0 and related changes
+
 ### v0.60.0 - 2026/3/29
 
 - Update
