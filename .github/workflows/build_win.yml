@@ -38,6 +38,9 @@ jobs:
           arch: 'win64_msvc2022_64'
           modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
           tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja'
+          # 暫定対応
+          # https://github.com/miurahr/aqtinstall/issues/959
+          aqtsource: git+https://github.com/miurahr/aqtinstall.git@refs/pull/1000/head
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
