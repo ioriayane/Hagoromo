@@ -15,8 +15,7 @@ platforms/libqminimal.so
 platforms/libqminimalegl.so
 platforms/libqoffscreen.so
 platforms/libqvnc.so
-platforms/libqwayland-egl.so
-platforms/libqwayland-generic.so
+platforms/libqwayland.so
 platforms/libqxcb.so
 platformthemes/libqgtk3.so
 platformthemes/libqxdgdesktopportal.so

@@ -37,7 +37,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 qt_policy(
     SET QTP0004 NEW
 )
-qt_standard_project_setup(REQUIRES 6.8)
+qt_standard_project_setup(REQUIRES 6.11)
 qt_standard_project_setup(
     I18N_TRANSLATED_LANGUAGES ja
 )

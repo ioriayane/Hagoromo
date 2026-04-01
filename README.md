@@ -16,7 +16,7 @@
 
 ## 使用ソフトウェア
 
-- [Qt 6.8.1](https://www.qt.io/)
+- [Qt 6.11.0](https://www.qt.io/)
 - [OpenSSL 3.4.0](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
 - [zlib 1.3.1](https://github.com/madler/zlib)
@@ -38,7 +38,7 @@
 
 ### 共通
 
-ビルドするプラットフォームのQt 6.8.1をインストールしてください。
+ビルドするプラットフォームのQt 6.11.0をインストールしてください。
 
 Official site : [Qt](https://www.qt.io/)
 
@@ -58,7 +58,7 @@ REM checkout repo
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\
+>.\scripts\build.bat path\to\Qt\6.11.0\msvc2022_64\
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
@@ -78,7 +78,7 @@ $ sudo apt-get install zlib1g-dev ninja-build
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/build.sh linux path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
@@ -96,7 +96,7 @@ $ git submodule update -i
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
@@ -129,15 +129,15 @@ pre-commit installed at .git/hooks/pre-commit
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\
+> .\scripts\unittest.bat path\to\Qt\6.11.0\msvc2022_64\
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/unittest.sh linux path/to/Qt/6.11.0/gcc_64/
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/unittest.sh mac path/to/Qt/6.11.0/gcc_64/
 ```
 
 ---
@@ -151,6 +151,27 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
 ```
 -DHAGOROMO_LAYOUT_TEST=ON
 ```
+
+### Qt C++ Extension Packを使用する場合
+
+`.vscode/settings.json`にQtのインストールパスを設定してください。
+
+`Ninja`へのパスを指定する場合は、
+`CMAKE_MAKE_PROGRAM`を使用します。
+
+例:
+```json
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
+        "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
+    ]
+}
+```
+
+`CMake: Configure`を実行してください。
+
+VSCodeのOUTPUTの`CMake/Build`にてcmakeの実行コマンドとともに`CMAKE_PREFIX_PATH`が設定できていることを確認できます。
 
 ## Overview
 
@@ -166,7 +187,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 ## Software used
 
-- [Qt 6.8.1](https://www.qt.io/)
+- [Qt 6.11.0](https://www.qt.io/)
 - [OpenSSL 3.4.0](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
 - [zlib 1.3.1](https://github.com/madler/zlib)
@@ -189,7 +210,7 @@ Please refer to [the User's Manual](https://hagoromo.relog.tech/).
 
 ### Common
 
-Install Qt 6.8.1 for the platform you want to build.
+Install Qt 6.11.0 for the platform you want to build.
 
 Official site : [Qt](https://www.qt.io/)
 
@@ -210,7 +231,7 @@ REM checkout repo
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\
+>.\scripts\build.bat path\to\Qt\6.11.0\msvc2022_64\
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
@@ -230,7 +251,7 @@ $ sudo apt-get install zlib1g-dev ninja-build
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/build.sh linux path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
@@ -248,7 +269,7 @@ $ git submodule update -i
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
@@ -282,15 +303,15 @@ Please confirm that you can clear the tests by running them in one of the enviro
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\
+> .\scripts\unittest.bat path\to\Qt\6.11.0\msvc2022_64\
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/unittest.sh linux path/to/Qt/6.11.0/gcc_64/
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/
+$ ./scripts/unittest.sh mac path/to/Qt/6.11.0/gcc_64/
 ```
 
 ## Development Support
@@ -302,3 +323,25 @@ Adding the following option when running CMake will load a lightweight layout ve
 ```
 -DHAGOROMO_LAYOUT_TEST=ON
 ```
+
+### When using the Qt C++ Extension Pack
+
+Please set the Qt installation path in `.vscode/settings.json`.
+
+To specify the path to `Ninja`,
+use `CMAKE_MAKE_PROGRAM`.
+
+example:
+
+```json
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
+        "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
+    ]
+}
+```
+
+Please run `CMake: Configure`.
+
+You can verify that `CMAKE_PREFIX_PATH` has been set along with the CMake command in the `CMake/Build` section of VSCode's OUTPUT.
