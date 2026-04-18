@@ -2233,40 +2233,39 @@ Please recreate AppPassword in the official application.</source>
         <translation>統計: %1</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="159"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="170"/>
         <source>Statistics</source>
         <translation>統計</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="165"/>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="225"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="176"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="236"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="171"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="182"/>
         <source>Daily</source>
         <translation>日毎</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="177"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="188"/>
         <source>Monthly</source>
         <translation>月毎</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="270"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="281"/>
         <source>Not found.</source>
         <translation>見つかりませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="387"/>
+        <location filename="qml/dialogs/LogViewDialog.qml" line="398"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LogViewDialog.qml" line="393"/>
         <source>Minimize</source>
-        <translation>最小化</translation>
+        <translation type="vanished">最小化</translation>
     </message>
 </context>
 <context>
