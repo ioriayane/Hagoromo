@@ -9,6 +9,7 @@ description: This is a multi-column Bluesky client.
 ## 2026
 
 - Update
+  - Change the image size limit for posts to 2 MB
   - Change Qt version to 6.11.0 and related changes
 
 ### v0.60.0 - 2026/3/29
