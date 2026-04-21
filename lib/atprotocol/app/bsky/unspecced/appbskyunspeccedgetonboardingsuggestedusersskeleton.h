@@ -15,12 +15,14 @@ public:
 
     const QStringList &didsList() const;
     const QString &recId() const;
+    const QString &recIdStr() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QStringList m_didsList;
     QString m_recId;
+    QString m_recIdStr;
 };
 
 }
