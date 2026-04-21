@@ -45,6 +45,12 @@ ChatBskyModerationGetMessageContext::messagesDeletedMessageViewList() const
     return m_messagesDeletedMessageViewList;
 }
 
+const QList<AtProtocolType::ChatBskyConvoDefs::SystemMessageView> &
+ChatBskyModerationGetMessageContext::messagesSystemMessageViewList() const
+{
+    return m_messagesSystemMessageViewList;
+}
+
 bool ChatBskyModerationGetMessageContext::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -62,6 +68,10 @@ bool ChatBskyModerationGetMessageContext::parseJson(bool success, const QString 
                 AtProtocolType::ChatBskyConvoDefs::DeletedMessageView data;
                 AtProtocolType::ChatBskyConvoDefs::copyDeletedMessageView(value.toObject(), data);
                 m_messagesDeletedMessageViewList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#systemMessageView")) {
+                AtProtocolType::ChatBskyConvoDefs::SystemMessageView data;
+                AtProtocolType::ChatBskyConvoDefs::copySystemMessageView(value.toObject(), data);
+                m_messagesSystemMessageViewList.append(data);
             }
         }
     }

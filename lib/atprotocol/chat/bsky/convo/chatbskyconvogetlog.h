@@ -25,6 +25,33 @@ public:
     const QList<AtProtocolType::ChatBskyConvoDefs::LogAddReaction> &logsLogAddReactionList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::LogRemoveReaction> &
     logsLogRemoveReactionList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogReadConvo> &logsLogReadConvoList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogAddMember> &logsLogAddMemberList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogRemoveMember> &
+    logsLogRemoveMemberList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogMemberJoin> &logsLogMemberJoinList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogMemberLeave> &logsLogMemberLeaveList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogLockConvo> &logsLogLockConvoList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogUnlockConvo> &logsLogUnlockConvoList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogLockConvoPermanently> &
+    logsLogLockConvoPermanentlyList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogEditGroup> &logsLogEditGroupList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogCreateJoinLink> &
+    logsLogCreateJoinLinkList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogEditJoinLink> &
+    logsLogEditJoinLinkList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogEnableJoinLink> &
+    logsLogEnableJoinLinkList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogDisableJoinLink> &
+    logsLogDisableJoinLinkList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogIncomingJoinRequest> &
+    logsLogIncomingJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogApproveJoinRequest> &
+    logsLogApproveJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogRejectJoinRequest> &
+    logsLogRejectJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogOutgoingJoinRequest> &
+    logsLogOutgoingJoinRequestList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -39,6 +66,26 @@ private:
     QList<AtProtocolType::ChatBskyConvoDefs::LogReadMessage> m_logsLogReadMessageList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogAddReaction> m_logsLogAddReactionList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogRemoveReaction> m_logsLogRemoveReactionList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogReadConvo> m_logsLogReadConvoList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogAddMember> m_logsLogAddMemberList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogRemoveMember> m_logsLogRemoveMemberList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogMemberJoin> m_logsLogMemberJoinList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogMemberLeave> m_logsLogMemberLeaveList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogLockConvo> m_logsLogLockConvoList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogUnlockConvo> m_logsLogUnlockConvoList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogLockConvoPermanently>
+            m_logsLogLockConvoPermanentlyList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogEditGroup> m_logsLogEditGroupList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogCreateJoinLink> m_logsLogCreateJoinLinkList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogEditJoinLink> m_logsLogEditJoinLinkList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogEnableJoinLink> m_logsLogEnableJoinLinkList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogDisableJoinLink> m_logsLogDisableJoinLinkList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogIncomingJoinRequest>
+            m_logsLogIncomingJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogApproveJoinRequest> m_logsLogApproveJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogRejectJoinRequest> m_logsLogRejectJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogOutgoingJoinRequest>
+            m_logsLogOutgoingJoinRequestList;
 };
 
 }

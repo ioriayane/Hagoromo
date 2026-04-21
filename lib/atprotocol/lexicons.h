@@ -52,6 +52,9 @@ struct ThreadViewPost;
 namespace AppBskyRichtextFacet {
 struct Main;
 }
+namespace ChatBskyActorDefs {
+struct ProfileViewBasic;
+}
 
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -364,6 +367,7 @@ enum class StatusViewEmbedType : int {
 struct ProfileAssociatedChat
 {
     QString allowIncoming;
+    QString allowGroupInvites;
 };
 struct ProfileAssociatedActivitySubscription
 {
@@ -428,6 +432,7 @@ struct StatusView
     AppBskyEmbedExternal::View
             embed_AppBskyEmbedExternal_View; // An optional embed associated with the status.
     // union end : embed
+    QList<ComAtprotoLabelDefs::Label> labels;
     QString expiresAt; // datetime , The date when this status will expire. The application might
                        // choose to no longer return the status after expiration.
     bool isActive = false; // True if the status is not expired, false if it is expired. Only
@@ -896,7 +901,7 @@ struct View
 // A set of images embedded in a Bluesky record (eg, a post).
 struct Image
 {
-    Blob image;
+    Blob image; // The raw image file. May be up to 2 MB, formerly limited to 1 MB.
     QString alt; // Alt text description of the image, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
 };
@@ -1954,11 +1959,30 @@ namespace ChatBskyActorDeclaration {
 struct Main
 {
     QString allowIncoming;
+    QString allowGroupInvites; // [NOTE: This is under active development and should be considered
+                               // unstable while this note is here]. Declaration about group chat
+                               // invitation preferences for the record owner.
 };
 }
 
 // chat.bsky.actor.defs
 namespace ChatBskyActorDefs {
+enum class ProfileViewBasicKindType : int {
+    none,
+    kind_DirectConvoMember,
+    kind_GroupConvoMember,
+};
+typedef QString MemberRole;
+struct DirectConvoMember
+{
+};
+struct GroupConvoMember
+{
+    QSharedPointer<ProfileViewBasic> addedBy; // Who added this member. Only present if the member
+                                              // was added (instead of joining via link).
+    MemberRole role; // The member's role within this conversation. Only present in group
+                     // conversation member lists.
+};
 struct ProfileViewBasic
 {
     QString did; // did
@@ -1968,14 +1992,57 @@ struct ProfileViewBasic
     AppBskyActorDefs::ProfileAssociated associated;
     AppBskyActorDefs::ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    QString createdAt; // datetime
     bool chatDisabled =
             false; // Set to true when the actor cannot actively participate in conversations
     AppBskyActorDefs::VerificationState verification;
+    // union start : kind
+    ProfileViewBasicKindType kind_type = ProfileViewBasicKindType::none;
+    DirectConvoMember kind_DirectConvoMember; // Union field that has data specific to different
+                                              // kinds of convos.
+    GroupConvoMember kind_GroupConvoMember; // Union field that has data specific to different kinds
+                                            // of convos.
+    // union end : kind
+};
+}
+
+// chat.bsky.group.defs
+namespace ChatBskyGroupDefs {
+typedef QString LinkEnabledStatus;
+typedef QString JoinRule;
+struct JoinLinkView
+{
+    QString code;
+    LinkEnabledStatus enabledStatus;
+    bool requireApproval = false;
+    JoinRule joinRule;
+    QString createdAt; // datetime
+};
+// [NOTE: This is under active development and should be considered unstable while this note is
+// here].
+struct GroupPublicView
+{
+    QString name;
+    ChatBskyActorDefs::ProfileViewBasic owner;
+    int memberCount = 0;
+    bool requireApproval = false;
+};
+struct JoinRequestView
+{
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic requestedBy;
+    QString requestedAt; // datetime
 };
 }
 
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+enum class LogReadConvoMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+    message_SystemMessageView,
+};
 enum class LogRemoveReactionMessageType : int {
     none,
     message_MessageView,
@@ -1990,6 +2057,7 @@ enum class LogReadMessageMessageType : int {
     none,
     message_MessageView,
     message_DeletedMessageView,
+    message_SystemMessageView,
 };
 enum class LogDeleteMessageMessageType : int {
     none,
@@ -2005,10 +2073,31 @@ enum class ConvoViewLastMessageType : int {
     none,
     lastMessage_MessageView,
     lastMessage_DeletedMessageView,
+    lastMessage_SystemMessageView,
 };
 enum class ConvoViewLastReactionType : int {
     none,
     lastReaction_MessageAndReactionView,
+};
+enum class ConvoViewKindType : int {
+    none,
+    kind_DirectConvo,
+    kind_GroupConvo,
+};
+enum class SystemMessageViewDataType : int {
+    none,
+    data_SystemMessageDataAddMember,
+    data_SystemMessageDataRemoveMember,
+    data_SystemMessageDataMemberJoin,
+    data_SystemMessageDataMemberLeave,
+    data_SystemMessageDataLockConvo,
+    data_SystemMessageDataUnlockConvo,
+    data_SystemMessageDataLockConvoPermanently,
+    data_SystemMessageDataEditGroup,
+    data_SystemMessageDataCreateJoinLink,
+    data_SystemMessageDataEditJoinLink,
+    data_SystemMessageDataEnableJoinLink,
+    data_SystemMessageDataDisableJoinLink,
 };
 enum class MessageViewEmbedType : int {
     none,
@@ -2018,6 +2107,9 @@ enum class MessageInputEmbedType : int {
     none,
     embed_AppBskyEmbedRecord_Main,
 };
+typedef QString ConvoKind;
+typedef QString ConvoLockStatus;
+typedef QString ConvoStatus;
 struct MessageRef
 {
     QString did; // did
@@ -2062,6 +2154,77 @@ struct MessageView
     MessageViewSender sender;
     QString sentAt; // datetime
 };
+struct SystemMessageDataAddMember
+{
+    ChatBskyActorDefs::ProfileViewBasic member;
+    ChatBskyActorDefs::MemberRole role;
+    ChatBskyActorDefs::ProfileViewBasic addedBy;
+};
+struct SystemMessageDataRemoveMember
+{
+    ChatBskyActorDefs::ProfileViewBasic member;
+    ChatBskyActorDefs::ProfileViewBasic removedBy;
+};
+struct SystemMessageDataMemberJoin
+{
+    ChatBskyActorDefs::ProfileViewBasic member;
+    ChatBskyActorDefs::MemberRole role;
+    ChatBskyActorDefs::ProfileViewBasic approvedBy;
+};
+struct SystemMessageDataMemberLeave
+{
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct SystemMessageDataLockConvo
+{
+    ChatBskyActorDefs::ProfileViewBasic lockedBy;
+};
+struct SystemMessageDataUnlockConvo
+{
+    ChatBskyActorDefs::ProfileViewBasic unlockedBy;
+};
+struct SystemMessageDataLockConvoPermanently
+{
+    ChatBskyActorDefs::ProfileViewBasic lockedBy;
+};
+struct SystemMessageDataEditGroup
+{
+    QString oldName; // Group name that was replaced.
+    QString newName; // Group name that replaced the old.
+};
+struct SystemMessageDataCreateJoinLink
+{
+};
+struct SystemMessageDataEditJoinLink
+{
+};
+struct SystemMessageDataEnableJoinLink
+{
+};
+struct SystemMessageDataDisableJoinLink
+{
+};
+struct SystemMessageView
+{
+    QString id;
+    QString rev;
+    QString sentAt; // datetime
+    // union start : data
+    SystemMessageViewDataType data_type = SystemMessageViewDataType::none;
+    SystemMessageDataAddMember data_SystemMessageDataAddMember;
+    SystemMessageDataRemoveMember data_SystemMessageDataRemoveMember;
+    SystemMessageDataMemberJoin data_SystemMessageDataMemberJoin;
+    SystemMessageDataMemberLeave data_SystemMessageDataMemberLeave;
+    SystemMessageDataLockConvo data_SystemMessageDataLockConvo;
+    SystemMessageDataUnlockConvo data_SystemMessageDataUnlockConvo;
+    SystemMessageDataLockConvoPermanently data_SystemMessageDataLockConvoPermanently;
+    SystemMessageDataEditGroup data_SystemMessageDataEditGroup;
+    SystemMessageDataCreateJoinLink data_SystemMessageDataCreateJoinLink;
+    SystemMessageDataEditJoinLink data_SystemMessageDataEditJoinLink;
+    SystemMessageDataEnableJoinLink data_SystemMessageDataEnableJoinLink;
+    SystemMessageDataDisableJoinLink data_SystemMessageDataDisableJoinLink;
+    // union end : data
+};
 struct DeletedMessageView
 {
     QString id;
@@ -2074,6 +2237,15 @@ struct MessageAndReactionView
     MessageView message;
     ReactionView reaction;
 };
+struct DirectConvo
+{
+};
+struct GroupConvo
+{
+    QString name; // The display name of the group conversation.
+    ChatBskyGroupDefs::JoinLinkView joinLink;
+    ConvoLockStatus lockStatus; // The lock status of the conversation.
+};
 struct ConvoView
 {
     QString id;
@@ -2083,14 +2255,21 @@ struct ConvoView
     ConvoViewLastMessageType lastMessage_type = ConvoViewLastMessageType::none;
     MessageView lastMessage_MessageView;
     DeletedMessageView lastMessage_DeletedMessageView;
+    SystemMessageView lastMessage_SystemMessageView;
     // union end : lastMessage
     // union start : lastReaction
     ConvoViewLastReactionType lastReaction_type = ConvoViewLastReactionType::none;
     MessageAndReactionView lastReaction_MessageAndReactionView;
     // union end : lastReaction
     bool muted = false;
-    QString status;
+    ConvoStatus status; // Convo status for the viewer member (not the convo itself).
     int unreadCount = 0;
+    // union start : kind
+    ConvoViewKindType kind_type = ConvoViewKindType::none;
+    DirectConvo
+            kind_DirectConvo; // Union field that has data specific to different kinds of convos.
+    GroupConvo kind_GroupConvo; // Union field that has data specific to different kinds of convos.
+    // union end : kind
 };
 struct LogBeginConvo
 {
@@ -2145,6 +2324,7 @@ struct LogReadMessage
     LogReadMessageMessageType message_type = LogReadMessageMessageType::none;
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
+    SystemMessageView message_SystemMessageView;
     // union end : message
 };
 struct LogAddReaction
@@ -2169,6 +2349,112 @@ struct LogRemoveReaction
     // union end : message
     ReactionView reaction;
 };
+struct LogReadConvo
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogReadConvoMessageType message_type = LogReadConvoMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    SystemMessageView message_SystemMessageView;
+    // union end : message
+};
+struct LogAddMember
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataAddMember message;
+};
+struct LogRemoveMember
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataRemoveMember message;
+};
+struct LogMemberJoin
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataMemberJoin message;
+};
+struct LogMemberLeave
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataMemberLeave message;
+};
+struct LogLockConvo
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataLockConvo message;
+};
+struct LogUnlockConvo
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataUnlockConvo message;
+};
+struct LogLockConvoPermanently
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataLockConvoPermanently message;
+};
+struct LogEditGroup
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataEditGroup message;
+};
+struct LogCreateJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataCreateJoinLink message;
+};
+struct LogEditJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataEditJoinLink message;
+};
+struct LogEnableJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataEnableJoinLink message;
+};
+struct LogDisableJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageDataDisableJoinLink message;
+};
+struct LogIncomingJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogApproveJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogRejectJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogOutgoingJoinRequest
+{
+    QString rev;
+    QString convoId;
+};
 }
 
 // chat.bsky.convo.sendMessageBatch
@@ -2188,6 +2474,20 @@ struct Metadata
     int messagesReceived = 0;
     int convos = 0;
     int convosStarted = 0;
+};
+}
+
+// chat.bsky.moderation.subscribeModEvents
+namespace ChatBskyModerationSubscribeModEvents {
+struct EventConvoFirstMessage
+{
+    QString convoId;
+    QString createdAt; // datetime
+    QString messageId;
+    QList<QString> recipients; // The list of DIDs message recipients. Does not include the sender,
+                               // which is in the `user` field
+    QString rev;
+    QString user; // did , The DID of the message author.
 };
 }
 
@@ -2630,6 +2930,7 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_AgeAssurancePurgeEvent,
     event_RevokeAccountCredentialsEvent,
     event_ScheduleTakedownEvent,
     event_CancelScheduledTakedownEvent,
@@ -2680,6 +2981,7 @@ enum class ModEventViewEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_AgeAssurancePurgeEvent,
     event_RevokeAccountCredentialsEvent,
     event_ScheduleTakedownEvent,
     event_CancelScheduledTakedownEvent,
@@ -2849,6 +3151,10 @@ struct AgeAssuranceOverrideEvent
     AppBskyAgeassuranceDefs::Access access;
     QString comment; // Comment describing the reason for the override.
 };
+struct AgeAssurancePurgeEvent
+{
+    QString comment; // Comment describing the reason for the purge.
+};
 struct RevokeAccountCredentialsEvent
 {
     QString comment; // Comment describing the reason for the revocation.
@@ -2895,6 +3201,7 @@ struct ModEventView
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    AgeAssurancePurgeEvent event_AgeAssurancePurgeEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     ScheduleTakedownEvent event_ScheduleTakedownEvent;
     CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
@@ -3085,6 +3392,7 @@ struct ModEventViewDetail
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    AgeAssurancePurgeEvent event_AgeAssurancePurgeEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     ScheduleTakedownEvent event_ScheduleTakedownEvent;
     CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
