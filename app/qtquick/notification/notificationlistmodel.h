@@ -171,6 +171,7 @@ public:
         ReasonRepostViaRepost,
         ReasonSubscribedPost,
         ReasonStarterPack,
+        ReasonVerified,
     };
     Q_ENUM(NotificationListModelReason)
 

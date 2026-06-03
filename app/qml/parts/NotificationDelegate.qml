@@ -188,6 +188,11 @@ ClickableFrame {
             when: notificationFrame.reason === NotificationListModel.ReasonStarterPack
             PropertyChanges { target: reasonImage; source: "../images/starterpack.png" }
             PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("signed up with your starter pack")}
+        },
+        State {
+            when: notificationFrame.reason === NotificationListModel.ReasonVerified
+            PropertyChanges { target: reasonImage; source: "../images/verified.png" }
+            PropertyChanges { target: commonNotificationMessageText; visible: true; text: qsTr("verified you")}
         }
     ]
 
@@ -266,6 +271,10 @@ ClickableFrame {
                         State {
                             when: notificationFrame.reason === NotificationListModel.ReasonStarterPack
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonVerified
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
                         }
                     ]
                 }
