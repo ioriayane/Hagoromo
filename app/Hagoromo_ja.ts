@@ -2364,7 +2364,12 @@ Please recreate AppPassword in the official application.</source>
         <translation>あなたのリポストがリポストされました。</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="203"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="195"/>
+        <source>verified you</source>
+        <translation>あなたを認証しました</translation>
+    </message>
+    <message>
+        <location filename="qml/parts/NotificationDelegate.qml" line="208"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
