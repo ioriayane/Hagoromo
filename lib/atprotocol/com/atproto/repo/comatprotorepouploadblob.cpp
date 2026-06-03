@@ -23,9 +23,9 @@ ComAtprotoRepoUploadBlob::~ComAtprotoRepoUploadBlob()
     m_thread.wait();
 }
 
-void ComAtprotoRepoUploadBlob::uploadBlob(const QString &path)
+void ComAtprotoRepoUploadBlob::uploadBlob(const QString &path,int image_size_limit)
 {
-    emit compress(path);
+    emit compress(path, image_size_limit);
 }
 
 bool ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
