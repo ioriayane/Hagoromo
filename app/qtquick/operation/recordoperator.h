@@ -10,6 +10,7 @@ struct EmbedImage
 {
     QString path;
     QString alt;
+    int size_limit = 0;
 };
 
 class RecordOperator : public QObject

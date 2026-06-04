@@ -103,6 +103,7 @@ void RecordOperator::setExternalLink(const QString &uri, const QString &title,
     if (!image_path.isEmpty()) {
         EmbedImage e;
         e.path = image_path;
+        e.size_limit = 1000000;
         m_embedImages.append(e);
     }
 }
@@ -346,6 +347,7 @@ void RecordOperator::postWithPoll()
                     if (!m_pollOgpImagepath.isEmpty()) {
                         EmbedImage e;
                         e.path = QUrl::fromLocalFile(m_pollOgpImagepath).toString();
+                        e.size_limit = 1000000;
                         m_embedImages.append(e);
                     }
                     postWithImages();
@@ -1315,6 +1317,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
                                .arg(m_embedImagesTotal));
     QString path = QUrl(m_embedImages.first().path).toLocalFile();
     QString alt = m_embedImages.first().alt;
+    int size_limit = m_embedImages.first().size_limit;
     m_embedImages.removeFirst();
 
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
@@ -1343,7 +1346,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
         upload_blob->deleteLater();
     });
     upload_blob->setAccount(account());
-    upload_blob->uploadBlob(path);
+    upload_blob->uploadBlob(path, size_limit);
 }
 
 bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)
