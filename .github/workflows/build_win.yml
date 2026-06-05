@@ -20,7 +20,7 @@ env:
 
 jobs:
   build-for-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022 # https://github.com/actions/runner-images/issues/14017
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
@@ -29,7 +29,7 @@ jobs:
         with:
           arch: x86_64
       - name: Install Qt
-        uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
+        uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
           aqtversion: '==3.3.*'
           version: '6.11.0'
