@@ -19,7 +19,7 @@ jobs:
       VERSION_NO: ${{ steps.tag_check.outputs.VERSION_NO }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - name: Tag check
@@ -76,7 +76,7 @@ jobs:
     needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
     steps:
       - name: Download archives
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       - name: Information
         run: |
           find . -type f
@@ -84,7 +84,7 @@ jobs:
           echo "Make release : ${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}"
           echo "Make release : ${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}"
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
           # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
