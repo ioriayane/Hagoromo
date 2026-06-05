@@ -25,11 +25,11 @@ jobs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
       - name: Configure build for x86_64
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: step-security/msvc-dev-cmd@22c98154b708dbd743e6f27a933cf6ceba3305c4 # v1.13.1
         with:
           arch: x86_64
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
         with:
           aqtversion: '==3.3.*'
           version: '6.11.0'

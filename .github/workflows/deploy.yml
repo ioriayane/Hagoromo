@@ -84,7 +84,7 @@ jobs:
           echo "Make release : ${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}"
           echo "Make release : ${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}"
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
           # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
