@@ -17,7 +17,7 @@ public:
     explicit ComAtprotoRepoUploadBlob(QObject *parent = nullptr);
     ~ComAtprotoRepoUploadBlob();
 
-    void uploadBlob(const QString &path);
+    void uploadBlob(const QString &path, int image_size_limit);
 
     QString cid() const;
     QString mimeType() const;
@@ -28,7 +28,7 @@ public slots:
     void compressed(const QString &path, const QSize &aspect_ratio);
 
 signals:
-    void compress(const QString &path);
+    void compress(const QString &path, int image_size_limit);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

@@ -10,7 +10,7 @@ public:
     explicit ImageCompressor(QObject *parent = nullptr);
 
 public slots:
-    void compress(const QString &path);
+    void compress(const QString &path, int image_size_limit);
 
 signals:
     void compressed(const QString &path, const QSize &aspect_ratio);

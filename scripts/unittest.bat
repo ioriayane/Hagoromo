@@ -10,7 +10,7 @@ REM --- help -----------------------------
 :HELP
 echo build.bat QTDIR
 echo ex:
-echo   build.bat path\to\Qt\6.8.1\msvc2019_64
+echo   build.bat path\to\Qt\6.11.0\msvc2019_64
 
 goto QUIT
 

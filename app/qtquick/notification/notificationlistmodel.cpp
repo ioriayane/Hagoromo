@@ -361,6 +361,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonSubscribedPost;
         } else if (current.reason == "starterpack-joined") {
             return NotificationListModelReason::ReasonStarterPack;
+        } else if (current.reason == "verified") {
+            return NotificationListModelReason::ReasonVerified;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -417,6 +419,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else if (current.reason == "mention") {
         } else if (current.reason == "reply") {
         } else if (current.reason == "quote") {
+        } else if (current.reason == "verified") {
         }
 
         //----------------------------------------
@@ -757,6 +760,7 @@ bool NotificationListModel::getLatest()
                     } else if (item->reason == "subscribed-post") {
                         m_auth2SubscribedPost[item->author.did] = item->cid;
                     } else if (item->reason == "starterpack-joined") {
+                    } else if (item->reason == "verified") {
                     }
                 }
 
@@ -865,6 +869,7 @@ bool NotificationListModel::getNext()
                         }
                     } else if (item->reason == "subscribed-post") {
                     } else if (item->reason == "starterpack-joined") {
+                    } else if (item->reason == "verified") {
                     }
                 }
             } else {
@@ -1748,6 +1753,8 @@ bool NotificationListModel::enableReason(const QString &reason) const
     else if (reason == "subscribed-post" && visibleSubscribedPost())
         return true;
     else if (reason == "starterpack-joined")
+        return true;
+    else if (reason == "verified")
         return true;
 
     return false;

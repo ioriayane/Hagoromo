@@ -370,19 +370,52 @@ void copyMain(const QJsonObject &src, ChatBskyActorDeclaration::Main &dest);
 }
 // chat.bsky.actor.defs
 namespace ChatBskyActorDefs {
+void copyMemberRole(const QJsonValue &src, ChatBskyActorDefs::MemberRole &dest);
+void copyDirectConvoMember(const QJsonObject &src, ChatBskyActorDefs::DirectConvoMember &dest);
+void copyGroupConvoMember(const QJsonObject &src, ChatBskyActorDefs::GroupConvoMember &dest);
 void copyProfileViewBasic(const QJsonObject &src, ChatBskyActorDefs::ProfileViewBasic &dest);
 }
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+void copyConvoKind(const QJsonValue &src, ChatBskyConvoDefs::ConvoKind &dest);
+void copyConvoLockStatus(const QJsonValue &src, ChatBskyConvoDefs::ConvoLockStatus &dest);
+void copyConvoStatus(const QJsonValue &src, ChatBskyConvoDefs::ConvoStatus &dest);
 void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest);
 void copyMessageInput(const QJsonObject &src, ChatBskyConvoDefs::MessageInput &dest);
 void copyReactionViewSender(const QJsonObject &src, ChatBskyConvoDefs::ReactionViewSender &dest);
 void copyReactionView(const QJsonObject &src, ChatBskyConvoDefs::ReactionView &dest);
 void copyMessageViewSender(const QJsonObject &src, ChatBskyConvoDefs::MessageViewSender &dest);
 void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &dest);
+void copySystemMessageDataAddMember(const QJsonObject &src,
+                                    ChatBskyConvoDefs::SystemMessageDataAddMember &dest);
+void copySystemMessageDataRemoveMember(const QJsonObject &src,
+                                       ChatBskyConvoDefs::SystemMessageDataRemoveMember &dest);
+void copySystemMessageDataMemberJoin(const QJsonObject &src,
+                                     ChatBskyConvoDefs::SystemMessageDataMemberJoin &dest);
+void copySystemMessageDataMemberLeave(const QJsonObject &src,
+                                      ChatBskyConvoDefs::SystemMessageDataMemberLeave &dest);
+void copySystemMessageDataLockConvo(const QJsonObject &src,
+                                    ChatBskyConvoDefs::SystemMessageDataLockConvo &dest);
+void copySystemMessageDataUnlockConvo(const QJsonObject &src,
+                                      ChatBskyConvoDefs::SystemMessageDataUnlockConvo &dest);
+void copySystemMessageDataLockConvoPermanently(
+        const QJsonObject &src, ChatBskyConvoDefs::SystemMessageDataLockConvoPermanently &dest);
+void copySystemMessageDataEditGroup(const QJsonObject &src,
+                                    ChatBskyConvoDefs::SystemMessageDataEditGroup &dest);
+void copySystemMessageDataCreateJoinLink(const QJsonObject &src,
+                                         ChatBskyConvoDefs::SystemMessageDataCreateJoinLink &dest);
+void copySystemMessageDataEditJoinLink(const QJsonObject &src,
+                                       ChatBskyConvoDefs::SystemMessageDataEditJoinLink &dest);
+void copySystemMessageDataEnableJoinLink(const QJsonObject &src,
+                                         ChatBskyConvoDefs::SystemMessageDataEnableJoinLink &dest);
+void copySystemMessageDataDisableJoinLink(
+        const QJsonObject &src, ChatBskyConvoDefs::SystemMessageDataDisableJoinLink &dest);
+void copySystemMessageView(const QJsonObject &src, ChatBskyConvoDefs::SystemMessageView &dest);
 void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
 void copyMessageAndReactionView(const QJsonObject &src,
                                 ChatBskyConvoDefs::MessageAndReactionView &dest);
+void copyDirectConvo(const QJsonObject &src, ChatBskyConvoDefs::DirectConvo &dest);
+void copyGroupConvo(const QJsonObject &src, ChatBskyConvoDefs::GroupConvo &dest);
 void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest);
 void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest);
 void copyLogAcceptConvo(const QJsonObject &src, ChatBskyConvoDefs::LogAcceptConvo &dest);
@@ -394,6 +427,36 @@ void copyLogDeleteMessage(const QJsonObject &src, ChatBskyConvoDefs::LogDeleteMe
 void copyLogReadMessage(const QJsonObject &src, ChatBskyConvoDefs::LogReadMessage &dest);
 void copyLogAddReaction(const QJsonObject &src, ChatBskyConvoDefs::LogAddReaction &dest);
 void copyLogRemoveReaction(const QJsonObject &src, ChatBskyConvoDefs::LogRemoveReaction &dest);
+void copyLogReadConvo(const QJsonObject &src, ChatBskyConvoDefs::LogReadConvo &dest);
+void copyLogAddMember(const QJsonObject &src, ChatBskyConvoDefs::LogAddMember &dest);
+void copyLogRemoveMember(const QJsonObject &src, ChatBskyConvoDefs::LogRemoveMember &dest);
+void copyLogMemberJoin(const QJsonObject &src, ChatBskyConvoDefs::LogMemberJoin &dest);
+void copyLogMemberLeave(const QJsonObject &src, ChatBskyConvoDefs::LogMemberLeave &dest);
+void copyLogLockConvo(const QJsonObject &src, ChatBskyConvoDefs::LogLockConvo &dest);
+void copyLogUnlockConvo(const QJsonObject &src, ChatBskyConvoDefs::LogUnlockConvo &dest);
+void copyLogLockConvoPermanently(const QJsonObject &src,
+                                 ChatBskyConvoDefs::LogLockConvoPermanently &dest);
+void copyLogEditGroup(const QJsonObject &src, ChatBskyConvoDefs::LogEditGroup &dest);
+void copyLogCreateJoinLink(const QJsonObject &src, ChatBskyConvoDefs::LogCreateJoinLink &dest);
+void copyLogEditJoinLink(const QJsonObject &src, ChatBskyConvoDefs::LogEditJoinLink &dest);
+void copyLogEnableJoinLink(const QJsonObject &src, ChatBskyConvoDefs::LogEnableJoinLink &dest);
+void copyLogDisableJoinLink(const QJsonObject &src, ChatBskyConvoDefs::LogDisableJoinLink &dest);
+void copyLogIncomingJoinRequest(const QJsonObject &src,
+                                ChatBskyConvoDefs::LogIncomingJoinRequest &dest);
+void copyLogApproveJoinRequest(const QJsonObject &src,
+                               ChatBskyConvoDefs::LogApproveJoinRequest &dest);
+void copyLogRejectJoinRequest(const QJsonObject &src,
+                              ChatBskyConvoDefs::LogRejectJoinRequest &dest);
+void copyLogOutgoingJoinRequest(const QJsonObject &src,
+                                ChatBskyConvoDefs::LogOutgoingJoinRequest &dest);
+}
+// chat.bsky.group.defs
+namespace ChatBskyGroupDefs {
+void copyLinkEnabledStatus(const QJsonValue &src, ChatBskyGroupDefs::LinkEnabledStatus &dest);
+void copyJoinRule(const QJsonValue &src, ChatBskyGroupDefs::JoinRule &dest);
+void copyJoinLinkView(const QJsonObject &src, ChatBskyGroupDefs::JoinLinkView &dest);
+void copyGroupPublicView(const QJsonObject &src, ChatBskyGroupDefs::GroupPublicView &dest);
+void copyJoinRequestView(const QJsonObject &src, ChatBskyGroupDefs::JoinRequestView &dest);
 }
 // chat.bsky.convo.sendMessageBatch
 namespace ChatBskyConvoSendMessageBatch {
@@ -402,6 +465,11 @@ void copyBatchItem(const QJsonObject &src, ChatBskyConvoSendMessageBatch::BatchI
 // chat.bsky.moderation.getActorMetadata
 namespace ChatBskyModerationGetActorMetadata {
 void copyMetadata(const QJsonObject &src, ChatBskyModerationGetActorMetadata::Metadata &dest);
+}
+// chat.bsky.moderation.subscribeModEvents
+namespace ChatBskyModerationSubscribeModEvents {
+void copyEventConvoFirstMessage(const QJsonObject &src,
+                                ChatBskyModerationSubscribeModEvents::EventConvoFirstMessage &dest);
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
@@ -567,6 +635,8 @@ void copyAgeAssuranceEvent(const QJsonObject &src,
                            ToolsOzoneModerationDefs::AgeAssuranceEvent &dest);
 void copyAgeAssuranceOverrideEvent(const QJsonObject &src,
                                    ToolsOzoneModerationDefs::AgeAssuranceOverrideEvent &dest);
+void copyAgeAssurancePurgeEvent(const QJsonObject &src,
+                                ToolsOzoneModerationDefs::AgeAssurancePurgeEvent &dest);
 void copyRevokeAccountCredentialsEvent(
         const QJsonObject &src, ToolsOzoneModerationDefs::RevokeAccountCredentialsEvent &dest);
 void copyScheduleTakedownEvent(const QJsonObject &src,
