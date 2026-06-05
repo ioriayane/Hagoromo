@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.61.0 - 2026/6/5
+
 - Add
   - Support for notifications when verified
 - Update
