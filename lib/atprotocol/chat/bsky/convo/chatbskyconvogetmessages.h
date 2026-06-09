@@ -17,6 +17,7 @@ public:
     messagesDeletedMessageViewList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::SystemMessageView> &
     messagesSystemMessageViewList() const;
+    const QList<AtProtocolType::ChatBskyActorDefs::ProfileViewBasic> &relatedProfilesList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -24,6 +25,7 @@ private:
     QList<AtProtocolType::ChatBskyConvoDefs::MessageView> m_messagesMessageViewList;
     QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> m_messagesDeletedMessageViewList;
     QList<AtProtocolType::ChatBskyConvoDefs::SystemMessageView> m_messagesSystemMessageViewList;
+    QList<AtProtocolType::ChatBskyActorDefs::ProfileViewBasic> m_relatedProfilesList;
 };
 
 }

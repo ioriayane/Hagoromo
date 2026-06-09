@@ -13,14 +13,15 @@ public:
     void listConvoRequests(const int limit, const QString &cursor);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &requestsConvoViewList() const;
-    const QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestView> &
-    requestsJoinRequestViewList() const;
+    const QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestConvoView> &
+    requestsJoinRequestConvoViewList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> m_requestsConvoViewList;
-    QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestView> m_requestsJoinRequestViewList;
+    QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestConvoView>
+            m_requestsJoinRequestConvoViewList;
 };
 
 }

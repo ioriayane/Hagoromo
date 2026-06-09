@@ -31,10 +31,10 @@ ChatBskyConvoListConvoRequests::requestsConvoViewList() const
     return m_requestsConvoViewList;
 }
 
-const QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestView> &
-ChatBskyConvoListConvoRequests::requestsJoinRequestViewList() const
+const QList<AtProtocolType::ChatBskyGroupDefs::JoinRequestConvoView> &
+ChatBskyConvoListConvoRequests::requestsJoinRequestConvoViewList() const
 {
-    return m_requestsJoinRequestViewList;
+    return m_requestsJoinRequestConvoViewList;
 }
 
 bool ChatBskyConvoListConvoRequests::parseJson(bool success, const QString reply_json)
@@ -51,10 +51,10 @@ bool ChatBskyConvoListConvoRequests::parseJson(bool success, const QString reply
                 AtProtocolType::ChatBskyConvoDefs::ConvoView data;
                 AtProtocolType::ChatBskyConvoDefs::copyConvoView(value.toObject(), data);
                 m_requestsConvoViewList.append(data);
-            } else if (type == QStringLiteral("chat.bsky.group.defs#joinRequestView")) {
-                AtProtocolType::ChatBskyGroupDefs::JoinRequestView data;
-                AtProtocolType::ChatBskyGroupDefs::copyJoinRequestView(value.toObject(), data);
-                m_requestsJoinRequestViewList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.group.defs#joinRequestConvoView")) {
+                AtProtocolType::ChatBskyGroupDefs::JoinRequestConvoView data;
+                AtProtocolType::ChatBskyGroupDefs::copyJoinRequestConvoView(value.toObject(), data);
+                m_requestsJoinRequestConvoViewList.append(data);
             }
         }
     }
