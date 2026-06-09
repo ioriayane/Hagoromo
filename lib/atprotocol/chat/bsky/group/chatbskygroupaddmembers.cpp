@@ -29,14 +29,25 @@ const AtProtocolType::ChatBskyConvoDefs::ConvoView &ChatBskyGroupAddMembers::con
     return m_convo;
 }
 
+const QList<AtProtocolType::ChatBskyActorDefs::ProfileViewBasic> &
+ChatBskyGroupAddMembers::addedMembersList() const
+{
+    return m_addedMembersList;
+}
+
 bool ChatBskyGroupAddMembers::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("addedMembers")) {
         success = false;
     } else {
         AtProtocolType::ChatBskyConvoDefs::copyConvoView(
                 json_doc.object().value("convo").toObject(), m_convo);
+        for (const auto &value : json_doc.object().value("addedMembers").toArray()) {
+            AtProtocolType::ChatBskyActorDefs::ProfileViewBasic data;
+            AtProtocolType::ChatBskyActorDefs::copyProfileViewBasic(value.toObject(), data);
+            m_addedMembersList.append(data);
+        }
     }
 
     return success;

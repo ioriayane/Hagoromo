@@ -1,4 +1,4 @@
-#include "chatbskyconvolistconvos.h"
+#include "chatbskygrouplistmutualgroups.h"
 #include "atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
@@ -7,42 +7,35 @@
 
 namespace AtProtocolInterface {
 
-ChatBskyConvoListConvos::ChatBskyConvoListConvos(QObject *parent) : AccessAtProtocol { parent } { }
+ChatBskyGroupListMutualGroups::ChatBskyGroupListMutualGroups(QObject *parent)
+    : AccessAtProtocol { parent }
+{
+}
 
-void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
-                                         const QString &readState, const QString &status,
-                                         const QString &kind, const QString &lockStatus)
+void ChatBskyGroupListMutualGroups::listMutualGroups(const QString &subject, const int limit,
+                                                     const QString &cursor)
 {
     QUrlQuery url_query;
+    if (!subject.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("subject"), subject);
+    }
     if (limit > 0) {
         url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
-    if (!readState.isEmpty()) {
-        url_query.addQueryItem(QStringLiteral("readState"), readState);
-    }
-    if (!status.isEmpty()) {
-        url_query.addQueryItem(QStringLiteral("status"), status);
-    }
-    if (!kind.isEmpty()) {
-        url_query.addQueryItem(QStringLiteral("kind"), kind);
-    }
-    if (!lockStatus.isEmpty()) {
-        url_query.addQueryItem(QStringLiteral("lockStatus"), lockStatus);
-    }
 
-    get(QStringLiteral("xrpc/chat.bsky.convo.listConvos"), url_query);
+    get(QStringLiteral("xrpc/chat.bsky.group.listMutualGroups"), url_query);
 }
 
 const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &
-ChatBskyConvoListConvos::convosList() const
+ChatBskyGroupListMutualGroups::convosList() const
 {
     return m_convosList;
 }
 
-bool ChatBskyConvoListConvos::parseJson(bool success, const QString reply_json)
+bool ChatBskyGroupListMutualGroups::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty() || !json_doc.object().contains("convos")) {

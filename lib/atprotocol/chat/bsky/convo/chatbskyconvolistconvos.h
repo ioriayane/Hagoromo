@@ -11,7 +11,7 @@ public:
     explicit ChatBskyConvoListConvos(QObject *parent = nullptr);
 
     void listConvos(const int limit, const QString &cursor, const QString &readState,
-                    const QString &status, const QString &kind);
+                    const QString &status, const QString &kind, const QString &lockStatus);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &convosList() const;
 

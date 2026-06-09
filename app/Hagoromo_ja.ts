@@ -3114,155 +3114,155 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>RecordOperator</name>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="153"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="154"/>
         <source>Let&apos;s poll:</source>
         <translation>投票しよう:</translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="208"/>
-        <location filename="qtquick/operation/recordoperator.cpp" line="213"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="209"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="214"/>
         <source>Posting ... %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="215"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="216"/>
         <source>Posting ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="338"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="339"/>
         <source>Getting OGP image ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="371"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="373"/>
         <source>Repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="396"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="398"/>
         <source>Like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="420"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="422"/>
         <source>Follow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="442"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="444"/>
         <source>Mute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="465"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="467"/>
         <source>Block ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="487"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="489"/>
         <source>Block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="511"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="513"/>
         <source>Create list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="551"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="553"/>
         <source>Add to list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="574"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="576"/>
         <source>Saving post ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="600"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="602"/>
         <source>Delete post ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="624"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="626"/>
         <source>Delete like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="648"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="650"/>
         <source>Delete repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="672"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="674"/>
         <source>Unfollow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="694"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="696"/>
         <source>Unmute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="719"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="721"/>
         <source>Unblock ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="743"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="745"/>
         <source>Unblock block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="764"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="766"/>
         <source>Delete list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="826"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="828"/>
         <source>Delete list item ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="849"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="851"/>
         <source>Delete saved post ...</source>
         <oldsource>Delete bookmark ...</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="875"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="877"/>
         <source>Update profile ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="947"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="949"/>
         <source>Update post pinning ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="994"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="996"/>
         <source>Update list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1057"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1059"/>
         <source>Update who can reply ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1097"/>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1141"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1099"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1143"/>
         <source>Update quote status ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1313"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1315"/>
         <source>Uploading images ... (%1/%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="qtquick/operation/recordoperator.cpp" line="1401"/>
+        <location filename="qtquick/operation/recordoperator.cpp" line="1404"/>
         <source>Delete list item ... (%1)</source>
         <translation></translation>
     </message>

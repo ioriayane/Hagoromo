@@ -181,6 +181,24 @@ ChatBskyConvoGetLog::logsLogOutgoingJoinRequestList() const
     return m_logsLogOutgoingJoinRequestList;
 }
 
+const QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawIncomingJoinRequest> &
+ChatBskyConvoGetLog::logsLogWithdrawIncomingJoinRequestList() const
+{
+    return m_logsLogWithdrawIncomingJoinRequestList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawOutgoingJoinRequest> &
+ChatBskyConvoGetLog::logsLogWithdrawOutgoingJoinRequestList() const
+{
+    return m_logsLogWithdrawOutgoingJoinRequestList;
+}
+
+const QList<AtProtocolType::ChatBskyConvoDefs::LogReadJoinRequests> &
+ChatBskyConvoGetLog::logsLogReadJoinRequestsList() const
+{
+    return m_logsLogReadJoinRequestsList;
+}
+
 bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -303,6 +321,22 @@ bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
                 AtProtocolType::ChatBskyConvoDefs::copyLogOutgoingJoinRequest(value.toObject(),
                                                                               data);
                 m_logsLogOutgoingJoinRequestList.append(data);
+            } else if (type
+                       == QStringLiteral("chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")) {
+                AtProtocolType::ChatBskyConvoDefs::LogWithdrawIncomingJoinRequest data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogWithdrawIncomingJoinRequest(
+                        value.toObject(), data);
+                m_logsLogWithdrawIncomingJoinRequestList.append(data);
+            } else if (type
+                       == QStringLiteral("chat.bsky.convo.defs#logWithdrawOutgoingJoinRequest")) {
+                AtProtocolType::ChatBskyConvoDefs::LogWithdrawOutgoingJoinRequest data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogWithdrawOutgoingJoinRequest(
+                        value.toObject(), data);
+                m_logsLogWithdrawOutgoingJoinRequestList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logReadJoinRequests")) {
+                AtProtocolType::ChatBskyConvoDefs::LogReadJoinRequests data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogReadJoinRequests(value.toObject(), data);
+                m_logsLogReadJoinRequestsList.append(data);
             }
         }
     }
