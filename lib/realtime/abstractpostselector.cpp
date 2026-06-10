@@ -577,6 +577,14 @@ bool AbstractPostSelector::matchImageCondition(const QJsonObject &object) const
             if (media.value("$type").toString() == "app.bsky.embed.images") {
                 count += media.value("images").toArray().count();
             }
+        } else if (type == "app.bsky.embed.gallery") {
+            const auto items = embed.value("items").toArray();
+            for (const auto item : items) {
+                const auto item_type = item.toObject().value("$type").toString();
+                if (item_type == "app.bsky.embed.gallery#image") {
+                    count++;
+                }
+            }
         }
     }
     if (imageCount() < 0) {

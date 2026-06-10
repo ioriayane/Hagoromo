@@ -224,6 +224,12 @@ Dialog {
                             ListElement { value: 2; text: qsTr("2") }
                             ListElement { value: 3; text: qsTr("3") }
                             ListElement { value: 4; text: qsTr("4") }
+                            ListElement { value: 5; text: qsTr("5") }
+                            ListElement { value: 6; text: qsTr("6") }
+                            ListElement { value: 7; text: qsTr("7") }
+                            ListElement { value: 8; text: qsTr("8") }
+                            ListElement { value: 9; text: qsTr("9") }
+                            ListElement { value: 10; text: qsTr("10") }
                             ListElement { value: -1; text: qsTr(">=1") }
                         }
                         onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
