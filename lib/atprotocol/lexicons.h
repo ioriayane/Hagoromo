@@ -2409,6 +2409,9 @@ struct GroupConvo
     int joinRequestCount = 0; // The total number of pending join requests for the group
                               // conversation. Only present for the owner. Capped at 21.
     ConvoLockStatus lockStatus; // The lock status of the conversation.
+    bool lockStatusModerationOverride =
+            false; // Whether the lock status is being forced by a moderation override (account
+                   // inactivation or convo takedown) rather than the owner's own setting.
     int memberCount = 0; // The total number of members in the group conversation.
     int memberLimit = 0; // The maximum number of members allowed in the group conversation.
     QString name; // The display name of the group conversation.

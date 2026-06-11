@@ -358,7 +358,7 @@ target_compile_definitions(HagoromoLib PRIVATE
     CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
 )
 
-qt_add_translations(HagoromoLib QM_OUTPUT_DIRECTORY translations)
+qt_add_translations(HagoromoLib)
 
 set(HAGOROMO_ADDITIONAL_LIBRARIES)
 if (ZLIB_FOUND)
