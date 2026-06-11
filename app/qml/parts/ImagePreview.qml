@@ -38,14 +38,24 @@ Frame {
 
     states: [
         State {
-            when: layoutType === 0
+            when: layoutType === 0 && embedImages.length <= 4
             PropertyChanges { target: contentRootLayout; columns: 4 }
             PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 5 }
         },
         State {
-            when: layoutType === 1 || layoutType === 2
+            when: layoutType === 0
+            PropertyChanges { target: contentRootLayout; columns: 5 }
+            PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 5 }
+        },
+        State {
+            when: (layoutType === 1 || layoutType === 2) && embedImages.length <= 4
             PropertyChanges { target: contentRootLayout; columns: 2 }
             PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 3 }
+        },
+        State {
+            when: layoutType === 1 || layoutType === 2
+            PropertyChanges { target: contentRootLayout; columns: 4 }
+            PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 5 }
         },
         State {
             when: layoutType === 3
@@ -66,12 +76,12 @@ Frame {
                 id: image
                 property bool isWide: false
                 property bool isTall: false
-                Layout.preferredWidth: isWide ? imagePreviewLayout.layoutWidth : imagePreviewLayout.cellWidth
+                Layout.preferredWidth: isWide ? (Layout.columnSpan * imagePreviewLayout.cellWidth + (Layout.columnSpan - 1) * contentRootLayout.columnSpacing) : imagePreviewLayout.cellWidth
                 Layout.preferredHeight: isTall ? parseInt(imagePreviewLayout.layoutWidth * (
                                                       model.index < embedImageRatios.length ? parseFloat(embedImageRatios[model.index]) : (sourceSize.height / sourceSize.width)
                                                       )
                                                   ) : imagePreviewLayout.cellWidth
-                Layout.columnSpan: isWide ? 2 : 1
+                Layout.columnSpan: isWide ? (contentRootLayout.columns - repeater.count % contentRootLayout.columns + 1) : 1
                 fillMode: Image.PreserveAspectCrop
                 source: modelData
                 states: [
@@ -82,12 +92,12 @@ Frame {
                     },
                     State {
                         when: imagePreviewLayout.layoutType === 1
-                        PropertyChanges { target: image; isWide: (repeater.count % 2 === 1 && model.index === (repeater.count - 1)) }
+                        PropertyChanges { target: image; isWide: ((repeater.count % contentRootLayout.columns) > 0 && model.index === (repeater.count - 1)) }
                         PropertyChanges { target: image; isTall: false }
                     },
                     State {
                         when: imagePreviewLayout.layoutType === 2
-                        PropertyChanges { target: image; isWide: (repeater.count % 2 === 1 && model.index === (repeater.count - 1)) }
+                        PropertyChanges { target: image; isWide: (repeater.count % contentRootLayout.columns !== 0 && model.index === (repeater.count - 1)) }
                         PropertyChanges { target: image; isTall: (repeater.count === 1) }
                     },
                     State {
