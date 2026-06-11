@@ -271,6 +271,16 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
                 else if (type == CopyImageType::Alt)
                     images.append(image.alt);
             }
+        } else if (view.media_type
+                   == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedGallery_View) {
+            for (const auto &image : view.media_AppBskyEmbedGallery_View.items_ViewImage) {
+                if (type == CopyImageType::Thumb)
+                    images.append(image.thumbnail);
+                else if (type == CopyImageType::FullSize)
+                    images.append(image.fullsize);
+                else if (type == CopyImageType::Alt)
+                    images.append(image.alt);
+            }
         }
     }
     return images;
