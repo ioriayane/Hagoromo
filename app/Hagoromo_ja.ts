@@ -3039,13 +3039,13 @@ Please recreate AppPassword in the official application.</source>
     </message>
     <message>
         <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="222"/>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="257"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="263"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
         <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="223"/>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="258"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="264"/>
         <source>1</source>
         <translation></translation>
     </message>
@@ -3066,6 +3066,36 @@ Please recreate AppPassword in the official application.</source>
     </message>
     <message>
         <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="227"/>
+        <source>5</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="228"/>
+        <source>6</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="229"/>
+        <source>7</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="230"/>
+        <source>8</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="231"/>
+        <source>9</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="232"/>
+        <source>10</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="233"/>
         <source>&gt;=1</source>
         <translation></translation>
     </message>
@@ -3074,39 +3104,39 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">動画</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="271"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="277"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="284"/>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="310"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="290"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="316"/>
         <source>Exclude</source>
         <translation>除外</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="283"/>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="309"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="289"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="315"/>
         <source>Only</source>
         <translation>のみ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="240"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="246"/>
         <source>Video</source>
         <translation>動画</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="297"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="303"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="352"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="358"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="362"/>
+        <location filename="qml/dialogs/RealtimeFeedEditorDialog.qml" line="368"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
