@@ -3188,6 +3188,7 @@ void copyGroupConvo(const QJsonObject &src, ChatBskyConvoDefs::GroupConvo &dest)
         ChatBskyGroupDefs::copyJoinLinkView(src.value("joinLink").toObject(), dest.joinLink);
         dest.joinRequestCount = src.value("joinRequestCount").toInt();
         copyConvoLockStatus(src.value("lockStatus"), dest.lockStatus);
+        dest.lockStatusModerationOverride = src.value("lockStatusModerationOverride").toBool();
         dest.memberCount = src.value("memberCount").toInt();
         dest.memberLimit = src.value("memberLimit").toInt();
         dest.name = src.value("name").toString();
