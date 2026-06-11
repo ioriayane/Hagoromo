@@ -1272,36 +1272,57 @@ QStringList AtpAbstractListModel::copyImagesFromPostView(
 
     const AppBskyFeedPost::Main record =
             LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record);
-    for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
-        const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
-        if (image.image.mimeType != "image/gif")
-            continue;
-        QString path = getMediaFilePath(image.image.cid,
-                                        Common::mimeTypeToExtension(image.image.mimeType));
-        if (QFile::exists(path)) {
-            path = QUrl::fromLocalFile(path).toString();
-            if (i < ret.length()) {
-                ret[i] = path;
-            } else {
-                ret.append(path);
+    if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
+            const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (QFile::exists(path)) {
+                path = QUrl::fromLocalFile(path).toString();
+                if (i < ret.length()) {
+                    ret[i] = path;
+                } else {
+                    ret.append(path);
+                }
             }
         }
-    }
-    for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main.media_AppBskyEmbedImages_Main
-                                .images.length();
-         i++) {
-        const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
-                                    .media_AppBskyEmbedImages_Main.images.at(i);
-        if (image.image.mimeType != "image/gif")
-            continue;
-        QString path = getMediaFilePath(image.image.cid,
-                                        Common::mimeTypeToExtension(image.image.mimeType));
-        if (QFile::exists(path)) {
-            path = QUrl::fromLocalFile(path).toString();
-            if (i < ret.length()) {
-                ret[i] = path;
-            } else {
-                ret.append(path);
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main
+                                    .media_AppBskyEmbedImages_Main.images.length();
+             i++) {
+            const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
+                                        .media_AppBskyEmbedImages_Main.images.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (QFile::exists(path)) {
+                path = QUrl::fromLocalFile(path).toString();
+                if (i < ret.length()) {
+                    ret[i] = path;
+                } else {
+                    ret.append(path);
+                }
+            }
+        }
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedGallery_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedGallery_Main.items_Image.length(); i++) {
+            const auto &image = record.embed_AppBskyEmbedGallery_Main.items_Image.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (QFile::exists(path)) {
+                path = QUrl::fromLocalFile(path).toString();
+                if (i < ret.length()) {
+                    ret[i] = path;
+                } else {
+                    ret.append(path);
+                }
             }
         }
     }
@@ -1314,27 +1335,44 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
 {
     const AppBskyFeedPost::Main record =
             LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record);
-    for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
-        const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
-        if (image.image.mimeType != "image/gif")
-            continue;
-        QString path = getMediaFilePath(image.image.cid,
-                                        Common::mimeTypeToExtension(image.image.mimeType));
-        if (!QFile::exists(path)) {
-            appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+
+    if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
+            const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (!QFile::exists(path)) {
+                appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+            }
         }
-    }
-    for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main.media_AppBskyEmbedImages_Main
-                                .images.length();
-         i++) {
-        const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
-                                    .media_AppBskyEmbedImages_Main.images.at(i);
-        if (image.image.mimeType != "image/gif")
-            continue;
-        QString path = getMediaFilePath(image.image.cid,
-                                        Common::mimeTypeToExtension(image.image.mimeType));
-        if (!QFile::exists(path)) {
-            appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main
+                                    .media_AppBskyEmbedImages_Main.images.length();
+             i++) {
+            const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
+                                        .media_AppBskyEmbedImages_Main.images.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (!QFile::exists(path)) {
+                appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+            }
+        }
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedGallery_View) {
+        for (int i = 0; i < record.embed_AppBskyEmbedGallery_Main.items_Image.length(); i++) {
+            const auto &image = record.embed_AppBskyEmbedGallery_Main.items_Image.at(i);
+            if (image.image.mimeType != "image/gif")
+                continue;
+            QString path = getMediaFilePath(image.image.cid,
+                                            Common::mimeTypeToExtension(image.image.mimeType));
+            if (!QFile::exists(path)) {
+                appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+            }
         }
     }
 }

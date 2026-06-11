@@ -8,6 +8,10 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Update
+  - Supports posts with 5 or more attached images
+  - Update the suggested number of images when editing the real-time feed
+
 ### v0.61.0 - 2026/6/5
 
 - Add

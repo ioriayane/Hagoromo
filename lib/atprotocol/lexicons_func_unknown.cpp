@@ -163,6 +163,26 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
             }
         }
         return images;
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedGallery_View) {
+        QStringList images;
+        for (const auto &image : post.embed_AppBskyEmbedGallery_View.items_ViewImage) {
+            if (type == CopyImageType::Thumb)
+                images.append(image.thumbnail);
+            else if (type == CopyImageType::FullSize)
+                images.append(image.fullsize);
+            else if (type == CopyImageType::Alt)
+                images.append(image.alt);
+            else if (type == CopyImageType::Ratio) {
+                if (image.aspectRatio.width == 0) {
+                    images.append("1");
+                } else {
+                    images.append(QString::number(static_cast<double>(image.aspectRatio.height)
+                                                  / static_cast<double>(image.aspectRatio.width)));
+                }
+            }
+        }
+        return images;
     } else {
         return QStringList();
     }
