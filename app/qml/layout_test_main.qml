@@ -16,8 +16,8 @@ import "compat"
 
 ApplicationWindow {
     id: layoutTestWindow
-    width: 900
-    height: 1400
+    width: 1300
+    height: 1300
     visible: true
     title: "Hagoromo - Layout Test Mode"
 
@@ -64,13 +64,24 @@ ApplicationWindow {
     //     id: selectDraftDialog
     // }
 
-    ColumnLayout {
-        y: 0
-        width: 200
-        spacing: 12
-        property int layoutType: 1
+    ComboBox {
+        id: layoutTypeComboBox
+        x: 10
+        y: 10
+        model: ["Type 0", "Type 1", "Type 2", "Type 3"]
+    }
+    GridLayout {
+        anchors.top: layoutTypeComboBox.bottom
+        anchors.topMargin: 10
+        width: 1300
+        // spacing: 12
+        columnSpacing: 6
+        rowSpacing: 6
+        columns: 4
+        property int layoutType: layoutTypeComboBox.currentIndex
+        property int cellWidth: 300
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -97,7 +108,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true  
+            Layout.preferredWidth: parent.cellWidth  
             // height: 100
             layoutWidth: width
 
@@ -124,7 +135,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -151,7 +162,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -178,7 +189,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -205,7 +216,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -232,7 +243,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -259,7 +270,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -286,7 +297,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 
@@ -313,7 +324,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 

@@ -54,8 +54,8 @@ Frame {
         },
         State {
             when: layoutType === 1 || layoutType === 2
-            PropertyChanges { target: contentRootLayout; columns: 4 }
-            PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 5 }
+            PropertyChanges { target: contentRootLayout; columns: 3 }
+            PropertyChanges { target: imagePreviewLayout; cellWidthAdjust: 4 }
         },
         State {
             when: layoutType === 3
