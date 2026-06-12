@@ -63,23 +63,29 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
 
     } else if (role == LastMessageIdRole)
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
-                ? current.lastMessage_MessageView.id
+                        && current.lastMessage_MessageView
+                ? current.lastMessage_MessageView.data()->id
                 : QString();
     else if (role == LastMessageRevRole)
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
-                ? current.lastMessage_MessageView.rev
+                        && current.lastMessage_MessageView
+                ? current.lastMessage_MessageView.data()->rev
                 : QString();
     else if (role == LastMessageSenderDidRole)
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
-                ? current.lastMessage_MessageView.sender.did
+                        && current.lastMessage_MessageView
+                ? current.lastMessage_MessageView.data()->sender.did
                 : QString();
     else if (role == LastMessageTextRole)
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
-                ? current.lastMessage_MessageView.text
+                        && current.lastMessage_MessageView
+                ? current.lastMessage_MessageView.data()->text
                 : QString();
     else if (role == LastMessageSentAtRole)
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
-                ? LexiconsTypeUnknown::formatDateTime(current.lastMessage_MessageView.sentAt, true)
+                        && current.lastMessage_MessageView
+                ? LexiconsTypeUnknown::formatDateTime(
+                        current.lastMessage_MessageView.data()->sentAt, true)
                 : QString();
 
     else if (role == MutedRole)
@@ -148,7 +154,7 @@ bool ChatListModel::getLatest()
             convos->setAccount(account());
             convos->setService(account().service_endpoint);
             convos->setLabelers(labelerDids());
-            convos->listConvos(0, QString(), QString(), QString(), QString());
+            convos->listConvos(0, QString(), QString(), QString(), QString(), QString());
         });
     });
 
@@ -176,7 +182,7 @@ bool ChatListModel::getNext()
         });
         convos->setAccount(account());
         convos->setService(account().service_endpoint);
-        convos->listConvos(0, m_cursor, QString(), QString(), QString());
+        convos->listConvos(0, m_cursor, QString(), QString(), QString(), QString());
     });
 
     return true;

@@ -140,15 +140,58 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
         }
         return images;
     } else if (post.embed_type
-                       == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View
-               && post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                       == AppBskyEmbedRecordWithMedia::ViewMediaType::
-                               media_AppBskyEmbedImages_View) {
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View) {
+        if (post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+            == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View) {
+            QStringList images;
+            for (const auto &image :
+                 post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View.images) {
+                if (type == CopyImageType::Thumb)
+                    images.append(image.thumb);
+                else if (type == CopyImageType::FullSize)
+                    images.append(image.fullsize);
+                else if (type == CopyImageType::Alt)
+                    images.append(image.alt);
+                else if (type == CopyImageType::Ratio) {
+                    if (image.aspectRatio.width == 0) {
+                        images.append("1");
+                    } else {
+                        images.append(
+                                QString::number(static_cast<double>(image.aspectRatio.height)
+                                                / static_cast<double>(image.aspectRatio.width)));
+                    }
+                }
+            }
+            return images;
+        } else if (post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                   == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedGallery_View) {
+            QStringList images;
+            for (const auto &image : post.embed_AppBskyEmbedRecordWithMedia_View
+                                             .media_AppBskyEmbedGallery_View.items_ViewImage) {
+                if (type == CopyImageType::Thumb)
+                    images.append(image.thumbnail);
+                else if (type == CopyImageType::FullSize)
+                    images.append(image.fullsize);
+                else if (type == CopyImageType::Alt)
+                    images.append(image.alt);
+                else if (type == CopyImageType::Ratio) {
+                    if (image.aspectRatio.width == 0) {
+                        images.append("1");
+                    } else {
+                        images.append(
+                                QString::number(static_cast<double>(image.aspectRatio.height)
+                                                / static_cast<double>(image.aspectRatio.width)));
+                    }
+                }
+            }
+            return images;
+        }
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedGallery_View) {
         QStringList images;
-        for (const auto &image :
-             post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View.images) {
+        for (const auto &image : post.embed_AppBskyEmbedGallery_View.items_ViewImage) {
             if (type == CopyImageType::Thumb)
-                images.append(image.thumb);
+                images.append(image.thumbnail);
             else if (type == CopyImageType::FullSize)
                 images.append(image.fullsize);
             else if (type == CopyImageType::Alt)
@@ -163,9 +206,8 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
             }
         }
         return images;
-    } else {
-        return QStringList();
     }
+    return QStringList();
 }
 
 QString copyVideoFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
@@ -224,6 +266,16 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
             for (const auto &image : view.media_AppBskyEmbedImages_View.images) {
                 if (type == CopyImageType::Thumb)
                     images.append(image.thumb);
+                else if (type == CopyImageType::FullSize)
+                    images.append(image.fullsize);
+                else if (type == CopyImageType::Alt)
+                    images.append(image.alt);
+            }
+        } else if (view.media_type
+                   == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedGallery_View) {
+            for (const auto &image : view.media_AppBskyEmbedGallery_View.items_ViewImage) {
+                if (type == CopyImageType::Thumb)
+                    images.append(image.thumbnail);
                 else if (type == CopyImageType::FullSize)
                     images.append(image.fullsize);
                 else if (type == CopyImageType::Alt)

@@ -52,6 +52,12 @@ public:
     logsLogRejectJoinRequestList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::LogOutgoingJoinRequest> &
     logsLogOutgoingJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawIncomingJoinRequest> &
+    logsLogWithdrawIncomingJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawOutgoingJoinRequest> &
+    logsLogWithdrawOutgoingJoinRequestList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogReadJoinRequests> &
+    logsLogReadJoinRequestsList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -86,6 +92,11 @@ private:
     QList<AtProtocolType::ChatBskyConvoDefs::LogRejectJoinRequest> m_logsLogRejectJoinRequestList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogOutgoingJoinRequest>
             m_logsLogOutgoingJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawIncomingJoinRequest>
+            m_logsLogWithdrawIncomingJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogWithdrawOutgoingJoinRequest>
+            m_logsLogWithdrawOutgoingJoinRequestList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogReadJoinRequests> m_logsLogReadJoinRequestsList;
 };
 
 }
