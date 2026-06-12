@@ -41,6 +41,11 @@ const QString &AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton::recId() cons
     return m_recId;
 }
 
+const QString &AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton::recIdStr() const
+{
+    return m_recIdStr;
+}
+
 bool AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton::parseJson(bool success,
                                                                     const QString reply_json)
 {
@@ -51,6 +56,8 @@ bool AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton::parseJson(bool success
         AtProtocolType::LexiconsTypeUnknown::copyStringList(
                 json_doc.object().value("dids").toArray(), m_didsList);
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("recId"), m_recId);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("recIdStr"),
+                                                        m_recIdStr);
     }
 
     return success;

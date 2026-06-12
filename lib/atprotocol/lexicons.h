@@ -52,6 +52,13 @@ struct ThreadViewPost;
 namespace AppBskyRichtextFacet {
 struct Main;
 }
+namespace ChatBskyActorDefs {
+struct ProfileViewBasic;
+}
+namespace ChatBskyConvoDefs {
+struct ConvoView;
+struct MessageView;
+}
 
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -238,14 +245,55 @@ struct SubjectActivitySubscription
 };
 }
 
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+struct Main
+{
+    QString uri; // at-uri
+    QString cid; // cid
+};
+// A URI with a content-hash fingerprint.
+}
+
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
+struct ColorRGB
+{
+    int r = 0;
+    int g = 0;
+    int b = 0;
+};
+struct ViewExternalSourceTheme
+{
+    ColorRGB backgroundRGB;
+    ColorRGB foregroundRGB;
+    ColorRGB accentRGB;
+    ColorRGB accentForegroundRGB;
+};
+struct ViewExternalSource
+{
+    QString uri; // uri , URI of the source, if available. Example: the https:// URL of a
+                 // site.standard.publication record.
+    QString icon; // uri , Fully-qualified URL where an icon representing the source can be fetched.
+                  // For example, CDN location provided by the App View.
+    QString title;
+    QString description;
+    ViewExternalSourceTheme theme;
+};
 struct ViewExternal
 {
     QString uri; // uri
     QString title;
     QString description;
     QString thumb; // uri
+    QString createdAt; // datetime , When the external content was created, if available. Example: a
+                       // publication date, for an article.
+    QString updatedAt; // datetime , When the external content was updated, if available.
+    int readingTime = 0; // Estimated reading time in minutes, if applicable and available.
+    QList<ComAtprotoLabelDefs::Label> labels;
+    ViewExternalSource source;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
 };
 struct View
 {
@@ -257,21 +305,12 @@ struct External
     QString title;
     QString description;
     Blob thumb;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
 };
 struct Main
 {
     External external;
 };
-}
-
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-struct Main
-{
-    QString uri; // at-uri
-    QString cid; // cid
-};
-// A URI with a content-hash fingerprint.
 }
 
 // app.bsky.feed.threadgate
@@ -364,6 +403,7 @@ enum class StatusViewEmbedType : int {
 struct ProfileAssociatedChat
 {
     QString allowIncoming;
+    QString allowGroupInvites;
 };
 struct ProfileAssociatedActivitySubscription
 {
@@ -405,6 +445,8 @@ struct ViewerState
 struct VerificationView
 {
     QString issuer; // did , The user who issued this verification.
+    QString issuerDisplayName; // The display name of the issuer.
+    QString issuerHandle; // handle , The handle of the issuer.
     QString uri; // at-uri , The AT-URI of the verification record.
     bool isValid = false; // True if the verification passes validation, otherwise false.
     QString createdAt; // datetime , Timestamp when the verification was created.
@@ -428,6 +470,7 @@ struct StatusView
     AppBskyEmbedExternal::View
             embed_AppBskyEmbedExternal_View; // An optional embed associated with the status.
     // union end : embed
+    QList<ComAtprotoLabelDefs::Label> labels;
     QString expiresAt; // datetime , The date when this status will expire. The application might
                        // choose to no longer return the status after expiration.
     bool isActive = false; // True if the status is not expired, false if it is expired. Only
@@ -896,7 +939,7 @@ struct View
 // A set of images embedded in a Bluesky record (eg, a post).
 struct Image
 {
-    Blob image;
+    Blob image; // The raw image file. May be up to 2 MB, formerly limited to 1 MB.
     QString alt; // Alt text description of the image, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
 };
@@ -933,18 +976,64 @@ struct Main
 // A video embedded in a Bluesky record (eg, a post).
 }
 
+// app.bsky.embed.gallery
+namespace AppBskyEmbedGallery {
+enum class MainItemsType : int {
+    none,
+    items_Image,
+};
+enum class ViewItemsType : int {
+    none,
+    items_ViewImage,
+};
+struct ViewImage
+{
+    QString thumbnail; // uri , Fully-qualified URL where a thumbnail of the image can be fetched.
+                       // For example, CDN location provided by the App View.
+    QString fullsize; // uri , Fully-qualified URL where a large version of the image can be
+                      // fetched. May or may not be the exact original blob. For example, CDN
+                      // location provided by the App View.
+    QString alt; // Alt text description of the image, for accessibility.
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
+};
+struct View
+{
+    // union start : items
+    ViewItemsType items_type = ViewItemsType::none;
+    QList<ViewImage> items_ViewImage;
+    // union end : items
+};
+// An assortment of media embedded in a Bluesky record (eg, a post).
+struct Image
+{
+    Blob image;
+    QString alt; // Alt text description of the image, for accessibility.
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
+};
+struct Main
+{
+    // union start : items
+    MainItemsType items_type = MainItemsType::none;
+    QList<Image> items_Image; // The schema-level maxLength of 20 is a future-proof ceiling. Clients
+                              // should currently enforce a soft limit of 10 items in authoring UIs.
+    // union end : items
+};
+}
+
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
 enum class MainMediaType : int {
     none,
     media_AppBskyEmbedImages_Main,
     media_AppBskyEmbedVideo_Main,
+    media_AppBskyEmbedGallery_Main,
     media_AppBskyEmbedExternal_Main,
 };
 enum class ViewMediaType : int {
     none,
     media_AppBskyEmbedImages_View,
     media_AppBskyEmbedVideo_View,
+    media_AppBskyEmbedGallery_View,
     media_AppBskyEmbedExternal_View,
 };
 struct View
@@ -954,6 +1043,7 @@ struct View
     ViewMediaType media_type = ViewMediaType::none;
     AppBskyEmbedImages::View media_AppBskyEmbedImages_View;
     AppBskyEmbedVideo::View media_AppBskyEmbedVideo_View;
+    AppBskyEmbedGallery::View media_AppBskyEmbedGallery_View;
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
@@ -966,6 +1056,7 @@ struct Main
     MainMediaType media_type = MainMediaType::none;
     AppBskyEmbedImages::Main media_AppBskyEmbedImages_Main;
     AppBskyEmbedVideo::Main media_AppBskyEmbedVideo_Main;
+    AppBskyEmbedGallery::Main media_AppBskyEmbedGallery_Main;
     AppBskyEmbedExternal::Main media_AppBskyEmbedExternal_Main;
     // union end : media
 };
@@ -1033,6 +1124,7 @@ enum class ViewRecordEmbedsType : int {
     none,
     embeds_AppBskyEmbedImages_View,
     embeds_AppBskyEmbedVideo_View,
+    embeds_AppBskyEmbedGallery_View,
     embeds_AppBskyEmbedExternal_View,
     embeds_AppBskyEmbedRecord_View,
     embeds_AppBskyEmbedRecordWithMedia_View,
@@ -1052,6 +1144,7 @@ struct ViewRecord
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
     QList<AppBskyEmbedVideo::View> embeds_AppBskyEmbedVideo_View;
+    QList<AppBskyEmbedGallery::View> embeds_AppBskyEmbedGallery_View;
     QList<AppBskyEmbedExternal::View> embeds_AppBskyEmbedExternal_View;
     QList<QSharedPointer<AppBskyEmbedRecord::View>> embeds_AppBskyEmbedRecord_View;
     QList<AppBskyEmbedRecordWithMedia::View> embeds_AppBskyEmbedRecordWithMedia_View;
@@ -1173,6 +1266,7 @@ enum class PostViewEmbedType : int {
     none,
     embed_AppBskyEmbedImages_View,
     embed_AppBskyEmbedVideo_View,
+    embed_AppBskyEmbedGallery_View,
     embed_AppBskyEmbedExternal_View,
     embed_AppBskyEmbedRecord_View,
     embed_AppBskyEmbedRecordWithMedia_View,
@@ -1241,6 +1335,7 @@ struct PostView
     PostViewEmbedType embed_type = PostViewEmbedType::none;
     AppBskyEmbedImages::View embed_AppBskyEmbedImages_View;
     AppBskyEmbedVideo::View embed_AppBskyEmbedVideo_View;
+    AppBskyEmbedGallery::View embed_AppBskyEmbedGallery_View;
     AppBskyEmbedExternal::View embed_AppBskyEmbedExternal_View;
     AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     AppBskyEmbedRecordWithMedia::View embed_AppBskyEmbedRecordWithMedia_View;
@@ -1418,6 +1513,16 @@ struct DraftEmbedImage
     DraftEmbedLocalRef localRef;
     QString alt;
 };
+struct DraftEmbedGalleryItems
+{
+    // union start : draftEmbedGalleryItems
+    QList<AppBskyDraftDefs::DraftEmbedImage> draftEmbedImage;
+    // union end : draftEmbedGalleryItems
+};
+struct DraftEmbedGallery
+{
+    DraftEmbedGalleryItems items;
+};
 struct DraftEmbedCaption
 {
     QString lang; // language
@@ -1448,6 +1553,7 @@ struct DraftPost
                                                    // content warnings.
     // union end : labels
     QList<DraftEmbedImage> embedImages;
+    DraftEmbedGallery embedGallery;
     QList<DraftEmbedVideo> embedVideos;
     QList<DraftEmbedExternal> embedExternals;
     QList<DraftEmbedRecord> embedRecords;
@@ -1562,6 +1668,7 @@ enum class MainEmbedType : int {
     none,
     embed_AppBskyEmbedImages_Main,
     embed_AppBskyEmbedVideo_Main,
+    embed_AppBskyEmbedGallery_Main,
     embed_AppBskyEmbedExternal_Main,
     embed_AppBskyEmbedRecord_Main,
     embed_AppBskyEmbedRecordWithMedia_Main,
@@ -1595,6 +1702,7 @@ struct Main
     MainEmbedType embed_type = MainEmbedType::none;
     AppBskyEmbedImages::Main embed_AppBskyEmbedImages_Main;
     AppBskyEmbedVideo::Main embed_AppBskyEmbedVideo_Main;
+    AppBskyEmbedGallery::Main embed_AppBskyEmbedGallery_Main;
     AppBskyEmbedExternal::Main embed_AppBskyEmbedExternal_Main;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
@@ -1954,11 +2062,34 @@ namespace ChatBskyActorDeclaration {
 struct Main
 {
     QString allowIncoming;
+    QString allowGroupInvites; // [NOTE: This is under active development and should be considered
+                               // unstable while this note is here]. Declaration about group chat
+                               // invitation preferences for the record owner.
 };
 }
 
 // chat.bsky.actor.defs
 namespace ChatBskyActorDefs {
+enum class ProfileViewBasicKindType : int {
+    none,
+    kind_DirectConvoMember,
+    kind_GroupConvoMember,
+    kind_PastGroupConvoMember,
+};
+typedef QString MemberRole;
+struct DirectConvoMember
+{
+};
+struct GroupConvoMember
+{
+    QSharedPointer<ProfileViewBasic> addedBy; // Who added this member. Only present if the member
+                                              // was added (instead of joining via link).
+    MemberRole role; // The member's role within this conversation. Only present in group
+                     // conversation member lists.
+};
+struct PastGroupConvoMember
+{
+};
 struct ProfileViewBasic
 {
     QString did; // did
@@ -1968,14 +2099,113 @@ struct ProfileViewBasic
     AppBskyActorDefs::ProfileAssociated associated;
     AppBskyActorDefs::ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    QString createdAt; // datetime
     bool chatDisabled =
             false; // Set to true when the actor cannot actively participate in conversations
     AppBskyActorDefs::VerificationState verification;
+    // union start : kind
+    ProfileViewBasicKindType kind_type = ProfileViewBasicKindType::none;
+    DirectConvoMember kind_DirectConvoMember; // Union field that has data specific to different
+                                              // kinds of convos.
+    GroupConvoMember kind_GroupConvoMember; // Union field that has data specific to different kinds
+                                            // of convos.
+    PastGroupConvoMember kind_PastGroupConvoMember; // Union field that has data specific to
+                                                    // different kinds of convos.
+    // union end : kind
 };
+}
+
+// chat.bsky.group.defs
+namespace ChatBskyGroupDefs {
+typedef QString JoinRule;
+typedef QString LinkEnabledStatus;
+struct JoinLinkView
+{
+    QString code;
+    LinkEnabledStatus enabledStatus;
+    bool requireApproval = false;
+    JoinRule joinRule;
+    QString createdAt; // datetime
+};
+struct JoinLinkViewerState
+{
+    QString requestedAt; // datetime
+};
+struct JoinLinkPreviewView
+{
+    QString convoId;
+    QString code;
+    QString name;
+    ChatBskyActorDefs::ProfileViewBasic owner;
+    int memberCount = 0;
+    int memberLimit = 0;
+    bool requireApproval = false;
+    JoinRule joinRule;
+    QSharedPointer<ChatBskyConvoDefs::ConvoView> convo;
+    JoinLinkViewerState viewer;
+};
+struct DisabledJoinLinkPreviewView
+{
+    QString code;
+};
+struct InvalidJoinLinkPreviewView
+{
+    QString code;
+};
+// [NOTE: This is under active development and should be considered unstable while this note is
+// here].
+struct JoinRequestView
+{
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic requestedBy;
+    QString requestedAt; // datetime
+};
+struct JoinRequestConvoView
+{
+    QString convoId;
+    QString name;
+    ChatBskyActorDefs::ProfileViewBasic owner;
+    int memberCount = 0;
+    int memberLimit = 0;
+    JoinLinkViewerState viewer;
+};
+}
+
+// chat.bsky.embed.joinLink
+namespace ChatBskyEmbedJoinLink {
+enum class ViewJoinLinkPreviewType : int {
+    none,
+    joinLinkPreview_ChatBskyGroupDefs_JoinLinkPreviewView,
+    joinLinkPreview_ChatBskyGroupDefs_DisabledJoinLinkPreviewView,
+    joinLinkPreview_ChatBskyGroupDefs_InvalidJoinLinkPreviewView,
+};
+struct Main
+{
+    QString code; // The join link code.
+};
+struct View
+{
+    // union start : joinLinkPreview
+    ViewJoinLinkPreviewType joinLinkPreview_type = ViewJoinLinkPreviewType::none;
+    ChatBskyGroupDefs::JoinLinkPreviewView joinLinkPreview_ChatBskyGroupDefs_JoinLinkPreviewView;
+    ChatBskyGroupDefs::DisabledJoinLinkPreviewView
+            joinLinkPreview_ChatBskyGroupDefs_DisabledJoinLinkPreviewView;
+    ChatBskyGroupDefs::InvalidJoinLinkPreviewView
+            joinLinkPreview_ChatBskyGroupDefs_InvalidJoinLinkPreviewView;
+    // union end : joinLinkPreview
+};
+// [NOTE: This is under active development and should be considered unstable while this note is
+// here]. A join link embedded in a chat message.
 }
 
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
+enum class LogReadConvoMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+    message_SystemMessageView,
+};
 enum class LogRemoveReactionMessageType : int {
     none,
     message_MessageView,
@@ -1990,6 +2220,7 @@ enum class LogReadMessageMessageType : int {
     none,
     message_MessageView,
     message_DeletedMessageView,
+    message_SystemMessageView,
 };
 enum class LogDeleteMessageMessageType : int {
     none,
@@ -2001,22 +2232,53 @@ enum class LogCreateMessageMessageType : int {
     message_MessageView,
     message_DeletedMessageView,
 };
+enum class MessageViewEmbedType : int {
+    none,
+    embed_AppBskyEmbedRecord_View,
+    embed_ChatBskyEmbedJoinLink_View,
+};
 enum class ConvoViewLastMessageType : int {
     none,
     lastMessage_MessageView,
     lastMessage_DeletedMessageView,
+    lastMessage_SystemMessageView,
 };
 enum class ConvoViewLastReactionType : int {
     none,
     lastReaction_MessageAndReactionView,
 };
-enum class MessageViewEmbedType : int {
+enum class ConvoViewKindType : int {
     none,
-    embed_AppBskyEmbedRecord_View,
+    kind_DirectConvo,
+    kind_GroupConvo,
+};
+enum class SystemMessageViewDataType : int {
+    none,
+    data_SystemMessageDataAddMember,
+    data_SystemMessageDataRemoveMember,
+    data_SystemMessageDataMemberJoin,
+    data_SystemMessageDataMemberLeave,
+    data_SystemMessageDataLockConvo,
+    data_SystemMessageDataUnlockConvo,
+    data_SystemMessageDataLockConvoPermanently,
+    data_SystemMessageDataEditGroup,
+    data_SystemMessageDataCreateJoinLink,
+    data_SystemMessageDataEditJoinLink,
+    data_SystemMessageDataEnableJoinLink,
+    data_SystemMessageDataDisableJoinLink,
 };
 enum class MessageInputEmbedType : int {
     none,
     embed_AppBskyEmbedRecord_Main,
+    embed_ChatBskyEmbedJoinLink_Main,
+};
+typedef QString ConvoKind;
+typedef QString ConvoLockStatus;
+typedef QString ConvoStatus;
+struct ConvoRef
+{
+    QString did; // did
+    QString convoId;
 };
 struct MessageRef
 {
@@ -2031,7 +2293,96 @@ struct MessageInput
     // union start : embed
     MessageInputEmbedType embed_type = MessageInputEmbedType::none;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    ChatBskyEmbedJoinLink::Main embed_ChatBskyEmbedJoinLink_Main;
     // union end : embed
+};
+struct MessageViewSender
+{
+    QString did; // did
+};
+struct DeletedMessageView
+{
+    QString id;
+    QString rev;
+    MessageViewSender sender;
+    QString sentAt; // datetime
+};
+struct SystemMessageReferredUser
+{
+    QString did; // did
+};
+struct SystemMessageDataAddMember
+{
+    SystemMessageReferredUser member; // Current view of the member who was added.
+    ChatBskyActorDefs::MemberRole role;
+    SystemMessageReferredUser addedBy;
+};
+struct SystemMessageDataRemoveMember
+{
+    SystemMessageReferredUser member; // Current view of the member who was removed.
+    SystemMessageReferredUser removedBy;
+};
+struct SystemMessageDataMemberJoin
+{
+    SystemMessageReferredUser member; // Current view of the member who joined.
+    ChatBskyActorDefs::MemberRole role;
+    SystemMessageReferredUser
+            approvedBy; // If join link was configured to require approval, this will be set to who
+                        // approved the request. Undefined if approval was not required.
+};
+struct SystemMessageDataMemberLeave
+{
+    SystemMessageReferredUser member; // Current view of the member who left the group.
+};
+struct SystemMessageDataLockConvo
+{
+    SystemMessageReferredUser lockedBy; // Current view of the member who locked the group.
+};
+struct SystemMessageDataUnlockConvo
+{
+    SystemMessageReferredUser unlockedBy; // Current view of the member who unlocked the group.
+};
+struct SystemMessageDataLockConvoPermanently
+{
+    SystemMessageReferredUser lockedBy; // Current view of the member who locked the group.
+};
+struct SystemMessageDataEditGroup
+{
+    QString oldName; // Group name that was replaced.
+    QString newName; // Group name that replaced the old.
+};
+struct SystemMessageDataCreateJoinLink
+{
+};
+struct SystemMessageDataEditJoinLink
+{
+};
+struct SystemMessageDataEnableJoinLink
+{
+};
+struct SystemMessageDataDisableJoinLink
+{
+};
+struct SystemMessageView
+{
+    QString id;
+    QString rev;
+    QString sentAt; // datetime
+    // union start : data
+    SystemMessageViewDataType data_type = SystemMessageViewDataType::none;
+    SystemMessageDataAddMember data_SystemMessageDataAddMember;
+    SystemMessageDataRemoveMember data_SystemMessageDataRemoveMember;
+    SystemMessageDataMemberJoin data_SystemMessageDataMemberJoin;
+    SystemMessageDataMemberLeave data_SystemMessageDataMemberLeave;
+    SystemMessageDataLockConvo data_SystemMessageDataLockConvo;
+    SystemMessageDataUnlockConvo data_SystemMessageDataUnlockConvo;
+    SystemMessageDataLockConvoPermanently data_SystemMessageDataLockConvoPermanently;
+    SystemMessageDataEditGroup data_SystemMessageDataEditGroup;
+    SystemMessageDataCreateJoinLink data_SystemMessageDataCreateJoinLink;
+    SystemMessageDataEditJoinLink data_SystemMessageDataEditJoinLink;
+    SystemMessageDataEnableJoinLink data_SystemMessageDataEnableJoinLink;
+    SystemMessageDataDisableJoinLink data_SystemMessageDataDisableJoinLink;
+    // union end : data
 };
 struct ReactionViewSender
 {
@@ -2043,9 +2394,54 @@ struct ReactionView
     ReactionViewSender sender;
     QString createdAt; // datetime
 };
-struct MessageViewSender
+struct MessageAndReactionView
 {
-    QString did; // did
+    QSharedPointer<MessageView> message;
+    ReactionView reaction;
+};
+struct DirectConvo
+{
+};
+struct GroupConvo
+{
+    QString createdAt; // datetime
+    ChatBskyGroupDefs::JoinLinkView joinLink;
+    int joinRequestCount = 0; // The total number of pending join requests for the group
+                              // conversation. Only present for the owner. Capped at 21.
+    ConvoLockStatus lockStatus; // The lock status of the conversation.
+    bool lockStatusModerationOverride =
+            false; // Whether the lock status is being forced by a moderation override (account
+                   // inactivation or convo takedown) rather than the owner's own setting.
+    int memberCount = 0; // The total number of members in the group conversation.
+    int memberLimit = 0; // The maximum number of members allowed in the group conversation.
+    QString name; // The display name of the group conversation.
+    int unreadJoinRequestCount = 0; // The number of unread join requests for the group
+                                    // conversation. Only present for the owner.
+};
+struct ConvoView
+{
+    QString id;
+    QString rev;
+    QList<ChatBskyActorDefs::ProfileViewBasic> members;
+    // union start : lastMessage
+    ConvoViewLastMessageType lastMessage_type = ConvoViewLastMessageType::none;
+    QSharedPointer<MessageView> lastMessage_MessageView;
+    DeletedMessageView lastMessage_DeletedMessageView;
+    SystemMessageView lastMessage_SystemMessageView;
+    // union end : lastMessage
+    // union start : lastReaction
+    ConvoViewLastReactionType lastReaction_type = ConvoViewLastReactionType::none;
+    MessageAndReactionView lastReaction_MessageAndReactionView;
+    // union end : lastReaction
+    bool muted = false;
+    ConvoStatus status; // Convo status for the viewer member (not the convo itself).
+    int unreadCount = 0;
+    // union start : kind
+    ConvoViewKindType kind_type = ConvoViewKindType::none;
+    DirectConvo
+            kind_DirectConvo; // Union field that has data specific to different kinds of convos.
+    GroupConvo kind_GroupConvo; // Union field that has data specific to different kinds of convos.
+    // union end : kind
 };
 struct MessageView
 {
@@ -2056,41 +2452,12 @@ struct MessageView
     // union start : embed
     MessageViewEmbedType embed_type = MessageViewEmbedType::none;
     AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
+    ChatBskyEmbedJoinLink::View embed_ChatBskyEmbedJoinLink_View;
     // union end : embed
     QList<ReactionView>
             reactions; // Reactions to this message, in ascending order of creation time.
     MessageViewSender sender;
     QString sentAt; // datetime
-};
-struct DeletedMessageView
-{
-    QString id;
-    QString rev;
-    MessageViewSender sender;
-    QString sentAt; // datetime
-};
-struct MessageAndReactionView
-{
-    MessageView message;
-    ReactionView reaction;
-};
-struct ConvoView
-{
-    QString id;
-    QString rev;
-    QList<ChatBskyActorDefs::ProfileViewBasic> members;
-    // union start : lastMessage
-    ConvoViewLastMessageType lastMessage_type = ConvoViewLastMessageType::none;
-    MessageView lastMessage_MessageView;
-    DeletedMessageView lastMessage_DeletedMessageView;
-    // union end : lastMessage
-    // union start : lastReaction
-    ConvoViewLastReactionType lastReaction_type = ConvoViewLastReactionType::none;
-    MessageAndReactionView lastReaction_MessageAndReactionView;
-    // union end : lastReaction
-    bool muted = false;
-    QString status;
-    int unreadCount = 0;
 };
 struct LogBeginConvo
 {
@@ -2126,6 +2493,7 @@ struct LogCreateMessage
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
     // union end : message
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
 };
 struct LogDeleteMessage
 {
@@ -2145,6 +2513,7 @@ struct LogReadMessage
     LogReadMessageMessageType message_type = LogReadMessageMessageType::none;
     MessageView message_MessageView;
     DeletedMessageView message_DeletedMessageView;
+    SystemMessageView message_SystemMessageView;
     // union end : message
 };
 struct LogAddReaction
@@ -2157,6 +2526,7 @@ struct LogAddReaction
     DeletedMessageView message_DeletedMessageView;
     // union end : message
     ReactionView reaction;
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
 };
 struct LogRemoveReaction
 {
@@ -2168,6 +2538,140 @@ struct LogRemoveReaction
     DeletedMessageView message_DeletedMessageView;
     // union end : message
     ReactionView reaction;
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogReadConvo
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogReadConvoMessageType message_type = LogReadConvoMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    SystemMessageView message_SystemMessageView;
+    // union end : message
+};
+struct LogAddMember
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataAddMember
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogRemoveMember
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataRemoveMember
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogMemberJoin
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataMemberJoin
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogMemberLeave
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataMemberLeave
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogLockConvo
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataLockConvo
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogUnlockConvo
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataUnlockConvo
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogLockConvoPermanently
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView
+            message; // A system message with data of type #systemMessageDataLockConvoPermanently
+    QList<ChatBskyActorDefs::ProfileViewBasic> relatedProfiles;
+};
+struct LogEditGroup
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataEditGroup
+};
+struct LogCreateJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView
+            message; // A system message with data of type #systemMessageDataCreateJoinLink
+};
+struct LogEditJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView message; // A system message with data of type #systemMessageDataEditJoinLink
+};
+struct LogEnableJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView
+            message; // A system message with data of type #systemMessageDataEnableJoinLink
+};
+struct LogDisableJoinLink
+{
+    QString rev;
+    QString convoId;
+    SystemMessageView
+            message; // A system message with data of type #systemMessageDataDisableJoinLink
+};
+struct LogIncomingJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogApproveJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogRejectJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogOutgoingJoinRequest
+{
+    QString rev;
+    QString convoId;
+};
+struct LogWithdrawIncomingJoinRequest
+{
+    QString rev;
+    QString convoId;
+    ChatBskyActorDefs::ProfileViewBasic member;
+};
+struct LogWithdrawOutgoingJoinRequest
+{
+    QString rev;
+    QString convoId;
+};
+struct LogReadJoinRequests
+{
+    QString rev;
+    QString convoId;
 };
 }
 
@@ -2180,6 +2684,41 @@ struct BatchItem
 };
 }
 
+// chat.bsky.moderation.defs
+namespace ChatBskyModerationDefs {
+enum class ConvoViewKindType : int {
+    none,
+    kind_DirectConvo,
+    kind_GroupConvo,
+};
+struct DirectConvo
+{
+};
+struct GroupConvo
+{
+    QString createdAt; // datetime
+    ChatBskyGroupDefs::JoinLinkView joinLink;
+    int joinRequestCount =
+            0; // The total number of pending join requests for the group conversation. This
+               // information is only visible to the owner and to moderators. Capped at 21.
+    ChatBskyConvoDefs::ConvoLockStatus lockStatus;
+    int memberCount = 0; // The total number of members in the group conversation.
+    int memberLimit = 0; // The maximum number of members allowed in the group conversation.
+    QString name; // The display name of the group conversation.
+};
+struct ConvoView
+{
+    QString id;
+    QString rev;
+    // union start : kind
+    ConvoViewKindType kind_type = ConvoViewKindType::none;
+    DirectConvo
+            kind_DirectConvo; // Union field that has data specific to different kinds of convos.
+    GroupConvo kind_GroupConvo; // Union field that has data specific to different kinds of convos.
+    // union end : kind
+};
+}
+
 // chat.bsky.moderation.getActorMetadata
 namespace ChatBskyModerationGetActorMetadata {
 struct Metadata
@@ -2188,6 +2727,153 @@ struct Metadata
     int messagesReceived = 0;
     int convos = 0;
     int convosStarted = 0;
+};
+}
+
+// chat.bsky.moderation.subscribeModEvents
+namespace ChatBskyModerationSubscribeModEvents {
+struct EventConvoFirstMessage
+{
+    QString convoId;
+    QString createdAt; // datetime
+    QString messageId;
+    QList<QString> recipients; // The list of DIDs message recipients. Does not include the sender,
+                               // which is in the `user` field
+    QString rev;
+    QString user; // did , The DID of the message author.
+};
+struct EventGroupChatCreated
+{
+    QString actorDid; // did , The DID of the actor performing the action. For this event, same as
+                      // ownerDid.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName; // The name set at creation time.
+    QList<QString> initialMemberDids; // DIDs of everyone added at creation time.
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+};
+struct EventGroupChatMemberAdded
+{
+    QString actorDid; // did , The DID of the actor performing the action. For this event, same as
+                      // ownerDid.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString ownerDid; // did , The DID of the group chat owner.
+    int requestMembersCount = 0; // The number of members who have not yet accepted the convo.
+    QString rev;
+    QString subjectDid; // did , The DID of the member who was added.
+    bool subjectFollowsOwner = false; // Whether the added member follows the group owner.
+};
+struct EventGroupChatMemberJoined
+{
+    QString actorDid; // did , The DID of the person joining.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString joinLinkCode; // The code of the join link used to join.
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    bool subjectFollowsOwner = false; // Whether the joining member follows the group owner.
+};
+struct EventGroupChatJoinRequest
+{
+    QString actorDid; // did , The DID of the person requesting to join.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString joinLinkCode; // The code of the join link used to request joining.
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    bool subjectFollowsOwner = false; // Whether the requesting member follows the group owner.
+};
+struct EventGroupChatJoinRequestApproved
+{
+    QString actorDid; // did , The DID of the owner approving the request.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    QString subjectDid; // did , The DID of the member whose request was approved.
+};
+struct EventGroupChatJoinRequestRejected
+{
+    QString actorDid; // did , The DID of the owner rejecting the request.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    QString subjectDid; // did , The DID of the member whose request was rejected.
+};
+struct EventChatAccepted
+{
+    QString actorDid; // did , The DID of the person accepting the convo.
+    QString convoCreatedAt; // datetime , When the convo was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount =
+            0; // Current member count at the time of the event. Only present for group convos.
+    QString groupName; // The name of the group chat. Only present for group convos.
+    QString method; // How the convo was accepted.
+    QString ownerDid; // did , The DID of the group chat owner. Only present for group convos.
+    QString rev;
+};
+struct EventGroupChatMemberLeft
+{
+    QString actorDid; // did , The DID of the actor. For voluntary: the person leaving. For kicked:
+                      // the owner.
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName;
+    QString leaveMethod; // How the member left.
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    QString subjectDid; // did , The DID of the member who left or was removed.
+};
+struct EventGroupChatUpdated
+{
+    QString actorDid; // did , The DID of the actor performing the action (the owner).
+    QString convoCreatedAt; // datetime , When the group was originally created.
+    QString convoId;
+    QString createdAt; // datetime
+    int groupMemberCount = 0; // Current member count at the time of the event.
+    QString groupName; // Current group name.
+    QString joinLinkCode; // The code of the join link. Only present when updateType is
+                          // join-link-related.
+    bool joinLinkFollowersOnly = false; // Whether the join link is restricted to followers of the
+                                        // owner. Only present when updateType is join-link-related.
+    bool joinLinkRequiresApproval = false; // Whether the join link requires owner approval to join.
+                                           // Only present when updateType is join-link-related.
+    QString lockReason; // Why the group was locked. Only present when updateType is 'locked'.
+    QString newName; // The new group name. Only present when updateType is 'name_changed'.
+    QString oldName; // The previous group name. Only present when updateType is 'name_changed'.
+    QString ownerDid; // did , The DID of the group chat owner.
+    QString rev;
+    QString updateType; // What changed.
+};
+struct EventRateLimitExceeded
+{
+    QString actorDid; // did , The DID of the user who hit the rate limit.
+    QString createdAt; // datetime
+    QString endpoint; // The NSID of the endpoint that was rate limited.
+    QString rev;
 };
 }
 
@@ -2528,6 +3214,158 @@ struct Main
 };
 }
 
+// site.standard.document
+namespace SiteStandardDocument {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
+struct Contributor
+{
+    QString did; // did
+    QString displayName;
+    QString role;
+};
+struct Main
+{
+    ComAtprotoRepoStrongRef::Main bskyPostRef;
+    // union start : content
+    // union end : content
+    QList<Contributor> contributors;
+    Blob coverImage; // Image to used for thumbnail or cover image. Less than 1MB is size.
+    QString description; // A brief description or excerpt from the document.
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
+                                                   // content warnings.
+    // union end : labels
+    // union start : links
+    // union end : links
+    QString path; // Combine with site or publication url to construct a canonical URL to the
+                  // document. Prepend with a leading slash.
+    QString publishedAt; // datetime , Timestamp of the documents publish time.
+    QString site; // uri , Points to a publication record (at://) or a publication url (https://)
+                  // for loose documents. Avoid trailing slashes.
+    QList<QString> tags; // Array of strings used to tag or categorize the document. Avoid
+                         // prepending tags with hashtags.
+    QString textContent; // Plaintext representation of the documents contents. Should not contain
+                         // markdown or other formatting.
+    QString title; // Title of the document.
+    QString updatedAt; // datetime , Timestamp of the documents last edit.
+};
+}
+
+// site.standard.theme.color
+namespace SiteStandardThemeColor {
+struct Rgb
+{
+    int b = 0;
+    int g = 0;
+    int r = 0;
+};
+struct Rgba
+{
+    int a = 0;
+    int b = 0;
+    int g = 0;
+    int r = 0;
+};
+}
+
+// site.standard.theme.basic
+namespace SiteStandardThemeBasic {
+enum class MainAccentType : int {
+    none,
+    accent_SiteStandardThemeColor_Rgb,
+};
+enum class MainAccentForegroundType : int {
+    none,
+    accentForeground_SiteStandardThemeColor_Rgb,
+};
+enum class MainBackgroundType : int {
+    none,
+    background_SiteStandardThemeColor_Rgb,
+};
+enum class MainForegroundType : int {
+    none,
+    foreground_SiteStandardThemeColor_Rgb,
+};
+struct Main
+{
+    // union start : accent
+    MainAccentType accent_type = MainAccentType::none;
+    SiteStandardThemeColor::Rgb
+            accent_SiteStandardThemeColor_Rgb; // Color used for links and button backgrounds.
+    // union end : accent
+    // union start : accentForeground
+    MainAccentForegroundType accentForeground_type = MainAccentForegroundType::none;
+    SiteStandardThemeColor::Rgb
+            accentForeground_SiteStandardThemeColor_Rgb; // Color used for button text.
+    // union end : accentForeground
+    // union start : background
+    MainBackgroundType background_type = MainBackgroundType::none;
+    SiteStandardThemeColor::Rgb
+            background_SiteStandardThemeColor_Rgb; // Color used for content background.
+    // union end : background
+    // union start : foreground
+    MainForegroundType foreground_type = MainForegroundType::none;
+    SiteStandardThemeColor::Rgb
+            foreground_SiteStandardThemeColor_Rgb; // Color used for content text.
+    // union end : foreground
+};
+}
+
+// site.standard.publication
+namespace SiteStandardPublication {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
+struct Preferences
+{
+    bool showInDiscover =
+            true; // Boolean which decides whether the publication should appear in discovery feeds.
+};
+struct Main
+{
+    SiteStandardThemeBasic::Main basicTheme;
+    QString description; // Brief description of the publication.
+    Blob icon; // Square image to identify the publication. Should be at least 256x256.
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this publication.
+                                                   // Effectively content warnings.
+    // union end : labels
+    QString name; // Name of the publication.
+    Preferences preferences; // Object containing platform specific preferences (with a few shared
+                             // properties).
+    QString url; // uri , Base publication url (ex: https://standard.site). The canonical document
+                 // URL is formed by combining this value with the document path.
+};
+}
+
+// site.standard.graph.recommend
+namespace SiteStandardGraphRecommend {
+struct Main
+{
+    QString createdAt; // datetime
+    QString document; // at-uri , AT-URI reference to the document record being recommended (ex:
+                      // at://did:plc:abc123/site.standard.document/xyz789).
+};
+}
+
+// site.standard.graph.subscription
+namespace SiteStandardGraphSubscription {
+struct Main
+{
+    QString createdAt; // datetime
+    QString publication; // at-uri , AT-URI reference to the publication record being subscribed to
+                         // (ex: at://did:plc:abc123/site.standard.publication/xyz789).
+};
+}
+
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {
 struct TemplateView
@@ -2630,6 +3468,7 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_AgeAssurancePurgeEvent,
     event_RevokeAccountCredentialsEvent,
     event_ScheduleTakedownEvent,
     event_CancelScheduledTakedownEvent,
@@ -2640,6 +3479,7 @@ enum class ModEventViewDetailSubjectType : int {
     subject_RepoViewNotFound,
     subject_RecordView,
     subject_RecordViewNotFound,
+    subject_ConvoView,
 };
 enum class BlobViewDetailsType : int {
     none,
@@ -2651,6 +3491,7 @@ enum class SubjectStatusViewSubjectType : int {
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
     subject_ChatBskyConvoDefs_MessageRef,
+    subject_ChatBskyConvoDefs_ConvoRef,
 };
 enum class SubjectStatusViewHostingType : int {
     none,
@@ -2680,6 +3521,7 @@ enum class ModEventViewEventType : int {
     event_ModEventPriorityScore,
     event_AgeAssuranceEvent,
     event_AgeAssuranceOverrideEvent,
+    event_AgeAssurancePurgeEvent,
     event_RevokeAccountCredentialsEvent,
     event_ScheduleTakedownEvent,
     event_CancelScheduledTakedownEvent,
@@ -2689,6 +3531,7 @@ enum class ModEventViewSubjectType : int {
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
     subject_ChatBskyConvoDefs_MessageRef,
+    subject_ChatBskyConvoDefs_ConvoRef,
 };
 struct ModEventTakedown
 {
@@ -2797,6 +3640,8 @@ struct ModEventTag
     QList<QString> remove; // Tags to be removed to the subject. Ignores a tag If it doesn't exist,
                            // won't be duplicated.
     QString comment; // Additional comment about added/removed tags.
+    int durationInHours = 0; // Indicates how long the tags being added should remain before
+                             // automatically being removed. Only applies to tags being added.
 };
 struct AccountEvent
 {
@@ -2849,6 +3694,10 @@ struct AgeAssuranceOverrideEvent
     AppBskyAgeassuranceDefs::Access access;
     QString comment; // Comment describing the reason for the override.
 };
+struct AgeAssurancePurgeEvent
+{
+    QString comment; // Comment describing the reason for the purge.
+};
 struct RevokeAccountCredentialsEvent
 {
     QString comment; // Comment describing the reason for the revocation.
@@ -2895,6 +3744,7 @@ struct ModEventView
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    AgeAssurancePurgeEvent event_AgeAssurancePurgeEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     ScheduleTakedownEvent event_ScheduleTakedownEvent;
     CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
@@ -2904,6 +3754,7 @@ struct ModEventView
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
+    ChatBskyConvoDefs::ConvoRef subject_ChatBskyConvoDefs_ConvoRef;
     // union end : subject
     QList<QString> subjectBlobCids;
     QString createdBy; // did
@@ -2963,6 +3814,7 @@ struct SubjectStatusView
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
+    ChatBskyConvoDefs::ConvoRef subject_ChatBskyConvoDefs_ConvoRef;
     // union end : subject
     // union start : hosting
     SubjectStatusViewHostingType hosting_type = SubjectStatusViewHostingType::none;
@@ -3035,6 +3887,11 @@ struct RecordViewNotFound
 {
     QString uri; // at-uri
 };
+struct ConvoView
+{
+    QString did; // did
+    QString convoId;
+};
 struct ImageDetails
 {
     int width = 0;
@@ -3085,6 +3942,7 @@ struct ModEventViewDetail
     ModEventPriorityScore event_ModEventPriorityScore;
     AgeAssuranceEvent event_AgeAssuranceEvent;
     AgeAssuranceOverrideEvent event_AgeAssuranceOverrideEvent;
+    AgeAssurancePurgeEvent event_AgeAssurancePurgeEvent;
     RevokeAccountCredentialsEvent event_RevokeAccountCredentialsEvent;
     ScheduleTakedownEvent event_ScheduleTakedownEvent;
     CancelScheduledTakedownEvent event_CancelScheduledTakedownEvent;
@@ -3095,6 +3953,7 @@ struct ModEventViewDetail
     RepoViewNotFound subject_RepoViewNotFound;
     RecordView subject_RecordView;
     RecordViewNotFound subject_RecordViewNotFound;
+    ConvoView subject_ConvoView;
     // union end : subject
     QList<BlobView> subjectBlobs;
     QString createdBy; // did
@@ -3183,6 +4042,18 @@ struct ScheduledActionView
 };
 }
 
+// tools.ozone.moderation.emitEvent
+namespace ToolsOzoneModerationEmitEvent {
+struct ReportAction
+{
+    QList<int> ids; // Target specific report IDs
+    QList<QString> types; // Target reports matching these report types on the subject (fully
+                          // qualified NSIDs)
+    bool all = false; // Target ALL reports on the subject
+    QString note; // Note to send to reporter(s) when actioning their report
+};
+}
+
 // tools.ozone.moderation.getAccountTimeline
 namespace ToolsOzoneModerationGetAccountTimeline {
 struct TimelineItemSummary
@@ -3237,9 +4108,192 @@ struct ScheduledActionResults
 };
 }
 
+// tools.ozone.team.defs
+namespace ToolsOzoneTeamDefs {
+struct Member
+{
+    QString did; // did
+    bool disabled = false;
+    AppBskyActorDefs::ProfileViewDetailed profile;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QString lastUpdatedBy;
+    QString role;
+};
+}
+
+// tools.ozone.queue.defs
+namespace ToolsOzoneQueueDefs {
+struct QueueStats
+{
+    int pendingCount = 0; // Number of reports in 'open' status
+    int actionedCount = 0; // Number of reports in 'closed' status
+    int escalatedCount = 0; // Number of reports in 'escalated' status
+    int inboundCount = 0; // Reports received in this queue in the last 24 hours.
+    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
+                        // rounded to nearest integer. Absent when inboundCount is 0.
+    int avgHandlingTimeSec = 0; // Average time in seconds from report creation to close, for
+                                // reports closed in this period.
+    QString lastUpdated; // datetime , When these statistics were last computed
+};
+struct QueueView
+{
+    int id = 0; // Queue ID
+    QString name; // Display name of the queue
+    QList<QString> subjectTypes; // Subject types this queue accepts.
+    QString collection; // nsid , Collection name for record subjects (e.g., 'app.bsky.feed.post')
+    QList<QString> reportTypes; // Report reason types this queue accepts (fully qualified NSIDs)
+    QString description; // Optional description of the queue
+    QString createdBy; // did , DID of moderator who created this queue
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    bool enabled = false; // Whether this queue is currently active
+    QString deletedAt; // datetime , When the queue was deleted, if applicable
+    QueueStats stats; // Statistics about this queue
+};
+struct AssignmentView
+{
+    int id = 0;
+    QString did; // did
+    ToolsOzoneTeamDefs::Member moderator;
+    QueueView queue;
+    QString startAt; // datetime
+    QString endAt; // datetime
+};
+}
+
 // tools.ozone.report.defs
 namespace ToolsOzoneReportDefs {
+enum class ReportActivityViewActivityType : int {
+    none,
+    activity_QueueActivity,
+    activity_AssignmentActivity,
+    activity_EscalationActivity,
+    activity_CloseActivity,
+    activity_ReopenActivity,
+    activity_NoteActivity,
+};
 typedef QString ReasonType;
+struct ReportAssignment
+{
+    QString did; // did , DID of the assigned moderator
+    ToolsOzoneTeamDefs::Member moderator;
+    QString assignedAt; // datetime , When the report was assigned
+};
+struct ReportView
+{
+    int id = 0; // Report ID
+    int eventId = 0; // ID of the moderation event that created this report
+    QString status; // Current status of the report
+    ToolsOzoneModerationDefs::SubjectView subject;
+    ComAtprotoModerationDefs::ReasonType reportType;
+    QString reportedBy; // did , DID of the user who made the report
+    ToolsOzoneModerationDefs::SubjectView reporter;
+    QString comment; // Comment provided by the reporter
+    QString createdAt; // datetime , When the report was created
+    QString updatedAt; // datetime , When the report was last updated
+    QString queuedAt; // datetime , When the report was assigned to its current queue
+    QList<int> actionEventIds; // Array of moderation event IDs representing actions taken on this
+                               // report (sorted DESC, most recent first)
+    QList<ToolsOzoneModerationDefs::ModEventView> actions;
+    QString actionNote; // Note sent to reporter when report was actioned
+    ToolsOzoneModerationDefs::SubjectStatusView subjectStatus;
+    int relatedReportCount = 0; // Number of other pending reports on the same subject
+    ReportAssignment
+            assignment; // Information about moderator currently assigned to this report (if any)
+    ToolsOzoneQueueDefs::QueueView queue;
+    bool isMuted = false; // Whether this report is muted. A report is muted if the reporter was
+                          // muted or the subject was muted at the time the report was created.
+};
+struct QueueActivity
+{
+    QString previousStatus; // The report's status before this activity. Populated automatically
+                            // from the report row; not required in input.
+};
+struct AssignmentActivity
+{
+    QString previousStatus; // The report's status before this activity. Populated automatically
+                            // from the report row; not required in input.
+};
+struct EscalationActivity
+{
+    QString previousStatus; // The report's status before this activity. Populated automatically
+                            // from the report row; not required in input.
+};
+struct CloseActivity
+{
+    QString previousStatus; // The report's status before this activity. Populated automatically
+                            // from the report row; not required in input.
+};
+struct ReopenActivity
+{
+    QString previousStatus; // The report's status before this activity. Populated automatically
+                            // from the report row; not required in input.
+};
+struct NoteActivity
+{
+};
+struct ReportActivityView
+{
+    int id = 0; // Activity ID
+    int reportId = 0; // ID of the report this activity belongs to
+    // union start : activity
+    ReportActivityViewActivityType activity_type = ReportActivityViewActivityType::none;
+    QueueActivity activity_QueueActivity; // The typed activity object describing what occurred.
+    AssignmentActivity
+            activity_AssignmentActivity; // The typed activity object describing what occurred.
+    EscalationActivity
+            activity_EscalationActivity; // The typed activity object describing what occurred.
+    CloseActivity activity_CloseActivity; // The typed activity object describing what occurred.
+    ReopenActivity activity_ReopenActivity; // The typed activity object describing what occurred.
+    NoteActivity activity_NoteActivity; // The typed activity object describing what occurred.
+    // union end : activity
+    QString internalNote; // Optional moderator-only note. Not visible to reporters.
+    QString publicNote; // Optional public note, potentially visible to the reporter.
+    QVariant meta; // Extensible JSON payload for loose activity-specific metadata (e.g.
+                   // assignmentId).
+    bool isAutomated = false; // True if this activity was created by an automated process (e.g.
+                              // queue router) rather than a direct human action.
+    QString createdBy; // did , DID of the actor who created this activity, or the service DID for
+                       // automated activities.
+    ToolsOzoneTeamDefs::Member moderator;
+    QString createdAt; // datetime , When this activity was created
+};
+struct LiveStats
+{
+    int pendingCount = 0; // Number of reports currently not closed.
+    int actionedCount = 0; // Number of reports closed today.
+    int escalatedCount = 0; // Number of reports escalated today.
+    int inboundCount = 0; // Reports received today.
+    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
+                        // rounded to nearest integer.
+    int avgHandlingTimeSec =
+            0; // Average time in seconds from report creation (or moderator assignment) to close.
+    QString lastUpdated; // datetime , When these statistics were last computed.
+};
+struct HistoricalStats
+{
+    QString date; // The calendar date this snapshot covers (YYYY-MM-DD).
+    QString computedAt; // datetime , When this snapshot was last computed.
+    int pendingCount = 0; // Number of reports not closed at time of computation.
+    int actionedCount = 0; // Number of reports closed during this day.
+    int escalatedCount = 0; // Number of reports escalated during this day.
+    int inboundCount = 0; // Reports received during this day.
+    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
+                        // rounded to nearest integer.
+    int avgHandlingTimeSec =
+            0; // Average time in seconds from report creation (or moderator assignment) to close.
+};
+struct AssignmentView
+{
+    int id = 0;
+    QString did; // did
+    ToolsOzoneTeamDefs::Member moderator;
+    ToolsOzoneQueueDefs::QueueView queue;
+    int reportId = 0;
+    QString startAt; // datetime
+    QString endAt; // datetime
+};
 }
 
 // tools.ozone.safelink.defs
@@ -3334,20 +4388,6 @@ struct RelatedAccount
 {
     ComAtprotoAdminDefs::AccountView account;
     QList<ToolsOzoneSignatureDefs::SigDetail> similarities;
-};
-}
-
-// tools.ozone.team.defs
-namespace ToolsOzoneTeamDefs {
-struct Member
-{
-    QString did; // did
-    bool disabled = false;
-    AppBskyActorDefs::ProfileViewDetailed profile;
-    QString createdAt; // datetime
-    QString updatedAt; // datetime
-    QString lastUpdatedBy;
-    QString role;
 };
 }
 

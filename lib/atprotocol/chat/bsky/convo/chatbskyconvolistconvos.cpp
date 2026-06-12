@@ -10,7 +10,8 @@ namespace AtProtocolInterface {
 ChatBskyConvoListConvos::ChatBskyConvoListConvos(QObject *parent) : AccessAtProtocol { parent } { }
 
 void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
-                                         const QString &readState, const QString &status)
+                                         const QString &readState, const QString &status,
+                                         const QString &kind, const QString &lockStatus)
 {
     QUrlQuery url_query;
     if (limit > 0) {
@@ -24,6 +25,12 @@ void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
     }
     if (!status.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("status"), status);
+    }
+    if (!kind.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("kind"), kind);
+    }
+    if (!lockStatus.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("lockStatus"), lockStatus);
     }
 
     get(QStringLiteral("xrpc/chat.bsky.convo.listConvos"), url_query);

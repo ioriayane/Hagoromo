@@ -574,8 +574,25 @@ bool AbstractPostSelector::matchImageCondition(const QJsonObject &object) const
             count += embed.value("images").toArray().count();
         } else if (type == "app.bsky.embed.recordWithMedia") {
             const QJsonObject media = embed.value("media").toObject();
-            if (media.value("$type").toString() == "app.bsky.embed.images") {
+            const auto media_type = media.value("$type").toString();
+            if (media_type == "app.bsky.embed.images") {
                 count += media.value("images").toArray().count();
+            } else if (media_type == "app.bsky.embed.gallery") {
+                const auto items = media.value("items").toArray();
+                for (const auto item : items) {
+                    const auto item_type = item.toObject().value("$type").toString();
+                    if (item_type == "app.bsky.embed.gallery#image") {
+                        count++;
+                    }
+                }
+            }
+        } else if (type == "app.bsky.embed.gallery") {
+            const auto items = embed.value("items").toArray();
+            for (const auto item : items) {
+                const auto item_type = item.toObject().value("$type").toString();
+                if (item_type == "app.bsky.embed.gallery#image") {
+                    count++;
+                }
             }
         }
     }

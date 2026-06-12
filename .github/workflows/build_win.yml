@@ -20,16 +20,16 @@ env:
 
 jobs:
   build-for-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022 # https://github.com/actions/runner-images/issues/14017
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
       - name: Configure build for x86_64
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: step-security/msvc-dev-cmd@22c98154b708dbd743e6f27a933cf6ceba3305c4 # v1.13.1
         with:
           arch: x86_64
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
           aqtversion: '==3.3.*'
           version: '6.11.0'
@@ -42,7 +42,7 @@ jobs:
           # https://github.com/miurahr/aqtinstall/issues/959
           aqtsource: git+https://github.com/miurahr/aqtinstall.git@refs/pull/1000/head
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           submodules: recursive
           fetch-depth: 0
@@ -72,7 +72,7 @@ jobs:
           echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
       - name: Upload a archive
         if: ${{ inputs.upload == true }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: archive_for_windows
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
@@ -93,7 +93,7 @@ jobs:
           scripts\unittest.bat $env:QT_ROOT_DIR
       - name: Upload a unit test result
         if: ${{ inputs.unit_test == true && failure() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: unit_test_result_for_windows
           path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"

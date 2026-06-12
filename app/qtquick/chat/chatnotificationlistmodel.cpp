@@ -150,7 +150,7 @@ void ChatNotificationListModel::getChatList()
     convos->setAccount(account);
     convos->setService(account.service_endpoint);
     convos->setLabelers(labelerDids());
-    convos->listConvos(0, QString(), "unread", QString());
+    convos->listConvos(0, QString(), "unread", QString(), QString(), QString());
     // });
     // });
 }

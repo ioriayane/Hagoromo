@@ -769,6 +769,8 @@ class Defs2Struct:
                         else:
                             if forward_type in ['integer', 'string', 'boolean']:
                                 convert_method = ''
+                            elif forward_type in ['array', 'union']:
+                                convert_method = '.toArray()'
                             else:
                                 convert_method = '.toObject()'
                             self.output_func_text[namespace].append('        %scopy%s(src.value("%s")%s, dest.%s);' % (
@@ -1065,6 +1067,8 @@ class Defs2Struct:
 
         if len(ref_namespace) == 0:
             ref_namespace = namespace
+        if len(ref_struct_name) == 0:
+            ref_struct_name = 'main'
 
         data['parent_info'] = self.inheritance.get(ref, {})
         data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
