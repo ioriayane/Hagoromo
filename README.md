@@ -17,9 +17,9 @@
 ## 使用ソフトウェア
 
 - [Qt 6.11.0](https://www.qt.io/)
-- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [OpenSSL 3.6.3](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
-- [zlib 1.3.1](https://github.com/madler/zlib)
+- [zlib 1.3.2](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## ダウンロード
@@ -188,9 +188,9 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 ## Software used
 
 - [Qt 6.11.0](https://www.qt.io/)
-- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [OpenSSL 3.6.3](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
-- [zlib 1.3.1](https://github.com/madler/zlib)
+- [zlib 1.3.2](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## Download
