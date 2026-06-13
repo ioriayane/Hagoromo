@@ -132,7 +132,7 @@ deploy_hagoromo(){
             cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
             cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
         fi
-        cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
+        cp "zlib/lib/libz.so.1.3.2" ${work_dir}/lib
         cp "zlib/lib/libz.so.1" ${work_dir}/lib
 
         cat ${deploy_src_list_lib} | xargs -i{} cp -P ${QTDIR}/lib/{} ${work_dir}/lib
