@@ -28,13 +28,18 @@ echo VS_SETUP_BAT=%VS_SETUP_BAT%
 echo VS_REDIST_FOLDER=%VS_REDIST_FOLDER%
 
 REM --- build deps -------
-cmd.exe /c %CWD%/scripts/build_zlib.bat
+if EXIST %CWD%\zlib\bin\z.dll (
+    echo "[Info] zlib\bin\z.dll already exists. Skipping build_zlib.bat."
+) else (
+    cmd.exe /c %CWD%/scripts/build_zlib.bat
+    if ERRORLEVEL 1 echo "[Error] Failed to build dependencies." & goto QUIT
+)
 
 if EXIST %CWD%\openssl\bin\openssl.exe (
-    echo openssl\bin\openssl.exe already exists. Skipping build_openssl.bat.
+    echo "[Info] openssl\bin\openssl.exe already exists. Skipping build_openssl.bat."
 ) else (
     cmd.exe /c %CWD%\scripts\build_openssl.bat
-    if ERRORLEVEL 1 echo "Error: Failed to build dependencies." & goto QUIT
+    if ERRORLEVEL 1 echo "[Error] Failed to build dependencies." & goto QUIT
 )
 
 REM --- check path -------
@@ -88,6 +93,7 @@ REM --- deploy -------
                         --release ^
                         %DEPLOY_FOLDER%\hagoromo\Hagoromo.exe
 python3 scripts\copymsvcfiles.py %VS_REDIST_FOLDER% %DEPLOY_FOLDER%\hagoromo
+copy %CWD%\zlib\bin\z.dll %DEPLOY_FOLDER%\hagoromo\
 
 for /f "usebackq delims=" %%A in (`PowerShell -Command "((Get-Content app/main.cpp) -match 'app.setApplicationVersion' | Select-String -Pattern '[0-9]+\.[0-9]+\.[0-9]+' -AllMatches).Matches.Value"`) do set VERSION_NO=%%A
 PowerShell -Command "Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath deploy-hagoromo\hagoromo_%VERSION_NO%_windows.zip"

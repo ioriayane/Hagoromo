@@ -26,7 +26,12 @@ if NOT ERRORLEVEL 0 goto QUIT_ERROR
 REM --- build -------
 cd %BUILD_FOLDER%
 
-perl %SRC_FOLDER%\Configure VC-WIN64A no-asm --prefix="%DEPLOY_FOLDER%" --openssldir="%DEPLOY_FOLDER%"
+perl %SRC_FOLDER%\Configure VC-WIN64A no-asm ^
+                            zlib-dynamic ^
+                            --with-zlib-include="%CWD%\zlib\include" ^
+                            --with-zlib-lib="%CWD%\zlib\lib\zlib.lib" ^
+                            --prefix="%DEPLOY_FOLDER%" ^
+                            --openssldir="%DEPLOY_FOLDER%"
 if ERRORLEVEL 1 goto QUIT_ERROR
 
 nmake
