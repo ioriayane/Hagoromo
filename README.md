@@ -46,6 +46,8 @@ Official site : [Qt](https://www.qt.io/)
 
 [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition も利用可能です）。
 
+perlをインストールしてください。OpenSSLのビルドに使用します。
+
 CRLF（Windows のデフォルト）の改行コードでリポジトリを確認してください。
 
 > **注意:** 以下のコマンドはコマンドプロンプト（`cmd`）用です。PowerShell を使用する場合は、コメントの `REM` を `#` に置き換えてください。
@@ -218,6 +220,8 @@ Official site : [Qt](https://www.qt.io/)
 ### Windows
 
 Install [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/) (Community Edition is also available).
+
+Please install Perl. It will be used to build OpenSSL.
 
 Check out the repository with CRLF (Windows default) line endings.
 
