@@ -46,6 +46,12 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Download and extract OpenSSL
+        continue-on-error: true
+        run: |
+          Invoke-WebRequest -Uri "https://download.relog.tech/openssl/openssl_3.6.3.zip" -OutFile "openssl_3.6.3.zip"
+          Expand-Archive -Path "openssl_3.6.3.zip" -DestinationPath "." -Force
+          Remove-Item "openssl_3.6.3.zip"
       - name: Build for Windows
         id: build
         env:

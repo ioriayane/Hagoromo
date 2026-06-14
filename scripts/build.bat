@@ -22,13 +22,20 @@ IF not defined  VS_REDIST_FOLDER set VS_REDIST_FOLDER="C:\Program Files\Microsof
 set SRC_FOLDER=..
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
-set OPENSSL_FOLDER=%QTDIR%/../../Tools/OpenSSLv3/Win_x64
+set OPENSSL_FOLDER=openssl
 
 echo VS_SETUP_BAT=%VS_SETUP_BAT%
 echo VS_REDIST_FOLDER=%VS_REDIST_FOLDER%
 
 REM --- build deps -------
 cmd.exe /c %CWD%/scripts/build_zlib.bat
+
+if EXIST %CWD%\openssl\bin\openssl.exe (
+    echo openssl\bin\openssl.exe already exists. Skipping build_openssl.bat.
+) else (
+    cmd.exe /c %CWD%\scripts\build_openssl.bat
+    if ERRORLEVEL 1 echo "Error: Failed to build dependencies." & goto QUIT
+)
 
 REM --- check path -------
 nmake /? /c

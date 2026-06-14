@@ -8,11 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(WIN32)
-set(OPENSSL_ROOT_DIR "${CMAKE_PREFIX_PATH}/../../Tools/OpenSSLv3/Win_x64")
-else()
 set(OPENSSL_ROOT_DIR "${CMAKE_SOURCE_DIR}/openssl")
-endif()
 set(ZLIB_ROOT "../zlib")
 
 find_package(Qt6 REQUIRED COMPONENTS
