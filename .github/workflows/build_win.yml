@@ -50,6 +50,12 @@ jobs:
         continue-on-error: true
         run: |
           Invoke-WebRequest -Uri "https://download.relog.tech/openssl/openssl_3.6.3_win.zip" -OutFile "openssl_3.6.3.zip"
+          $expectedHash = "355E84292EEB7D9EF9506D89B6F134511E875DF6705D5FBD183DEC7616DAD74D"
+          $actualHash = (Get-FileHash "openssl_3.6.3.zip" -Algorithm SHA256).Hash
+          if ($actualHash -ne $expectedHash) {
+            Write-Error "Hash mismatch! Expected: $expectedHash, Actual: $actualHash"
+            exit 1
+          }
           Expand-Archive -Path "openssl_3.6.3.zip" -DestinationPath "." -Force
           Remove-Item "openssl_3.6.3.zip"
       - name: Build for Windows
