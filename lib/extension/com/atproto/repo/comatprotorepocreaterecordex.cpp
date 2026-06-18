@@ -92,12 +92,20 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
             setJsonBlob(blob, json_image);
             json_blob.insert("image", json_image);
             json_blob.insert("alt", blob.alt);
+            if (m_embedImageBlobs.length() > 4) {
+                json_blob.insert("$type", "app.bsky.embed.gallery#image");
+            }
 
             json_blobs.append(json_blob);
         }
 
-        json_embed_images.insert("$type", "app.bsky.embed.images");
-        json_embed_images.insert("images", json_blobs);
+        if (m_embedImageBlobs.length() > 4) {
+            json_embed_images.insert("$type", "app.bsky.embed.gallery");
+            json_embed_images.insert("items", json_blobs);
+        } else {
+            json_embed_images.insert("$type", "app.bsky.embed.images");
+            json_embed_images.insert("images", json_blobs);
+        }
     }
 
     if (!m_embedQuote.cid.isEmpty() && !m_embedQuote.uri.isEmpty()) {

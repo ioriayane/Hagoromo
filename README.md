@@ -17,9 +17,9 @@
 ## 使用ソフトウェア
 
 - [Qt 6.11.0](https://www.qt.io/)
-- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [OpenSSL 3.6.3](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
-- [zlib 1.3.1](https://github.com/madler/zlib)
+- [zlib 1.3.2](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## ダウンロード
@@ -45,6 +45,8 @@ Official site : [Qt](https://www.qt.io/)
 ### Windows
 
 [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition も利用可能です）。
+
+perlをインストールしてください。OpenSSLのビルドに使用します。
 
 CRLF（Windows のデフォルト）の改行コードでリポジトリを確認してください。
 
@@ -188,9 +190,9 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 ## Software used
 
 - [Qt 6.11.0](https://www.qt.io/)
-- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [OpenSSL 3.6.3](http://www.openssl.org/)
 - [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
-- [zlib 1.3.1](https://github.com/madler/zlib)
+- [zlib 1.3.2](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## Download
@@ -218,6 +220,8 @@ Official site : [Qt](https://www.qt.io/)
 ### Windows
 
 Install [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/) (Community Edition is also available).
+
+Please install Perl. It will be used to build OpenSSL.
 
 Check out the repository with CRLF (Windows default) line endings.
 

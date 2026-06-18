@@ -32,6 +32,8 @@ using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
+#define EMBED_IMAGES_MAX 10
+
 RecordOperator::RecordOperator(QObject *parent)
     : QObject { parent },
       m_sequentialPostsTotal(0),
@@ -200,9 +202,9 @@ void RecordOperator::post()
 
     setRunning(true);
 
-    if (m_embedImageBlobs.count() > 4 && m_sequentialPostsTotal == 0) {
-        m_sequentialPostsTotal = static_cast<int>(m_embedImageBlobs.count() / 4)
-                + ((m_embedImageBlobs.count() % 4) > 0 ? 1 : 0);
+    if (m_embedImageBlobs.count() > EMBED_IMAGES_MAX && m_sequentialPostsTotal == 0) {
+        m_sequentialPostsTotal = static_cast<int>(m_embedImageBlobs.count() / EMBED_IMAGES_MAX)
+                + ((m_embedImageBlobs.count() % EMBED_IMAGES_MAX) > 0 ? 1 : 0);
         QString progress_msg =
                 QString("(%1/%2)").arg(m_sequentialPostsCurrent + 1).arg(m_sequentialPostsTotal);
         m_text += QString("\n%1").arg(progress_msg);
@@ -216,7 +218,7 @@ void RecordOperator::post()
         setProgressMessage(tr("Posting ..."));
     }
     QList<AtProtocolType::Blob> embed_imageBlobs;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < EMBED_IMAGES_MAX; i++) {
         if (m_embedImageBlobs.isEmpty()) {
             break;
         }

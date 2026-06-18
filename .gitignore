@@ -66,6 +66,7 @@ deploy-hagoromo
 3rdparty/build-openssl
 openssl/bin
 openssl/certs
+openssl/html
 openssl/include
 openssl/lib
 openssl/lib64
