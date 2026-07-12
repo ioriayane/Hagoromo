@@ -33,6 +33,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     LinguistTools
     Quick
     QuickControls2
+    Widgets
 )
 qt_policy(
     SET QTP0004 NEW
@@ -204,6 +205,7 @@ target_link_libraries(Hagoromo PRIVATE
     Qt6::Core
     Qt6::Quick
     Qt6::QuickControls2
+    Qt6::Widgets
     HagoromoLib
     HagoromoGuiLib
 )

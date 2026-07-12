@@ -159,47 +159,47 @@
 <context>
     <name>AddListDialog</name>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="21"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="20"/>
         <source>Add a list</source>
         <translation>リストの追加</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="21"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="20"/>
         <source>Edit a list</source>
         <translation>リストの編集</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="100"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="99"/>
         <source>Avatar</source>
         <translation>アイコン</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="122"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="121"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="142"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="141"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="169"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="168"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="184"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="183"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="184"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="183"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AddListDialog.qml" line="210"/>
+        <location filename="qml/dialogs/AddListDialog.qml" line="209"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -973,32 +973,32 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>EditProfileDialog</name>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="21"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="20"/>
         <source>Edit my profile</source>
         <translation>プロフィールの編集</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="165"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="164"/>
         <source>Display Name</source>
         <translation>表示名</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="181"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="180"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="203"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="202"/>
         <source>Pronouns</source>
         <translation>呼び方</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="224"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="223"/>
         <source>Website</source>
         <translation>ウェブサイト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="224"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="223"/>
         <source>: Please enter a URL that starts with &apos;https://&apos;</source>
         <translation>: &apos;https://&apos;で始めてください</translation>
     </message>
@@ -1007,17 +1007,17 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished"> : &apos;https://&apos;で始めてください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="244"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="243"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="259"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="258"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="277"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="276"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
