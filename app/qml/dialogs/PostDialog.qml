@@ -3,7 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Material
-import Qt.labs.platform as P
+import QtQuick.Dialogs
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.draftoperator 1.0
@@ -752,7 +752,7 @@ Item {
                                 flat: true
                                 onClicked: {
                                     if(fileDialog.prevFolder.length > 0){
-                                        fileDialog.folder = fileDialog.prevFolder
+                                        fileDialog.currentFolder = fileDialog.prevFolder
                                     }
                                     fileDialog.open()
                                 }
@@ -877,22 +877,23 @@ Item {
                 }
             }
 
-            P.FileDialog {
+            FileDialog {
                 id: fileDialog
                 title: qsTr("Select contents")
                 visible: false
-                fileMode : P.FileDialog.OpenFiles
+                fileMode : FileDialog.OpenFiles
                 nameFilters: ["Image files (*.jpg *.jpeg *.png *.gif)"
                     , "All files (*)"]
                 onAccepted: {
                     //選択されたファイルをすべて追加
-                    prevFolder = folder
+                    prevFolder = currentFolder
 
                     var new_files = []
-                    for(var i=0; i<files.length; i++){
-                        new_files.push(files[i])
+                    for(var i=0; i<selectedFiles.length; i++){
+                        new_files.push(selectedFiles[i])
                     }
                     embedImageListModel.append(new_files)
+                    fileDialog.close()
                 }
                 property string prevFolder
             }

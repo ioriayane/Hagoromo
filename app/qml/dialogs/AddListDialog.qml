@@ -2,8 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-
-import Qt.labs.platform 1.1 as P
+import QtQuick.Dialogs
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.systemtool 1.0
@@ -205,17 +204,17 @@ Dialog {
         }
     }
 
-    P.FileDialog {
+    FileDialog {
         id: fileDialog
         title: qsTr("Select contents")
         visible: false
-        fileMode : P.FileDialog.OpenFiles
+        fileMode : FileDialog.OpenFiles
 
         nameFilters: ["Image files (*.jpg *.jpeg *.png)"
             , "All files (*)"]
         onAccepted: {
-            prevFolder = folder
-            imageClipDialog.embedImage = file
+            prevFolder = currentFolder
+            imageClipDialog.embedImage = selectedFile
             imageClipDialog.open()
         }
         property string prevFolder
