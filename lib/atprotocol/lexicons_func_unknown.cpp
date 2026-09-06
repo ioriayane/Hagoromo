@@ -83,6 +83,11 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
+void copyUnknown(const QJsonArray &src, QVariant &dest)
+{
+    dest = src.toVariantList();
+}
+
 void copyBlob(const QJsonObject &src, Blob &dest)
 {
     if (src.isEmpty())

@@ -14,12 +14,14 @@ public:
 
     const AtProtocolType::AppBskyEmbedExternal::View &view() const;
     const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &associatedRefsList() const;
+    const QVariant &associatedRecordsList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::AppBskyEmbedExternal::View m_view;
     QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> m_associatedRefsList;
+    QVariant m_associatedRecordsList;
 };
 
 }
