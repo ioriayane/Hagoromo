@@ -1,0 +1,32 @@
+#ifndef APPBSKYVIDEOSTARTUPLOAD_H
+#define APPBSKYVIDEOSTARTUPLOAD_H
+
+#include "atprotocol/accessatprotocol.h"
+
+namespace AtProtocolInterface {
+
+class AppBskyVideoStartUpload : public AccessAtProtocol
+{
+public:
+    explicit AppBskyVideoStartUpload(QObject *parent = nullptr);
+
+    void startUpload(const int sizeBytes, const QString &mimeType, const QString &name,
+                     const int durationMs, const int width, const int height);
+
+    const QString &jobId() const;
+    const int &partSizeBytes() const;
+    const int &partCount() const;
+    const QString &expiresAt() const;
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json);
+
+    QString m_jobId;
+    int m_partSizeBytes;
+    int m_partCount;
+    QString m_expiresAt;
+};
+
+}
+
+#endif // APPBSKYVIDEOSTARTUPLOAD_H

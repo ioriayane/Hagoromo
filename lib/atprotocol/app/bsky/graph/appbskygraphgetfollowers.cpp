@@ -10,7 +10,7 @@ AppBskyGraphGetFollowers::AppBskyGraphGetFollowers(QObject *parent)
 }
 
 void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limit,
-                                            const QString &cursor)
+                                            const QString &cursor, const QString &sort)
 {
     QUrlQuery url_query;
     if (!actor.isEmpty()) {
@@ -21,6 +21,9 @@ void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limi
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (!sort.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("sort"), sort);
     }
 
     get(QStringLiteral("xrpc/app.bsky.graph.getFollowers"), url_query);

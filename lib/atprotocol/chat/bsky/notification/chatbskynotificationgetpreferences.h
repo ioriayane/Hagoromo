@@ -1,0 +1,25 @@
+#ifndef CHATBSKYNOTIFICATIONGETPREFERENCES_H
+#define CHATBSKYNOTIFICATIONGETPREFERENCES_H
+
+#include "atprotocol/accessatprotocol.h"
+
+namespace AtProtocolInterface {
+
+class ChatBskyNotificationGetPreferences : public AccessAtProtocol
+{
+public:
+    explicit ChatBskyNotificationGetPreferences(QObject *parent = nullptr);
+
+    void getPreferences();
+
+    const AtProtocolType::ChatBskyNotificationDefs::Preferences &preferences() const;
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json);
+
+    AtProtocolType::ChatBskyNotificationDefs::Preferences m_preferences;
+};
+
+}
+
+#endif // CHATBSKYNOTIFICATIONGETPREFERENCES_H

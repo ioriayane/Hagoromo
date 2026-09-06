@@ -10,7 +10,7 @@ class ChatBskyConvoGetUnreadCounts : public AccessAtProtocol
 public:
     explicit ChatBskyConvoGetUnreadCounts(QObject *parent = nullptr);
 
-    void getUnreadCounts();
+    void getUnreadCounts(const bool includeGroupChats);
 
     const int &unreadAcceptedConvos() const;
     const int &unreadRequestConvos() const;

@@ -260,7 +260,7 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
                 images.append(image.alt);
         }
     }
-    for(const auto &view : record.embeds_AppBskyEmbedGallery_View) {
+    for (const auto &view : record.embeds_AppBskyEmbedGallery_View) {
         for (const auto &image : view.items_ViewImage) {
             if (type == CopyImageType::Thumb)
                 images.append(image.thumbnail);

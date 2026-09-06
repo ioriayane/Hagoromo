@@ -8,12 +8,15 @@ namespace AtProtocolInterface {
 
 AppBskyGraphMuteActor::AppBskyGraphMuteActor(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyGraphMuteActor::muteActor(const QString &actor)
+void AppBskyGraphMuteActor::muteActor(const QString &actor, const bool onlyReposts,
+                                      const bool onlyQuoteposts)
 {
     QJsonObject json_obj;
     if (!actor.isEmpty()) {
         json_obj.insert(QStringLiteral("actor"), actor);
     }
+    json_obj.insert(QStringLiteral("onlyReposts"), onlyReposts);
+    json_obj.insert(QStringLiteral("onlyQuoteposts"), onlyQuoteposts);
 
     QJsonDocument json_doc(json_obj);
 

@@ -1,0 +1,50 @@
+#include "chatbskynotificationputpreferences.h"
+#include "atprotocol/lexicons_func.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
+namespace AtProtocolInterface {
+
+ChatBskyNotificationPutPreferences::ChatBskyNotificationPutPreferences(QObject *parent)
+    : AccessAtProtocol { parent }
+{
+}
+
+void ChatBskyNotificationPutPreferences::putPreferences(const QJsonObject &chat,
+                                                        const QJsonObject &chatRequest)
+{
+    QJsonObject json_obj;
+    if (!chat.isEmpty()) {
+        json_obj.insert(QStringLiteral("chat"), chat);
+    }
+    if (!chatRequest.isEmpty()) {
+        json_obj.insert(QStringLiteral("chatRequest"), chatRequest);
+    }
+
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/chat.bsky.notification.putPreferences"),
+         json_doc.toJson(QJsonDocument::Compact));
+}
+
+const AtProtocolType::ChatBskyNotificationDefs::Preferences &
+ChatBskyNotificationPutPreferences::preferences() const
+{
+    return m_preferences;
+}
+
+bool ChatBskyNotificationPutPreferences::parseJson(bool success, const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::ChatBskyNotificationDefs::copyPreferences(
+                json_doc.object().value("preferences").toObject(), m_preferences);
+    }
+
+    return success;
+}
+
+}

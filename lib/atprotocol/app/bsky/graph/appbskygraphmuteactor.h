@@ -10,7 +10,7 @@ class AppBskyGraphMuteActor : public AccessAtProtocol
 public:
     explicit AppBskyGraphMuteActor(QObject *parent = nullptr);
 
-    void muteActor(const QString &actor);
+    void muteActor(const QString &actor, const bool onlyReposts, const bool onlyQuoteposts);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

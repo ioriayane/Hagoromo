@@ -13,9 +13,12 @@ ChatBskyConvoGetUnreadCounts::ChatBskyConvoGetUnreadCounts(QObject *parent)
 {
 }
 
-void ChatBskyConvoGetUnreadCounts::getUnreadCounts()
+void ChatBskyConvoGetUnreadCounts::getUnreadCounts(const bool includeGroupChats)
 {
     QUrlQuery url_query;
+    if (includeGroupChats) {
+        url_query.addQueryItem(QStringLiteral("includeGroupChats"), "true");
+    }
 
     get(QStringLiteral("xrpc/chat.bsky.convo.getUnreadCounts"), url_query);
 }

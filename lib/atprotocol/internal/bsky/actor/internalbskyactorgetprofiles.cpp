@@ -13,7 +13,8 @@ InternalBskyActorGetProfiles::InternalBskyActorGetProfiles(QObject *parent)
 }
 
 void InternalBskyActorGetProfiles::getProfiles(const QList<QString> &dids, const QString &viewer,
-                                               const QList<QString> &socialProof)
+                                               const QList<QString> &socialProof,
+                                               const bool includeTakedowns)
 {
     QUrlQuery url_query;
     for (const auto &value : dids) {
@@ -24,6 +25,9 @@ void InternalBskyActorGetProfiles::getProfiles(const QList<QString> &dids, const
     }
     for (const auto &value : socialProof) {
         url_query.addQueryItem(QStringLiteral("socialProof"), value);
+    }
+    if (includeTakedowns) {
+        url_query.addQueryItem(QStringLiteral("includeTakedowns"), "true");
     }
 
     get(QStringLiteral("xrpc/internal.bsky.actor.getProfiles"), url_query);

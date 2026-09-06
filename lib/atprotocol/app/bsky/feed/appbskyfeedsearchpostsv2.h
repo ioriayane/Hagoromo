@@ -1,0 +1,42 @@
+#ifndef APPBSKYFEEDSEARCHPOSTSV2_H
+#define APPBSKYFEEDSEARCHPOSTSV2_H
+
+#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
+
+namespace AtProtocolInterface {
+
+class AppBskyFeedSearchPostsV2 : public AppBskyFeedGetPosts
+{
+public:
+    explicit AppBskyFeedSearchPostsV2(QObject *parent = nullptr);
+
+    void searchPostsV2(const QString &cursor, const int limit, const QString &query,
+                       const QString &sort, const QList<QString> &authors,
+                       const QList<QString> &mentions, const QList<QString> &domains,
+                       const QList<QString> &urls, const QList<QString> &embeddedAtUris,
+                       const QList<QString> &hashtags, const QList<QString> &excludeAuthors,
+                       const QList<QString> &excludeMentions, const QList<QString> &excludeDomains,
+                       const QList<QString> &excludeUrls,
+                       const QList<QString> &excludeEmbeddedAtUris,
+                       const QList<QString> &excludeHashtags, const QString &since,
+                       const QString &until, const bool allTime, const QList<QString> &languages,
+                       const QList<QString> &excludeLanguages, const bool hasMedia,
+                       const bool hasVideo, const QString &replyParentUri,
+                       const QString &threadRootUri, const bool excludeReplies,
+                       const bool repliesOnly, const bool following, const QString &queryLanguage);
+
+    const int &hitsTotal() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::PostView> &postsList() const;
+    const QStringList &detectedQueryLanguagesList() const;
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json);
+
+    int m_hitsTotal;
+    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postsList;
+    QStringList m_detectedQueryLanguagesList;
+};
+
+}
+
+#endif // APPBSKYFEEDSEARCHPOSTSV2_H

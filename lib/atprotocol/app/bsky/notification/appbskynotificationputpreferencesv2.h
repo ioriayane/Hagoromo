@@ -10,13 +10,12 @@ class AppBskyNotificationPutPreferencesV2 : public AccessAtProtocol
 public:
     explicit AppBskyNotificationPutPreferencesV2(QObject *parent = nullptr);
 
-    void putPreferencesV2(const QJsonObject &chat, const QJsonObject &follow,
-                          const QJsonObject &like, const QJsonObject &likeViaRepost,
-                          const QJsonObject &mention, const QJsonObject &quote,
-                          const QJsonObject &reply, const QJsonObject &repost,
-                          const QJsonObject &repostViaRepost, const QJsonObject &starterpackJoined,
-                          const QJsonObject &subscribedPost, const QJsonObject &unverified,
-                          const QJsonObject &verified);
+    void putPreferencesV2(const QJsonObject &follow, const QJsonObject &like,
+                          const QJsonObject &likeViaRepost, const QJsonObject &mention,
+                          const QJsonObject &quote, const QJsonObject &reply,
+                          const QJsonObject &repost, const QJsonObject &repostViaRepost,
+                          const QJsonObject &starterpackJoined, const QJsonObject &subscribedPost,
+                          const QJsonObject &unverified, const QJsonObject &verified);
 
     const AtProtocolType::AppBskyNotificationDefs::Preferences &preferences() const;
 
