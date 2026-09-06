@@ -222,7 +222,7 @@ void RealtimeFeedListModel::getFollowing()
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    profiles->getFollows(account().did, 100, m_cursor);
+    profiles->getFollows(account().did, 100, m_cursor, "latest");
 }
 
 void RealtimeFeedListModel::getFollowers()
@@ -262,7 +262,7 @@ void RealtimeFeedListModel::getFollowers()
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    profiles->getFollowers(account().did, 100, m_cursor);
+    profiles->getFollowers(account().did, 100, m_cursor, "latest");
 }
 
 void RealtimeFeedListModel::getListMembers()

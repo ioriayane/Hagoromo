@@ -162,7 +162,7 @@ bool FollowsListModel::getLatest()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollows(targetDid(), 50, QString());
+        profiles->getFollows(targetDid(), 50, QString(), "latest");
     });
     return true;
 }
@@ -187,7 +187,7 @@ bool FollowsListModel::getNext()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollows(targetDid(), 50, m_cursor);
+        profiles->getFollows(targetDid(), 50, m_cursor, "latest");
     });
     return true;
 }

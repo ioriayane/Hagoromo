@@ -457,7 +457,7 @@ void RecordOperator::mute(const QString &did)
         mute->deleteLater();
     });
     mute->setAccount(account());
-    mute->muteActor(did);
+    mute->muteActor(did, false, false);
 }
 
 void RecordOperator::block(const QString &did)

@@ -28,7 +28,7 @@ bool FollowersListModel::getLatest()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollowers(targetDid(), 50, QString());
+        profiles->getFollowers(targetDid(), 50, QString(), "latest");
     });
     return true;
 }
@@ -53,7 +53,7 @@ bool FollowersListModel::getNext()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollowers(targetDid(), 50, m_cursor);
+        profiles->getFollowers(targetDid(), 50, m_cursor, "latest");
     });
     return true;
 }
