@@ -1,0 +1,39 @@
+#ifndef APPBSKYVIDEOGETUPLOADSTATUS_H
+#define APPBSKYVIDEOGETUPLOADSTATUS_H
+
+#include "atprotocol/accessatprotocol.h"
+
+namespace AtProtocolInterface {
+
+class AppBskyVideoGetUploadStatus : public AccessAtProtocol
+{
+public:
+    explicit AppBskyVideoGetUploadStatus(QObject *parent = nullptr);
+
+    void getUploadStatus(const QString &jobId);
+
+    const QString &jobId() const;
+    const int &partSizeBytes() const;
+    const int &partCount() const;
+    const QString &expiresAt() const;
+    const QString &state() const;
+    const QString &completedJobId() const;
+    const AtProtocolType::AppBskyVideoDefs::JobStatus &jobStatus() const;
+    const QString &failureReason() const;
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json);
+
+    QString m_jobId;
+    int m_partSizeBytes;
+    int m_partCount;
+    QString m_expiresAt;
+    QString m_state;
+    QString m_completedJobId;
+    AtProtocolType::AppBskyVideoDefs::JobStatus m_jobStatus;
+    QString m_failureReason;
+};
+
+}
+
+#endif // APPBSKYVIDEOGETUPLOADSTATUS_H

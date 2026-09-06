@@ -14,6 +14,10 @@
 #include <QVariant>
 
 namespace AtProtocolType {
+// app.bsky.actor.contentVisibilityDeclaration
+namespace AppBskyActorContentVisibilityDeclaration {
+void copyMain(const QJsonObject &src, AppBskyActorContentVisibilityDeclaration::Main &dest);
+}
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
 void copyProfileAssociatedChat(const QJsonObject &src,
@@ -164,6 +168,7 @@ void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest)
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
 void copyGeneratorViewerState(const QJsonObject &src, AppBskyFeedDefs::GeneratorViewerState &dest);
 void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &dest);
+void copyKnownLikers(const QJsonObject &src, AppBskyFeedDefs::KnownLikers &dest);
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
 void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest);
 void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest);
@@ -313,6 +318,10 @@ void copyMain(const QJsonObject &src, AppBskyGraphListblock::Main &dest);
 namespace AppBskyGraphListitem {
 void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
 }
+// app.bsky.graph.referencelistoptout
+namespace AppBskyGraphReferencelistoptout {
+void copyMain(const QJsonObject &src, AppBskyGraphReferencelistoptout::Main &dest);
+}
 // app.bsky.graph.starterpack
 namespace AppBskyGraphStarterpack {
 void copyFeedItem(const QJsonObject &src, AppBskyGraphStarterpack::FeedItem &dest);
@@ -398,6 +407,7 @@ void copyConvoLockStatus(const QJsonValue &src, ChatBskyConvoDefs::ConvoLockStat
 void copyConvoStatus(const QJsonValue &src, ChatBskyConvoDefs::ConvoStatus &dest);
 void copyConvoRef(const QJsonObject &src, ChatBskyConvoDefs::ConvoRef &dest);
 void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest);
+void copyReplyRef(const QJsonObject &src, ChatBskyConvoDefs::ReplyRef &dest);
 void copyMessageInput(const QJsonObject &src, ChatBskyConvoDefs::MessageInput &dest);
 void copyMessageViewSender(const QJsonObject &src, ChatBskyConvoDefs::MessageViewSender &dest);
 void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
@@ -435,6 +445,8 @@ void copyMessageAndReactionView(const QJsonObject &src,
 void copyDirectConvo(const QJsonObject &src, ChatBskyConvoDefs::DirectConvo &dest);
 void copyGroupConvo(const QJsonObject &src, ChatBskyConvoDefs::GroupConvo &dest);
 void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest);
+void copyMessageBeforeUserJoinedGroupView(
+        const QJsonObject &src, ChatBskyConvoDefs::MessageBeforeUserJoinedGroupView &dest);
 void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &dest);
 void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest);
 void copyLogAcceptConvo(const QJsonObject &src, ChatBskyConvoDefs::LogAcceptConvo &dest);
@@ -538,6 +550,11 @@ void copyEventGroupChatUpdated(const QJsonObject &src,
                                ChatBskyModerationSubscribeModEvents::EventGroupChatUpdated &dest);
 void copyEventRateLimitExceeded(const QJsonObject &src,
                                 ChatBskyModerationSubscribeModEvents::EventRateLimitExceeded &dest);
+}
+// chat.bsky.notification.defs
+namespace ChatBskyNotificationDefs {
+void copyChatPreference(const QJsonObject &src, ChatBskyNotificationDefs::ChatPreference &dest);
+void copyPreferences(const QJsonObject &src, ChatBskyNotificationDefs::Preferences &dest);
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {

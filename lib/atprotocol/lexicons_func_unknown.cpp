@@ -83,6 +83,11 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
+void copyUnknown(const QJsonArray &src, QVariant &dest)
+{
+    dest = src.toVariantList();
+}
+
 void copyBlob(const QJsonObject &src, Blob &dest)
 {
     if (src.isEmpty())
@@ -260,7 +265,7 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
                 images.append(image.alt);
         }
     }
-    for(const auto &view : record.embeds_AppBskyEmbedGallery_View) {
+    for (const auto &view : record.embeds_AppBskyEmbedGallery_View) {
         for (const auto &image : view.items_ViewImage) {
             if (type == CopyImageType::Thumb)
                 images.append(image.thumbnail);

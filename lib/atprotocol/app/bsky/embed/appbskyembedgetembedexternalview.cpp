@@ -1,5 +1,6 @@
 #include "appbskyembedgetembedexternalview.h"
 #include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -37,6 +38,11 @@ AppBskyEmbedGetEmbedExternalView::associatedRefsList() const
     return m_associatedRefsList;
 }
 
+const QVariant &AppBskyEmbedGetEmbedExternalView::associatedRecordsList() const
+{
+    return m_associatedRecordsList;
+}
+
 bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -50,6 +56,8 @@ bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString rep
             AtProtocolType::ComAtprotoRepoStrongRef::copyMain(value.toObject(), data);
             m_associatedRefsList.append(data);
         }
+        AtProtocolType::LexiconsTypeUnknown::copyUnknown(
+                json_doc.object().value("associatedRecords").toArray(), m_associatedRecordsList);
     }
 
     return success;

@@ -60,6 +60,16 @@ struct ConvoView;
 struct MessageView;
 }
 
+// app.bsky.actor.contentVisibilityDeclaration
+namespace AppBskyActorContentVisibilityDeclaration {
+struct Main
+{
+    bool hideFromAlgorithmicRecommendations =
+            false; // Whether the account requests that its posts be hidden from algorithmic
+                   // recommendations. Consumers must treat a missing record as false.
+};
+}
+
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
 struct Label
@@ -114,6 +124,10 @@ struct ListViewerState
 {
     bool muted = false;
     QString blocked; // at-uri
+    QString referenceListOptOut; // at-uri , The authenticated viewer's
+                                 // app.bsky.graph.referencelistoptout record URI for this reference
+                                 // list. Only set for reference lists. A client can delete this
+                                 // record to undo the opt-out.
 };
 struct ListViewBasic
 {
@@ -158,6 +172,8 @@ struct ListItemView
 {
     QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> subject;
+    bool subjectOptedOut = false; // Set to true when the subject has opted out of appearing in the
+                                  // reference list. Only set when the viewer owns the list.
 };
 struct StarterPackView
 {
@@ -224,7 +240,6 @@ struct Preference
 };
 struct Preferences
 {
-    ChatPreference chat;
     FilterablePreference follow;
     FilterablePreference like;
     FilterablePreference likeViaRepost;
@@ -431,7 +446,15 @@ struct KnownFollowers
 };
 struct ViewerState
 {
-    bool muted = false;
+    bool muted = false; // Whether the account is fully muted, directly or via a mutelist. False
+                        // when the mute is scoped to specific kinds; see mutedOnlyReposts and
+                        // mutedOnlyQuoteposts.
+    bool mutedOnlyReposts = false; // Whether the account's reposts are muted. Scoped mutes are
+                                   // exclusive with muted: this can be true while muted is false.
+                                   // If muted is true, this will be false.
+    bool mutedOnlyQuoteposts = false; // Whether the account's quote posts are muted. Scoped mutes
+                                      // are exclusive with muted: this can be true while muted is
+                                      // false. If muted is true, this will be false.
     AppBskyGraphDefs::ListViewBasic mutedByList;
     bool blockedBy = false;
     QString blocking; // at-uri
@@ -592,6 +615,8 @@ struct ThreadViewPref
 };
 struct InterestsPref
 {
+    QString updatedAt; // datetime , The timestamp when the account owner last updated their
+                       // interests.
     QList<QString> tags; // A list of tags which describe the account owner's interests gathered
                          // during onboarding.
 };
@@ -630,6 +655,7 @@ struct Nux
 struct BskyAppStatePref
 {
     BskyAppProgressGuide activeProgressGuide;
+    bool isBetaUser = false; // Indicates if the user is participating in the beta features program.
     QList<QString> queuedNudges; // An array of tokens which identify nudges (modals, popups, tours,
                                  // highlight dots) that should be shown to the user.
     QList<AppBskyActorDefs::Nux> nuxs;
@@ -831,11 +857,18 @@ struct ConfigRegionRuleIfAccountOlderThan
 };
 struct ConfigRegion
 {
+    QList<QString> platforms; // The platforms this configuration applies to. If omitted, the
+                              // configuration applies to all platforms.
     QString countryCode; // The ISO 3166-1 alpha-2 country code this configuration applies to.
     QString regionCode; // The ISO 3166-2 region code this configuration applies to. If omitted, the
                         // configuration applies to the entire country.
     int minAccessAge =
             0; // The minimum age (as a whole integer) required to use Bluesky in this region.
+    QList<QString> additionalVerificationMethods; // Verification methods permitted in this region
+                                                  // in addition to the third-party (KWS) flow,
+                                                  // which is always supported. `device` permits
+                                                  // using the native on-device age APIs (e.g. Apple
+                                                  // Declared Age Range, Google Play Age Signals).
     // union start : rules
     ConfigRegionRulesType rules_type = ConfigRegionRulesType::none;
     QList<ConfigRegionRuleDefault>
@@ -967,7 +1000,7 @@ struct Caption
 };
 struct Main
 {
-    Blob video; // The mp4 video file. May be up to 100mb, formerly limited to 50mb.
+    Blob video; // The mp4 video file. May be up to 300mb, formerly limited to 100mb.
     QList<Caption> captions;
     QString alt; // Alt text description of the video, for accessibility.
     AppBskyEmbedDefs::AspectRatio aspectRatio;
@@ -1308,6 +1341,11 @@ struct GeneratorView
     QString contentMode;
     QString indexedAt; // datetime
 };
+struct KnownLikers
+{
+    int count = 0;
+    QList<AppBskyActorDefs::ProfileViewBasic> actors;
+};
 struct ViewerState
 {
     QString repost; // at-uri
@@ -1317,6 +1355,7 @@ struct ViewerState
     bool replyDisabled = false;
     bool embeddingDisabled = false;
     bool pinned = false;
+    KnownLikers knownLikers; // This property is present only in selected cases, as an optimization.
 };
 struct ThreadgateView
 {
@@ -1812,6 +1851,16 @@ struct Main
 };
 }
 
+// app.bsky.graph.referencelistoptout
+namespace AppBskyGraphReferencelistoptout {
+struct Main
+{
+    QString subject; // at-uri , Canonical, DID-based AT URI of the app.bsky.graph.list record from
+                     // which the author requests omission.
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.graph.starterpack
 namespace AppBskyGraphStarterpack {
 struct FeedItem
@@ -1889,6 +1938,7 @@ struct Notification
                     // you received a new follower.
     QString reasonSubject; // at-uri
     QVariant record;
+    AppBskyGraphDefs::StarterPackViewBasic starterPack;
     bool isRead = false;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -1920,6 +1970,7 @@ struct SkeletonTrend
 {
     QString topic;
     QString displayName;
+    QString description;
     QString link;
     QString startedAt; // datetime
     int postCount = 0;
@@ -1931,6 +1982,7 @@ struct TrendView
 {
     QString topic;
     QString displayName;
+    QString description;
     QString link;
     QString startedAt; // datetime
     int postCount = 0;
@@ -1945,8 +1997,15 @@ struct ThreadItemPost
                               // This is just a boolean, without the number of parents.
     int moreReplies = 0; // This post has more replies that were not present in the response. This
                          // is a numeric value, which is best-effort and might not be accurate.
-    bool opThread = false; // This post is part of a contiguous thread by the OP from the thread
-                           // root. Many different OP threads can happen in the same thread.
+    bool opThread =
+            false; // This post is part of a contiguous thread by the OP from the thread root.
+                   // Sub-threads by OP deeper in the tree are not considered an OP thread.
+    int opThreadPostIndex =
+            0; // The 1-indexed position of this post within the contiguous OP thread. Only present
+               // when this post is part of the OP thread (see `opThread`).
+    int opThreadPostCount =
+            0; // The total number of posts in the contiguous OP thread that this post belongs to.
+               // Only present when this post is part of the OP thread (see `opThread`).
     bool hiddenByThreadgate = false; // The threadgate created by the author indicates this post as
                                      // a reply to be hidden for everyone consuming the thread.
     bool mutedByViewer = false; // This is by an account muted by the viewer requesting it.
@@ -2053,6 +2112,7 @@ struct JobStatus
     int progress = 0; // Progress within the current processing state.
     Blob blob;
     QString error;
+    QString failureCode; // A machine-readable code for why the video processing job failed.
     QString message;
 };
 }
@@ -2062,9 +2122,8 @@ namespace ChatBskyActorDeclaration {
 struct Main
 {
     QString allowIncoming;
-    QString allowGroupInvites; // [NOTE: This is under active development and should be considered
-                               // unstable while this note is here]. Declaration about group chat
-                               // invitation preferences for the record owner.
+    QString allowGroupInvites; // Declaration about group chat invitation preferences for the record
+                               // owner.
 };
 }
 
@@ -2152,8 +2211,6 @@ struct InvalidJoinLinkPreviewView
 {
     QString code;
 };
-// [NOTE: This is under active development and should be considered unstable while this note is
-// here].
 struct JoinRequestView
 {
     QString convoId;
@@ -2194,8 +2251,7 @@ struct View
             joinLinkPreview_ChatBskyGroupDefs_InvalidJoinLinkPreviewView;
     // union end : joinLinkPreview
 };
-// [NOTE: This is under active development and should be considered unstable while this note is
-// here]. A join link embedded in a chat message.
+// A join link embedded in a chat message.
 }
 
 // chat.bsky.convo.defs
@@ -2236,6 +2292,12 @@ enum class MessageViewEmbedType : int {
     none,
     embed_AppBskyEmbedRecord_View,
     embed_ChatBskyEmbedJoinLink_View,
+};
+enum class MessageViewReplyToType : int {
+    none,
+    replyTo_MessageView,
+    replyTo_DeletedMessageView,
+    replyTo_MessageBeforeUserJoinedGroupView,
 };
 enum class ConvoViewLastMessageType : int {
     none,
@@ -2286,6 +2348,10 @@ struct MessageRef
     QString convoId;
     QString messageId;
 };
+struct ReplyRef
+{
+    QString messageId;
+};
 struct MessageInput
 {
     QString text;
@@ -2295,6 +2361,8 @@ struct MessageInput
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     ChatBskyEmbedJoinLink::Main embed_ChatBskyEmbedJoinLink_Main;
     // union end : embed
+    ReplyRef replyTo; // If set, the message this message is replying to. The referenced message
+                      // must be in the same convo.
 };
 struct MessageViewSender
 {
@@ -2443,6 +2511,9 @@ struct ConvoView
     GroupConvo kind_GroupConvo; // Union field that has data specific to different kinds of convos.
     // union end : kind
 };
+struct MessageBeforeUserJoinedGroupView
+{
+};
 struct MessageView
 {
     QString id;
@@ -2456,6 +2527,29 @@ struct MessageView
     // union end : embed
     QList<ReactionView>
             reactions; // Reactions to this message, in ascending order of creation time.
+    // union start : replyTo
+    MessageViewReplyToType replyTo_type = MessageViewReplyToType::none;
+    QSharedPointer<MessageView>
+            replyTo_MessageView; // If set, the message this message is replying to. The full view
+                                 // of the referenced message is embedded so the client can render
+                                 // it inline. Only a single level is embedded: the embedded message
+                                 // will not itself have a populated 'replyTo' field even if it was
+                                 // also a reply.
+    DeletedMessageView
+            replyTo_DeletedMessageView; // If set, the message this message is replying to. The full
+                                        // view of the referenced message is embedded so the client
+                                        // can render it inline. Only a single level is embedded:
+                                        // the embedded message will not itself have a populated
+                                        // 'replyTo' field even if it was also a reply.
+    MessageBeforeUserJoinedGroupView
+            replyTo_MessageBeforeUserJoinedGroupView; // If set, the message this message is
+                                                      // replying to. The full view of the
+                                                      // referenced message is embedded so the
+                                                      // client can render it inline. Only a single
+                                                      // level is embedded: the embedded message
+                                                      // will not itself have a populated 'replyTo'
+                                                      // field even if it was also a reply.
+    // union end : replyTo
     MessageViewSender sender;
     QString sentAt; // datetime
 };
@@ -2874,6 +2968,20 @@ struct EventRateLimitExceeded
     QString createdAt; // datetime
     QString endpoint; // The NSID of the endpoint that was rate limited.
     QString rev;
+};
+}
+
+// chat.bsky.notification.defs
+namespace ChatBskyNotificationDefs {
+struct ChatPreference
+{
+    QString include;
+    bool push = false;
+};
+struct Preferences
+{
+    ChatPreference chat;
+    ChatPreference chatRequest;
 };
 }
 
@@ -4144,6 +4252,8 @@ struct QueueView
     QString collection; // nsid , Collection name for record subjects (e.g., 'app.bsky.feed.post')
     QList<QString> reportTypes; // Report reason types this queue accepts (fully qualified NSIDs)
     QString description; // Optional description of the queue
+    QList<QString>
+            recommendedPolicies; // Policy keys recommended when actioning reports in this queue
     QString createdBy; // did , DID of moderator who created this queue
     QString createdAt; // datetime
     QString updatedAt; // datetime
@@ -4204,6 +4314,7 @@ struct ReportView
     ToolsOzoneQueueDefs::QueueView queue;
     bool isMuted = false; // Whether this report is muted. A report is muted if the reporter was
                           // muted or the subject was muted at the time the report was created.
+    bool isAutomated = false; // Whether this report was emitted by automated tooling.
 };
 struct QueueActivity
 {
@@ -4257,6 +4368,7 @@ struct ReportActivityView
     QString createdBy; // did , DID of the actor who created this activity, or the service DID for
                        // automated activities.
     ToolsOzoneTeamDefs::Member moderator;
+    ReportView report; // Full view of the report this activity belongs to.
     QString createdAt; // datetime , When this activity was created
 };
 struct LiveStats

@@ -45,6 +45,7 @@ namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
 void copyUnknown(const QJsonObject &src, QVariant &dest);
+void copyUnknown(const QJsonArray &src, QVariant &dest);
 void copyBlob(const QJsonObject &src, Blob &dest);
 void copyString(const QJsonValue &src, QString &dest);
 void copyStringList(const QJsonArray &src, QStringList &dest);

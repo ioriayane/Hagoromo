@@ -2228,7 +2228,7 @@ void atprotocol_test::test_AppBskyGraphGetFollowers()
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.getFollowers("", 0, QString());
+        api.getFollowers("", 0, QString(), "latest");
         spy.wait();
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
@@ -2251,7 +2251,7 @@ void atprotocol_test::test_AppBskyGraphGetFollows()
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.getFollows("", 0, QString());
+        api.getFollows("", 0, QString(), "latest");
         spy.wait();
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();

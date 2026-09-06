@@ -1,0 +1,56 @@
+#include "appbskyvideoabortupload.h"
+#include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
+namespace AtProtocolInterface {
+
+AppBskyVideoAbortUpload::AppBskyVideoAbortUpload(QObject *parent) : AccessAtProtocol { parent } { }
+
+void AppBskyVideoAbortUpload::abortUpload(const QString &jobId)
+{
+    QJsonObject json_obj;
+    if (!jobId.isEmpty()) {
+        json_obj.insert(QStringLiteral("jobId"), jobId);
+    }
+
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/app.bsky.video.abortUpload"),
+         json_doc.toJson(QJsonDocument::Compact));
+}
+
+const QString &AppBskyVideoAbortUpload::state() const
+{
+    return m_state;
+}
+
+const QString &AppBskyVideoAbortUpload::completedJobId() const
+{
+    return m_completedJobId;
+}
+
+const QString &AppBskyVideoAbortUpload::failureReason() const
+{
+    return m_failureReason;
+}
+
+bool AppBskyVideoAbortUpload::parseJson(bool success, const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("state"), m_state);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("completedJobId"),
+                                                        m_completedJobId);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("failureReason"),
+                                                        m_failureReason);
+    }
+
+    return success;
+}
+
+}

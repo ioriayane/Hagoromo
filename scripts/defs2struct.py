@@ -1107,6 +1107,9 @@ class Defs2Struct:
         elif pro_type == 'array_string':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyStringList'
             data['variable_type'] = 'QStringList'
+        elif pro_type == 'array_unknown':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
+            data['variable_type'] = 'QVariant'
         elif pro_type == 'boolean':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBool'
             data['variable_type'] = 'bool'
@@ -1284,11 +1287,13 @@ class Defs2Struct:
                             var_type = 'array_union'
                         elif item_type == 'string':
                             var_type = 'array_string'
+                        elif item_type == 'unknown':
+                            var_type = 'array_unknown'
                         else:
                             var_type = ''
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
 
-                        if var_type == 'array_string':
+                        if var_type == 'array_string' or var_type == 'array_unknown':
                             item_obj = self.output_api_class_data_primitive(var_type, key_name)
                             if len(item_obj) > 0:
                                 item_obj['variable_is_obj'] = True

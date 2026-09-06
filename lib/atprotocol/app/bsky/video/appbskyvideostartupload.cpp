@@ -1,0 +1,80 @@
+#include "appbskyvideostartupload.h"
+#include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
+namespace AtProtocolInterface {
+
+AppBskyVideoStartUpload::AppBskyVideoStartUpload(QObject *parent) : AccessAtProtocol { parent } { }
+
+void AppBskyVideoStartUpload::startUpload(const int sizeBytes, const QString &mimeType,
+                                          const QString &name, const int durationMs,
+                                          const int width, const int height)
+{
+    QJsonObject json_obj;
+    if (sizeBytes > 0) {
+        json_obj.insert(QStringLiteral("sizeBytes"), QString::number(sizeBytes));
+    }
+    if (!mimeType.isEmpty()) {
+        json_obj.insert(QStringLiteral("mimeType"), mimeType);
+    }
+    if (!name.isEmpty()) {
+        json_obj.insert(QStringLiteral("name"), name);
+    }
+    if (durationMs > 0) {
+        json_obj.insert(QStringLiteral("durationMs"), QString::number(durationMs));
+    }
+    if (width > 0) {
+        json_obj.insert(QStringLiteral("width"), QString::number(width));
+    }
+    if (height > 0) {
+        json_obj.insert(QStringLiteral("height"), QString::number(height));
+    }
+
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/app.bsky.video.startUpload"),
+         json_doc.toJson(QJsonDocument::Compact));
+}
+
+const QString &AppBskyVideoStartUpload::jobId() const
+{
+    return m_jobId;
+}
+
+const int &AppBskyVideoStartUpload::partSizeBytes() const
+{
+    return m_partSizeBytes;
+}
+
+const int &AppBskyVideoStartUpload::partCount() const
+{
+    return m_partCount;
+}
+
+const QString &AppBskyVideoStartUpload::expiresAt() const
+{
+    return m_expiresAt;
+}
+
+bool AppBskyVideoStartUpload::parseJson(bool success, const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("jobId"), m_jobId);
+        AtProtocolType::LexiconsTypeUnknown::copyInt(json_doc.object().value("partSizeBytes"),
+                                                     m_partSizeBytes);
+        AtProtocolType::LexiconsTypeUnknown::copyInt(json_doc.object().value("partCount"),
+                                                     m_partCount);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("expiresAt"),
+                                                        m_expiresAt);
+    }
+
+    return success;
+}
+
+}

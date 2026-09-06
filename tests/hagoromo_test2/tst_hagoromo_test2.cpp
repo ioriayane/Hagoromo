@@ -733,8 +733,8 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     NotificationPreferenceListModel model;
     model.setAccount(uuid);
 
-    // 初期状態では13の設定項目があることを確認
-    QCOMPARE(model.rowCount(), 13);
+    // 初期状態では12の設定項目があることを確認
+    QCOMPARE(model.rowCount(), 12);
 
     {
         QSignalSpy spy(&model, SIGNAL(preferencesUpdated()));
@@ -743,8 +743,8 @@ void hagoromo_test::test_NotificationPreferenceListModel()
         QCOMPARE(spy.count(), 1);
     }
 
-    // 設定読み込み後も13の設定項目があることを確認
-    QCOMPARE(model.rowCount(), 13);
+    // 設定読み込み後も12の設定項目があることを確認
+    QCOMPARE(model.rowCount(), 12);
 
     // リソースファイルから読み込まれた実際の設定値の詳細検証
 
@@ -785,65 +785,57 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     QCOMPARE(model.item(4, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(4, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // Chat (System category) - リソース: include="all", push=true
+    // Reply (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(5, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::ChatType);
+            == NotificationPreferenceListModel::ReplyType);
     QVERIFY(model.item(5, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
     QCOMPARE(model.item(5, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+    QCOMPARE(model.item(5, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(5, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // Reply (Interaction category) - リソース: include="all", list=true, push=true
+    // Mention (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(6, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::ReplyType);
+            == NotificationPreferenceListModel::MentionType);
     QVERIFY(model.item(6, NotificationPreferenceListModel::CategoryRole).toString()
             == "Interaction");
     QCOMPARE(model.item(6, NotificationPreferenceListModel::IncludeRole).toString(), "all");
     QCOMPARE(model.item(6, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(6, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // Mention (Interaction category) - リソース: include="all", list=true, push=true
+    // Quote (Interaction category) - リソース: include="all", list=true, push=true
     QVERIFY(model.item(7, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::MentionType);
-    QVERIFY(model.item(7, NotificationPreferenceListModel::CategoryRole).toString()
-            == "Interaction");
+            == NotificationPreferenceListModel::QuoteType);
     QCOMPARE(model.item(7, NotificationPreferenceListModel::IncludeRole).toString(), "all");
     QCOMPARE(model.item(7, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(7, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // Quote (Interaction category) - リソース: include="all", list=true, push=true
+    // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(8, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::QuoteType);
-    QCOMPARE(model.item(8, NotificationPreferenceListModel::IncludeRole).toString(), "all");
+            == NotificationPreferenceListModel::StarterpackJoinedType);
+    QCOMPARE(model.item(8, NotificationPreferenceListModel::CategoryRole).toString(), "Activity");
     QCOMPARE(model.item(8, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(8, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // StarterpackJoined (Activity category) - リソース: list=true, push=true (include設定なし)
+    // SubscribedPost (Activity category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(9, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::StarterpackJoinedType);
-    QCOMPARE(model.item(9, NotificationPreferenceListModel::CategoryRole).toString(), "Activity");
+            == NotificationPreferenceListModel::SubscribedPostType);
     QCOMPARE(model.item(9, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(9, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // SubscribedPost (Activity category) - リソース: list=true, push=true (include設定なし)
+    // Unverified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(10, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::SubscribedPostType);
+            == NotificationPreferenceListModel::UnverifiedType);
+    QCOMPARE(model.item(10, NotificationPreferenceListModel::CategoryRole).toString(), "System");
     QCOMPARE(model.item(10, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(10, NotificationPreferenceListModel::PushRole).toBool(), true);
 
-    // Unverified (System category) - リソース: list=true, push=true (include設定なし)
+    // Verified (System category) - リソース: list=true, push=true (include設定なし)
     QVERIFY(model.item(11, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::UnverifiedType);
+            == NotificationPreferenceListModel::VerifiedType);
     QCOMPARE(model.item(11, NotificationPreferenceListModel::CategoryRole).toString(), "System");
     QCOMPARE(model.item(11, NotificationPreferenceListModel::ListRole).toBool(), true);
     QCOMPARE(model.item(11, NotificationPreferenceListModel::PushRole).toBool(), true);
-
-    // Verified (System category) - リソース: list=true, push=true (include設定なし)
-    QVERIFY(model.item(12, NotificationPreferenceListModel::TypeRole).toInt()
-            == NotificationPreferenceListModel::VerifiedType);
-    QCOMPARE(model.item(12, NotificationPreferenceListModel::CategoryRole).toString(), "System");
-    QCOMPARE(model.item(12, NotificationPreferenceListModel::ListRole).toBool(), true);
-    QCOMPARE(model.item(12, NotificationPreferenceListModel::PushRole).toBool(), true);
 
     // 設定変更のテスト
     {
@@ -861,12 +853,6 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     }
 
     // include選択肢のテスト
-    QStringList chatOptions =
-            model.getAvailableIncludeOptions(NotificationPreferenceListModel::ChatType);
-    QCOMPARE(chatOptions.contains("all"), true);
-    QCOMPARE(chatOptions.contains("accepted"), true);
-    QCOMPARE(chatOptions.size(), 2);
-
     QStringList followOptions =
             model.getAvailableIncludeOptions(NotificationPreferenceListModel::FollowType);
     QCOMPARE(followOptions.contains("all"), true);
@@ -876,19 +862,11 @@ void hagoromo_test::test_NotificationPreferenceListModel()
     // 表示名のテスト
     QCOMPARE(model.getIncludeDisplayName("all"), "All");
     QCOMPARE(model.getIncludeDisplayName("follows"), "Follows only");
-    QCOMPARE(model.getIncludeDisplayName("accepted"), "Accepted only");
 
     // ShowListRoleのテスト
-    // ChatTypeのみshowListがfalseであることを確認
     for (int i = 0; i < model.rowCount(); ++i) {
-        int type = model.item(i, NotificationPreferenceListModel::TypeRole).toInt();
         bool showList = model.item(i, NotificationPreferenceListModel::ShowListRole).toBool();
-
-        if (type == NotificationPreferenceListModel::ChatType) {
-            QCOMPARE(showList, false);
-        } else {
-            QCOMPARE(showList, true);
-        }
+        QCOMPARE(showList, true);
     }
 
     // データ整合性の確認

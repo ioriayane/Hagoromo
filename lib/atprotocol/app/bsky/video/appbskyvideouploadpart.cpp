@@ -1,0 +1,42 @@
+#include "appbskyvideouploadpart.h"
+#include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
+namespace AtProtocolInterface {
+
+AppBskyVideoUploadPart::AppBskyVideoUploadPart(QObject *parent) : AccessAtProtocol { parent } { }
+
+void AppBskyVideoUploadPart::uploadPart()
+{
+    post(QStringLiteral("xrpc/app.bsky.video.uploadPart"), QByteArray());
+}
+
+const int &AppBskyVideoUploadPart::partNumber() const
+{
+    return m_partNumber;
+}
+
+const int &AppBskyVideoUploadPart::sizeBytes() const
+{
+    return m_sizeBytes;
+}
+
+bool AppBskyVideoUploadPart::parseJson(bool success, const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::LexiconsTypeUnknown::copyInt(json_doc.object().value("partNumber"),
+                                                     m_partNumber);
+        AtProtocolType::LexiconsTypeUnknown::copyInt(json_doc.object().value("sizeBytes"),
+                                                     m_sizeBytes);
+    }
+
+    return success;
+}
+
+}

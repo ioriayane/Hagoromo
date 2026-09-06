@@ -11,7 +11,7 @@ public:
     explicit InternalBskyActorGetProfiles(QObject *parent = nullptr);
 
     void getProfiles(const QList<QString> &dids, const QString &viewer,
-                     const QList<QString> &socialProof);
+                     const QList<QString> &socialProof, const bool includeTakedowns);
 
     const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &profilesList() const;
 

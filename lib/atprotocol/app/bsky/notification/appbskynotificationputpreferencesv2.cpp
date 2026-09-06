@@ -12,16 +12,13 @@ AppBskyNotificationPutPreferencesV2::AppBskyNotificationPutPreferencesV2(QObject
 }
 
 void AppBskyNotificationPutPreferencesV2::putPreferencesV2(
-        const QJsonObject &chat, const QJsonObject &follow, const QJsonObject &like,
-        const QJsonObject &likeViaRepost, const QJsonObject &mention, const QJsonObject &quote,
-        const QJsonObject &reply, const QJsonObject &repost, const QJsonObject &repostViaRepost,
+        const QJsonObject &follow, const QJsonObject &like, const QJsonObject &likeViaRepost,
+        const QJsonObject &mention, const QJsonObject &quote, const QJsonObject &reply,
+        const QJsonObject &repost, const QJsonObject &repostViaRepost,
         const QJsonObject &starterpackJoined, const QJsonObject &subscribedPost,
         const QJsonObject &unverified, const QJsonObject &verified)
 {
     QJsonObject json_obj;
-    if (!chat.isEmpty()) {
-        json_obj.insert(QStringLiteral("chat"), chat);
-    }
     if (!follow.isEmpty()) {
         json_obj.insert(QStringLiteral("follow"), follow);
     }

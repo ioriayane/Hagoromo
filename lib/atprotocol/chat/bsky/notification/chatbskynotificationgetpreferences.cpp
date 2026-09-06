@@ -1,0 +1,41 @@
+#include "chatbskynotificationgetpreferences.h"
+#include "atprotocol/lexicons_func.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QUrlQuery>
+
+namespace AtProtocolInterface {
+
+ChatBskyNotificationGetPreferences::ChatBskyNotificationGetPreferences(QObject *parent)
+    : AccessAtProtocol { parent }
+{
+}
+
+void ChatBskyNotificationGetPreferences::getPreferences()
+{
+    QUrlQuery url_query;
+
+    get(QStringLiteral("xrpc/chat.bsky.notification.getPreferences"), url_query);
+}
+
+const AtProtocolType::ChatBskyNotificationDefs::Preferences &
+ChatBskyNotificationGetPreferences::preferences() const
+{
+    return m_preferences;
+}
+
+bool ChatBskyNotificationGetPreferences::parseJson(bool success, const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::ChatBskyNotificationDefs::copyPreferences(
+                json_doc.object().value("preferences").toObject(), m_preferences);
+    }
+
+    return success;
+}
+
+}
