@@ -167,7 +167,8 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
     "cmake.configureArgs": [
         "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
         "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
-    ]
+    ],
+    "cmake.useVsDeveloperEnvironment": "always" // Windows only
 }
 ```
 
