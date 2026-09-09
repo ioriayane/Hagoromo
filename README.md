@@ -168,7 +168,11 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
         "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
         "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
     ],
-    "cmake.useVsDeveloperEnvironment": "always" // Windows only
+    // Windows only
+    "cmake.useVsDeveloperEnvironment": "always",
+    "cmake.environment": {
+        "PATH": "C:\\path\\to\\Hagoromo\\zlib\\bin;C:\\path\\to\\Hagoromo\\openssl\\bin;C:\\path\\to\\Qt\\6.11.0\\msvc2022_64\\bin;${env:PATH}"
+    },
 }
 ```
 
@@ -344,7 +348,11 @@ example:
         "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
         "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
     ],
-    "cmake.useVsDeveloperEnvironment": "always" // Windows only
+    // Windows only
+    "cmake.useVsDeveloperEnvironment": "always",
+    "cmake.environment": {
+        "PATH": "C:\\path\\to\\Hagoromo\\zlib\\bin;C:\\path\\to\\Hagoromo\\openssl\\bin;C:\\path\\to\\Qt\\6.11.0\\msvc2022_64\\bin;${env:PATH}"
+    },
 }
 ```
 
