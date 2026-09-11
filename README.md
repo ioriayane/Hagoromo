@@ -179,7 +179,7 @@ cmake実行時に下記のオプションを追加するとレイアウト確認
 
 1. コマンドパレットで `CMake: Select Configre Preset`を実行後に下記から選択
    - `Default Config (Windows)`
-   - `Default Config (Linux/macOS)` 
+   - `Default Config (Linux/macOS)`
 2. `CMake: Configure`を実行
 
 VSCodeのOUTPUTの`CMake/Build`にてcmakeの実行コマンドとともに`CMAKE_PREFIX_PATH`が設定できていることを確認できます。
@@ -363,7 +363,7 @@ example:
 
 1. In the Command Pallete, run `CMake: Select Configre Preset`, then select from following.
    - `Default Config (Windows)`
-   - `Default Config (Linux/macOS)` 
+   - `Default Config (Linux/macOS)`
 2. run `CMake: Configure`.
 
 You can verify that `CMAKE_PREFIX_PATH` has been set along with the CMake command in the `CMake/Build` section of VSCode's OUTPUT.
