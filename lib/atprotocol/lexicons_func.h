@@ -669,6 +669,14 @@ namespace SiteStandardDocument {
 void copyContributor(const QJsonObject &src, SiteStandardDocument::Contributor &dest);
 void copyMain(const QJsonObject &src, SiteStandardDocument::Main &dest);
 }
+// site.standard.graph.recommend
+namespace SiteStandardGraphRecommend {
+void copyMain(const QJsonObject &src, SiteStandardGraphRecommend::Main &dest);
+}
+// site.standard.graph.subscription
+namespace SiteStandardGraphSubscription {
+void copyMain(const QJsonObject &src, SiteStandardGraphSubscription::Main &dest);
+}
 // site.standard.theme.color
 namespace SiteStandardThemeColor {
 void copyRgb(const QJsonObject &src, SiteStandardThemeColor::Rgb &dest);
@@ -682,14 +690,6 @@ void copyMain(const QJsonObject &src, SiteStandardThemeBasic::Main &dest);
 namespace SiteStandardPublication {
 void copyPreferences(const QJsonObject &src, SiteStandardPublication::Preferences &dest);
 void copyMain(const QJsonObject &src, SiteStandardPublication::Main &dest);
-}
-// site.standard.graph.recommend
-namespace SiteStandardGraphRecommend {
-void copyMain(const QJsonObject &src, SiteStandardGraphRecommend::Main &dest);
-}
-// site.standard.graph.subscription
-namespace SiteStandardGraphSubscription {
-void copyMain(const QJsonObject &src, SiteStandardGraphSubscription::Main &dest);
 }
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {

@@ -3364,6 +3364,26 @@ struct Main
 };
 }
 
+// site.standard.graph.recommend
+namespace SiteStandardGraphRecommend {
+struct Main
+{
+    QString createdAt; // datetime
+    QString document; // at-uri , AT-URI reference to the document record being recommended (ex:
+                      // at://did:plc:abc123/site.standard.document/xyz789).
+};
+}
+
+// site.standard.graph.subscription
+namespace SiteStandardGraphSubscription {
+struct Main
+{
+    QString createdAt; // datetime
+    QString publication; // at-uri , AT-URI reference to the publication record being subscribed to
+                         // (ex: at://did:plc:abc123/site.standard.publication/xyz789).
+};
+}
+
 // site.standard.theme.color
 namespace SiteStandardThemeColor {
 struct Rgb
@@ -3451,26 +3471,6 @@ struct Main
                              // properties).
     QString url; // uri , Base publication url (ex: https://standard.site). The canonical document
                  // URL is formed by combining this value with the document path.
-};
-}
-
-// site.standard.graph.recommend
-namespace SiteStandardGraphRecommend {
-struct Main
-{
-    QString createdAt; // datetime
-    QString document; // at-uri , AT-URI reference to the document record being recommended (ex:
-                      // at://did:plc:abc123/site.standard.document/xyz789).
-};
-}
-
-// site.standard.graph.subscription
-namespace SiteStandardGraphSubscription {
-struct Main
-{
-    QString createdAt; // datetime
-    QString publication; // at-uri , AT-URI reference to the publication record being subscribed to
-                         // (ex: at://did:plc:abc123/site.standard.publication/xyz789).
 };
 }
 

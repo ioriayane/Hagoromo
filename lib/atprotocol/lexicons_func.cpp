@@ -4562,6 +4562,26 @@ void copyMain(const QJsonObject &src, SiteStandardDocument::Main &dest)
     }
 }
 }
+// site.standard.graph.recommend
+namespace SiteStandardGraphRecommend {
+void copyMain(const QJsonObject &src, SiteStandardGraphRecommend::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.createdAt = src.value("createdAt").toString();
+        dest.document = src.value("document").toString();
+    }
+}
+}
+// site.standard.graph.subscription
+namespace SiteStandardGraphSubscription {
+void copyMain(const QJsonObject &src, SiteStandardGraphSubscription::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.createdAt = src.value("createdAt").toString();
+        dest.publication = src.value("publication").toString();
+    }
+}
+}
 // site.standard.theme.color
 namespace SiteStandardThemeColor {
 void copyRgb(const QJsonObject &src, SiteStandardThemeColor::Rgb &dest)
@@ -4643,26 +4663,6 @@ void copyMain(const QJsonObject &src, SiteStandardPublication::Main &dest)
         dest.name = src.value("name").toString();
         copyPreferences(src.value("preferences").toObject(), dest.preferences);
         dest.url = src.value("url").toString();
-    }
-}
-}
-// site.standard.graph.recommend
-namespace SiteStandardGraphRecommend {
-void copyMain(const QJsonObject &src, SiteStandardGraphRecommend::Main &dest)
-{
-    if (!src.isEmpty()) {
-        dest.createdAt = src.value("createdAt").toString();
-        dest.document = src.value("document").toString();
-    }
-}
-}
-// site.standard.graph.subscription
-namespace SiteStandardGraphSubscription {
-void copyMain(const QJsonObject &src, SiteStandardGraphSubscription::Main &dest)
-{
-    if (!src.isEmpty()) {
-        dest.createdAt = src.value("createdAt").toString();
-        dest.publication = src.value("publication").toString();
     }
 }
 }
