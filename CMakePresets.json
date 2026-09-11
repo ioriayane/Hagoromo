@@ -2,25 +2,75 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "default",
-      "displayName": "Default Config",
-      "description": "Default build configuration",
+      "name": "base",
+      "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
+      "name": "windows-base",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      }
+    },
+    {
+      "name": "unix-base",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "default",
+      "displayName": "Default Config (Windows)",
+      "description": "Default build configuration for Windows (MSVC)",
+      "inherits": "windows-base",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
       "name": "release",
-      "displayName": "Release Config",
-      "description": "Release build configuration",
-      "generator": "Ninja",
+      "displayName": "Release Config (Windows)",
+      "description": "Release build configuration for Windows (MSVC)",
+      "inherits": "windows-base",
       "binaryDir": "${sourceDir}/build-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "unix-default",
+      "displayName": "Default Config (Linux/macOS)",
+      "description": "Default build configuration for Linux/macOS",
+      "inherits": "unix-base",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "unix-release",
+      "displayName": "Release Config (Linux/macOS)",
+      "description": "Release build configuration for Linux/macOS",
+      "inherits": "unix-base",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
       }
     }
   ],
@@ -34,6 +84,16 @@
       "name": "release",
       "displayName": "Release Build",
       "configurePreset": "release"
+    },
+    {
+      "name": "unix-default",
+      "displayName": "Default Build (Linux/macOS)",
+      "configurePreset": "unix-default"
+    },
+    {
+      "name": "unix-release",
+      "displayName": "Release Build (Linux/macOS)",
+      "configurePreset": "unix-release"
     }
   ],
   "testPresets": [
