@@ -96,20 +96,31 @@ Qt 6.11.0 を用意したうえで、次を実行します:
 CMake を直接使う場合、`-DHAGOROMO_LAYOUT_TEST=ON` を付けると、アプリ本体ではなく
 `app/qml/layout_test_main.qml` を利用してレイアウト確認ができます。
 
-### VS Code + CMake Tools を使う場合
+### Qt C++ Extension Pack を使う場合
 
-`.vscode/settings.json`(`.gitignore` 対象)に Qt のパスを設定します:
+`.vscode/settings.json`(`.gitignore` 対象)に Qt のパスを設定します。`Ninja` へのパスは `CMAKE_MAKE_PROGRAM` で指定します:
 
 ```json
 {
     "cmake.configureArgs": [
         "-DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.0/gcc_64",
         "-DCMAKE_MAKE_PROGRAM=/path/to/Qt/Tools/Ninja/ninja"
-    ]
+        "-DCMAKE_OSX_ARCHITECTURES=arm64",  // macOS only
+    ],
+    // Windows only
+    "cmake.useVsDeveloperEnvironment": "always",
+    "cmake.environment": {
+        "PATH": "C:\\path\\to\\Hagoromo\\zlib\\bin;C:\\path\\to\\Hagoromo\\openssl\\bin;C:\\path\\to\\Qt\\6.11.0\\msvc2022_64\\bin;${env:PATH}"
+    },
 }
 ```
 
-設定後は `CMake: Configure` を実行し、OUTPUT の `CMake/Build` で `CMAKE_PREFIX_PATH` が反映されているか確認してください。
+1. コマンドパレットで `CMake: Select Configre Preset` を実行し、下記から選択する
+   - `Default Config (Windows)`
+   - `Default Config (Linux/macOS)`
+2. `CMake: Configure` を実行する
+
+VSCode の OUTPUT の `CMake/Build` にて cmake の実行コマンドとともに `CMAKE_PREFIX_PATH` が設定できていることを確認できます。
 
 ## 開発フロー
 
