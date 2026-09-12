@@ -1432,6 +1432,12 @@ struct FeedViewPost
     QString feedContext; // Context provided by feed generator that may be passed back alongside
                          // interactions.
     QString reqId; // Unique identifier per request that may be passed back alongside interactions.
+    int opThreadPostIndex =
+            0; // The 1-indexed position of this post within the contiguous OP thread. Only present
+               // when this post is part of the OP thread (see `opThread`).
+    int opThreadPostCount =
+            0; // The total number of posts in the contiguous OP thread that this post belongs to.
+               // Only present when this post is part of the OP thread (see `opThread`).
 };
 struct ThreadViewPost
 {
