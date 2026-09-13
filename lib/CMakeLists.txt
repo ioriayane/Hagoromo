@@ -141,6 +141,8 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.h
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h
+    atprotocol/app/bsky/unspecced/appbskyunspeccedgetpostthreadv2.cpp
+    atprotocol/app/bsky/unspecced/appbskyunspeccedgetpostthreadv2.h
     atprotocol/app/bsky/video/appbskyvideogetjobstatus.cpp
     atprotocol/app/bsky/video/appbskyvideogetjobstatus.h
     atprotocol/app/bsky/video/appbskyvideogetuploadlimits.cpp

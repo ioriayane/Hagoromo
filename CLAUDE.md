@@ -22,8 +22,10 @@ Qt 6 のデスクトップアプリケーションで、C++ と QML で構成さ
 - `tests/`: CMake / CTest によるユニットテストと記録済み API レスポンス
 - `tools/`: 補助的な C++ ツール
 - `1stparty/`: AT Protocol の依存ソース
+  - `1stparty/atproto/lexicons`: AT ProtocolのLexicon定義（エンドポイントなど）
 - `3rdparty/`: OpenSSL / cpp-httplib / zlib のサブモジュール
 - `scripts/`: OS 別のビルド・テスト・デプロイ・メンテナンス用スクリプト
+  - `scripts/lexicons/`: `1stparty/atproto/lexicons`のAT Protocol公式で定義されていない拡張情報
 - `web/`: Hugo ベースのドキュメントサイト
 - `.github/workflows/`: CI とリリースチェック
 

@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Add
+  - Support for displaying indexes in post threads (Excluding real-time feeds)
+
 ### v0.63.0 - 2026/6/18
 
 - Add
