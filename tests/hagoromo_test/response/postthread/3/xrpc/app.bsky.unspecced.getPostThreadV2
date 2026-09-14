@@ -59,6 +59,8 @@
                 "moreParents": false,
                 "moreReplies": 0,
                 "opThread": false,
+                "opThreadPostIndex": 0,
+                "opThreadPostCount": 0,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
@@ -108,7 +110,9 @@
                 },
                 "moreParents": false,
                 "moreReplies": 0,
-                "opThread": false,
+                "opThread": true,
+                "opThreadPostIndex": 1,
+                "opThreadPostCount": 2,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
@@ -155,7 +159,9 @@
                 },
                 "moreParents": false,
                 "moreReplies": 0,
-                "opThread": false,
+                "opThread": true,
+                "opThreadPostIndex": 2,
+                "opThreadPostCount": 2,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
@@ -206,6 +212,8 @@
                 "moreParents": false,
                 "moreReplies": 0,
                 "opThread": false,
+                "opThreadPostIndex": 0,
+                "opThreadPostCount": 0,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
@@ -253,6 +261,8 @@
                 "moreParents": false,
                 "moreReplies": 0,
                 "opThread": false,
+                "opThreadPostIndex": 0,
+                "opThreadPostCount": 0,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
@@ -307,6 +317,8 @@
                 "moreParents": false,
                 "moreReplies": 0,
                 "opThread": false,
+                "opThreadPostIndex": 0,
+                "opThreadPostCount": 0,
                 "hiddenByThreadgate": false,
                 "mutedByViewer": false
             }
