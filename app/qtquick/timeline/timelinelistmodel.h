@@ -180,6 +180,9 @@ public:
 
         HasSkyblurLinkRole,
         SkyblurPostTextRole,
+
+        OpThreadPostIndexRole,
+        OpThreadPostCountRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

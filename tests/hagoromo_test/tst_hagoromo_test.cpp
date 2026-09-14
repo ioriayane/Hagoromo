@@ -2382,18 +2382,26 @@ void hagoromo_test::test_PostThreadListModel()
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 1;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 1);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 3);
     row = 2;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 2);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 3);
     row = 3;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 3);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 3);
 
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/postthread/2", "id", "pass",
@@ -2413,26 +2421,38 @@ void hagoromo_test::test_PostThreadListModel()
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 1;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 1);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 2);
     row = 2;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3 - 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 2);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 2);
     row = 3;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4 - 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 4;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 5;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
 
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/postthread/3", "id", "pass",
@@ -2452,26 +2472,38 @@ void hagoromo_test::test_PostThreadListModel()
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "test");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), false);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 1;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 1);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 2);
     row = 2;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3 - 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 2);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 2);
     row = 3;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4 - 2");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 4;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 3");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), true);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
     row = 5;
     QCOMPARE(model.item(row, PostThreadListModel::RecordTextPlainRole).toString(), "reply 4");
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool(), true);
     QCOMPARE(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool(), false);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostIndexRole).toInt(), 0);
+    QCOMPARE(model.item(row, PostThreadListModel::OpThreadPostCountRole).toInt(), 0);
 }
 
 void hagoromo_test::test_SystemTool_ImageClip()

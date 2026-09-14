@@ -1,7 +1,6 @@
 #include "postthreadlistmodel.h"
-#include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
+#include "atprotocol/app/bsky/unspecced/appbskyunspeccedgetpostthreadv2.h"
 
-using AtProtocolInterface::AppBskyFeedGetPostThread;
 using namespace AtProtocolType;
 
 PostThreadListModel::PostThreadListModel(QObject *parent)
@@ -25,20 +24,20 @@ bool PostThreadListModel::getLatest()
 
     m_postThreadCid.clear();
     updateContentFilterLabels([=]() {
-        AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
-        connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
-            if (success) {
-                m_postThreadCid = thread->threadViewPost().post.cid;
-                copyFrom(&thread->threadViewPost());
-            } else {
-                emit errorOccurred(thread->errorCode(), thread->errorMessage());
-            }
-            QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
-            thread->deleteLater();
-        });
+        auto thread = new AtProtocolInterface::AppBskyUnspeccedGetPostThreadV2(this);
+        connect(thread, &AtProtocolInterface::AppBskyUnspeccedGetPostThreadV2::finished,
+                [=](bool success) {
+                    if (success) {
+                        copyFrom(thread->threadList());
+                    } else {
+                        emit errorOccurred(thread->errorCode(), thread->errorMessage());
+                    }
+                    QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
+                    thread->deleteLater();
+                });
         thread->setAccount(account());
         thread->setLabelers(labelerDids());
-        thread->getPostThread(postThreadUri(), 0, 0);
+        thread->getPostThreadV2(postThreadUri(), true, 0, 0, QString());
     });
     return true;
 }
@@ -48,117 +47,68 @@ void PostThreadListModel::finishedDisplayingQueuedPosts()
     setRunning(false);
 }
 
-void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread_view_post)
+void PostThreadListModel::copyFrom(
+        const QList<AtProtocolType::AppBskyUnspeccedGetPostThreadV2::ThreadItem> &thread_list)
 {
-    if (thread_view_post == nullptr)
-        return;
-
-    const AppBskyFeedDefs::ThreadViewPost *origin = thread_view_post;
-    const AppBskyFeedDefs::ThreadViewPost *current = thread_view_post;
-    QList<const AppBskyFeedDefs::ThreadViewPost *> list;
-
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
-    while (current != nullptr
-           && current->parent_type
-                   == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
-        current = current->parent_ThreadViewPost.get();
-        if (current != nullptr) {
-            list.push_front(current);
-        } else {
-            break;
-        }
-    }
-    for (auto post : list) {
-        // 親方向の投稿登録（2番目以降は必ず親がいる）
-        copyFromMain(post, 1, reference_time, post != list.first());
-    }
 
-    copyFromMain(origin, 0, reference_time, !list.isEmpty());
-}
+    for (int i = 0; i < thread_list.length(); i++) {
+        const auto &item = thread_list.at(i);
+        if (item.value_type
+            != AtProtocolType::AppBskyUnspeccedGetPostThreadV2::ThreadItemValueType::
+                    value_AppBskyUnspeccedDefs_ThreadItemPost)
+            continue;
 
-// type
-// 0 : 基準になっているポスト
-// 1 : 親方向のポスト
-// 2 : リプライ方向のポスト
-void PostThreadListModel::copyFromMain(
-        const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post, const int type,
-        QDateTime reference_time, bool has_parent)
-{
-    if (thread_view_post == nullptr)
-        return;
+        const AppBskyFeedDefs::PostView &post = item.value_AppBskyUnspeccedDefs_ThreadItemPost.post;
 
-    PostCueItem post;
-    post.cid = thread_view_post->post.cid;
-    post.indexed_at = thread_view_post->post.indexedAt;
-    post.reference_time = reference_time;
-    m_cuePost.insert(0, post);
+        if (item.depth == 0)
+            m_postThreadCid = post.cid;
 
-    // Tokimekiの投票の取得のキューに入れる
-    appendTokimekiPollToCue(thread_view_post->post.cid,
-                            thread_view_post->post.embed_AppBskyEmbedExternal_View);
+        PostCueItem cue_item;
+        cue_item.cid = post.cid;
+        cue_item.indexed_at = post.indexedAt;
+        cue_item.reference_time = reference_time;
+        m_cuePost.insert(0, cue_item);
 
-    AppBskyFeedDefs::FeedViewPost feed_view_post;
-    feed_view_post.post = thread_view_post->post;
-    m_viewPostHash[thread_view_post->post.cid] = feed_view_post;
+        // Tokimekiの投票の取得のキューに入れる
+        appendTokimekiPollToCue(post.cid, post.embed_AppBskyEmbedExternal_View);
 
-    ThreadConnector connector;
-    if (type == 0) {
-        connector.top = has_parent;
-        connector.bottom = (thread_view_post->replies_ThreadViewPost.length() > 0);
-    } else if (type == 1) {
-        connector.top = has_parent;
-        connector.bottom = true;
-    } else if (type == 2) {
-        connector.top = true;
-        connector.bottom = (thread_view_post->replies_ThreadViewPost.length() > 0);
-    }
-    m_threadConnectorHash[thread_view_post->post.cid] = connector;
-
-    // TODO
-    // replies側の表示
-    // こっちは枝分かれする場合があるので表示方法を検討すること
-    // そもそも時系列が逆順になるので基準になっているpostを強調するなど工夫が必要
-    // あと、repliesの1階層目しか表示できていない！
-    for (const auto &view_post : thread_view_post->replies_ThreadViewPost) {
         AppBskyFeedDefs::FeedViewPost feed_view_post;
-        feed_view_post.post = view_post->post;
-        m_viewPostHash[view_post->post.cid] = feed_view_post;
+        feed_view_post.post = post;
+        feed_view_post.opThreadPostIndex =
+                item.value_AppBskyUnspeccedDefs_ThreadItemPost.opThreadPostIndex;
+        feed_view_post.opThreadPostCount =
+                item.value_AppBskyUnspeccedDefs_ThreadItemPost.opThreadPostCount;
+        m_viewPostHash[post.cid] = feed_view_post;
 
-        PostCueItem post;
-        post.cid = view_post->post.cid;
-        post.indexed_at = view_post->post.indexedAt;
-        post.reference_time = reference_time;
-        m_cuePost.insert(0, post);
-
+        // 前後のスレッド項目とのdepthの連続性から接続線の表示を判定する
         ThreadConnector connector;
-        connector.top = true;
-        connector.bottom = !view_post->replies_ThreadViewPost.isEmpty();
-        m_threadConnectorHash[view_post->post.cid] = connector;
+        connector.top = (i != 0);
+        connector.bottom =
+                (i + 1 < thread_list.length() && thread_list.at(i + 1).depth == item.depth + 1);
+        m_threadConnectorHash[post.cid] = connector;
 
-        for (const auto &reply_view_post : view_post->replies_ThreadViewPost) {
-            copyFromMain(reply_view_post.get(), 2, reference_time, true);
+        if (item.depth == 0) {
+            // ラベラーの情報を取得してラベルの表示名を取得できるようにする
+            QStringList labelers;
+            for (const auto &label : post.author.labels) {
+                if (!label.src.isEmpty() && !labelers.contains(label.src)) {
+                    labelers.append(label.src);
+                }
+            }
+            for (const auto &label : post.labels) {
+                if (!label.src.isEmpty() && !labelers.contains(label.src)) {
+                    labelers.append(label.src);
+                }
+            }
+            if (!labelers.isEmpty()) {
+                LabelProvider::getInstance()->update(labelers, account(), &m_labelConnector);
+            }
         }
     }
 
-    if (type == 0) {
-        // ラベラーの情報を取得してラベルの表示名を取得できるようにする
-        QStringList labelers;
-        for (const auto &label : thread_view_post->post.author.labels) {
-            if (!label.src.isEmpty() && !labelers.contains(label.src)) {
-                labelers.append(label.src);
-            }
-        }
-        for (const auto &label : thread_view_post->post.labels) {
-            if (!label.src.isEmpty() && !labelers.contains(label.src)) {
-                labelers.append(label.src);
-            }
-        }
-        if (!labelers.isEmpty()) {
-            LabelProvider::getInstance()->update(labelers, account(), &m_labelConnector);
-        }
-        // Tokimekiの投票を取得
-        getTokimekiPoll();
-    }
+    // Tokimekiの投票を取得
+    getTokimekiPoll();
 }
 
 QString PostThreadListModel::postThreadUri() const

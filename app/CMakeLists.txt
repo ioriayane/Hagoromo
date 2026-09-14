@@ -87,6 +87,7 @@ qt_add_qml_module(Hagoromo
         qml/parts/RealtimeFeedStatus.qml
         qml/parts/ExternalLinkCard.qml
         qml/parts/PinnedIndicator.qml
+        qml/parts/BadgeLabel.qml
         qml/parts/PostControls.qml
         qml/parts/Author.qml
         qml/parts/CoverFrame.qml

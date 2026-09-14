@@ -369,6 +369,11 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == ReasonRepostedUriRole) {
         return current.reason_ReasonRepost.uri;
 
+    } else if (role == OpThreadPostIndexRole) {
+        return current.opThreadPostIndex;
+    } else if (role == OpThreadPostCountRole) {
+        return current.opThreadPostCount;
+
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
     else if (role == LabelIconsRole)
@@ -1120,6 +1125,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[HasSkyblurLinkRole] = "hasSkyblurLink";
     roles[SkyblurPostTextRole] = "skyblurPostText";
+
+    roles[OpThreadPostIndexRole] = "opThreadPostIndex";
+    roles[OpThreadPostCountRole] = "opThreadPostCount";
 
     return roles;
 }

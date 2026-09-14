@@ -24,6 +24,8 @@ ClickableFrame {
     property bool hasQuote: false
     property bool threadConnected: false
     property bool logMode: false
+    property int opThreadPostIndex: 0
+    property int opThreadPostCount: 0
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -218,6 +220,14 @@ ClickableFrame {
                         acceptedButtons: Qt.MiddleButton
                         hoverEnabled: true
                         visible: recordText.text.length > 0
+                        BadgeLabel {
+                            id: opThreadIndicatorFrame
+                            anchors.right: recordText.right
+                            anchors.bottom: recordText.bottom
+                            visible: postFrame.opThreadPostIndex > 0 && postFrame.opThreadPostCount > 0
+                            text: postFrame.opThreadPostIndex + "/" + postFrame.opThreadPostCount
+                            fontPointSize: AdjustedValues.f8
+                        }
                         Label {
                             id: recordText
                             anchors.top: parent.top

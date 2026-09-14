@@ -21,12 +21,12 @@
         <file>response/anyprofile/xrpc/app.bsky.feed.getRepostedBy</file>
         <file>response/timeline/text/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/text/xrpc/app.bsky.feed.getTimeline</file>
-        <file>response/postthread/1/xrpc/app.bsky.feed.getPostThread</file>
+        <file>response/postthread/1/xrpc/app.bsky.unspecced.getPostThreadV2</file>
         <file>response/postthread/1/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/postthread/2/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/postthread/2/xrpc/app.bsky.feed.getPostThread</file>
+        <file>response/postthread/2/xrpc/app.bsky.unspecced.getPostThreadV2</file>
         <file>response/postthread/3/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/postthread/3/xrpc/app.bsky.feed.getPostThread</file>
+        <file>response/postthread/3/xrpc/app.bsky.unspecced.getPostThreadV2</file>
         <file>response/notifications/visible/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.feed.getTimeline</file>

@@ -1489,6 +1489,8 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
         }
         dest.feedContext = src.value("feedContext").toString();
         dest.reqId = src.value("reqId").toString();
+        dest.opThreadPostIndex = src.value("opThreadPostIndex").toInt();
+        dest.opThreadPostCount = src.value("opThreadPostCount").toInt();
     }
 }
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
