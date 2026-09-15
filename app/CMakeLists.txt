@@ -119,6 +119,8 @@ qt_add_qml_module(Hagoromo
         qml/parts/PollOptions.qml
         qml/parts/OperationProgressFrame.qml
         qml/parts/OperationProgressManager.qml
+        qml/parts/ErrorNotificationFrame.qml
+        qml/parts/ErrorNotificationManager.qml
         qml/parts/IconMessage.qml
         qml/dialogs/SelectThreadGateDialog.qml
         qml/dialogs/SearchDialog.qml
