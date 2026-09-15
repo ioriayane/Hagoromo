@@ -65,7 +65,7 @@ ApplicationWindow {
             }
             console.log("ERROR: " + handle + "(" + account_uuid + ") " + code + ":" + message)
             message += "\n\n@" + handle
-            messageDialog.show("error", code, message)
+            errorNotificationManager.notify(code, message)
         }
     }
 
@@ -188,8 +188,8 @@ ApplicationWindow {
         accountModel: accountListModel
         onOpened: {
             if(showLogainAgainMessage){
-                messageDialog.show("error", qsTr("Authentication error"),
-                                   qsTr("Some accounts require you to log in again."))
+                errorNotificationManager.notify(qsTr("Authentication error"),
+                                                 qsTr("Some accounts require you to log in again."))
             }
             showLogainAgainMessage = false
         }
@@ -1116,6 +1116,11 @@ ApplicationWindow {
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
+        ErrorNotificationManager {
+            id: errorNotificationManager
+            Layout.alignment: Qt.AlignRight
+            onMessageClicked: (headerText, message) => messageDialog.show("error", headerText, message)
+        }
         OperationProgressManager {
             id: operationProgressManager
             Layout.alignment: Qt.AlignRight
