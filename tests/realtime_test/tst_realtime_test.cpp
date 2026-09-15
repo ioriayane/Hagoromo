@@ -30,6 +30,7 @@ private slots:
     void test_FirehoseReceiver();
     void test_Websock();
     void test_RealtimeFeedListModel();
+    void test_RealtimeFeedListModel_recoverAfterError();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
     void test_EditSelectorListModel_save();
@@ -381,6 +382,56 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq5");
     QCOMPARE(model.item(0, TimelineListModel::RecordTextPlainRole).toString(), "post 5");
     QCOMPARE(model.item(0, TimelineListModel::IsRepostedByRole).toBool(), false);
+}
+
+void realtime_test::test_RealtimeFeedListModel_recoverAfterError()
+{
+    // getLatest() を初めて実行したときの一連の処理
+    //（following/followers/list の取得 -> finishGetting()）の途中でエラーが
+    // 発生した場合に、次回の getLatest() で最初からやり直せることを確認する。
+
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+
+    // getFollows のレスポンスが用意されていないサービスを使ってエラーを起こす
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/error", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "handle", "email", "accessJwt", "refreshJwt", true);
+
+    RealtimeFeedListModel model;
+    model.setAccount(uuid);
+    model.setSelectorJson("{\"following\": {}}");
+
+    QCOMPARE(recv->containsSelector(&model), false);
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+    }
+
+    // finishGetting() に到達できなかったので、不完全な selector が残っていない
+    // （= 次回 getLatest() が最初からやり直せる状態になっている）ことを確認する
+    QCOMPARE(recv->containsSelector(&model), false);
+    QCOMPARE(model.receiving(), false);
+
+    // 同じ selectorJson のまま、正常にレスポンスが返るサービスへ切り替えて再実行する
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    model.setAccount(uuid);
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+    }
+
+    AbstractPostSelector *s = recv->getSelector(&model);
+    QCOMPARE_NE(s, nullptr);
+    QCOMPARE(s->ready(), true);
+    QCOMPARE(recv->selectorIsReady(&model), true);
+
+    recv->removeSelector(&model);
 }
 
 void realtime_test::test_EditSelectorListModel()

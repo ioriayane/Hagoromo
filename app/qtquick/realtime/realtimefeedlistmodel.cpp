@@ -217,7 +217,7 @@ void RealtimeFeedListModel::getFollowing()
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
         } else {
             emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
+            abortGetting();
         }
         profiles->deleteLater();
     });
@@ -257,7 +257,7 @@ void RealtimeFeedListModel::getFollowers()
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowers);
         } else {
             emit errorOccurred(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
+            abortGetting();
         }
         profiles->deleteLater();
     });
@@ -304,7 +304,7 @@ void RealtimeFeedListModel::getListMembers()
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getListMembers);
         } else {
             emit errorOccurred(list->errorCode(), list->errorMessage());
-            setRunning(false);
+            abortGetting();
         }
         list->deleteLater();
     });
@@ -343,6 +343,15 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
         FirehoseReceiver::getInstance()->start();
 #endif
     }
+}
+
+void RealtimeFeedListModel::abortGetting()
+{
+    // finishGetting() に到達する前にエラーが発生した場合、
+    // selector を未完成のまま残さず取り除く。
+    // これにより次回の getLatest() は containsSelector() が false になり、最初からやり直せる。
+    FirehoseReceiver::getInstance()->removeSelector(this);
+    setRunning(false);
 }
 
 void RealtimeFeedListModel::copyFollows(
