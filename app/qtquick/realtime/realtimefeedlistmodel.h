@@ -35,6 +35,7 @@ private:
     void getFollowers();
     void getListMembers();
     void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
+    void abortGetting();
     void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
                      bool is_following);
     void copyListMembers(const QString &list_uri,
