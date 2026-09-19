@@ -712,7 +712,7 @@ void RecordOperator::deleteMute(const QString &did)
     setProgressMessage(tr("Unmute ..."));
 
     AppBskyGraphUnmuteActor *unmute = new AppBskyGraphUnmuteActor(this);
-    connect(unmute, &AppBskyGraphMuteActor::finished, this, [=](bool success) {
+    connect(unmute, &AppBskyGraphUnmuteActor::finished, this, [=](bool success) {
         if (success) {
         } else {
             emit errorOccurred(unmute->errorCode(), unmute->errorMessage());
