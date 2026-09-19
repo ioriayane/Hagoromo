@@ -425,31 +425,32 @@ void makeFacets(
             }
 
             AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(parent);
-            QObject::connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
-                QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
-                if (success) {
-                    for (const auto &item : std::as_const(profiles->profilesList())) {
-                        QString handle = item.handle;
-                        handle.remove("@");
-                        if (mention.contains(handle)) {
-                            const QList<MentionData> positions = mention.values(handle);
-                            for (const auto &position : positions) {
-                                AppBskyRichtextFacet::Main facet;
-                                facet.index.byteStart = position.start;
-                                facet.index.byteEnd = position.end;
-                                AppBskyRichtextFacet::Mention mention;
-                                mention.did = item.did;
-                                facet.features_type =
-                                        AppBskyRichtextFacet::MainFeaturesType::features_Mention;
-                                facet.features_Mention.append(mention);
-                                facets2.append(facet);
+            QObject::connect(
+                    profiles, &AppBskyActorGetProfiles::finished, profiles, [=](bool success) {
+                        QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
+                        if (success) {
+                            for (const auto &item : std::as_const(profiles->profilesList())) {
+                                QString handle = item.handle;
+                                handle.remove("@");
+                                if (mention.contains(handle)) {
+                                    const QList<MentionData> positions = mention.values(handle);
+                                    for (const auto &position : positions) {
+                                        AppBskyRichtextFacet::Main facet;
+                                        facet.index.byteStart = position.start;
+                                        facet.index.byteEnd = position.end;
+                                        AppBskyRichtextFacet::Mention mention;
+                                        mention.did = item.did;
+                                        facet.features_type = AppBskyRichtextFacet::
+                                                MainFeaturesType::features_Mention;
+                                        facet.features_Mention.append(mention);
+                                        facets2.append(facet);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                callback(facets2);
-                profiles->deleteLater();
-            });
+                        callback(facets2);
+                        profiles->deleteLater();
+                    });
             profiles->setAccount(account);
             profiles->getProfiles(ids);
         } else {

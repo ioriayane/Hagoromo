@@ -14,7 +14,7 @@ bool KnownFollowersListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetKnownFollowers *profiles = new AppBskyGraphGetKnownFollowers(this);
-        connect(profiles, &AppBskyGraphGetKnownFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetKnownFollowers::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -41,7 +41,7 @@ bool KnownFollowersListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetKnownFollowers *profiles = new AppBskyGraphGetKnownFollowers(this);
-        connect(profiles, &AppBskyGraphGetKnownFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetKnownFollowers::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);

@@ -148,7 +148,7 @@ bool FollowsListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
-        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollows::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -175,7 +175,7 @@ bool FollowsListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
-        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollows::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);
@@ -238,7 +238,7 @@ void FollowsListModel::getProfiles()
     }
 
     AppBskyActorGetProfiles *posts = new AppBskyActorGetProfiles(this);
-    connect(posts, &AppBskyActorGetProfiles::finished, [=](bool success) {
+    connect(posts, &AppBskyActorGetProfiles::finished, this, [=](bool success) {
         if (success) {
             QStringList new_cid;
 

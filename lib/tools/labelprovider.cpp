@@ -47,7 +47,7 @@ void LabelProvider::update(const QStringList labelers,
 
     // ラベラー取得
     AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
-    connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
+    connect(services, &AppBskyLabelerGetServices::finished, this, [=](bool success) {
         if (success) {
             for (const auto &labeler : services->viewsLabelerViewDetailedList()) {
                 m_lablers[labeler.creator.did] = labeler;

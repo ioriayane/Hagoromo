@@ -166,6 +166,10 @@ target_link_libraries(HagoromoGuiLib PRIVATE
     HagoromoLib
 )
 
+target_compile_definitions(HagoromoGuiLib PRIVATE
+    QT_NO_CONTEXTLESS_CONNECT
+)
+
 if(HAGOROMO_UNIT_TEST_BUILD)
     target_compile_definitions(HagoromoGuiLib PUBLIC
         HAGOROMO_UNIT_TEST

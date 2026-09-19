@@ -14,7 +14,7 @@ bool ActorLikeListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
-        connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
+        connect(likes, &AppBskyFeedGetActorLikes::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = likes->cursor();
@@ -41,7 +41,7 @@ bool ActorLikeListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
-        connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
+        connect(likes, &AppBskyFeedGetActorLikes::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = likes->cursor();
                 copyFromNext(likes->feedList());

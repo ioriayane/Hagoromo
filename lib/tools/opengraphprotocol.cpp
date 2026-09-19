@@ -63,7 +63,7 @@ OpenGraphProtocol::Private::~Private() { }
 OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << this << "OpenGraphProtocol()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 OpenGraphProtocol::~OpenGraphProtocol()
@@ -91,7 +91,7 @@ void OpenGraphProtocol::getData(const QString &url)
     request.setTransferTimeout(60 * 1000);
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (!ret) {
@@ -137,7 +137,7 @@ void OpenGraphProtocol::getData(const QString &url)
     //         }
     //     }
     // });
-    connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
+    connect(reply, &QNetworkReply::errorOccurred, this, [=](QNetworkReply::NetworkError code) {
         qDebug() << "Reply error:" << code << reply->request().url();
     });
 }
@@ -153,7 +153,7 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
     QNetworkRequest request((QUrl(thumb())));
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "downloadThumb reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (ret) {

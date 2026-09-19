@@ -178,7 +178,7 @@ bool FeedTypeListModel::getLatest()
     reloadRealtimeFeedRules();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             for (const auto &feed : pref->preferences().savedFeedsPref) {
                 m_cueUri = feed.saved;
@@ -296,7 +296,7 @@ void FeedTypeListModel::getFeedDetails()
     }
 
     AppBskyFeedGetFeedGenerators *generators = new AppBskyFeedGetFeedGenerators(this);
-    connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
+    connect(generators, &AppBskyFeedGetFeedGenerators::finished, this, [=](bool success) {
         if (success) {
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
@@ -327,7 +327,7 @@ void FeedTypeListModel::getFeedDetails()
 void FeedTypeListModel::getLists()
 {
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
-    connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetLists::finished, this, [=](bool success) {
         if (success) {
             if (m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();

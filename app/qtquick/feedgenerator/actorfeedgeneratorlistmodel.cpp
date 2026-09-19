@@ -18,7 +18,7 @@ bool ActorFeedGeneratorListModel::getLatest()
     clear();
 
     AppBskyFeedGetActorFeeds *feeds = new AppBskyFeedGetActorFeeds(this);
-    connect(feeds, &AppBskyFeedGetActorFeeds::finished, [=](bool success) {
+    connect(feeds, &AppBskyFeedGetActorFeeds::finished, this, [=](bool success) {
         if (success) {
             m_cursor = feeds->cursor();
 

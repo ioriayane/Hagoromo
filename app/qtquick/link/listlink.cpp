@@ -19,7 +19,7 @@ void ListLink::getList(const QString &uri)
             return;
         }
         AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
-        connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
+        connect(list, &AppBskyGraphGetList::finished, this, [=](bool success) {
             if (success && list->list().creator) {
                 setAvatar(list->list().avatar);
                 setDisplayName(list->list().name);

@@ -20,7 +20,7 @@ void PostLink::getPost(const QString &uri)
             return;
         }
         AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
-        connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+        connect(post, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
             if (success && !post->postsList().isEmpty()) {
                 setAvatar(post->postsList().at(0).author.avatar);
                 setDisplayName(post->postsList().at(0).author.displayName);

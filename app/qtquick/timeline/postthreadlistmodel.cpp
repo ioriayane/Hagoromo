@@ -25,7 +25,7 @@ bool PostThreadListModel::getLatest()
     m_postThreadCid.clear();
     updateContentFilterLabels([=]() {
         auto thread = new AtProtocolInterface::AppBskyUnspeccedGetPostThreadV2(this);
-        connect(thread, &AtProtocolInterface::AppBskyUnspeccedGetPostThreadV2::finished,
+        connect(thread, &AtProtocolInterface::AppBskyUnspeccedGetPostThreadV2::finished, this,
                 [=](bool success) {
                     if (success) {
                         copyFrom(thread->threadList());

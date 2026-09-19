@@ -409,7 +409,7 @@ void RealtimeFeedListModel::getPostThread()
     m_runningCue = true;
 
     AppBskyFeedGetPostThread *post_thread = new AppBskyFeedGetPostThread(this);
-    connect(post_thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
+    connect(post_thread, &AppBskyFeedGetPostThread::finished, this, [=](bool success) {
         if (success) {
 
             AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;

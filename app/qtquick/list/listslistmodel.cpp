@@ -163,7 +163,7 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
         return false;
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
@@ -219,7 +219,7 @@ void ListsListModel::mute(const int row)
     if (muted.toBool()) {
         // -> unmute
         AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
-        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+        connect(list, &AppBskyGraphUnmuteActorList::finished, this, [=](bool success) {
             if (success) {
                 update(row, ListsListModel::MutedRole, false);
                 setRunning(false);
@@ -231,7 +231,7 @@ void ListsListModel::mute(const int row)
     } else {
         // -> mute
         AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
-        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+        connect(list, &AppBskyGraphMuteActorList::finished, this, [=](bool success) {
             if (success) {
                 update(row, ListsListModel::MutedRole, true);
                 setRunning(false);
@@ -256,7 +256,7 @@ void ListsListModel::block(const int row)
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 qDebug() << success << uri << cid;
                 if (success) {
@@ -296,7 +296,7 @@ bool ListsListModel::getLatest()
     m_listItemCursor.clear();
 
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
-    connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetLists::finished, this, [=](bool success) {
         if (success) {
             if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
@@ -323,7 +323,7 @@ bool ListsListModel::getNext()
 
     m_searchCidQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
-    connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetLists::finished, this, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
             if (lists->listsList().isEmpty())
@@ -447,36 +447,40 @@ void ListsListModel::searchActorInEachLists()
     }
     AtProtocolInterface::ComAtprotoRepoListRecordsEx *list =
             new AtProtocolInterface::ComAtprotoRepoListRecordsEx(this);
-    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
-        if (success) {
-            m_listItemCursor = list->cursor();
-            if (list->recordsList().isEmpty())
-                m_listItemCursor.clear();
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, this,
+            [=](bool success) {
+                if (success) {
+                    m_listItemCursor = list->cursor();
+                    if (list->recordsList().isEmpty())
+                        m_listItemCursor.clear();
 
-            for (const auto &item : list->recordsList()) {
-                AppBskyGraphListitem::Main record =
-                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                AppBskyGraphListitem::Main>(item.value);
-                QString list_cid = getListCidByUri(record.list);
-                if (!list_cid.isEmpty()) {
-                    const AppBskyGraphDefs::ListView &current = m_listViewHash.value(list_cid);
-                    if (record.subject == searchTarget()) {
-                        update(indexOf(list_cid), ListsListModel::ListItemUriRole, item.uri);
-                        update(indexOf(list_cid), ListsListModel::SearchStatusRole,
-                               SearchStatusType::SearchStatusTypeContains);
-                        // Listを横断してListItemを探索するのでbreakはできない
+                    for (const auto &item : list->recordsList()) {
+                        AppBskyGraphListitem::Main record =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AppBskyGraphListitem::Main>(item.value);
+                        QString list_cid = getListCidByUri(record.list);
+                        if (!list_cid.isEmpty()) {
+                            const AppBskyGraphDefs::ListView &current =
+                                    m_listViewHash.value(list_cid);
+                            if (record.subject == searchTarget()) {
+                                update(indexOf(list_cid), ListsListModel::ListItemUriRole,
+                                       item.uri);
+                                update(indexOf(list_cid), ListsListModel::SearchStatusRole,
+                                       SearchStatusType::SearchStatusTypeContains);
+                                // Listを横断してListItemを探索するのでbreakはできない
+                            }
+                            // キャッシュに登録
+                            ListItemsCache::getInstance()->addItem(account().did, record.subject,
+                                                                   current.name, current.uri,
+                                                                   item.uri);
+                        }
                     }
-                    // キャッシュに登録
-                    ListItemsCache::getInstance()->addItem(account().did, record.subject,
-                                                           current.name, current.uri, item.uri);
+                    QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+                } else {
+                    setRunning(false);
                 }
-            }
-            QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
-        } else {
-            setRunning(false);
-        }
-        list->deleteLater();
-    });
+                list->deleteLater();
+            });
     list->setAccount(account());
     list->listListItems(account().did, cursor);
 }

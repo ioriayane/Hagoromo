@@ -706,101 +706,106 @@ bool NotificationListModel::getLatest()
     updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
-        connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
-            m_hasUnread = false;
-            if (success) {
-                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+        connect(notification, &AppBskyNotificationListNotifications::finished, this,
+                [=](bool success) {
+                    m_hasUnread = false;
+                    if (success) {
+                        QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-                if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
-                    m_cursor = notification->cursor();
-                }
-                for (auto item = notification->notificationsList().crbegin();
-                     item != notification->notificationsList().crend(); item++) {
-                    m_notificationHash[item->cid] = *item;
+                        if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                            m_cursor = notification->cursor();
+                        }
+                        for (auto item = notification->notificationsList().crbegin();
+                             item != notification->notificationsList().crend(); item++) {
+                            m_notificationHash[item->cid] = *item;
 
-                    PostCueItem post;
-                    post.cid = item->cid;
-                    post.indexed_at = item->indexedAt;
-                    post.reference_time = reference_time;
-                    post.reason = item->reason;
-                    m_cuePost.append(post);
+                            PostCueItem post;
+                            post.cid = item->cid;
+                            post.indexed_at = item->indexedAt;
+                            post.reference_time = reference_time;
+                            post.reason = item->reason;
+                            m_cuePost.append(post);
 
-                    if (!item->isRead) {
-                        m_hasUnread = true;
+                            if (!item->isRead) {
+                                m_hasUnread = true;
+                            }
+
+                            if (item->reason == "like") {
+                                if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                                    appendGetFeedGeneratorCue<
+                                            AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                                } else {
+                                    appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                            item->record);
+                                }
+                            } else if (item->reason == "repost") {
+                                if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                                    appendGetFeedGeneratorCue<
+                                            AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                                } else {
+                                    appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                            item->record);
+                                }
+                            } else if (item->reason == "like-via-repost") {
+                                appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                        item->record);
+                            } else if (item->reason == "repost-via-repost") {
+                                appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                        item->record);
+                            } else if (item->reason == "quote") {
+                                // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                                if (!m_cueGetPost.contains(item->uri)) {
+                                    m_cueGetPost.append(item->uri);
+                                }
+                            } else if (item->reason == "reply" || item->reason == "mention") {
+                                // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                                if (!m_cueGetPost.contains(item->uri)) {
+                                    m_cueGetPost.append(item->uri);
+                                }
+                            } else if (item->reason == "subscribed-post") {
+                                m_auth2SubscribedPost[item->author.did] = item->cid;
+                            } else if (item->reason == "starterpack-joined") {
+                            } else if (item->reason == "verified") {
+                            }
+                        }
+
+                        for (const auto &author : m_auth2SubscribedPost.keys()) {
+                            auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
+                            if (index >= 0) {
+                                if (m_cidList[index] == m_auth2SubscribedPost[author]) {
+                                    // 同じときは消さない
+                                } else {
+                                    beginRemoveRows(QModelIndex(), index, index);
+                                    m_cidList.removeAt(index);
+                                    endRemoveRows();
+                                }
+                            }
+                        }
+
+                        //
+                        // m_cidList[cid] :
+                        //   表示リスト（replyとquoteはそのPostのcidを入れる。それ以外は元Postのcidを表示リストに入れて集計表示する（予定））
+                        // m_list2notificationHash<cid, QList<cid>> :
+                        //   表示リストのcidに関連している実体のcidのリスト
+                        // m_notificationHash<cid, Notification> :
+                        //   apiで取得できるcidをキーにそのまま保存
+                        // m_postHash<cid, Post> :
+                        //   Notificationの先にあるPostの実体
+
+                        // m_post2notificationHash<cid, cid>
+                        //   Post側(m_postHash)からNotification側(m_notificationHash)の参照
+                        //
+                        // m_cueGetPost[cid] :
+                        //   Notificationの先にあるPostを取りに行く待ち行列（たぶんいくつも並列でいけるけど）
+                        //
+                        // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
+                        // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
+                    } else {
+                        emit errorOccurred(notification->errorCode(), notification->errorMessage());
                     }
-
-                    if (item->reason == "like") {
-                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
-                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedLike::Main>(
-                                    item->record);
-                        } else {
-                            appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                        }
-                    } else if (item->reason == "repost") {
-                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
-                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
-                                    item->record);
-                        } else {
-                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
-                        }
-                    } else if (item->reason == "like-via-repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                    } else if (item->reason == "repost-via-repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
-                    } else if (item->reason == "quote") {
-                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                        if (!m_cueGetPost.contains(item->uri)) {
-                            m_cueGetPost.append(item->uri);
-                        }
-                    } else if (item->reason == "reply" || item->reason == "mention") {
-                        // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                        if (!m_cueGetPost.contains(item->uri)) {
-                            m_cueGetPost.append(item->uri);
-                        }
-                    } else if (item->reason == "subscribed-post") {
-                        m_auth2SubscribedPost[item->author.did] = item->cid;
-                    } else if (item->reason == "starterpack-joined") {
-                    } else if (item->reason == "verified") {
-                    }
-                }
-
-                for (const auto &author : m_auth2SubscribedPost.keys()) {
-                    auto index = m_cidList.indexOf(m_auth2SubscribedPost[author]);
-                    if (index >= 0) {
-                        if (m_cidList[index] == m_auth2SubscribedPost[author]) {
-                            // 同じときは消さない
-                        } else {
-                            beginRemoveRows(QModelIndex(), index, index);
-                            m_cidList.removeAt(index);
-                            endRemoveRows();
-                        }
-                    }
-                }
-
-                //
-                // m_cidList[cid] :
-                //   表示リスト（replyとquoteはそのPostのcidを入れる。それ以外は元Postのcidを表示リストに入れて集計表示する（予定））
-                // m_list2notificationHash<cid, QList<cid>> :
-                //   表示リストのcidに関連している実体のcidのリスト
-                // m_notificationHash<cid, Notification> :
-                //   apiで取得できるcidをキーにそのまま保存
-                // m_postHash<cid, Post> :
-                //   Notificationの先にあるPostの実体
-
-                // m_post2notificationHash<cid, cid>
-                //   Post側(m_postHash)からNotification側(m_notificationHash)の参照
-                //
-                // m_cueGetPost[cid] :
-                //   Notificationの先にあるPostを取りに行く待ち行列（たぶんいくつも並列でいけるけど）
-                //
-                // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
-                // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
-            } else {
-                emit errorOccurred(notification->errorCode(), notification->errorMessage());
-            }
-            QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPosts);
-            notification->deleteLater();
-        });
+                    QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPosts);
+                    notification->deleteLater();
+                });
         notification->setAccount(account());
         notification->setLabelers(labelerDids());
         notification->listNotifications(QList<QString>(), 0, false, QString(), QString());
@@ -817,67 +822,72 @@ bool NotificationListModel::getNext()
     updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
-        connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
-            m_hasUnread = false;
-            if (success) {
-                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+        connect(notification, &AppBskyNotificationListNotifications::finished, this,
+                [=](bool success) {
+                    m_hasUnread = false;
+                    if (success) {
+                        QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-                m_cursor = notification->cursor();
+                        m_cursor = notification->cursor();
 
-                for (auto item = notification->notificationsList().crbegin();
-                     item != notification->notificationsList().crend(); item++) {
-                    m_notificationHash[item->cid] = *item;
+                        for (auto item = notification->notificationsList().crbegin();
+                             item != notification->notificationsList().crend(); item++) {
+                            m_notificationHash[item->cid] = *item;
 
-                    PostCueItem post;
-                    post.cid = item->cid;
-                    post.indexed_at = item->indexedAt;
-                    post.reference_time = reference_time;
-                    post.reason = item->reason;
-                    m_cuePost.append(post);
+                            PostCueItem post;
+                            post.cid = item->cid;
+                            post.indexed_at = item->indexedAt;
+                            post.reference_time = reference_time;
+                            post.reason = item->reason;
+                            m_cuePost.append(post);
 
-                    if (!item->isRead) {
-                        m_hasUnread = true;
+                            if (!item->isRead) {
+                                m_hasUnread = true;
+                            }
+
+                            if (item->reason == "like") {
+                                if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                                    appendGetFeedGeneratorCue<
+                                            AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                                } else {
+                                    appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                            item->record);
+                                }
+                            } else if (item->reason == "repost") {
+                                if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                                    appendGetFeedGeneratorCue<
+                                            AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                                } else {
+                                    appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                            item->record);
+                                }
+                            } else if (item->reason == "like-via-repost") {
+                                appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                        item->record);
+                            } else if (item->reason == "repost-via-repost") {
+                                appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                        item->record);
+                            } else if (item->reason == "quote") {
+                                // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                                if (!m_cueGetPost.contains(item->uri)) {
+                                    m_cueGetPost.append(item->uri);
+                                }
+                            } else if (item->reason == "reply" || item->reason == "mention") {
+                                // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                                if (!m_cueGetPost.contains(item->uri)) {
+                                    m_cueGetPost.append(item->uri);
+                                }
+                            } else if (item->reason == "subscribed-post") {
+                            } else if (item->reason == "starterpack-joined") {
+                            } else if (item->reason == "verified") {
+                            }
+                        }
+                    } else {
+                        emit errorOccurred(notification->errorCode(), notification->errorMessage());
                     }
-
-                    if (item->reason == "like") {
-                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
-                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedLike::Main>(
-                                    item->record);
-                        } else {
-                            appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                        }
-                    } else if (item->reason == "repost") {
-                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
-                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
-                                    item->record);
-                        } else {
-                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
-                        }
-                    } else if (item->reason == "like-via-repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                    } else if (item->reason == "repost-via-repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
-                    } else if (item->reason == "quote") {
-                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                        if (!m_cueGetPost.contains(item->uri)) {
-                            m_cueGetPost.append(item->uri);
-                        }
-                    } else if (item->reason == "reply" || item->reason == "mention") {
-                        // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                        if (!m_cueGetPost.contains(item->uri)) {
-                            m_cueGetPost.append(item->uri);
-                        }
-                    } else if (item->reason == "subscribed-post") {
-                    } else if (item->reason == "starterpack-joined") {
-                    } else if (item->reason == "verified") {
-                    }
-                }
-            } else {
-                emit errorOccurred(notification->errorCode(), notification->errorMessage());
-            }
-            QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
-            notification->deleteLater();
-        });
+                    QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
+                    notification->deleteLater();
+                });
         notification->setAccount(account());
         notification->setLabelers(labelerDids());
         notification->listNotifications(QList<QString>(), 0, false, m_cursor, QString());
@@ -898,7 +908,7 @@ bool NotificationListModel::repost(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
 
@@ -930,7 +940,7 @@ bool NotificationListModel::like(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
@@ -1025,7 +1035,7 @@ bool NotificationListModel::detachQuote(int row)
                 if (success) {
                     // 更新後のポストを取得
                     AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
-                    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+                    connect(post, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
                         if (success && !post->postsList().isEmpty()) {
                             QString new_cid = post->postsList().at(0).cid;
                             if (m_postHash.contains(new_cid)) {
@@ -1062,7 +1072,7 @@ bool NotificationListModel::bookmark(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccurred, this, &NotificationListModel::errorOccurred);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
@@ -1515,7 +1525,7 @@ void NotificationListModel::getPosts()
     }
 
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
-    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+    connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
             QStringList new_cid;
             for (const auto &post : posts->postsList()) {
@@ -1627,7 +1637,7 @@ void NotificationListModel::getFeedGenerators()
     }
 
     AppBskyFeedGetFeedGenerators *generators = new AppBskyFeedGetFeedGenerators(this);
-    connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
+    connect(generators, &AppBskyFeedGetFeedGenerators::finished, this, [=](bool success) {
         if (success) {
             QStringList new_cid;
             for (const auto &generator : generators->feedsList()) {
@@ -1668,7 +1678,7 @@ void NotificationListModel::updateSeen()
     }
 
     AppBskyNotificationUpdateSeen *seen = new AppBskyNotificationUpdateSeen(this);
-    connect(seen, &AppBskyNotificationUpdateSeen::finished, [=](bool success) {
+    connect(seen, &AppBskyNotificationUpdateSeen::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(seen->errorCode(), seen->errorMessage());
         }

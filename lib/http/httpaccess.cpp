@@ -226,7 +226,7 @@ QStringList HttpAccess::Private::unixCertFolders() const
 HttpAccess::HttpAccess(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << LOG_DATETIME << this << "HttpAccess()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 HttpAccess::~HttpAccess()

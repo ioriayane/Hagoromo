@@ -128,7 +128,7 @@ void NotificationPreferenceListModel::loadPreferences()
 
     AtProtocolInterface::AppBskyNotificationGetPreferences *getPreferences =
             new AtProtocolInterface::AppBskyNotificationGetPreferences(this);
-    connect(getPreferences, &AtProtocolInterface::AppBskyNotificationGetPreferences::finished,
+    connect(getPreferences, &AtProtocolInterface::AppBskyNotificationGetPreferences::finished, this,
             [=](bool success) {
                 setRunning(false);
 
@@ -167,7 +167,7 @@ void NotificationPreferenceListModel::savePreferences()
     AtProtocolInterface::AppBskyNotificationPutPreferencesV2 *putPreferences =
             new AtProtocolInterface::AppBskyNotificationPutPreferencesV2(this);
     connect(putPreferences, &AtProtocolInterface::AppBskyNotificationPutPreferencesV2::finished,
-            [=](bool success) {
+            this, [=](bool success) {
                 setRunning(false);
 
                 if (!success) {

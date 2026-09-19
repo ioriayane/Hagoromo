@@ -14,7 +14,7 @@ bool BlocksListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetBlocks *profiles = new AppBskyGraphGetBlocks(this);
-        connect(profiles, &AppBskyGraphGetBlocks::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetBlocks::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -41,7 +41,7 @@ bool BlocksListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetBlocks *profiles = new AppBskyGraphGetBlocks(this);
-        connect(profiles, &AppBskyGraphGetBlocks::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetBlocks::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);

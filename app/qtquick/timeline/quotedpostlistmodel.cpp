@@ -13,7 +13,7 @@ bool QuotedPostListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetQuotes *posts = new AppBskyFeedGetQuotes(this);
-        connect(posts, &AppBskyFeedGetQuotes::finished, [=](bool success) {
+        connect(posts, &AppBskyFeedGetQuotes::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = posts->cursor();
@@ -46,7 +46,7 @@ bool QuotedPostListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetQuotes *posts = new AppBskyFeedGetQuotes(this);
-        connect(posts, &AppBskyFeedGetQuotes::finished, [=](bool success) {
+        connect(posts, &AppBskyFeedGetQuotes::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = posts->cursor();
                 QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;

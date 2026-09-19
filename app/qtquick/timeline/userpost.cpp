@@ -288,7 +288,7 @@ void UserPost::convertToAtUri(const QString &base_at_uri, const QString &uri,
     } else {
         // handle
         AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+        connect(profile, &AppBskyActorGetProfile::finished, this, [=](bool success) {
             if (success) {
                 // handle -> did
                 callback(QString(base_at_uri).arg(profile->profileViewDetailed().did, items.at(6)));

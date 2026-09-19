@@ -14,7 +14,7 @@ bool FollowersListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
-        connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollowers::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -41,7 +41,7 @@ bool FollowersListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
-        connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollowers::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);

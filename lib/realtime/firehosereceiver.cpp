@@ -33,14 +33,14 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     m_wdgTimer.setInterval(10 * 1000);
     m_analysisTimer.start();
 
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccurred,
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccurred, this,
             [this](const QString &error, const QString &message) {
                 qDebug().noquote() << "Error:" << error << message;
                 setStatus(FirehoseReceiverStatus::Error);
                 emit errorOccurred(error, message);
                 emit receivingChanged(false);
             });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received, this,
             [=](const QString &type, const QJsonObject &json, const qsizetype size) {
                 m_wdgCounter = 0;
                 updateTimeOfLastReceivedData(json);
@@ -52,16 +52,16 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                 analizeReceivingData(json, size);
                 emit judgeSelectionAndReaction(json); // スレッドのselectorへ通知
             });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, this, [this]() {
         setStatus(FirehoseReceiverStatus::Connected);
         emit connectedToService();
     });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, [this]() {
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, this, [this]() {
         setStatus(FirehoseReceiverStatus::Disconnected);
         emit receivingChanged(false);
         emit disconnectFromService();
     });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::socketStateChanged,
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::socketStateChanged, this,
             [this](QAbstractSocket::SocketState state) {
                 switch (state) {
                 case QAbstractSocket::SocketState::ConnectedState:
@@ -87,7 +87,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                 }
             });
 
-    connect(&m_wdgTimer, &QTimer::timeout, [this]() {
+    connect(&m_wdgTimer, &QTimer::timeout, this, [this]() {
         if (m_wdgCounter < 3) {
             m_wdgCounter++;
         } else {

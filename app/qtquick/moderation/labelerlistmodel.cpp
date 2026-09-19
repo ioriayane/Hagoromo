@@ -73,7 +73,7 @@ void LabelerListModel::load()
             }
 
             AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
-            connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
+            connect(services, &AppBskyLabelerGetServices::finished, this, [=](bool success) {
                 if (success) {
                     beginInsertRows(QModelIndex(), 0, services->viewsLabelerViewList().count() - 1);
                     m_labelerList = services->viewsLabelerViewList();

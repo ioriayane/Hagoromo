@@ -211,6 +211,10 @@ target_link_libraries(Hagoromo PRIVATE
     HagoromoGuiLib
 )
 
+target_compile_definitions(Hagoromo PRIVATE
+    QT_NO_CONTEXTLESS_CONNECT
+)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(Hagoromo PRIVATE
         QT_NO_DEBUG_OUTPUT
