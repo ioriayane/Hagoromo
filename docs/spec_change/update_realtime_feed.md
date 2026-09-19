@@ -1,0 +1,25 @@
+# リアルタムフィードに直近のデータを保存する機能の追加
+
+- リアルタイムフィードのポスト情報を管理するクラス
+  - シングルトンのクラスとして構築
+  - 保存する内容
+    - RealtimeFeed::OperationInfoの内容をリストで保存する
+    - RealtimeFeedListModelのインスタンスごとに割り当てられるキー（GUIのカラムごとに割り振られるキーを使用する）
+    - リストはキーを使用して辞書に保存する
+  - 動作
+    - ポストの追加機能
+      - キーとCIDとURIを受け取り、キーごとに保存する
+      - 50件を超えたら古いものから削除する
+    - ポストの取得機能
+      - キーを受け取り、保存している情報のリストを返す
+    - ポストのファイル出力機能
+      - アプリの終了時にポストの追加機能で保存した情報をJSONでファイルに出力する
+      - 出力先はCommon::appDataFolder()で取得できるフォルダ
+    - ポストの復元機能
+      - アプリの起動時にポストのファイル出力機能で出力したファイルから読み込み復元する
+- RealtimeFeedListModelの変更
+  - QML側からキーを受け取るプロパティを追加（GUIのカラムごとに割り振られるキーを使用する）
+  - RealtimeFeedListModel::getPostThreadでm_cueGetPostThreadの内容を取り出したら管理クラスへ追加をする
+  - RealtimeFeedListModelの初期化シーケンスの最後に管理クラスから読み込みm_cueGetPostThreadに入れて取得処理をキックする
+- ColumnView.qmlの変更
+  - RealtimeFeedListModelに追加したプロパティを設定する（columnKeyをバインディング）

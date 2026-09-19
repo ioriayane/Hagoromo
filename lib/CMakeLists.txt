@@ -287,6 +287,8 @@ add_library(HagoromoLib STATIC
     realtime/notpostselector.h
     realtime/orpostselector.cpp
     realtime/orpostselector.h
+    realtime/recentpostcache.cpp
+    realtime/recentpostcache.h
     realtime/xorpostselector.cpp
     realtime/xorpostselector.h
     search/search.h

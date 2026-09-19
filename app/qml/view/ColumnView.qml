@@ -635,6 +635,7 @@ ColumnLayout {
             model: RealtimeFeedListModel {
                 enableNotificationsForReactionsOnReposts: settings.enableNotificationsForReactionsOnReposts
                 selectorJson: settings.columnValue
+                columnKey: columnView.columnKey
                 onErrorOccurred: (code, message) => columnView.errorOccurred(columnView.account.uuid, code, message)
                 onReceivingChanged: {
                     autoIconImage.iconColor = Material.color(Material.Green)

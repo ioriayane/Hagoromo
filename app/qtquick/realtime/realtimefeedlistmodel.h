@@ -11,6 +11,7 @@ class RealtimeFeedListModel : public TimelineListModel
     Q_PROPERTY(QString selectorJson READ selectorJson WRITE setSelectorJson NOTIFY
                        selectorJsonChanged FINAL)
     Q_PROPERTY(bool receiving READ receiving WRITE setReceiving NOTIFY receivingChanged FINAL)
+    Q_PROPERTY(QString columnKey READ columnKey WRITE setColumnKey NOTIFY columnKeyChanged FINAL)
 public:
     explicit RealtimeFeedListModel(QObject *parent = nullptr);
     ~RealtimeFeedListModel();
@@ -25,10 +26,13 @@ public:
     void setSelectorJson(const QString &newSelectorJson);
     bool receiving() const;
     void setReceiving(bool newReceiving);
+    QString columnKey() const;
+    void setColumnKey(const QString &newColumnKey);
 
 signals:
     void selectorJsonChanged();
     void receivingChanged();
+    void columnKeyChanged();
 
 private:
     void getFollowing();
@@ -52,6 +56,7 @@ private:
     QString m_cursor;
     QString m_selectorJson;
     bool m_receiving;
+    QString m_columnKey;
 };
 
 #endif // REALTIMEFEEDLISTMODEL_H

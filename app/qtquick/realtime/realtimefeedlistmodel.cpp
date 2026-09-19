@@ -5,6 +5,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlist.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
+#include "realtime/recentpostcache.h"
 
 using namespace RealtimeFeed;
 using AtProtocolInterface::AppBskyFeedGetPosts;
@@ -342,6 +343,12 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
 #else
         FirehoseReceiver::getInstance()->start();
 #endif
+        if (!m_columnKey.isEmpty()) {
+            m_cueGetPostThread.append(RecentPostCache::getInstance()->get(m_columnKey));
+            if (!m_cueGetPostThread.isEmpty()) {
+                getPostThread();
+            }
+        }
     }
 }
 
@@ -405,6 +412,9 @@ void RealtimeFeedListModel::getPostThread()
 
     RealtimeFeed::OperationInfo ope_info = m_cueGetPostThread.first();
     m_cueGetPostThread.removeFirst();
+    if (!m_columnKey.isEmpty()) {
+        RecentPostCache::getInstance()->add(m_columnKey, ope_info);
+    }
 
     m_runningCue = true;
 
@@ -473,4 +483,17 @@ void RealtimeFeedListModel::setReceiving(bool newReceiving)
         return;
     m_receiving = newReceiving;
     emit receivingChanged();
+}
+
+QString RealtimeFeedListModel::columnKey() const
+{
+    return m_columnKey;
+}
+
+void RealtimeFeedListModel::setColumnKey(const QString &newColumnKey)
+{
+    if (m_columnKey == newColumnKey)
+        return;
+    m_columnKey = newColumnKey;
+    emit columnKeyChanged();
 }

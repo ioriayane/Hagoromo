@@ -11,7 +11,9 @@
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
 #include "realtime/editselectorlistmodel.h"
+#include "realtime/recentpostcache.h"
 #include "tools/accountmanager.h"
+#include "common.h"
 
 using namespace RealtimeFeed;
 
@@ -31,6 +33,8 @@ private slots:
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
+    void test_RealtimeFeedListModel_columnKey();
+    void test_RecentPostCache();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
     void test_EditSelectorListModel_save();
@@ -63,6 +67,13 @@ realtime_test::~realtime_test() { }
 
 void realtime_test::initTestCase()
 {
+    // RecentPostCacheはシングルトンで、生成時(初回のgetInstance()呼び出し時)に
+    // ディスク上のファイルを読み込む。前回のテスト実行時の残留ファイルの影響を受けないように、
+    // どのテストからもRecentPostCacheが参照される前にここで削除しておく。
+    QString recent_post_cache_path = Common::appDataFolder() + "/realtime_recent_post.json";
+    if (QFile::exists(recent_post_cache_path)) {
+        QFile::remove(recent_post_cache_path);
+    }
 
     // if (m_server.listen(QHostAddress::LocalHost, 0)) {
     //     qDebug().noquote() << "Start WebSocket Server";
@@ -432,6 +443,137 @@ void realtime_test::test_RealtimeFeedListModel_recoverAfterError()
     QCOMPARE(recv->selectorIsReady(&model), true);
 
     recv->removeSelector(&model);
+}
+
+void realtime_test::test_RealtimeFeedListModel_columnKey()
+{
+    // columnKeyを設定したモデルがポストを取得するとRecentPostCacheへ保存され、
+    // 別のモデルを同じcolumnKeyで初期化すると、その内容が復元されて自動的に再取得されることを確認する
+
+    const QString column_key = "unittest-column-key";
+    const QString selector_json =
+            "{\"or\": [{\"following\": {}},{\"followers\": {}},{\"list\": "
+            "{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+            "3kcj52ovctd2h\",\"name\":\"My Accounts\"}}]}";
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
+    RealtimeFeedListModel model1;
+    model1.setAccount(uuid);
+    model1.setColumnKey(column_key);
+    QCOMPARE(model1.columnKey(), column_key);
+    model1.setSelectorJson(selector_json);
+    {
+        QSignalSpy spy(&model1, SIGNAL(runningChanged()));
+        model1.getLatest();
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 2);
+    }
+
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    {
+        QSignalSpy spy(recv, SIGNAL(connectedToService()));
+        recv->start();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+    }
+
+    QJsonDocument json_doc = loadJson(":/data/realtimemodel/recv_data_1.json");
+    QVERIFY(json_doc.isObject());
+    QCOMPARE(model1.rowCount(), 0);
+    {
+        QSignalSpy spy(&model1, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(json_doc.object());
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+    }
+    QCOMPARE(model1.rowCount(), 1);
+    QString cid = model1.item(0, TimelineListModel::CidRole).toString();
+    QVERIFY(!cid.isEmpty());
+
+    recv->removeSelector(&model1);
+
+    // 同じcolumnKeyで新しいモデルを初期化すると、保存されていたポストが復元されて自動的に取得される
+    RealtimeFeedListModel model2;
+    model2.setAccount(uuid);
+    model2.setColumnKey(column_key);
+    model2.setSelectorJson(selector_json);
+    {
+        QSignalSpy spy(&model2, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        model2.getLatest();
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 1);
+    }
+    QCOMPARE(model2.rowCount(), 1);
+    QCOMPARE(model2.item(0, TimelineListModel::CidRole).toString(), cid);
+
+    recv->removeSelector(&model2);
+}
+
+void realtime_test::test_RecentPostCache()
+{
+    QString temp_path = Common::appDataFolder() + "/realtime_recent_post.json";
+    if (QFile::exists(temp_path)) {
+        QFile::remove(temp_path);
+    }
+
+    RecentPostCache *cache = RecentPostCache::getInstance();
+
+    auto makeInfo = [](const QString &cid, const QString &uri) {
+        OperationInfo info;
+        info.cid = cid;
+        info.uri = uri;
+        return info;
+    };
+
+    // 未知のキー、空のキーは空リストを返す。空のキーは保存もされない
+    QVERIFY(cache->get("unknown-key").isEmpty());
+    cache->add(QString(), makeInfo("cid", "uri"));
+    QVERIFY(cache->get(QString()).isEmpty());
+
+    // 追加した内容がキーごとに取得できる
+    cache->add("key1", makeInfo("cid1", "uri1"));
+    cache->add("key1", makeInfo("cid2", "uri2"));
+    cache->add("key2", makeInfo("cid3", "uri3"));
+
+    QList<OperationInfo> list1 = cache->get("key1");
+    QCOMPARE(list1.count(), 2);
+    QCOMPARE(list1.at(0).cid, QString("cid1"));
+    QCOMPARE(list1.at(0).uri, QString("uri1"));
+    QCOMPARE(list1.at(1).cid, QString("cid2"));
+    QCOMPARE(list1.at(1).uri, QString("uri2"));
+
+    // get()で取り出した内容はキャッシュから取り除かれる
+    QVERIFY(cache->get("key1").isEmpty());
+
+    // 50件を超えたら古いものから削除される
+    for (int i = 0; i < 60; i++) {
+        cache->add("key3", makeInfo(QString("cid_%1").arg(i), QString("uri_%1").arg(i)));
+    }
+    QList<OperationInfo> list3 = cache->get("key3");
+    QCOMPARE(list3.count(), 50);
+    QCOMPARE(list3.first().cid, QString("cid_10"));
+    QCOMPARE(list3.last().cid, QString("cid_59"));
+
+    // ファイルへ保存・復元できる
+    cache->add("key4", makeInfo("cid4_1", "uri4_1"));
+    cache->add("key4", makeInfo("cid4_2", "uri4_2"));
+    cache->save();
+    QVERIFY(QFile::exists(temp_path));
+
+    // メモリ上から取り除いてから、保存したファイルを読み込んで復元する
+    QVERIFY(!cache->get("key4").isEmpty());
+    QVERIFY(cache->get("key4").isEmpty());
+    cache->load();
+
+    QList<OperationInfo> loaded = cache->get("key4");
+    QCOMPARE(loaded.count(), 2);
+    QCOMPARE(loaded.at(0).cid, QString("cid4_1"));
+    QCOMPARE(loaded.at(0).uri, QString("uri4_1"));
+    QCOMPARE(loaded.at(1).cid, QString("cid4_2"));
+    QCOMPARE(loaded.at(1).uri, QString("uri4_2"));
 }
 
 void realtime_test::test_EditSelectorListModel()
