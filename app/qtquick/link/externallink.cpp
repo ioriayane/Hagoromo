@@ -35,7 +35,7 @@ void ExternalLink::getExternalLink(const QString &uri)
     m_thumbLocal->open();
 
     OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
-    connect(open_graph, &OpenGraphProtocol::finished, [=](bool success) {
+    connect(open_graph, &OpenGraphProtocol::finished, this, [=](bool success) {
         bool do_download = false;
         qDebug().noquote() << "uri:" << open_graph->uri();
         qDebug().noquote() << "title:" << open_graph->title();
@@ -54,7 +54,7 @@ void ExternalLink::getExternalLink(const QString &uri)
             setRunning(false);
         }
     });
-    connect(open_graph, &OpenGraphProtocol::finishedDownload, [=](bool success) {
+    connect(open_graph, &OpenGraphProtocol::finishedDownload, this, [=](bool success) {
         qDebug().noquote() << "finishedDownload" << success;
         if (!success) {
             setThumb(QString());

@@ -17,7 +17,7 @@ bool AuthorFeedListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
-        connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
+        connect(timeline, &AppBskyFeedGetAuthorFeed::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
@@ -57,7 +57,7 @@ bool AuthorFeedListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
-        connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
+        connect(timeline, &AppBskyFeedGetAuthorFeed::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = timeline->cursor();
                 copyFromNext(timeline->feedList());

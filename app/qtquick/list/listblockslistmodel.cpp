@@ -12,7 +12,7 @@ bool ListBlocksListModel::getLatest()
     setRunning(true);
 
     AppBskyGraphGetListBlocks *lists = new AppBskyGraphGetListBlocks(this);
-    connect(lists, &AppBskyGraphGetListBlocks::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetListBlocks::finished, this, [=](bool success) {
         if (success) {
             if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
@@ -38,7 +38,7 @@ bool ListBlocksListModel::getNext()
     setRunning(true);
 
     AppBskyGraphGetListBlocks *lists = new AppBskyGraphGetListBlocks(this);
-    connect(lists, &AppBskyGraphGetListBlocks::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetListBlocks::finished, this, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
             if (lists->listsList().isEmpty())

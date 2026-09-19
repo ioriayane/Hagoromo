@@ -1173,7 +1173,7 @@ void AtpAbstractListModel::getExtendMediaFiles()
     }
 
     ComAtprotoSyncGetBlob *blob = new ComAtprotoSyncGetBlob(this);
-    connect(blob, &ComAtprotoSyncGetBlob::finished, [=](bool success) {
+    connect(blob, &ComAtprotoSyncGetBlob::finished, this, [=](bool success) {
         if (success) {
             QString path = saveMediaFile(blob->blobData(), blob_item.cid, blob->extension());
             if (!path.isEmpty()) {

@@ -61,7 +61,7 @@ void FeedGeneratorLink::convertToAtUri(const QString &base_at_uri, const QString
     if (m_rxHandle.match(user_id).hasMatch()) {
         // handle
         AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+        connect(profile, &AppBskyActorGetProfile::finished, this, [=](bool success) {
             if (success) {
                 // handle -> did
                 callback(QString(base_at_uri).arg(profile->profileViewDetailed().did, items.at(6)));
@@ -92,7 +92,7 @@ void FeedGeneratorLink::getFeedGenerator(const QString &uri)
             return;
         }
         AppBskyFeedGetFeedGenerator *generator = new AppBskyFeedGetFeedGenerator(this);
-        connect(generator, &AppBskyFeedGetFeedGenerator::finished, [=](bool success) {
+        connect(generator, &AppBskyFeedGetFeedGenerator::finished, this, [=](bool success) {
             if (success) {
                 setAvatar(generator->view().avatar);
                 setDisplayName(generator->view().displayName);

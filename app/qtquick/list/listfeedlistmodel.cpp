@@ -14,7 +14,7 @@ bool ListFeedListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetListFeed *list = new AppBskyFeedGetListFeed(this);
-        connect(list, &AppBskyFeedGetListFeed::finished, [=](bool success) {
+        connect(list, &AppBskyFeedGetListFeed::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = list->cursor();
@@ -41,7 +41,7 @@ bool ListFeedListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetListFeed *list = new AppBskyFeedGetListFeed(this);
-        connect(list, &AppBskyFeedGetListFeed::finished, [=](bool success) {
+        connect(list, &AppBskyFeedGetListFeed::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = list->cursor(); // 続きの読み込みの時は必ず上書き
 

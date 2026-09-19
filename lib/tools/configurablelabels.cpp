@@ -850,7 +850,7 @@ void ConfigurableLabels::initializeLabels()
 bool ConfigurableLabels::putPreferences(const QJsonArray &json)
 {
     AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
-    connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorPutPreferences::finished, this, [=](bool success) {
         if (success) {
             qDebug() << "finish put preferences.";
         }

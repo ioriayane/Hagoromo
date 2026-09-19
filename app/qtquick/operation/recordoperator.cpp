@@ -231,70 +231,82 @@ void RecordOperator::post()
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
                 ComAtprotoRepoCreateRecordEx *create_record =
                         new ComAtprotoRepoCreateRecordEx(this);
-                connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
-                    if (success) {
-                        QString last_post_uri = create_record->uri();
-                        QString last_post_cid = create_record->cid();
-                        tokimekiPoll(
-                                last_post_uri, last_post_cid,
-                                [=](bool poll_success, const QString &poll_uri,
-                                    const QString &poll_cid) {
-                                    Q_UNUSED(poll_success)
-                                    Q_UNUSED(poll_uri)
-                                    Q_UNUSED(poll_cid)
+                connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this,
+                        [=](bool success) {
+                            if (success) {
+                                QString last_post_uri = create_record->uri();
+                                QString last_post_cid = create_record->cid();
+                                tokimekiPoll(
+                                        last_post_uri, last_post_cid,
+                                        [=](bool poll_success, const QString &poll_uri,
+                                            const QString &poll_cid) {
+                                            Q_UNUSED(poll_success)
+                                            Q_UNUSED(poll_uri)
+                                            Q_UNUSED(poll_cid)
 
-                                    bool ret = threadGate(
-                                            last_post_uri,
-                                            [=](bool success2, const QString &uri,
-                                                const QString &cid) {
-                                                Q_UNUSED(uri)
-                                                Q_UNUSED(cid)
-                                                postGate(
-                                                        last_post_uri,
-                                                        [=](bool success3, const QString &uri3,
-                                                            const QString &cid3) {
-                                                            Q_UNUSED(success3)
-                                                            m_sequentialPostsCurrent++;
-                                                            if (m_sequentialPostsCurrent
-                                                                >= m_sequentialPostsTotal) {
-                                                                setProgressMessage(QString());
-                                                                emit finished(success2, uri3, cid3);
-                                                                setRunning(false);
-                                                            } else {
-                                                                setPostGate(true, QStringList());
-                                                                m_threadGateType = "everybody";
-                                                                if (m_sequentialPostsCurrent == 1
-                                                                    && m_replyRoot.uri.isEmpty()) {
-                                                                    m_replyRoot.uri = last_post_uri;
-                                                                    m_replyRoot.cid = last_post_cid;
-                                                                }
-                                                                m_replyParent.uri = last_post_uri;
-                                                                m_replyParent.cid = last_post_cid;
-                                                                post();
-                                                            }
-                                                        });
-                                            });
-                                    if (!ret) {
-                                        setProgressMessage(QString());
-                                        emit errorOccurred(
-                                                "InvalidThreadGateSetting",
-                                                QString("Invalid thread gate "
-                                                        "setting.\ntype:%1\nrules:%2")
-                                                        .arg(m_threadGateType,
-                                                             m_threadGateRules.join(", ")));
-                                        emit finished(ret, QString(), QString());
-                                        setRunning(false);
-                                    }
-                                });
-                    } else {
-                        setProgressMessage(QString());
-                        emit errorOccurred(create_record->errorCode(),
-                                           create_record->errorMessage());
-                        emit finished(success, QString(), QString());
-                        setRunning(false);
-                    }
-                    create_record->deleteLater();
-                });
+                                            bool ret = threadGate(
+                                                    last_post_uri,
+                                                    [=](bool success2, const QString &uri,
+                                                        const QString &cid) {
+                                                        Q_UNUSED(uri)
+                                                        Q_UNUSED(cid)
+                                                        postGate(
+                                                                last_post_uri,
+                                                                [=](bool success3,
+                                                                    const QString &uri3,
+                                                                    const QString &cid3) {
+                                                                    Q_UNUSED(success3)
+                                                                    m_sequentialPostsCurrent++;
+                                                                    if (m_sequentialPostsCurrent
+                                                                        >= m_sequentialPostsTotal) {
+                                                                        setProgressMessage(
+                                                                                QString());
+                                                                        emit finished(success2,
+                                                                                      uri3, cid3);
+                                                                        setRunning(false);
+                                                                    } else {
+                                                                        setPostGate(true,
+                                                                                    QStringList());
+                                                                        m_threadGateType =
+                                                                                "everybody";
+                                                                        if (m_sequentialPostsCurrent
+                                                                                    == 1
+                                                                            && m_replyRoot.uri
+                                                                                       .isEmpty()) {
+                                                                            m_replyRoot.uri =
+                                                                                    last_post_uri;
+                                                                            m_replyRoot.cid =
+                                                                                    last_post_cid;
+                                                                        }
+                                                                        m_replyParent.uri =
+                                                                                last_post_uri;
+                                                                        m_replyParent.cid =
+                                                                                last_post_cid;
+                                                                        post();
+                                                                    }
+                                                                });
+                                                    });
+                                            if (!ret) {
+                                                setProgressMessage(QString());
+                                                emit errorOccurred(
+                                                        "InvalidThreadGateSetting",
+                                                        QString("Invalid thread gate "
+                                                                "setting.\ntype:%1\nrules:%2")
+                                                                .arg(m_threadGateType,
+                                                                     m_threadGateRules.join(", ")));
+                                                emit finished(ret, QString(), QString());
+                                                setRunning(false);
+                                            }
+                                        });
+                            } else {
+                                setProgressMessage(QString());
+                                emit errorOccurred(create_record->errorCode(),
+                                                   create_record->errorMessage());
+                                emit finished(success, QString(), QString());
+                                setRunning(false);
+                            }
+                            create_record->deleteLater();
+                        });
                 create_record->setAccount(account());
                 create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
                                         m_replyRoot.uri);
@@ -375,7 +387,7 @@ void RecordOperator::repost(const QString &cid, const QString &uri, const QStrin
     setProgressMessage(tr("Repost ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -400,7 +412,7 @@ void RecordOperator::like(const QString &cid, const QString &uri, const QString 
     setProgressMessage(tr("Like ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -424,7 +436,7 @@ void RecordOperator::follow(const QString &did)
     setProgressMessage(tr("Follow ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -446,7 +458,7 @@ void RecordOperator::mute(const QString &did)
     setProgressMessage(tr("Mute ..."));
 
     AppBskyGraphMuteActor *mute = new AppBskyGraphMuteActor(this);
-    connect(mute, &AppBskyGraphMuteActor::finished, [=](bool success) {
+    connect(mute, &AppBskyGraphMuteActor::finished, this, [=](bool success) {
         if (success) {
         } else {
             emit errorOccurred(mute->errorCode(), mute->errorMessage());
@@ -469,7 +481,7 @@ void RecordOperator::block(const QString &did)
     setProgressMessage(tr("Block ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -491,7 +503,7 @@ void RecordOperator::blockList(const QString &uri)
     setProgressMessage(tr("Block list ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -515,15 +527,17 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
             setProgressMessage(tr("Create list ... (%1)").arg(name));
 
             ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-            connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
-                if (!success) {
-                    emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
-                }
-                setProgressMessage(QString());
-                emit finished(success, create_record->uri(), create_record->cid());
-                setRunning(false);
-                create_record->deleteLater();
-            });
+            connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this,
+                    [=](bool success) {
+                        if (!success) {
+                            emit errorOccurred(create_record->errorCode(),
+                                               create_record->errorMessage());
+                        }
+                        setProgressMessage(QString());
+                        emit finished(success, create_record->uri(), create_record->cid());
+                        setRunning(false);
+                        create_record->deleteLater();
+                    });
             if (!m_embedImageBlobs.isEmpty()) {
                 create_record->setImageBlobs(m_embedImageBlobs);
             } else {
@@ -555,7 +569,7 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
     setProgressMessage(tr("Add to list ..."));
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -578,7 +592,7 @@ bool RecordOperator::bookmark(const QString &cid, const QString &uri)
     setProgressMessage(tr("Saving post ..."));
 
     AppBskyBookmarkCreateBookmark *book_mark = new AppBskyBookmarkCreateBookmark(this);
-    connect(book_mark, &AppBskyBookmarkCreateBookmark::finished, [=](bool success) {
+    connect(book_mark, &AppBskyBookmarkCreateBookmark::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(book_mark->errorCode(), book_mark->errorMessage());
         }
@@ -604,7 +618,7 @@ void RecordOperator::deletePost(const QString &uri)
     setProgressMessage(tr("Delete post ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -628,7 +642,7 @@ void RecordOperator::deleteLike(const QString &uri)
     setProgressMessage(tr("Delete like ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -652,7 +666,7 @@ void RecordOperator::deleteRepost(const QString &uri)
     setProgressMessage(tr("Delete repost ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -676,7 +690,7 @@ void RecordOperator::deleteFollow(const QString &uri)
     setProgressMessage(tr("Unfollow ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -698,7 +712,7 @@ void RecordOperator::deleteMute(const QString &did)
     setProgressMessage(tr("Unmute ..."));
 
     AppBskyGraphUnmuteActor *unmute = new AppBskyGraphUnmuteActor(this);
-    connect(unmute, &AppBskyGraphMuteActor::finished, [=](bool success) {
+    connect(unmute, &AppBskyGraphMuteActor::finished, this, [=](bool success) {
         if (success) {
         } else {
             emit errorOccurred(unmute->errorCode(), unmute->errorMessage());
@@ -723,7 +737,7 @@ void RecordOperator::deleteBlock(const QString &uri)
     setProgressMessage(tr("Unblock ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -747,7 +761,7 @@ void RecordOperator::deleteBlockList(const QString &uri)
     setProgressMessage(tr("Unblock block list ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -777,7 +791,7 @@ bool RecordOperator::deleteList(const QString &uri)
 
                     ComAtprotoRepoDeleteRecordEx *delete_record =
                             new ComAtprotoRepoDeleteRecordEx(this);
-                    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished,
+                    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this,
                             [=](bool success) {
                                 if (!success) {
                                     emit errorOccurred(delete_record->errorCode(),
@@ -830,7 +844,7 @@ bool RecordOperator::deleteListItem(const QString &uri)
     setProgressMessage(tr("Delete list item ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -853,7 +867,7 @@ bool RecordOperator::deleteBookmark(const QString &uri)
     setProgressMessage(tr("Delete saved post ..."));
 
     AppBskyBookmarkDeleteBookmark *book_mark = new AppBskyBookmarkDeleteBookmark(this);
-    connect(book_mark, &AppBskyBookmarkDeleteBookmark::finished, [=](bool success) {
+    connect(book_mark, &AppBskyBookmarkDeleteBookmark::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(book_mark->errorCode(), book_mark->errorMessage());
         }
@@ -891,7 +905,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
     setImages(images, alts);
 
     ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
-    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
+    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
         if (success1) {
             AppBskyActorProfile::Main old_record =
                     LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
@@ -911,16 +925,17 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         }
                     }
                     ComAtprotoRepoPutRecordEx *new_profile = new ComAtprotoRepoPutRecordEx(this);
-                    connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
-                        if (!success3) {
-                            emit errorOccurred(new_profile->errorCode(),
-                                               new_profile->errorMessage());
-                        }
-                        setProgressMessage(QString());
-                        emit finished(success3, QString(), QString());
-                        setRunning(false);
-                        new_profile->deleteLater();
-                    });
+                    connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, this,
+                            [=](bool success3) {
+                                if (!success3) {
+                                    emit errorOccurred(new_profile->errorCode(),
+                                                       new_profile->errorMessage());
+                                }
+                                setProgressMessage(QString());
+                                emit finished(success3, QString(), QString());
+                                setRunning(false);
+                                new_profile->deleteLater();
+                            });
                     new_profile->setAccount(account());
                     new_profile->profile(avatar, banner, description, display_name, pronouns,
                                          website, old_record.pinnedPost, old_cid);
@@ -951,14 +966,14 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
     setProgressMessage(tr("Update post pinning ... (%1)").arg(account().handle));
 
     ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
-    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
+    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
         if (success1) {
             AppBskyActorProfile::Main old_record =
                     LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
                             old_profile->value());
             QString old_cid = old_profile->cid();
             ComAtprotoRepoPutRecordEx *new_profile = new ComAtprotoRepoPutRecordEx(this);
-            connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
+            connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success3) {
                 if (!success3) {
                     emit errorOccurred(new_profile->errorCode(), new_profile->errorMessage());
                 }
@@ -1006,7 +1021,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
     setImages(images, alts);
 
     ComAtprotoRepoGetRecordEx *old_list = new ComAtprotoRepoGetRecordEx(this);
-    connect(old_list, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
+    connect(old_list, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
         if (success1) {
             AppBskyGraphList::Main old_record =
                     LexiconsTypeUnknown::fromQVariant<AppBskyGraphList::Main>(old_list->value());
@@ -1020,15 +1035,17 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
                         }
                     }
                     ComAtprotoRepoPutRecordEx *new_list = new ComAtprotoRepoPutRecordEx(this);
-                    connect(new_list, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
-                        if (!success3) {
-                            emit errorOccurred(new_list->errorCode(), new_list->errorMessage());
-                        }
-                        setProgressMessage(QString());
-                        emit finished(success3, QString(), QString());
-                        setRunning(false);
-                        new_list->deleteLater();
-                    });
+                    connect(new_list, &ComAtprotoRepoPutRecordEx::finished, this,
+                            [=](bool success3) {
+                                if (!success3) {
+                                    emit errorOccurred(new_list->errorCode(),
+                                                       new_list->errorMessage());
+                                }
+                                setProgressMessage(QString());
+                                emit finished(success3, QString(), QString());
+                                setRunning(false);
+                                new_list->deleteLater();
+                            });
                     new_list->setAccount(account());
                     new_list->list(avatar, old_record.purpose, description, name, r_key);
                 } else {
@@ -1061,7 +1078,7 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
     setProgressMessage(tr("Update who can reply ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         // レコードがないときはエラーになるので継続
 
         if (type == "everybody") {
@@ -1204,17 +1221,18 @@ void RecordOperator::updateActivitySubscription(const QString &did, bool post, b
 
     AppBskyNotificationPutActivitySubscription *subscription =
             new AppBskyNotificationPutActivitySubscription(this);
-    connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, [=](bool success) {
-        if (success) {
-            qDebug().noquote() << "Activity subscription updated for" << did << "post:" << post
-                               << "reply:" << reply;
-        } else {
-            emit errorOccurred(subscription->errorCode(), subscription->errorMessage());
-        }
-        emit finished(success, QString(), QString());
-        setRunning(false);
-        subscription->deleteLater();
-    });
+    connect(subscription, &AppBskyNotificationPutActivitySubscription::finished, this,
+            [=](bool success) {
+                if (success) {
+                    qDebug().noquote() << "Activity subscription updated for" << did
+                                       << "post:" << post << "reply:" << reply;
+                } else {
+                    emit errorOccurred(subscription->errorCode(), subscription->errorMessage());
+                }
+                emit finished(success, QString(), QString());
+                setRunning(false);
+                subscription->deleteLater();
+            });
     subscription->setAccount(account());
     subscription->putActivitySubscription(did, subscription_json);
 }
@@ -1226,7 +1244,7 @@ void RecordOperator::updateNotificationDeclaration(const QString &declaration)
     setRunning(true);
 
     ComAtprotoRepoPutRecordEx *create_record = new ComAtprotoRepoPutRecordEx(this);
-    connect(create_record, &ComAtprotoRepoPutRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -1323,7 +1341,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
     m_embedImages.removeFirst();
 
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
-    connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
+    connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, this, [=](bool success) {
         if (success) {
             qDebug().noquote() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
                                << upload_blob->size();
@@ -1367,29 +1385,30 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
 
     AtProtocolInterface::ComAtprotoRepoListRecordsEx *list =
             new AtProtocolInterface::ComAtprotoRepoListRecordsEx(this);
-    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
-        if (success) {
-            m_listItemCursor = list->cursor();
-            if (list->recordsList().isEmpty())
-                m_listItemCursor.clear();
-            for (const auto &item : list->recordsList()) {
-                AppBskyGraphListitem::Main record =
-                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                AppBskyGraphListitem::Main>(item.value);
-                if (record.list == list_uri) {
-                    qDebug().noquote() << "DELETE ITEM:" << item.uri << " in " << list_uri;
-                    m_listItems.append(item.uri);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, this,
+            [=](bool success) {
+                if (success) {
+                    m_listItemCursor = list->cursor();
+                    if (list->recordsList().isEmpty())
+                        m_listItemCursor.clear();
+                    for (const auto &item : list->recordsList()) {
+                        AppBskyGraphListitem::Main record =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AppBskyGraphListitem::Main>(item.value);
+                        if (record.list == list_uri) {
+                            qDebug().noquote() << "DELETE ITEM:" << item.uri << " in " << list_uri;
+                            m_listItems.append(item.uri);
+                        }
+                    }
+                    if (!getAllListItems(list_uri, callback)) {
+                        callback(false);
+                    }
+                } else {
+                    emit errorOccurred(list->errorCode(), list->errorMessage());
+                    callback(false);
                 }
-            }
-            if (!getAllListItems(list_uri, callback)) {
-                callback(false);
-            }
-        } else {
-            emit errorOccurred(list->errorCode(), list->errorMessage());
-            callback(false);
-        }
-        list->deleteLater();
-    });
+                list->deleteLater();
+            });
     list->setAccount(account());
     list->listListItems(account().did, cursor);
 
@@ -1409,7 +1428,7 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     m_listItems.pop_front();
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
         if (success) {
             deleteAllListItems(callback);
         } else {
@@ -1464,7 +1483,7 @@ bool RecordOperator::threadGate(
     }
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -1495,7 +1514,7 @@ void RecordOperator::postGate(const QString &uri,
     }
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }
@@ -1516,7 +1535,7 @@ void RecordOperator::tokimekiPoll(
         return;
     }
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
         if (!success) {
             emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
         }

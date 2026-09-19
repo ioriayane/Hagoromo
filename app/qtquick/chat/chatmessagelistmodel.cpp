@@ -482,7 +482,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
 
     if (!convoId.isEmpty()) {
         ChatBskyConvoGetConvo *convo = new ChatBskyConvoGetConvo(this);
-        connect(convo, &ChatBskyConvoGetConvo::finished, [=](bool success) {
+        connect(convo, &ChatBskyConvoGetConvo::finished, this, [=](bool success) {
             if (success) {
                 m_convo = convo->convo();
                 setMembers(m_convo);
@@ -499,7 +499,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
         convo->getConvo(convoId);
     } else {
         ChatBskyConvoGetConvoForMembers *convo = new ChatBskyConvoGetConvoForMembers(this);
-        connect(convo, &ChatBskyConvoGetConvoForMembers::finished, [=](bool success) {
+        connect(convo, &ChatBskyConvoGetConvoForMembers::finished, this, [=](bool success) {
             qDebug().noquote() << success << convo->replyJson();
             if (success) {
                 m_convo = convo->convo();

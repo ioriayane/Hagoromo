@@ -106,7 +106,7 @@ void Reporter::reportPost(const QString &uri, const QString &cid, const QString 
     setRunning(true);
 
     ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
-    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, this, [=](bool success) {
         setRunning(false);
         emit errorOccurred(report->errorCode(), report->errorMessage());
         emit finished(success);
@@ -130,7 +130,7 @@ void Reporter::reportAccount(const QString &did, const QString &text, const QStr
     setRunning(true);
 
     ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
-    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, this, [=](bool success) {
         setRunning(false);
         emit errorOccurred(report->errorCode(), report->errorMessage());
         emit finished(success);
@@ -155,7 +155,7 @@ void Reporter::reportMessage(const QString &did, const QString &convo_id, const 
     setRunning(true);
 
     ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
-    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, this, [=](bool success) {
         setRunning(false);
         emit errorOccurred(report->errorCode(), report->errorMessage());
         emit finished(success);
