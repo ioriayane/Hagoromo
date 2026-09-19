@@ -354,6 +354,7 @@ target_link_libraries(HagoromoLib PRIVATE
 target_compile_definitions(HagoromoLib PRIVATE
     HAGOROMOLIB_LIBRARY
     CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
+    QT_NO_CONTEXTLESS_CONNECT
 )
 
 qt_add_translations(HagoromoLib)
