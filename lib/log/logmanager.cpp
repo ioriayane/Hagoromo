@@ -188,7 +188,7 @@ void LogManager::getPosts()
     }
 
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
-    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+    connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
             m_postViews.append(posts->postsList());
 

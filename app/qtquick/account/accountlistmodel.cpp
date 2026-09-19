@@ -48,7 +48,7 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
     m_roleTo[StatusRole] = AccountManager::AccountManagerRoles::StatusRole;
     m_roleTo[AuthorizedRole] = AccountManager::AccountManagerRoles::AuthorizedRole;
 
-    connect(&m_timer, &QTimer::timeout, [=]() {
+    connect(&m_timer, &QTimer::timeout, this, [=]() {
         AccountManager *manager = AccountManager::getInstance();
         for (int row = 0; row < manager->count(); row++) {
             refreshSession(row);

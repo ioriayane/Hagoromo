@@ -181,7 +181,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->get(request);
-    connect(reply, &HttpReply::finished, [=]() {
+    connect(reply, &HttpReply::finished, this, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
         if (alive) {
             qDebug().noquote() << LOG_DATETIME << "  " << this->thread();
@@ -249,7 +249,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, json);
-    connect(reply, &HttpReply::finished, [=]() {
+    connect(reply, &HttpReply::finished, this, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
         if (alive) {
             bool success = false;
@@ -303,7 +303,7 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, file->readAll());
     file->setParent(reply);
-    connect(reply, &HttpReply::finished, [=]() {
+    connect(reply, &HttpReply::finished, this, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
         if (alive) {
             bool success = false;

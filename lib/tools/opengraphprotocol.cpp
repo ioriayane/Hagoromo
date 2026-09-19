@@ -153,7 +153,7 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
     QNetworkRequest request((QUrl(thumb())));
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "downloadThumb reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (ret) {

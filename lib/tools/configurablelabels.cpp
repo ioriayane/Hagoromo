@@ -78,7 +78,7 @@ bool ConfigurableLabels::load()
     initializeLabels();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             m_targetLabelerDids.clear();
             for (const auto &labelers_pref : pref->preferences().labelersPref) {
@@ -182,7 +182,7 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
     }
 
     AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
-    connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
+    connect(services, &AppBskyLabelerGetServices::finished, this, [=](bool success) {
         if (success) {
             for (const auto &labeler : services->viewsLabelerViewDetailedList()) {
                 LabelerItem labeler_item;
@@ -241,7 +241,7 @@ bool ConfigurableLabels::save()
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             if (!putPreferences(updatePreferencesJson(pref->replyJson()))) {
                 setRunning(false);

@@ -284,7 +284,7 @@ void AccountManager::Private::removeRealtimeFeedRule(const QString &name)
 void AccountManager::Private::createSession()
 {
     ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
-    connect(session, &ComAtprotoServerCreateSessionEx::finished, [=](bool success) {
+    connect(session, &ComAtprotoServerCreateSessionEx::finished, this, [=](bool success) {
         //        qDebug() << session << session->service() << session->did() <<
         //        session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
@@ -320,7 +320,7 @@ void AccountManager::Private::refreshSession(bool initial)
 {
 
     ComAtprotoServerRefreshSessionEx *session = new ComAtprotoServerRefreshSessionEx(this);
-    connect(session, &ComAtprotoServerRefreshSessionEx::finished, [=](bool success) {
+    connect(session, &ComAtprotoServerRefreshSessionEx::finished, this, [=](bool success) {
         if (success) {
             qDebug() << "Refresh session" << session->did() << session->handle()
                      << session->email();
@@ -366,7 +366,7 @@ void AccountManager::Private::getProfile()
         // ここでPreferencesからThreadGateの設定を取得
         getPostInteractionSettings([=]() {
             AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-            connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            connect(profile, &AppBskyActorGetProfile::finished, this, [=](bool success) {
                 if (success) {
                     AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
                             profile->profileViewDetailed();
@@ -440,7 +440,7 @@ void AccountManager::Private::getPostInteractionSettings(std::function<void()> c
     m_account.thread_gate_options.clear();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success && !pref->preferences().postInteractionSettingsPref.isEmpty()) {
             const auto &s = pref->preferences().postInteractionSettingsPref.first();
             if (!s.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.isEmpty()) {
@@ -487,12 +487,12 @@ void AccountManager::Private::getPostInteractionSettings(std::function<void()> c
 void AccountManager::Private::putPostInteractionSettings()
 {
     AppBskyActorGetPreferences *get_pref = new AppBskyActorGetPreferences(this);
-    connect(get_pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(get_pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         QJsonDocument current_pref = QJsonDocument::fromJson(get_pref->replyJson().toUtf8());
         if (success && current_pref.object().contains("preferences")) {
 
             AppBskyActorPutPreferencesEx *put_pref = new AppBskyActorPutPreferencesEx(this);
-            connect(put_pref, &AppBskyActorPutPreferencesEx::finished, [=](bool success) {
+            connect(put_pref, &AppBskyActorPutPreferencesEx::finished, this, [=](bool success) {
                 if (success) {
                     qDebug() << "finish put preferences(post interaction settings).";
                 }

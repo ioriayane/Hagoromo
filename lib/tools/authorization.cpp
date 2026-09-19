@@ -395,7 +395,7 @@ void Authorization::startRedirectServer()
         }
         server->deleteLater();
     });
-    connect(server, &QObject::destroyed, [this]() {
+    connect(server, &QObject::destroyed, this, [this]() {
         qDebug().noquote() << "Destory webserver";
         m_listenPort.clear();
     });

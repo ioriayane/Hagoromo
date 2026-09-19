@@ -78,12 +78,12 @@ LogAccess::Private::~Private()
 LogAccess::LogAccess(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << LOG_DATETIME << this << "LogAccess()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 LogAccess::~LogAccess()
 {
-    qDebug().noquote() << LOG_DATETIME << this << "~HttpAccess()";
+    qDebug().noquote() << LOG_DATETIME << this << "~LogAccess()";
 }
 
 void LogAccess::removeDbFile(const QString &did)
