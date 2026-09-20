@@ -7,6 +7,7 @@
 #include <QWebSocketServer>
 
 #include "webserver.h"
+#include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
@@ -14,6 +15,7 @@
 #include "tools/accountmanager.h"
 
 using namespace RealtimeFeed;
+using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
 class realtime_test : public QObject
 {
@@ -28,6 +30,7 @@ private slots:
     void cleanupTestCase();
     void test_PostSelector();
     void test_FirehoseReceiver();
+    void test_JetStreamV2MessageParsing();
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
@@ -198,6 +201,88 @@ void realtime_test::test_FirehoseReceiver()
     QCOMPARE(recv->containsSelector(&parent2), true);
 
     // recv->removeAllSelector();
+}
+
+void realtime_test::test_JetStreamV2MessageParsing()
+{
+    ComAtprotoSyncSubscribeReposEx client;
+
+    QSignalSpy receivedSpy(&client, &ComAtprotoSyncSubscribeReposEx::received);
+    QSignalSpy errorSpy(&client, &ComAtprotoSyncSubscribeReposEx::errorOccurred);
+
+    QFile fileCreate(":/data/jetstream/commit_create.json");
+    QVERIFY(fileCreate.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileCreate.readAll());
+
+    QCOMPARE(receivedSpy.count(), 1);
+    QCOMPARE(errorSpy.count(), 0);
+    {
+        QList<QVariant> args = receivedSpy.takeFirst();
+        QCOMPARE(args.at(0).toString(), "#commit");
+        QJsonObject json = args.at(1).toJsonObject();
+        QCOMPARE(json.value("repo").toString(), "did:plc:7e6kocyzb77xkncplrkoojej");
+        QCOMPARE(json.value("rev").toString(), "3msx2efqjtc27");
+        QCOMPARE(json.value("time").toString(), "2026-08-13T06:47:43.959305Z");
+        QCOMPARE(json.value("seq").toVariant().toLongLong(), 24664288881LL);
+        QCOMPARE(json.value("commit").toObject().value("$link").toString(),
+                 "bafyreigwnxqttkhzha2ig4io6wwht3qiugtor4ruglceyfdbnyq53a55fe");
+
+        QJsonArray ops = json.value("ops").toArray();
+        QCOMPARE(ops.count(), 1);
+        QCOMPARE(ops.at(0).toObject().value("action").toString(), "create");
+        QCOMPARE(ops.at(0).toObject().value("path").toString(), "app.bsky.feed.like/3msx2efqdxs27");
+        QCOMPARE(ops.at(0).toObject().value("cid").toObject().value("$link").toString(),
+                 "bafyreigwnxqttkhzha2ig4io6wwht3qiugtor4ruglceyfdbnyq53a55fe");
+
+        QJsonArray blocks = json.value("blocks").toArray();
+        QCOMPARE(blocks.count(), 1);
+        QCOMPARE(blocks.at(0).toObject().value("uri").toString(),
+                 "at://did:plc:7e6kocyzb77xkncplrkoojej/app.bsky.feed.like/3msx2efqdxs27");
+        QCOMPARE(blocks.at(0).toObject().value("value").toObject().value("$type").toString(),
+                 "app.bsky.feed.like");
+    }
+
+    // delete: no record -> cid is null and blocks is empty
+    QFile fileDelete(":/data/jetstream/commit_delete.json");
+    QVERIFY(fileDelete.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileDelete.readAll());
+
+    QCOMPARE(receivedSpy.count(), 1);
+    QCOMPARE(errorSpy.count(), 0);
+    {
+        QList<QVariant> args = receivedSpy.takeFirst();
+        QJsonObject json = args.at(1).toJsonObject();
+        QJsonArray ops = json.value("ops").toArray();
+        QCOMPARE(ops.count(), 1);
+        QCOMPARE(ops.at(0).toObject().value("action").toString(), "delete");
+        QVERIFY(ops.at(0).toObject().value("cid").isNull());
+        QCOMPARE(json.value("blocks").toArray().count(), 0);
+    }
+
+    // #identity is not handled yet: silently ignored, no signal at all
+    QFile fileIdentity(":/data/jetstream/identity.json");
+    QVERIFY(fileIdentity.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileIdentity.readAll());
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 0);
+
+    // a server "error" frame is reported and does not emit "received"
+    QFile fileError(":/data/jetstream/error.json");
+    QVERIFY(fileError.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileError.readAll());
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 1);
+    {
+        QList<QVariant> args = errorSpy.takeFirst();
+        QCOMPARE(args.at(0).toString(), "ConsumerTooSlow");
+        QVERIFY(args.at(1).toString().contains("cursor=42"));
+    }
+
+    // unreadable JSON is reported as InvalidData
+    client.testMessageReceivedFromJetStream(QByteArray("not json"));
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 1);
+    QCOMPARE(errorSpy.takeFirst().at(0).toString(), "InvalidData");
 }
 
 void realtime_test::test_Websock()

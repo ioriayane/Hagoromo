@@ -1,0 +1,13 @@
+{
+    "$type": "message",
+    "payload": {
+        "$type": "network.bsky.jetstream.subscribeEvents#commit",
+        "did": "did:plc:7e6kocyzb77xkncplrkoojej",
+        "seq": 24664288999,
+        "time": "2026-08-13T06:50:00.100200Z",
+        "operation": "delete",
+        "collection": "app.bsky.feed.like",
+        "rkey": "3msx2efqdxs27",
+        "rev": "3msx2efqjtc99"
+    }
+}

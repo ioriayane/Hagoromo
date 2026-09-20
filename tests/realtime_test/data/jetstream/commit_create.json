@@ -1,0 +1,22 @@
+{
+    "$type": "message",
+    "payload": {
+        "$type": "network.bsky.jetstream.subscribeEvents#commit",
+        "did": "did:plc:7e6kocyzb77xkncplrkoojej",
+        "seq": 24664288881,
+        "time": "2026-08-13T06:47:43.959305Z",
+        "operation": "create",
+        "collection": "app.bsky.feed.like",
+        "rkey": "3msx2efqdxs27",
+        "rev": "3msx2efqjtc27",
+        "cid": "bafyreigwnxqttkhzha2ig4io6wwht3qiugtor4ruglceyfdbnyq53a55fe",
+        "record": {
+            "$type": "app.bsky.feed.like",
+            "createdAt": "2026-08-13T06:47:44.859Z",
+            "subject": {
+                "cid": "bafyreibfn4d6xedoe6jixkcl266v2fhiwga2x3zzsnq6yawnago2kb5ouu",
+                "uri": "at://did:plc:gdcz3s2rofr4bbom5bx3kqrr/app.bsky.feed.post/3mjfhkjsshs2q"
+            }
+        }
+    }
+}

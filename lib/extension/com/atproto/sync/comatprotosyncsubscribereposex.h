@@ -23,6 +23,10 @@ public:
     void close();
     QAbstractSocket::SocketState state() const;
 
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+    void testMessageReceivedFromJetStream(const QByteArray &message);
+#endif
+
 signals:
     void errorOccurred(const QString &code, const QString &message);
     void received(const QString &type, const QJsonObject &json, const qsizetype size);

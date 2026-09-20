@@ -232,4 +232,11 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
 
     emit received(payload_type, json_dest, message.length());
 }
+
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+void ComAtprotoSyncSubscribeReposEx::testMessageReceivedFromJetStream(const QByteArray &message)
+{
+    messageReceivedFromJetStream(message);
+}
+#endif
 }
