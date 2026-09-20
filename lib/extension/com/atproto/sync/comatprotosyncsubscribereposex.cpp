@@ -158,71 +158,78 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
 
 void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArray &message)
 {
-
-    QString payload_type;
-
     QJsonDocument doc = QJsonDocument::fromJson(message);
-    QJsonObject json_src = doc.object();
-    QHash<QString, QString> commit_kind_to;
-    commit_kind_to["create"] = "create";
-    commit_kind_to["update"] = "update";
-    commit_kind_to["delete"] = "delete";
+    QJsonObject json_top = doc.object();
 
-    if (doc.isNull() || json_src.isEmpty()) {
+    if (doc.isNull() || json_top.isEmpty()) {
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
         emit errorOccurred("InvalidData", "Unreadable JSON data.");
         m_webSocket.close();
-    } else if (!json_src.contains("kind") || !json_src.contains("did")
-               || !json_src.contains("commit")) {
-        // qDebug().noquote() << "Unsupport data:" << message;
-    } else {
-        payload_type = "#commit";
-
-        QJsonObject json_src_commit = json_src.value("commit").toObject();
-        QJsonObject json_dest;
-
-        json_dest.insert("repo", json_src.value("did").toString());
-        json_dest.insert("rev", json_src_commit.value("rev").toString());
-        json_dest.insert("time",
-                         QDateTime::fromMSecsSinceEpoch(
-                                 static_cast<qint64>(json_src.value("time_us").toDouble() / 1000))
-                                 .toString(Qt::ISODateWithMs));
-
-        QJsonObject json_dest_commit;
-        json_dest_commit.insert("$link", json_src_commit.value("cid").toString());
-        json_dest.insert("commit", json_dest_commit);
-
-        QJsonObject json_dest_op;
-        QString commit_op = commit_kind_to.value(json_src_commit.value("operation").toString());
-        json_dest_op.insert("action", commit_op);
-        json_dest_op.insert("path",
-                            QString("%1/%2").arg(json_src_commit.value("collection").toString(),
-                                                 json_src_commit.value("rkey").toString()));
-        if (commit_op == "delete") {
-            json_dest_op.insert("cid", QJsonValue());
-        } else {
-            json_dest_op.insert("cid", json_dest_commit);
-        }
-        QJsonArray json_dest_ops;
-        json_dest_ops.append(json_dest_op);
-        json_dest.insert("ops", json_dest_ops);
-
-        QJsonArray json_dest_blocks;
-        if (json_src_commit.contains("record")) {
-            QJsonObject json_dest_block;
-            json_dest_block.insert("cid", json_src_commit.value("cid").toString());
-            json_dest_block.insert("uri",
-                                   QString("at://%1/%2/%3")
-                                           .arg(json_src.value("did").toString(),
-                                                json_src_commit.value("collection").toString(),
-                                                json_src_commit.value("rkey").toString()));
-            json_dest_block.insert("value", json_src_commit.value("record").toObject());
-            json_dest_blocks.append(json_dest_block);
-        }
-        json_dest.insert("blocks", json_dest_blocks);
-
-        emit received(payload_type, json_dest, message.length());
+        return;
     }
+
+    const QString frame_type = json_top.value("$type").toString();
+    if (frame_type == "error") {
+        // Jetstream v2 closes the connection right after sending this frame.
+        qDebug().noquote() << "JetStream error:" << json_top.value("error").toString()
+                           << json_top.value("message").toString();
+        emit errorOccurred(json_top.value("error").toString(),
+                           json_top.value("message").toString());
+        m_webSocket.close();
+        return;
+    } else if (frame_type != "message") {
+        qDebug().noquote() << "Unsupported JetStream frame:" << frame_type;
+        return;
+    }
+
+    QJsonObject json_src = json_top.value("payload").toObject();
+    if (!json_src.value("$type").toString().endsWith(QStringLiteral("#commit"))) {
+        // #identity / #account / #sync / #info : not handled yet
+        return;
+    }
+
+    QString payload_type = "#commit";
+    QJsonObject json_dest;
+
+    json_dest.insert("repo", json_src.value("did").toString());
+    json_dest.insert("rev", json_src.value("rev").toString());
+    json_dest.insert("time", json_src.value("time").toString());
+    json_dest.insert("seq", json_src.value("seq"));
+
+    QJsonObject json_dest_commit;
+    json_dest_commit.insert("$link", json_src.value("cid").toString());
+    json_dest.insert("commit", json_dest_commit);
+
+    QJsonObject json_dest_op;
+    QString commit_op = json_src.value("operation").toString();
+    json_dest_op.insert("action", commit_op);
+    json_dest_op.insert("path",
+                        QString("%1/%2").arg(json_src.value("collection").toString(),
+                                             json_src.value("rkey").toString()));
+    if (commit_op == "delete") {
+        json_dest_op.insert("cid", QJsonValue());
+    } else {
+        json_dest_op.insert("cid", json_dest_commit);
+    }
+    QJsonArray json_dest_ops;
+    json_dest_ops.append(json_dest_op);
+    json_dest.insert("ops", json_dest_ops);
+
+    QJsonArray json_dest_blocks;
+    if (json_src.contains("record")) {
+        QJsonObject json_dest_block;
+        json_dest_block.insert("cid", json_src.value("cid").toString());
+        json_dest_block.insert("uri",
+                               QString("at://%1/%2/%3")
+                                       .arg(json_src.value("did").toString(),
+                                            json_src.value("collection").toString(),
+                                            json_src.value("rkey").toString()));
+        json_dest_block.insert("value", json_src.value("record").toObject());
+        json_dest_blocks.append(json_dest_block);
+    }
+    json_dest.insert("blocks", json_dest_blocks);
+
+    emit received(payload_type, json_dest, message.length());
 }
 }

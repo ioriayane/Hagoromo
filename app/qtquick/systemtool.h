@@ -25,7 +25,7 @@ public:
     Q_INVOKABLE void updateFont(const QString &family);
     Q_INVOKABLE static QString defaultFontFamily();
     Q_INVOKABLE static void setFlicableWheelDeceleration(qreal deceleration);
-    Q_INVOKABLE QStringList possibleRealtimeFeedServiceEndpoints() const;
+    Q_INVOKABLE static QStringList possibleRealtimeFeedServiceEndpoints();
     Q_INVOKABLE void changeRealtimeFeedServiceEndpoint(const QString &endpoint);
 
     QString applicationVersion() const;

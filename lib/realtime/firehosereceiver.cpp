@@ -22,10 +22,11 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       m_wdgCounter(0),
       m_status(FirehoseReceiverStatus::Disconnected),
       m_receivedDataSize(0),
-      m_timeOfReceivedData(0)
+      m_timeOfReceivedData(0),
+      m_lastSeq(0)
 {
 #ifdef USE_JETSTREAM
-    m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
+    m_serviceEndpoint = "wss://jetstream.us-west.bsky.network";
     // m_serviceEndpoint = "ws://localhost:19283";
 #else
     m_serviceEndpoint = "wss://bsky.network";
@@ -43,7 +44,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received, this,
             [=](const QString &type, const QJsonObject &json, const qsizetype size) {
                 m_wdgCounter = 0;
-                updateTimeOfLastReceivedData(json);
+                updateReceivedCursorState(json);
                 emit receivingChanged(true);
 
                 if (type != "#commit")
@@ -140,18 +141,16 @@ void FirehoseReceiver::start()
         path.resize(path.length() - 1);
     }
 #ifdef USE_JETSTREAM
-    QString cursor = getCursorTime();
-    // cursor = QString::number(
-    //         QDateTime::fromString("2025-02-14 18:42:00", Qt::ISODate).toMSecsSinceEpoch());
+    QString cursor = getCursor();
     if (!cursor.isEmpty()) {
         cursor = "&cursor=" + cursor;
     }
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
-    QUrl url(path + "/subscribe?wantedCollections=app.bsky.feed.post"
-             + "&wantedCollections=app.bsky.feed.repost" + "&wantedCollections=app.bsky.feed.like"
-             + "&wantedCollections=app.bsky.graph.follow"
-             + "&wantedCollections=app.bsky.graph.listitem" + cursor);
+    QUrl url(path + "/xrpc/network.bsky.jetstream.subscribeEvents?collections=app.bsky.feed.post"
+             + "&collections=app.bsky.feed.repost" + "&collections=app.bsky.feed.like"
+             + "&collections=app.bsky.graph.follow" + "&collections=app.bsky.graph.listitem"
+             + "&kinds=commit" + cursor);
 #else
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
@@ -383,26 +382,29 @@ void FirehoseReceiver::removeThreadSelector(QObject *parent)
     }
 }
 
-void FirehoseReceiver::updateTimeOfLastReceivedData(const QJsonObject &json)
+void FirehoseReceiver::updateReceivedCursorState(const QJsonObject &json)
 {
     m_timeOfReceivedData = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs)
                                    .toMSecsSinceEpoch();
+    if (json.contains("seq")) {
+        m_lastSeq = json.value("seq").toVariant().toLongLong();
+    }
 }
 
-QString FirehoseReceiver::getCursorTime() const
+QString FirehoseReceiver::getCursor() const
 {
-    if (m_timeOfReceivedData == 0)
+    if (m_timeOfReceivedData == 0 || m_lastSeq <= 0)
         return QString();
     qint64 now = QDateTime::currentMSecsSinceEpoch();
-    qDebug().noquote() << "getCursorTime:"
+    qDebug().noquote() << "getCursor:"
                        << " now :" << now;
-    qDebug().noquote() << "getCursorTime:"
+    qDebug().noquote() << "getCursor:"
                        << " time:" << m_timeOfReceivedData;
-    qDebug().noquote() << "getCursorTime:"
+    qDebug().noquote() << "getCursor:"
                        << " diff:" << (now - m_timeOfReceivedData);
     if ((now < m_timeOfReceivedData) || ((now - m_timeOfReceivedData) > (5 * 60 * 1000)))
         return QString();
-    return QString::number(m_timeOfReceivedData + 1);
+    return QString::number(m_lastSeq + 1);
 }
 
 QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const

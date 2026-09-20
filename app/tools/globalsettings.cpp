@@ -25,11 +25,18 @@ void setRealtimeFeedEndpoint(QSettings &settings)
     RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
     if (receiver == nullptr)
         return;
+    const QString defaultEndpoint = QStringLiteral("wss://jetstream.us-west.bsky.network");
     if (!settings.contains("realtimeServiceEndpoint")) {
         // キーが無い状態で起動するとなぜか翻訳のキーが消えてしまうので、ここで設定する
-        settings.setValue("realtimeServiceEndpoint", "wss://jetstream1.us-west.bsky.network");
+        settings.setValue("realtimeServiceEndpoint", defaultEndpoint);
     }
     QString endpoint = settings.value("realtimeServiceEndpoint").toString();
+    if (!SystemTool::possibleRealtimeFeedServiceEndpoints().contains(endpoint)) {
+        // Jetstream v1のホスト名など、v2移行で無効になった値はデフォルトへ置き換える
+        qDebug() << "Invalid realtime feed endpoint, reset to default:" << endpoint;
+        endpoint = defaultEndpoint;
+        settings.setValue("realtimeServiceEndpoint", endpoint);
+    }
     qDebug() << "Load realtime feed endpoint :" << endpoint;
     receiver->setServiceEndpoint(endpoint);
 }
@@ -56,7 +63,7 @@ void setDefaultSettings(QSettings &settings)
     setDefaultValue(settings, "displayOfPosts", QStringLiteral("sequential"));
     setDefaultValue(settings, "updateSeenNotification", true);
     setDefaultValue(settings, "realtimeServiceEndpoint",
-                    QStringLiteral("wss://jetstream1.us-west.bsky.network"));
+                    QStringLiteral("wss://jetstream.us-west.bsky.network"));
     // Notification
     setDefaultValue(settings, "enableChatNotification", true);
     setDefaultValue(settings, "enableNotificationsForReactionsOnReposts", true);
