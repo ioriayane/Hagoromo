@@ -4,6 +4,9 @@
 #include "timeline/timelinelistmodel.h"
 #include "realtime/firehosereceiver.h"
 
+#include <QSet>
+#include <QTimer>
+
 class RealtimeFeedListModel : public TimelineListModel
 {
     Q_OBJECT
@@ -41,6 +44,9 @@ private:
     void copyListMembers(const QString &list_uri,
                          const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
     void getPostThread();
+    void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
+                             bool increment);
+    void flushReactionCounts();
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
@@ -52,6 +58,11 @@ private:
     QString m_cursor;
     QString m_selectorJson;
     bool m_receiving;
+
+    // like/repostカウントの更新頻度が高い場合にdataChangedの発行回数を間引くための仕組み
+    // (件数はイベント受信時に即時反映し、GUIへの通知のみタイマーでまとめて行う)
+    QTimer m_reactionFlushTimer;
+    QHash<QString, QSet<int>> m_dirtyReactionCountRoles; // QHash<cid, roles>
 };
 
 #endif // REALTIMEFEEDLISTMODEL_H

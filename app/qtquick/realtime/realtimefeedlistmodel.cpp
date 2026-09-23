@@ -19,6 +19,11 @@ RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::receivingChanged, this,
             &RealtimeFeedListModel::setReceiving);
+
+    m_reactionFlushTimer.setInterval(1000);
+    connect(&m_reactionFlushTimer, &QTimer::timeout, this,
+            &RealtimeFeedListModel::flushReactionCounts);
+    m_reactionFlushTimer.start();
 }
 
 RealtimeFeedListModel::~RealtimeFeedListModel()
@@ -93,38 +98,33 @@ bool RealtimeFeedListModel::getLatest()
             }
 #endif
             const QList<int> rows = indexsOf(info.cid);
-            bool first = true;
-            for (const auto row : rows) {
-                if (info.is_repost) {
-                    if (first) {
-                        // ポストデータの実態は1つだけなのでupdateは1回だけ
-                        if (info.reacted_by_did == account().did) {
-                            update(row, RepostedUriRole, info.reaction_uri);
-                        }
-                        update(row, TimelineListModelRoles::RepostCountRole,
-                               info.action == OperationActionType::Create);
-                    } else {
-                        emit dataChanged(index(row), index(row), QVector<int>() << RepostCountRole);
-                    }
-                } else if (info.is_like) {
-                    if (first) {
-                        // ポストデータの実態は1つだけなのでupdateは1回だけ
-                        if (info.reacted_by_did == account().did) {
-                            update(row, LikedUriRole, info.reaction_uri);
-                        }
-                        update(row, TimelineListModelRoles::LikeCountRole,
-                               info.action == OperationActionType::Create);
-                    } else {
-                        emit dataChanged(index(row), index(row), QVector<int>() << LikeCountRole);
-                    }
-                } else {
-                    // delete post
-                    qDebug().noquote() << "delete" << rows << info.uri << info.cid;
-                    beginRemoveRows(QModelIndex(), row, row);
-                    m_cidList.removeAt(row);
+            if (rows.isEmpty()) {
+                continue;
+            }
+            if (info.is_repost) {
+                // 自分のリポスト状態はボタン表示に直結するので即時反映
+                if (info.reacted_by_did == account().did) {
+                    update(rows.first(), RepostedUriRole, info.reaction_uri);
+                }
+                // カウントはポストデータの実態が1つなので1回だけ更新し、
+                // GUIへの通知(dataChanged)はflushReactionCounts()でまとめて行う
+                updateReactionCount(info.cid, TimelineListModelRoles::RepostCountRole,
+                                    info.action == OperationActionType::Create);
+            } else if (info.is_like) {
+                if (info.reacted_by_did == account().did) {
+                    update(rows.first(), LikedUriRole, info.reaction_uri);
+                }
+                updateReactionCount(info.cid, TimelineListModelRoles::LikeCountRole,
+                                    info.action == OperationActionType::Create);
+            } else {
+                // delete post
+                qDebug().noquote() << "delete" << rows << info.uri << info.cid;
+                for (auto it = rows.crbegin(); it != rows.crend(); ++it) {
+                    beginRemoveRows(QModelIndex(), *it, *it);
+                    m_cidList.removeAt(*it);
                     endRemoveRows();
                 }
-                first = false;
+                m_dirtyReactionCountRoles.remove(info.cid);
             }
         }
     });
@@ -460,6 +460,53 @@ void RealtimeFeedListModel::getPostThread()
     post_thread->setAccount(account());
     post_thread->setLabelers(labelerDids());
     post_thread->getPostThread(ope_info.uri, 0, 1);
+}
+
+void RealtimeFeedListModel::updateReactionCount(const QString &cid,
+                                                TimelineListModel::TimelineListModelRoles role,
+                                                bool increment)
+{
+    if (!m_viewPostHash.contains(cid)) {
+        return;
+    }
+    AtProtocolType::AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash[cid];
+    if (role == RepostCountRole) {
+        current.post.repostCount += increment ? 1 : -1;
+        if (current.post.repostCount < 0) {
+            current.post.repostCount = 0;
+        }
+    } else if (role == LikeCountRole) {
+        current.post.likeCount += increment ? 1 : -1;
+        if (current.post.likeCount < 0) {
+            current.post.likeCount = 0;
+        }
+    } else {
+        return;
+    }
+    m_dirtyReactionCountRoles[cid].insert(role);
+}
+
+void RealtimeFeedListModel::flushReactionCounts()
+{
+    if (m_dirtyReactionCountRoles.isEmpty()) {
+        return;
+    }
+    const QHash<QString, QSet<int>> dirty = m_dirtyReactionCountRoles;
+    m_dirtyReactionCountRoles.clear();
+
+    for (auto it = dirty.constBegin(); it != dirty.constEnd(); ++it) {
+        const QList<int> rows = indexsOf(it.key());
+        if (rows.isEmpty()) {
+            continue;
+        }
+        QVector<int> roles;
+        for (int role : it.value()) {
+            roles.append(role);
+        }
+        for (const auto row : rows) {
+            emit dataChanged(index(row), index(row), roles);
+        }
+    }
 }
 
 bool RealtimeFeedListModel::receiving() const
