@@ -43,13 +43,13 @@ private:
                      bool is_following);
     void copyListMembers(const QString &list_uri,
                          const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
-    void getPostThread();
+    void getQueuedPosts();
     void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
                              bool increment);
     void flushReactionCounts();
 
     bool m_runningCue;
-    QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
+    QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
     QMap<QString, QList<RealtimeFeed::UserInfo>> m_list_members; // QMap<list_uri, List<UserInfo>>

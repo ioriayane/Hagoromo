@@ -377,6 +377,17 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
     QCOMPARE(model.item(0, TimelineListModel::RecordTextPlainRole).toString(), "reply3");
+    // リプライ先は同じgetPostsのリクエストで取得する
+    {
+        const QList<OperationInfo> infos = s->getOperationInfos(json_doc.object());
+        QCOMPARE(infos.count(), 1);
+        QCOMPARE(infos.first().reply_parent_uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kx6eow2kyr25");
+    }
+    QCOMPARE(model.item(0, TimelineListModel::HasReplyRole).toBool(), true);
+    QCOMPARE(model.item(0, TimelineListModel::ReplyParentDisplayNameRole).toString(), "iori2");
+    QCOMPARE(model.item(0, TimelineListModel::ReplyParentHandleRole).toString(),
+             "ioriayane2.bsky.social");
 
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
@@ -405,6 +416,7 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
     QCOMPARE(model.item(1, TimelineListModel::RecordTextPlainRole).toString(), "reply3");
     QCOMPARE(model.item(1, TimelineListModel::IsRepostedByRole).toBool(), false);
+    QCOMPARE(model.item(0, TimelineListModel::HasReplyRole).toBool(), false);
 
     // /////////////////
 

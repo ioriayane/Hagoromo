@@ -28,6 +28,7 @@ struct OperationInfo
     QString reacted_by_did; // did
     QString reacted_by_handle;
     QString reacted_by_display_name;
+    QString reply_parent_uri; // ポスト作成時のリプライ先
     QString time;
 };
 
