@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QMetaEnum>
+#include <QThread>
 
 namespace AtProtocolInterface {
 
@@ -71,7 +72,7 @@ void ComAtprotoSyncSubscribeReposEx::open(const QUrl &url, SubScribeMode mode)
 
 void ComAtprotoSyncSubscribeReposEx::close()
 {
-    m_webSocket.close();
+    closeWebSocket();
 }
 
 QAbstractSocket::SocketState ComAtprotoSyncSubscribeReposEx::state() const
@@ -129,7 +130,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
             // error payload
             qDebug().noquote() << QJsonDocument(json).toJson();
             emit errorOccurred(json.value("error").toString(), json.value("message").toString());
-            m_webSocket.close();
+            closeWebSocket();
         } else if (json.contains("seq")) {
             if (!m_payloadTypeList.contains(payload_type)) {
                 // unknown payload type
@@ -144,7 +145,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
             // decode error
             qDebug().noquote() << QJsonDocument(json).toJson();
             emit errorOccurred("DecodeError", "Unknown data format.");
-            m_webSocket.close();
+            closeWebSocket();
         }
     }
 
@@ -152,7 +153,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
         qDebug().noquote() << "Invalid offset ?";
         emit errorOccurred("InvalidDataSize",
                            "The size of the decoded data does not match the total.");
-        m_webSocket.close();
+        closeWebSocket();
     }
 }
 
@@ -165,7 +166,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
         emit errorOccurred("InvalidData", "Unreadable JSON data.");
-        m_webSocket.close();
+        closeWebSocket();
         return;
     }
 
@@ -176,7 +177,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
                            << json_top.value("message").toString();
         emit errorOccurred(json_top.value("error").toString(),
                            json_top.value("message").toString());
-        m_webSocket.close();
+        closeWebSocket();
         return;
     } else if (frame_type != "message") {
         qDebug().noquote() << "Unsupported JetStream frame:" << frame_type;
@@ -231,6 +232,18 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
     json_dest.insert("blocks", json_dest_blocks);
 
     emit received(payload_type, json_dest, message.length());
+}
+
+void ComAtprotoSyncSubscribeReposEx::closeWebSocket()
+{
+    // m_webSocketは親を持たないのでmoveToThread()されたこのオブジェクトとは所属スレッドが異なる
+    // 受信処理はこのオブジェクトのスレッドで動くため、所属スレッド以外からは直接操作しない
+    if (QThread::currentThread() == m_webSocket.thread()) {
+        m_webSocket.close();
+    } else {
+        QMetaObject::invokeMethod(
+                &m_webSocket, [this]() { m_webSocket.close(); }, Qt::QueuedConnection);
+    }
 }
 
 #ifdef QT_DEBUG // HAGOROMO_UNIT_TEST

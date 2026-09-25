@@ -43,6 +43,7 @@ public slots:
 private:
     void messageReceivedFromFirehose(const QByteArray &message);
     void messageReceivedFromJetStream(const QByteArray &message);
+    void closeWebSocket();
 
     QWebSocket m_webSocket;
     QStringList m_payloadTypeList;

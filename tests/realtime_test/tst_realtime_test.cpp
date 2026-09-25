@@ -31,6 +31,7 @@ private slots:
     void test_PostSelector();
     void test_FirehoseReceiver();
     void test_JetStreamV2MessageParsing();
+    void test_JetStreamV2ErrorFrameCloseOnWorkerThread();
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
@@ -283,6 +284,49 @@ void realtime_test::test_JetStreamV2MessageParsing()
     QCOMPARE(receivedSpy.count(), 0);
     QCOMPARE(errorSpy.count(), 1);
     QCOMPARE(errorSpy.takeFirst().at(0).toString(), "InvalidData");
+}
+
+void realtime_test::test_JetStreamV2ErrorFrameCloseOnWorkerThread()
+{
+    // FirehoseReceiverと同じくクライアントを別スレッドへ移した状態で、
+    // 受信処理(ワーカースレッド)からの切断がスレッドをまたいだ操作にならないことを確認する
+    QTest::failOnWarning(QRegularExpression("another thread|different thread|device not open"));
+
+    QWebSocketServer server("realtime_test", QWebSocketServer::NonSecureMode);
+    QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+    connect(&server, &QWebSocketServer::newConnection, this, [&server]() {
+        QWebSocket *socket = server.nextPendingConnection();
+        for (int i = 0; i < 100; i++) {
+            socket->sendTextMessage(
+                    "{\"$type\":\"message\",\"payload\":{\"$type\":\"x#identity\"}}");
+        }
+        // サーバー側からは切断せず、クライアント側のclose()で切断させる
+        socket->sendTextMessage(
+                "{\"$type\":\"error\",\"error\":\"ConsumerTooSlow\",\"message\":\"test\"}");
+    });
+
+    ComAtprotoSyncSubscribeReposEx client;
+    QThread thread;
+    client.moveToThread(&thread);
+    thread.start();
+
+    // ワーカースレッドから発行されるシグナルをこのスレッドで受ける
+    QStringList errors;
+    int disconnected = 0;
+    connect(&client, &ComAtprotoSyncSubscribeReposEx::errorOccurred, this,
+            [&errors](const QString &code, const QString &) { errors.append(code); });
+    connect(&client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, this,
+            [&disconnected]() { disconnected++; });
+
+    client.open(QUrl(QString("ws://127.0.0.1:%1").arg(server.serverPort())),
+                ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream);
+
+    QTRY_COMPARE_WITH_TIMEOUT(disconnected, 1, 10 * 1000);
+    QCOMPARE(errors, QStringList() << "ConsumerTooSlow");
+    QTRY_COMPARE(client.state(), QAbstractSocket::UnconnectedState);
+
+    thread.quit();
+    thread.wait();
 }
 
 void realtime_test::test_Websock()
