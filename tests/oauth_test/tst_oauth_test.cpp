@@ -20,6 +20,9 @@
 
 #include <QHttpHeaders>
 
+// #define AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
+// #define REFRESH_TEST_IN_PRODUCTION_ENVIRONMENT
+
 // DPoPのnonceが最新でないPAR/tokenリクエストに use_dpop_nonce を返すサーバー
 class DPopNonceServer : public SimpleHttpServer
 {
@@ -78,8 +81,9 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_oauth_process();
     void test_oauth_server();
+#ifndef AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
+    void test_oauth_process();
     void test_oauth();
     void test_oauth_dpop_nonce_retry_limit();
     void test_oauth_token_validation();
@@ -90,6 +94,7 @@ private slots:
     void test_well_known_atproto_did();
     void test_jwt();
     void test_es256();
+#endif
 
 private:
     DPopNonceServer m_server;
@@ -164,6 +169,49 @@ void oauth_test::initTestCase() { }
 
 void oauth_test::cleanupTestCase() { }
 
+void oauth_test::test_oauth_server()
+{
+    Authorization oauth;
+#ifdef AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
+    {
+        QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
+        oauth.start("https://bsky.social", "ioriayane.bsky.social");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QString request_url = arguments.at(0).toString();
+        qDebug().noquote() << "request url:" << request_url;
+        QDesktopServices::openUrl(request_url);
+    }
+    {
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        spy.wait(5 * 60 * 1000);
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    qDebug().noquote() << "DPoP for test";
+    qDebug().noquote() << "DPoP private key size" << oauth.dPopPrivateKey().size();
+#elif defined(REFRESH_TEST_IN_PRODUCTION_ENVIRONMENT)
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.refresh_token = "ref-121f89618c436";
+    oauth.setToken(token);
+    oauth.setTokenEndopoint("https://bsky.social/oauth/token");
+    oauth.setDPopNonce("8mo0kjo");
+    oauth.setListenPort("65073");
+    oauth.makeClientId();
+    {
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+#endif
+}
+
+#ifndef AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
 void oauth_test::test_oauth_process()
 {
     QString code_challenge;
@@ -198,48 +246,6 @@ void oauth_test::test_oauth_process()
     //         == sha256.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
     // QVERIFY(oauth.codeVerifier()
     //         == base_ba.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
-}
-
-void oauth_test::test_oauth_server()
-{
-    Authorization oauth;
-#if 0
-    {
-        QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
-        oauth.start("https://bsky.social", "ioriayane.bsky.social");
-        spy.wait();
-        QCOMPARE(spy.count(), 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QString request_url = arguments.at(0).toString();
-        qDebug().noquote() << "request url:" << request_url;
-        QDesktopServices::openUrl(request_url);
-    }
-    {
-        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-        spy.wait(5 * 60 * 1000);
-        QCOMPARE(spy.count(), 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
-    }
-    qDebug().noquote() << "DPoP for test";
-    qDebug().noquote() << "DPoP private key size" << oauth.dPopPrivateKey().size();
-#elif 0
-    AtProtocolType::OauthDefs::TokenResponse token;
-    token.refresh_token = "ref-121f89618c436";
-    oauth.setToken(token);
-    oauth.setTokenEndopoint("https://bsky.social/oauth/token");
-    oauth.setDPopNonce("8mo0kjo");
-    oauth.setListenPort("65073");
-    oauth.makeClientId();
-    {
-        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-        oauth.requestToken(true);
-        spy.wait();
-        QCOMPARE(spy.count(), 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
-    }
-#endif
 }
 
 void oauth_test::test_oauth()
@@ -825,6 +831,8 @@ void oauth_test::test_es256()
         QVERIFY(!restored.isValid());
     }
 }
+
+#endif // AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
 
 QJsonObject oauth_test::decode_jwt_part(const QByteArray &part)
 {
