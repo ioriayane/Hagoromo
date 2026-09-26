@@ -384,8 +384,13 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
                 }
             }
         }
-        qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
-        qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        if (m_errorCode == QStringLiteral("use_dpop_nonce")) {
+            // DPoPのnonceの更新要求は通常の流れで、呼び出し側で再送する
+            qDebug().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+        } else {
+            qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+            qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        }
     } else {
         status = true;
     }

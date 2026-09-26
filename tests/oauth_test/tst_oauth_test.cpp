@@ -91,6 +91,7 @@ private slots:
     void test_identity_resolver();
     void test_client_metadata();
     void test_identity_resolver_online();
+    void test_oauth_par_online();
     void test_well_known_atproto_did();
     void test_jwt();
     void test_es256();
@@ -173,10 +174,18 @@ void oauth_test::test_oauth_server()
 {
     Authorization oauth;
 #ifdef AUTH_TEST_IN_PRODUCTION_ENVIRONMENT
+    QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
     {
+        // ID解決(DNS/HTTPS/PLC)、メタデータ取得、PAR(nonceの再送を含む)まで数秒かかる
         QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
+        QSignalSpy spy_finished(&oauth, SIGNAL(finished(bool)));
         oauth.start("https://bsky.social", "ioriayane.bsky.social");
-        spy.wait();
+        for (int i = 0; i < 30 && spy.isEmpty() && spy_finished.isEmpty(); i++) {
+            spy.wait(1000);
+        }
+        for (const auto &error : spy_error) {
+            qDebug().noquote() << "error :" << error.at(0).toString() << error.at(1).toString();
+        }
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QString request_url = arguments.at(0).toString();
@@ -184,17 +193,37 @@ void oauth_test::test_oauth_server()
         QDesktopServices::openUrl(request_url);
     }
     {
+        // ブラウザでログインする
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         spy.wait(5 * 60 * 1000);
+        for (const auto &error : spy_error) {
+            qDebug().noquote() << "error :" << error.at(0).toString() << error.at(1).toString();
+        }
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
-    qDebug().noquote() << "DPoP for test";
-    qDebug().noquote() << "DPoP private key size" << oauth.dPopPrivateKey().size();
+    QCOMPARE(oauth.token().sub, oauth.did());
+    QVERIFY(oauth.token().scope.split(' ').contains("atproto"));
+    qDebug().noquote() << "granted scope:" << oauth.token().scope;
+    {
+        // 同じセッション(DPoPの鍵)でrefreshできること
+        const QString old_refresh_token = oauth.token().refresh_token;
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait(30 * 1000);
+        for (const auto &error : spy_error) {
+            qDebug().noquote() << "error :" << error.at(0).toString() << error.at(1).toString();
+        }
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(oauth.token().sub, oauth.did());
+        // refresh tokenは使い捨てで更新される
+        QVERIFY(oauth.token().refresh_token != old_refresh_token);
+    }
 #elif defined(REFRESH_TEST_IN_PRODUCTION_ENVIRONMENT)
     AtProtocolType::OauthDefs::TokenResponse token;
-    token.refresh_token = "ref-121f89618c436";
+    token.refresh_token = "ref-xxxxxxxxxxxxx"; // ここに実際のリフレッシュトークンを設定する
     oauth.setToken(token);
     oauth.setTokenEndopoint("https://bsky.social/oauth/token");
     oauth.setDPopNonce("8mo0kjo");
@@ -684,6 +713,37 @@ void oauth_test::test_client_metadata()
     QVERIFY(metadata.value("redirect_uris")
                     .toArray()
                     .contains(QJsonValue("http://127.0.0.1/tech/relog/hagoromo/oauth-callback")));
+}
+
+void oauth_test::test_oauth_par_online()
+{
+    if (qEnvironmentVariable("HAGOROMO_ONLINE_TEST") != "1") {
+        QSKIP("Set HAGOROMO_ONLINE_TEST=1 to access the production servers.");
+    }
+    // 本番環境でPARまで進めて、ブラウザで開く認可URLを作れること(ログイン操作は不要)
+    Authorization oauth;
+    oauth.setRedirectTimeout(10);
+    QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
+    QSignalSpy spy_url(&oauth, SIGNAL(madeRequestUrl(const QString &)));
+    QSignalSpy spy_finished(&oauth, SIGNAL(finished(bool)));
+    oauth.start("https://bsky.social", "ioriayane.bsky.social");
+    for (int i = 0; i < 30 && spy_url.isEmpty() && spy_finished.isEmpty(); i++) {
+        spy_url.wait(1000);
+    }
+    for (const auto &error : spy_error) {
+        qDebug().noquote() << "error :" << error.at(0).toString() << error.at(1).toString();
+    }
+    QCOMPARE(spy_error.count(), 0);
+    QCOMPARE(spy_url.count(), 1);
+
+    const QUrl url(spy_url.takeFirst().at(0).toString());
+    const QUrlQuery query(url.query());
+    QCOMPARE(url.host(), QUrl(oauth.authorizationEndpoint()).host());
+    QCOMPARE(query.queryItemValue("client_id", QUrl::FullyDecoded), oauth.clientId());
+    QVERIFY(query.queryItemValue("request_uri", QUrl::FullyDecoded)
+                    .startsWith("urn:ietf:params:oauth:request_uri:"));
+    QCOMPARE(oauth.did(), QString("did:plc:l4fsx4ujos7uw7n4ijq2ulgs"));
+    QVERIFY(!oauth.dPopNonce().isEmpty());
 }
 
 void oauth_test::test_well_known_atproto_did()
