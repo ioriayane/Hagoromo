@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMimeDatabase>
 #include "atprotocol/lexicons.h"
+#include "tools/es256.h"
 
 class Authorization : public QObject
 {
@@ -45,6 +46,9 @@ public:
     void setClientId(const QString &newClientId);
     QString dPopNonce() const;
     void setDPopNonce(const QString &newDPopNonce);
+    // セッションに紐づくDPoPの秘密鍵(PEM)。tokenと一緒に保存し、refresh前に復元する
+    QByteArray dPopPrivateKey() const;
+    bool setDPopPrivateKey(const QByteArray &pem);
 
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
@@ -98,6 +102,7 @@ private:
     QString m_redirectUri;
     QString m_clientId;
     QString m_dPopNonce;
+    Es256 m_dPopKey;
     // par
     QByteArray m_codeChallenge;
     QByteArray m_codeVerifier;

@@ -76,6 +76,7 @@ void Authorization::reset()
     // request token
     m_code.clear();
     m_token = AtProtocolType::OauthDefs::TokenResponse();
+    m_dPopKey.clear();
     //
     m_listenPort.clear();
 }
@@ -84,6 +85,13 @@ void Authorization::start(const QString &pds, const QString &handle)
 {
     if (pds.isEmpty() || handle.isEmpty())
         return;
+
+    // 新しいセッションなのでDPoPの鍵も新しく作る
+    if (!m_dPopKey.generateKey()) {
+        emit errorOccurred("Invalid DPoP key", "Failed to generate DPoP key.");
+        emit finished(false);
+        return;
+    }
 
     startRedirectServer();
 
@@ -324,6 +332,11 @@ void Authorization::par()
 {
     if (pushedAuthorizationRequestEndpoint().isEmpty())
         return;
+    if (!m_dPopKey.isValid() && !m_dPopKey.generateKey()) {
+        emit errorOccurred("Invalid DPoP key", "Failed to generate DPoP key.");
+        emit finished(false);
+        return;
+    }
 
     // 再送時にcode_challengeやstateが変わらないようにペイロードは1回だけ作る
     postPushedAuthorizationRequest(makeParPayload(), false);
@@ -358,7 +371,7 @@ void Authorization::postPushedAuthorizationRequest(const QByteArray &payload, bo
         req->deleteLater();
     });
     req->appendRawHeader("DPoP",
-                         JsonWebToken::generate(pushedAuthorizationRequestEndpoint(), clientId(),
+                         JsonWebToken::generate(m_dPopKey, pushedAuthorizationRequestEndpoint(),
                                                 "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
@@ -505,6 +518,12 @@ void Authorization::requestToken(bool refresh)
 {
     if (tokenEndopoint().isEmpty())
         return;
+    if (!m_dPopKey.isValid()) {
+        // tokenはDPoPの鍵に紐づくので、別の鍵を作って続けることはできない
+        emit errorOccurred("Invalid DPoP key", "DPoP key is not set.");
+        emit finished(false);
+        return;
+    }
 
     postTokenRequest(refresh, false);
 }
@@ -553,7 +572,7 @@ void Authorization::postTokenRequest(bool refresh, bool retried)
         req->deleteLater();
     });
     req->appendRawHeader("DPoP",
-                         JsonWebToken::generate(tokenEndopoint(), clientId(), "POST", dPopNonce()));
+                         JsonWebToken::generate(m_dPopKey, tokenEndopoint(), "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->requestToken(makeRequestTokenPayload(refresh));
@@ -718,6 +737,16 @@ QString Authorization::dPopNonce() const
 void Authorization::setDPopNonce(const QString &newDPopNonce)
 {
     m_dPopNonce = newDPopNonce;
+}
+
+QByteArray Authorization::dPopPrivateKey() const
+{
+    return m_dPopKey.privateKeyPem();
+}
+
+bool Authorization::setDPopPrivateKey(const QByteArray &pem)
+{
+    return m_dPopKey.loadPrivateKeyPem(pem);
 }
 
 QByteArray Authorization::codeChallenge() const

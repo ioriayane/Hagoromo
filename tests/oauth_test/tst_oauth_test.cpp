@@ -87,8 +87,14 @@ private:
     DPopNonceServer m_server;
     quint16 m_listenPort;
 
+    // サーバーが受け付けたPAR/tokenリクエストのDPoP
+    QList<QJsonObject> m_dPopHeaders;
+    QList<QJsonObject> m_dPopPayloads;
+
     void test_get(const QString &url, const QByteArray &except_data);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
+    static QJsonObject decode_jwt_part(const QByteArray &part);
+    static QByteArray generate_private_key_pem();
 };
 
 oauth_test::oauth_test()
@@ -111,6 +117,11 @@ oauth_test::oauth_test()
                     for (const auto &header : request.headers().toListOfPairs()) {
                         if (header.first.toLower() == "dpop") {
                             verify_jwt(header.second, nullptr);
+                            const QByteArrayList parts = header.second.split('.');
+                            if (parts.length() == 3) {
+                                m_dPopHeaders.append(decode_jwt_part(parts.at(0)));
+                                m_dPopPayloads.append(decode_jwt_part(parts.at(1)));
+                            }
                             exist = true;
                             break;
                         }
@@ -193,8 +204,7 @@ void oauth_test::test_oauth_server()
         QVERIFY(arguments.at(0).toBool());
     }
     qDebug().noquote() << "DPoP for test";
-    qDebug().noquote() << JsonWebToken::generate(oauth.tokenEndopoint(), oauth.clientId(), "GET",
-                                                 oauth.dPopNonce());
+    qDebug().noquote() << "DPoP private key size" << oauth.dPopPrivateKey().size();
 #elif 0
     AtProtocolType::OauthDefs::TokenResponse token;
     token.refresh_token = "ref-121f89618c436";
@@ -228,8 +238,13 @@ void oauth_test::test_oauth()
     m_server.m_nonce = "nonce-par";
     m_server.m_rotateAlways = false;
     m_server.m_challengeCount = 0;
+    m_dPopHeaders.clear();
+    m_dPopPayloads.clear();
 
     oauth.reset();
+    // 以前のセッションの鍵は使われず、新しい鍵が作られること
+    const QByteArray old_private_key = generate_private_key_pem();
+    QVERIFY(oauth.setDPopPrivateKey(old_private_key));
     {
         QSignalSpy spy(&oauth, SIGNAL(serviceEndpointChanged()));
         oauth.start(pds, handle);
@@ -352,6 +367,34 @@ void oauth_test::test_oauth()
     QCOMPARE(oauth.token().sub, "did:plc:ipj5qejfoqu6eukvt72uhyit");
     QCOMPARE(m_server.m_challengeCount, 2);
     QCOMPARE(oauth.dPopNonce(), QString("nonce-token"));
+
+    // PARとtokenは同じセッションの鍵で署名されていること
+    const QByteArray private_key = oauth.dPopPrivateKey();
+    QVERIFY(!private_key.isEmpty());
+    QVERIFY(private_key != old_private_key);
+    Es256 session_key;
+    QVERIFY(session_key.loadPrivateKeyPem(private_key));
+    QByteArray x_coord;
+    QByteArray y_coord;
+    QVERIFY(session_key.getAffineCoordinates(x_coord, y_coord));
+
+    const QStringList htu_list = QStringList()
+            << QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort)
+            << QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort);
+    QCOMPARE(m_dPopHeaders.length(), 2);
+    QCOMPARE(m_dPopPayloads.length(), 2);
+    for (int i = 0; i < m_dPopHeaders.length(); i++) {
+        const QJsonObject jwk = m_dPopHeaders.at(i).value("jwk").toObject();
+        QCOMPARE(jwk.value("x").toString(), QString::fromUtf8(x_coord));
+        QCOMPARE(jwk.value("y").toString(), QString::fromUtf8(y_coord));
+        QVERIFY(!jwk.contains("d"));
+
+        const QJsonObject payload = m_dPopPayloads.at(i);
+        QCOMPARE(payload.value("htm").toString(), QString("POST"));
+        QCOMPARE(payload.value("htu").toString(), htu_list.at(i));
+        QVERIFY(!payload.contains("ath"));
+    }
+    QVERIFY(m_dPopPayloads.at(0).value("jti") != m_dPopPayloads.at(1).value("jti"));
 }
 
 void oauth_test::test_oauth_dpop_nonce_retry_limit()
@@ -365,6 +408,7 @@ void oauth_test::test_oauth_dpop_nonce_retry_limit()
     AtProtocolType::OauthDefs::TokenResponse token;
     token.refresh_token = "refresh token";
     oauth.setToken(token);
+    QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
     oauth.setTokenEndopoint(
             QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
     oauth.makeClientId();
@@ -392,6 +436,20 @@ void oauth_test::test_oauth_token_validation()
             << qMakePair(QString("token"), true) << qMakePair(QString("token_invalid_sub"), false)
             << qMakePair(QString("token_no_atproto_scope"), false);
 
+    {
+        // DPoPの鍵がない場合はtokenを要求しない
+        Authorization oauth;
+        oauth.setTokenEndopoint(
+                QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+        QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("Invalid DPoP key"));
+    }
+
     for (const auto &item : cases) {
         qDebug().noquote() << "token response :" << item.first;
         Authorization oauth;
@@ -399,6 +457,7 @@ void oauth_test::test_oauth_token_validation()
         token.refresh_token = "refresh token";
         token.sub = expected_did;
         oauth.setToken(token);
+        QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
         oauth.setTokenEndopoint(QString("http://localhost:%1/response/2/oauth/%2")
                                         .arg(m_listenPort)
                                         .arg(item.first));
@@ -425,46 +484,148 @@ void oauth_test::test_oauth_token_validation()
 
 void oauth_test::test_jwt()
 {
-    QByteArray jwt = JsonWebToken::generate("https://hoge", "client_id", "GET",
-                                            "O_m5dyvKO7jNfnsfuYwB5GflhTuVaqCub4x3xVKqJ9Y");
+    Es256 key;
+    QVERIFY(key.generateKey());
 
+    const QString access_token = "access token";
+    QByteArray jwt =
+            JsonWebToken::generate(key, "https://hoge/path?query=1#fragment", "GET",
+                                   "O_m5dyvKO7jNfnsfuYwB5GflhTuVaqCub4x3xVKqJ9Y", access_token);
     qDebug().noquote() << jwt;
+    verify_jwt(jwt, nullptr);
+    verify_jwt(jwt, key.pKey());
 
-    verify_jwt(jwt, Es256::getInstance()->pKey());
+    const QByteArrayList parts = jwt.split('.');
+    QCOMPARE(parts.length(), 3);
+    const QJsonObject header = decode_jwt_part(parts.at(0));
+    QCOMPARE(header.value("alg").toString(), QString("ES256"));
+    QCOMPARE(header.value("typ").toString(), QString("dpop+jwt"));
+    QVERIFY(!header.value("jwk").toObject().contains("d"));
 
-    QVERIFY(true);
+    const QJsonObject payload = decode_jwt_part(parts.at(1));
+    QCOMPARE(payload.value("htm").toString(), QString("GET"));
+    QCOMPARE(payload.value("htu").toString(), QString("https://hoge/path"));
+    QCOMPARE(payload.value("nonce").toString(),
+             QString("O_m5dyvKO7jNfnsfuYwB5GflhTuVaqCub4x3xVKqJ9Y"));
+    QCOMPARE(payload.value("ath").toString(),
+             QString::fromUtf8(
+                     QCryptographicHash::hash(access_token.toUtf8(), QCryptographicHash::Sha256)
+                             .toBase64(QByteArray::Base64UrlEncoding
+                                       | QByteArray::OmitTrailingEquals)));
+    QVERIFY(qAbs(payload.value("iat").toInteger() - QDateTime::currentSecsSinceEpoch()) <= 5);
+    QVERIFY(!payload.value("jti").toString().isEmpty());
+    // RFC 9449で定義されていないクレームは付けない
+    QVERIFY(!payload.contains("exp"));
+    QVERIFY(!payload.contains("iss"));
+    QVERIFY(!payload.contains("sub"));
+
+    // nonceとathは指定したときだけ付く
+    const QByteArray jwt2 = JsonWebToken::generate(key, "https://hoge/path", "POST", QString());
+    const QJsonObject payload2 = decode_jwt_part(jwt2.split('.').at(1));
+    QVERIFY(!payload2.contains("nonce"));
+    QVERIFY(!payload2.contains("ath"));
+    QVERIFY(payload.value("jti") != payload2.value("jti"));
+
+    // 鍵がない場合は生成しない
+    Es256 empty_key;
+    QVERIFY(JsonWebToken::generate(empty_key, "https://hoge", "GET", QString()).isEmpty());
 }
 
 void oauth_test::test_es256()
 {
-    QString private_key_path =
-            QString("%1/%2/%3%4/private_key.pem")
-                    .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
-                    .arg(QCoreApplication::organizationName())
-                    .arg(QCoreApplication::applicationName())
-                    .arg(QStringLiteral("_debug"));
-    QFile::remove(private_key_path);
-    Es256::getInstance()->clear();
+    Es256 key;
+    QVERIFY(!key.isValid());
+    QVERIFY(key.sign("header.payload").isEmpty());
+    QVERIFY(key.privateKeyPem().isEmpty());
 
+    QVERIFY(key.generateKey());
+    QVERIFY(key.isValid());
     {
         QString message = "header.payload";
-        QByteArray sign = Es256::getInstance()->sign(message.toUtf8());
+        QByteArray sign = key.sign(message.toUtf8());
+        QCOMPARE(sign.length(), 64);
         QByteArray jwt = message.toUtf8() + '.'
                 + sign.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-
-        QVERIFY(QFile::exists(private_key_path));
-        verify_jwt(jwt, Es256::getInstance()->pKey());
+        verify_jwt(jwt, key.pKey());
     }
-    QFile::remove(private_key_path);
-    QVERIFY(!QFile::exists(private_key_path));
+
+    // PEMで保存・復元できること
+    const QByteArray pem = key.privateKeyPem();
+    QVERIFY(pem.startsWith("-----BEGIN PRIVATE KEY-----"));
+    Es256 restored;
+    QVERIFY(restored.loadPrivateKeyPem(pem));
     {
+        QByteArray x1, y1, x2, y2;
+        QVERIFY(key.getAffineCoordinates(x1, y1));
+        QVERIFY(restored.getAffineCoordinates(x2, y2));
+        QCOMPARE(x1, x2);
+        QCOMPARE(y1, y2);
+
         QString message = "header2.payload2";
-        QByteArray sign = Es256::getInstance()->sign(message.toUtf8());
+        QByteArray sign = restored.sign(message.toUtf8());
         QByteArray jwt = message.toUtf8() + '.'
                 + sign.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-
-        verify_jwt(jwt, Es256::getInstance()->pKey());
+        verify_jwt(jwt, key.pKey());
     }
+
+    // 鍵は生成するたびに異なること
+    {
+        Es256 other;
+        QVERIFY(other.generateKey());
+        QVERIFY(other.privateKeyPem() != pem);
+    }
+
+    // JWKの座標は先頭が0でも32バイト固定
+    for (int i = 0; i < 300; i++) {
+        Es256 temp;
+        QVERIFY(temp.generateKey());
+        QByteArray x_coord, y_coord;
+        QVERIFY(temp.getAffineCoordinates(x_coord, y_coord));
+        QCOMPARE(QByteArray::fromBase64(x_coord, QByteArray::Base64UrlEncoding).length(), 32);
+        QCOMPARE(QByteArray::fromBase64(y_coord, QByteArray::Base64UrlEncoding).length(), 32);
+        QCOMPARE(temp.sign("header.payload").length(), 64);
+    }
+
+    // 不正な鍵は読み込まない
+    QVERIFY(!restored.loadPrivateKeyPem(QByteArray()));
+    QVERIFY(!restored.isValid());
+    QVERIFY(!restored.loadPrivateKeyPem("-----BEGIN PRIVATE KEY-----\nhoge\n"
+                                        "-----END PRIVATE KEY-----\n"));
+    {
+        // P-256以外
+        EVP_PKEY *pkey = nullptr;
+        EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr);
+        QVERIFY(pctx);
+        QVERIFY(EVP_PKEY_keygen_init(pctx) > 0);
+        QVERIFY(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_secp384r1) > 0);
+        QVERIFY(EVP_PKEY_keygen(pctx, &pkey) > 0);
+        EVP_PKEY_CTX_free(pctx);
+        BIO *bio = BIO_new(BIO_s_mem());
+        QVERIFY(PEM_write_bio_PrivateKey(bio, pkey, nullptr, nullptr, 0, nullptr, nullptr) > 0);
+        char *data = nullptr;
+        long length = BIO_get_mem_data(bio, &data);
+        const QByteArray p384_pem(data, static_cast<int>(length));
+        BIO_free(bio);
+        EVP_PKEY_free(pkey);
+
+        QVERIFY(!restored.loadPrivateKeyPem(p384_pem));
+        QVERIFY(!restored.isValid());
+    }
+}
+
+QJsonObject oauth_test::decode_jwt_part(const QByteArray &part)
+{
+    return QJsonDocument::fromJson(QByteArray::fromBase64(part,
+                                                          QByteArray::Base64UrlEncoding
+                                                                  | QByteArray::OmitTrailingEquals))
+            .object();
+}
+
+QByteArray oauth_test::generate_private_key_pem()
+{
+    Es256 key;
+    key.generateKey();
+    return key.privateKeyPem();
 }
 
 void oauth_test::test_get(const QString &url, const QByteArray &except_data)
