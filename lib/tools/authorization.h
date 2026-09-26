@@ -68,6 +68,9 @@ private:
     QByteArray generateRandomValues() const;
     QString simplyEncode(QString text) const;
 
+    void postPushedAuthorizationRequest(const QByteArray &payload, bool retried);
+    void postTokenRequest(bool refresh, bool retried);
+
     // server info
     void requestOauthProtectedResource();
     void requestOauthAuthorizationServer();

@@ -15,6 +15,55 @@
 #include "tools/es256.h"
 #include "http/simplehttpserver.h"
 
+#include <QHttpHeaders>
+
+// DPoPのnonceが最新でないPAR/tokenリクエストに use_dpop_nonce を返すサーバー
+class DPopNonceServer : public SimpleHttpServer
+{
+public:
+    explicit DPopNonceServer(QObject *parent = nullptr)
+        : SimpleHttpServer(parent), m_rotateAlways(false), m_challengeCount(0)
+    {
+    }
+
+    bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder) override
+    {
+        const QString path = request.url().path();
+        if (!m_nonce.isEmpty() && (path.endsWith("/oauth/par") || path.endsWith("/oauth/token"))
+            && nonceInDPop(request.headers().value("DPoP").toByteArray()) != m_nonce) {
+            m_challengeCount++;
+            QHttpHeaders headers;
+            headers.append(QHttpHeaders::WellKnownHeader::ContentType, "application/json");
+            headers.append("DPoP-Nonce", m_nonce);
+            if (m_rotateAlways) {
+                // 通知したnonceを直後に無効にして、再送も失敗させる
+                m_nonce = QString("nonce-rotated-%1").arg(m_challengeCount);
+            }
+            responder.write(QByteArray("{\"error\":\"use_dpop_nonce\","
+                                       "\"error_description\":\"Authorization server requires "
+                                       "nonce in DPoP proof\"}"),
+                            headers, QHttpServerResponder::StatusCode::BadRequest);
+            return true;
+        }
+        return SimpleHttpServer::handleRequest(request, responder);
+    }
+
+    QString m_nonce;
+    bool m_rotateAlways;
+    int m_challengeCount;
+
+private:
+    static QString nonceInDPop(const QByteArray &jwt)
+    {
+        const QByteArrayList parts = jwt.split('.');
+        if (parts.length() != 3)
+            return QString();
+        const QByteArray payload = QByteArray::fromBase64(
+                parts.at(1), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+        return QJsonDocument::fromJson(payload).object().value("nonce").toString();
+    }
+};
+
 class oauth_test : public QObject
 {
     Q_OBJECT
@@ -29,11 +78,12 @@ private slots:
     void test_oauth_process();
     void test_oauth_server();
     void test_oauth();
+    void test_oauth_dpop_nonce_retry_limit();
     void test_jwt();
     void test_es256();
 
 private:
-    SimpleHttpServer m_server;
+    DPopNonceServer m_server;
     quint16 m_listenPort;
 
     void test_get(const QString &url, const QByteArray &except_data);
@@ -54,7 +104,7 @@ oauth_test::oauth_test()
                 QString path = SimpleHttpServer::convertResoucePath(request.url());
                 qDebug().noquote() << " res path =" << path;
 
-                if (path.endsWith("/oauth/token")) {
+                if (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")) {
                     qDebug().noquote() << "Verify jwt";
                     bool exist = false;
                     for (const auto &header : request.headers().toListOfPairs()) {
@@ -174,6 +224,10 @@ void oauth_test::test_oauth()
     QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
     QString handle = "ioriayane.relog.tech";
 
+    m_server.m_nonce = "nonce-par";
+    m_server.m_rotateAlways = false;
+    m_server.m_challengeCount = 0;
+
     oauth.reset();
     {
         QSignalSpy spy(&oauth, SIGNAL(serviceEndpointChanged()));
@@ -217,6 +271,9 @@ void oauth_test::test_oauth()
                                    "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
                                    "05650c01604941dc674f0af9cb032aca")));
     }
+    // 1回目のPARはnonceなしで拒否され、受け取ったnonceで再送される
+    QCOMPARE(m_server.m_challengeCount, 1);
+    QCOMPARE(oauth.dPopNonce(), QString("nonce-par"));
 
     {
         // ブラウザで認証ができないのでタイムアウトしてくるのを確認
@@ -242,6 +299,8 @@ void oauth_test::test_oauth()
         redirect_url.setQuery(redirect_query);
         qDebug().noquote() << "extract to " << redirect_url;
     }
+    // tokenリクエストまでにnonceがローテーションされたケース
+    m_server.m_nonce = "nonce-token";
     // 認証終了したていで続き
     {
         QSignalSpy spy(&oauth, SIGNAL(tokenChanged()));
@@ -257,6 +316,39 @@ void oauth_test::test_oauth()
     QCOMPARE(oauth.token().token_type, "DPoP");
     QCOMPARE(oauth.token().refresh_token, "refresh token");
     QCOMPARE(oauth.token().expires_in, 2677);
+    QCOMPARE(m_server.m_challengeCount, 2);
+    QCOMPARE(oauth.dPopNonce(), QString("nonce-token"));
+}
+
+void oauth_test::test_oauth_dpop_nonce_retry_limit()
+{
+    // 再送してもnonceエラーになる場合は1回で諦める
+    m_server.m_nonce = "nonce-1";
+    m_server.m_rotateAlways = true;
+    m_server.m_challengeCount = 0;
+
+    Authorization oauth;
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.refresh_token = "refresh token";
+    oauth.setToken(token);
+    oauth.setTokenEndopoint(
+            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+    oauth.makeClientId();
+    {
+        QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(!arguments.at(0).toBool());
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("use_dpop_nonce"));
+    }
+    QCOMPARE(m_server.m_challengeCount, 2);
+
+    m_server.m_nonce.clear();
+    m_server.m_rotateAlways = false;
 }
 
 void oauth_test::test_jwt()

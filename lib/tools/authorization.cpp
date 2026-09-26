@@ -27,6 +27,12 @@ using AtProtocolInterface::OauthRequestToken;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
+// Authorization ServerからDPoP nonceの更新を求められた場合、新しいnonceで1回だけ再送する
+inline bool canRetryWithDPopNonce(const QString &error_code, const QString &new_nonce, bool retried)
+{
+    return !retried && error_code == QStringLiteral("use_dpop_nonce") && !new_nonce.isEmpty();
+}
+
 Authorization::Authorization(QObject *parent) : QObject { parent }, m_redirectTimeout(300) { }
 
 void Authorization::reset()
@@ -287,30 +293,44 @@ void Authorization::par()
     if (pushedAuthorizationRequestEndpoint().isEmpty())
         return;
 
+    // 再送時にcode_challengeやstateが変わらないようにペイロードは1回だけ作る
+    postPushedAuthorizationRequest(makeParPayload(), false);
+}
+
+void Authorization::postPushedAuthorizationRequest(const QByteArray &payload, bool retried)
+{
     AtProtocolInterface::AccountData account;
     account.service = pushedAuthorizationRequestEndpoint();
 
     OauthPushedAuthorizationRequest *req = new OauthPushedAuthorizationRequest(this);
     connect(req, &OauthPushedAuthorizationRequest::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
         if (success) {
             if (!req->pushedAuthorizationResponse().request_uri.isEmpty()) {
                 // next step
-                setDPopNonce(req->dPopNonce());
                 authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
                 emit errorOccurred("Invalid Pushed Authorization Request",
                                    "'request_uri' is empty.");
                 emit finished(false);
             }
+        } else if (canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry PAR with new DPoP nonce";
+            postPushedAuthorizationRequest(payload, true);
         } else {
             emit errorOccurred(req->errorCode(), req->errorMessage());
             emit finished(false);
         }
         req->deleteLater();
     });
+    req->appendRawHeader("DPoP",
+                         JsonWebToken::generate(pushedAuthorizationRequestEndpoint(), clientId(),
+                                                "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
-    req->pushedAuthorizationRequest(makeParPayload());
+    req->pushedAuthorizationRequest(payload);
 }
 
 void Authorization::authorization(const QString &request_uri)
@@ -431,20 +451,31 @@ void Authorization::requestToken(bool refresh)
     if (tokenEndopoint().isEmpty())
         return;
 
+    postTokenRequest(refresh, false);
+}
+
+void Authorization::postTokenRequest(bool refresh, bool retried)
+{
     AtProtocolInterface::AccountData account;
     account.service = tokenEndopoint();
 
     OauthRequestToken *req = new OauthRequestToken(this);
     connect(req, &OauthRequestToken::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
+        if (!success && canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry token request with new DPoP nonce";
+            postTokenRequest(refresh, true);
+            req->deleteLater();
+            return;
+        }
         bool ret = false;
         if (success) {
             if (!req->tokenResponse().access_token.isEmpty()
                 && !req->tokenResponse().refresh_token.isEmpty()
                 && req->tokenResponse().token_type.toLower() == "dpop") {
 
-                if (!req->dPopNonce().isEmpty()) {
-                    setDPopNonce(req->dPopNonce());
-                }
                 setToken(req->tokenResponse());
 
                 qDebug().noquote() << "--- Success oauth ----";

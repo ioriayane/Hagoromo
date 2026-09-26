@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QFile>
 #include <QDebug>
+#include <QRandomGenerator>
 
 inline QByteArray base64UrlEncode(const QByteArray &data)
 {
@@ -51,7 +52,12 @@ QByteArray JsonWebToken::generate(const QString &endpoint, const QString &client
     payload["htu"] = endpoint;
     payload["htm"] = method;
     payload["exp"] = epoch + 60000;
-    payload["jti"] = QString(QString::number(epoch).toUtf8().toBase64());
+    // 同一秒内の再送でも重複しないようにランダムな値にする
+    QByteArray jti;
+    for (int i = 0; i < 16; i++) {
+        jti.append(static_cast<char>(QRandomGenerator::system()->bounded(256)));
+    }
+    payload["jti"] = QString::fromUtf8(base64UrlEncode(jti));
     payload["iat"] = epoch; // 発行時間
     if (!nonce.isEmpty()) {
         payload["nonce"] = nonce;
