@@ -6376,7 +6376,9 @@ void copyDidDoc(const QJsonObject &src, DirectoryPlcDefs::DidDoc &dest)
             dest.context.append(value.toString());
         }
         dest.id = src.value("id").toString();
-        dest.alsoKnownAs = src.value("alsoKnownAs").toString();
+        for (const auto &value : src.value("alsoKnownAs").toArray()) {
+            dest.alsoKnownAs.append(value.toString());
+        }
         for (const auto &s : src.value("verificationMethod").toArray()) {
             DidDocVerificationMethod child;
             copyDidDocVerificationMethod(s.toObject(), child);

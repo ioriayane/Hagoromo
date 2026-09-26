@@ -48,7 +48,11 @@
                     "format": "did"
                 },
                 "alsoKnownAs": {
-                    "type": "string",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uri"
+                    },
                     "description": "at://HANDLE"
                 },
                 "verificationMethod": {

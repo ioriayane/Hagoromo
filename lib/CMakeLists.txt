@@ -249,10 +249,14 @@ add_library(HagoromoLib STATIC
     extension/directory/plc/directoryplc.h
     extension/directory/plc/directoryplclogaudit.cpp
     extension/directory/plc/directoryplclogaudit.h
+    extension/com/atproto/identity/comatprotoidentityresolvehandle.cpp
+    extension/com/atproto/identity/comatprotoidentityresolvehandle.h
     extension/oauth/oauthpushedauthorizationrequest.cpp
     extension/oauth/oauthpushedauthorizationrequest.h
     extension/oauth/oauthrequesttoken.cpp
     extension/oauth/oauthrequesttoken.h
+    extension/well-known/wellknownatprotodid.cpp
+    extension/well-known/wellknownatprotodid.h
     extension/well-known/wellknownoauthauthorizationserver.cpp
     extension/well-known/wellknownoauthauthorizationserver.h
     extension/well-known/wellknownoauthprotectedresource.cpp
@@ -294,6 +298,8 @@ add_library(HagoromoLib STATIC
     tools/accountmanager.h
     tools/authorization.cpp
     tools/authorization.h
+    tools/identityresolver.cpp
+    tools/identityresolver.h
     tools/base32.cpp
     tools/base32.h
     tools/cardecoder.cpp

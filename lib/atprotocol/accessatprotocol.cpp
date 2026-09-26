@@ -188,8 +188,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 
             bool success = false;
             if (checkReply(reply)) {
-                if (reply->contentType().startsWith("image/")
-                    || reply->contentType().startsWith("application/vnd.ipld.car")) {
+                if (isRawContentType(reply->contentType())) {
                     success = recvImage(reply->recvData(), reply->contentType());
                 } else if (reply->contentType().startsWith("application/json")
                            || reply->contentType().startsWith("application/did+ld+json")) {
@@ -324,6 +323,11 @@ bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_
     Q_UNUSED(data)
     Q_UNUSED(content_type)
     return true;
+}
+
+bool AccessAtProtocol::isRawContentType(const QString &content_type) const
+{
+    return content_type.startsWith("image/") || content_type.startsWith("application/vnd.ipld.car");
 }
 
 bool AccessAtProtocol::checkReply(HttpReply *reply)

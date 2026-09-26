@@ -58,6 +58,14 @@ public:
     QByteArray state() const;
     QString issuer() const;
     QString did() const;
+    QString handle() const;
+
+    // client-metadata.jsonのscopeに同じ文字列で宣言されている必要がある
+    static QStringList defaultScopes();
+    QStringList scopes() const;
+    void setScopes(const QStringList &newScopes);
+    QString plcDirectory() const;
+    void setPlcDirectory(const QString &newPlcDirectory);
 
 signals:
     void errorOccurred(const QString &code, const QString &message);
@@ -97,7 +105,7 @@ private:
     QString m_pushedAuthorizationRequestEndpoint;
     QString m_authorizationEndpoint;
     QString m_tokenEndopoint;
-    QStringList m_scopesSupported;
+    QStringList m_scopes;
     //
     QString m_redirectUri;
     QString m_clientId;
@@ -110,6 +118,10 @@ private:
     // request token
     QByteArray m_code;
     AtProtocolType::OauthDefs::TokenResponse m_token;
+
+    QString m_plcDirectory;
+    // tokenの要求中(refresh tokenは使い捨てなので同時に要求しない)
+    bool m_tokenRequesting;
 
     QString m_listenPort;
     int m_redirectTimeout;

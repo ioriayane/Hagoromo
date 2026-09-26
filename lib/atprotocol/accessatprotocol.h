@@ -118,6 +118,8 @@ protected:
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
     virtual bool recvImage(const QByteArray &data, const QString &content_type);
+    // JSONとして扱わずrecvImage()に渡すContent-Type
+    virtual bool isRawContentType(const QString &content_type) const;
     bool checkReply(HttpReply *reply);
 
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);

@@ -4668,7 +4668,7 @@ struct DidDoc
 {
     QList<QString> context;
     QString id; // did
-    QString alsoKnownAs; // at://HANDLE
+    QList<QString> alsoKnownAs; // at://HANDLE
     QList<DidDocVerificationMethod> verificationMethod;
     QList<DidDocService> service;
 };

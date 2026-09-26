@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QDesktopServices>
 
 #include <openssl/ec.h>
@@ -13,6 +14,8 @@
 #include "tools/authorization.h"
 #include "tools/jsonwebtoken.h"
 #include "tools/es256.h"
+#include "tools/identityresolver.h"
+#include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"
 
 #include <QHttpHeaders>
@@ -80,6 +83,11 @@ private slots:
     void test_oauth();
     void test_oauth_dpop_nonce_retry_limit();
     void test_oauth_token_validation();
+    void test_oauth_token_request_lock();
+    void test_identity_resolver();
+    void test_client_metadata();
+    void test_identity_resolver_online();
+    void test_well_known_atproto_did();
     void test_jwt();
     void test_es256();
 
@@ -90,6 +98,8 @@ private:
     // サーバーが受け付けたPAR/tokenリクエストのDPoP
     QList<QJsonObject> m_dPopHeaders;
     QList<QJsonObject> m_dPopPayloads;
+    // サーバーが受け付けたPARのリクエストボディ
+    QList<QByteArray> m_parBodies;
 
     void test_get(const QString &url, const QByteArray &except_data);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
@@ -111,6 +121,14 @@ oauth_test::oauth_test()
                 QString path = SimpleHttpServer::convertResoucePath(request.url());
                 qDebug().noquote() << " res path =" << path;
 
+                if (path.contains("/response/plc/")) {
+                    // Windowsのファイル名に':'は使えないので置き換える
+                    path.replace(path.lastIndexOf('/') + 1, path.length(),
+                                 QString(path.mid(path.lastIndexOf('/') + 1)).replace(':', '_'));
+                }
+                if (path.endsWith("/oauth/par")) {
+                    m_parBodies.append(request.body());
+                }
                 if (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")) {
                     qDebug().noquote() << "Verify jwt";
                     bool exist = false;
@@ -132,7 +150,7 @@ oauth_test::oauth_test()
                 if (!QFile::exists(path)) {
                     result = false;
                 } else {
-                    mime_type = "application/json";
+                    mime_type = path.endsWith("/atproto-did") ? "text/plain" : "application/json";
                     result = SimpleHttpServer::readFile(path, data);
                     data.replace("{{SERVER_PORT_NO}}", QString::number(m_listenPort).toLocal8Bit());
                     qDebug().noquote() << " result =" << result;
@@ -231,15 +249,18 @@ void oauth_test::test_oauth()
 
     Authorization oauth;
     oauth.setRedirectTimeout(20);
+    oauth.setPlcDirectory(QString("http://localhost:%1/response/plc").arg(m_listenPort));
 
+    // DNS/HTTPSでは解決できないハンドルにして、pdsのresolveHandleで解決させる
     QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
-    QString handle = "ioriayane.relog.tech";
+    QString handle = "@IoriAyane.test";
 
     m_server.m_nonce = "nonce-par";
     m_server.m_rotateAlways = false;
     m_server.m_challengeCount = 0;
     m_dPopHeaders.clear();
     m_dPopPayloads.clear();
+    m_parBodies.clear();
 
     oauth.reset();
     // 以前のセッションの鍵は使われず、新しい鍵が作られること
@@ -248,10 +269,11 @@ void oauth_test::test_oauth()
     {
         QSignalSpy spy(&oauth, SIGNAL(serviceEndpointChanged()));
         oauth.start(pds, handle);
-        spy.wait();
+        spy.wait(20 * 1000);
         QCOMPARE(spy.count(), 1);
     }
     QCOMPARE(oauth.serviceEndpoint(), QString("http://localhost:%1/response/1").arg(m_listenPort));
+    QCOMPARE(oauth.handle(), QString("ioriayane.test"));
 
     {
         QSignalSpy spy(&oauth, SIGNAL(authorizationServerChanged()));
@@ -288,6 +310,16 @@ void oauth_test::test_oauth()
                                    "2Fclient-metadata.json&request_uri=urn%3Aietf%"
                                    "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
                                    "05650c01604941dc674f0af9cb032aca")));
+    }
+    // PARのパラメータ
+    QCOMPARE(m_parBodies.length(), 1);
+    {
+        const QUrlQuery par_query(QString::fromUtf8(m_parBodies.first()));
+        QCOMPARE(par_query.queryItemValue("scope", QUrl::FullyDecoded),
+                 Authorization::defaultScopes().join(" "));
+        QCOMPARE(par_query.queryItemValue("login_hint", QUrl::FullyDecoded),
+                 QString("ioriayane.test"));
+        QVERIFY(!par_query.queryItemValue("scope", QUrl::FullyDecoded).contains("transition:"));
     }
     // 1回目のPARはnonceなしで拒否され、受け取ったnonceで再送される
     QCOMPARE(m_server.m_challengeCount, 1);
@@ -480,6 +512,187 @@ void oauth_test::test_oauth_token_validation()
             QCOMPARE(oauth.token().access_token, QString());
         }
     }
+}
+
+void oauth_test::test_oauth_token_request_lock()
+{
+    // refresh中に再度refreshしても、tokenのリクエストは1回だけ
+    m_dPopPayloads.clear();
+
+    Authorization oauth;
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.refresh_token = "refresh token";
+    token.sub = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    oauth.setToken(token);
+    QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
+    oauth.setTokenEndopoint(
+            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+    oauth.makeClientId();
+
+    QSignalSpy spy_token(&oauth, SIGNAL(tokenChanged()));
+    QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+    oauth.requestToken(true);
+    oauth.requestToken(true);
+    spy.wait();
+    QTest::qWait(500);
+    QCOMPARE(spy.count(), 1);
+    QVERIFY(spy.takeFirst().at(0).toBool());
+    QCOMPARE(spy_token.count(), 1);
+    QCOMPARE(m_dPopPayloads.length(), 1);
+
+    // 終わった後は再度要求できる
+    oauth.requestToken(true);
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(m_dPopPayloads.length(), 2);
+}
+
+void oauth_test::test_identity_resolver()
+{
+    const QString plc = QString("http://localhost:%1/response/plc").arg(m_listenPort);
+    const QString service = QString("http://localhost:%1/response/2").arg(m_listenPort);
+    const QString pds = QString("http://localhost:%1/response/1").arg(m_listenPort);
+    const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+
+    struct TestCase
+    {
+        QString identifier;
+        QString service;
+        bool success;
+        QString did;
+        QString handle;
+        QString error_code;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // ハンドルから
+            << TestCase { "ioriayane.test", service, true, did, "ioriayane.test", QString() }
+            // DIDから(ハンドルも双方向で検証される)
+            << TestCase { did, service, true, did, "ioriayane.test", QString() }
+            // DIDから(ハンドルを検証できなくてもDIDは使える)
+            << TestCase { did, QString(), true, did, QString(), QString() }
+            // DIDドキュメントが別のハンドルを主張している
+            << TestCase { "other.test", service, false, QString(), QString(), "Invalid identity" }
+            // ハンドルを解決できない
+            << TestCase { "ioriayane.test", QString(), false,
+                          QString(),        QString(), "Failed to resolve handle" } // PDSがない
+            << TestCase { "did:plc:nopds", service, false, QString(), QString(), "Invalid identity" }
+            // DIDドキュメントのidが違う
+            << TestCase { "did:plc:mismatch", service,   false,
+                          QString(),          QString(), "Invalid identity" }
+            // DIDドキュメントがない
+            << TestCase { "did:plc:notfound", service,   false,
+                          QString(),          QString(), "Failed to resolve DID" } // 不正な書式
+            << TestCase { "invalid_handle", service,   false,
+                          QString(),        QString(), "Invalid identifier" }
+            << TestCase { "hagoromo.invalid", service,   false,
+                          QString(),          QString(), "Invalid identifier" }
+            << TestCase {
+                   "did:key:hoge", service, false, QString(), QString(), "Invalid identifier"
+               };
+
+    for (const auto &item : cases) {
+        qDebug().noquote() << "resolve :" << item.identifier << item.service;
+        IdentityResolver resolver;
+        resolver.setPlcDirectory(plc);
+        resolver.setHandleResolutionService(item.service);
+        resolver.setDnsTimeout(3000);
+
+        QSignalSpy spy_error(&resolver, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy(&resolver, SIGNAL(finished(bool)));
+        resolver.resolve(item.identifier);
+        if (spy.isEmpty()) {
+            spy.wait(20 * 1000);
+        }
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy.takeFirst().at(0).toBool(), item.success);
+        QCOMPARE(resolver.did(), item.did);
+        QCOMPARE(resolver.handle(), item.handle);
+        if (item.success) {
+            QCOMPARE(resolver.pdsEndpoint(), pds);
+            QCOMPARE(spy_error.count(), 0);
+        } else {
+            QVERIFY(resolver.pdsEndpoint().isEmpty());
+            QCOMPARE(spy_error.count(), 1);
+            QCOMPARE(spy_error.takeFirst().at(0).toString(), item.error_code);
+        }
+    }
+
+    QCOMPARE(IdentityResolver::normalizeHandle(" IoriAyane.Test "), QString("ioriayane.test"));
+    QVERIFY(IdentityResolver::isValidHandle("ioriayane.bsky.social"));
+    QVERIFY(IdentityResolver::isValidHandle("xn--ls8h.test"));
+    QVERIFY(!IdentityResolver::isValidHandle("bsky"));
+    QVERIFY(!IdentityResolver::isValidHandle("-hoge.bsky.social"));
+    QVERIFY(!IdentityResolver::isValidHandle("hoge.123"));
+    QVERIFY(!IdentityResolver::isValidHandle("hoge.local"));
+    QVERIFY(IdentityResolver::isValidDid("did:plc:ipj5qejfoqu6eukvt72uhyit"));
+    QVERIFY(IdentityResolver::isValidDid("did:web:example.com"));
+    QVERIFY(!IdentityResolver::isValidDid("did:key:zQ3sh"));
+    QVERIFY(!IdentityResolver::isValidDid("did:plc:"));
+}
+
+void oauth_test::test_identity_resolver_online()
+{
+    if (qEnvironmentVariable("HAGOROMO_ONLINE_TEST") != "1") {
+        QSKIP("Set HAGOROMO_ONLINE_TEST=1 to resolve real identities.");
+    }
+    // DNS TXT / HTTPS well-knownで解決できるハンドル(フォールバックのサービスなし)
+    const QStringList handles = QStringList() << "ioriayane.relog.tech"
+                                              << "ioriayane.bsky.social";
+    for (const auto &handle : handles) {
+        qDebug().noquote() << "resolve :" << handle;
+        IdentityResolver resolver;
+        QSignalSpy spy(&resolver, SIGNAL(finished(bool)));
+        resolver.resolve(handle);
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QVERIFY(resolver.did().startsWith("did:plc:"));
+        QCOMPARE(resolver.handle(), handle);
+        QVERIFY(resolver.pdsEndpoint().startsWith("https://"));
+        qDebug().noquote() << "  " << resolver.did() << resolver.pdsEndpoint();
+    }
+}
+
+void oauth_test::test_client_metadata()
+{
+    // サーバーに置くclient-metadata.jsonの原本とアプリの設定が一致していること
+    QByteArray data;
+    QVERIFY(SimpleHttpServer::readFile(":/client-metadata.json", data));
+    const QJsonObject metadata = QJsonDocument::fromJson(data).object();
+    QVERIFY(!metadata.isEmpty());
+
+    // 要求するscopeは文字列で完全一致している必要がある
+    const QStringList declared_scopes = metadata.value("scope").toString().split(' ');
+    for (const auto &scope : Authorization::defaultScopes()) {
+        QVERIFY2(declared_scopes.contains(scope), qPrintable(scope));
+    }
+    QCOMPARE(metadata.value("scope").toString(), Authorization::defaultScopes().join(" "));
+
+    Authorization oauth;
+    oauth.makeClientId();
+    QCOMPARE(metadata.value("client_id").toString(), oauth.clientId());
+    QCOMPARE(metadata.value("application_type").toString(), QString("native"));
+    QCOMPARE(metadata.value("token_endpoint_auth_method").toString(), QString("none"));
+    QVERIFY(metadata.value("dpop_bound_access_tokens").toBool());
+    // loopbackはポートを照合しない
+    QVERIFY(metadata.value("redirect_uris")
+                    .toArray()
+                    .contains(QJsonValue("http://127.0.0.1/tech/relog/hagoromo/oauth-callback")));
+}
+
+void oauth_test::test_well_known_atproto_did()
+{
+    AtProtocolInterface::AccountData account;
+    account.service = QString("http://localhost:%1/response/3").arg(m_listenPort);
+
+    AtProtocolInterface::WellKnownAtprotoDid well_known;
+    well_known.setAccount(account);
+    QSignalSpy spy(&well_known, SIGNAL(finished(bool)));
+    well_known.atprotoDid();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+    QVERIFY(spy.takeFirst().at(0).toBool());
+    QCOMPARE(well_known.did(), QString("did:plc:ipj5qejfoqu6eukvt72uhyit"));
 }
 
 void oauth_test::test_jwt()

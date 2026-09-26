@@ -1,13 +1,12 @@
 #include "authorization.h"
 #include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
-#include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/well-known/wellknownoauthprotectedresource.h"
 #include "extension/well-known/wellknownoauthauthorizationserver.h"
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "extension/oauth/oauthrequesttoken.h"
-#include "atprotocol/lexicons_func_unknown.h"
 #include "tools/jsonwebtoken.h"
+#include "tools/identityresolver.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -21,7 +20,6 @@
 #include <QDesktopServices>
 #include <QTimer>
 
-using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::OauthPushedAuthorizationRequest;
 using AtProtocolInterface::OauthRequestToken;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
@@ -50,7 +48,14 @@ inline bool canRetryWithDPopNonce(const QString &error_code, const QString &new_
     return !retried && error_code == QStringLiteral("use_dpop_nonce") && !new_nonce.isEmpty();
 }
 
-Authorization::Authorization(QObject *parent) : QObject { parent }, m_redirectTimeout(300) { }
+Authorization::Authorization(QObject *parent)
+    : QObject { parent },
+      m_scopes(defaultScopes()),
+      m_plcDirectory(QStringLiteral("https://plc.directory")),
+      m_tokenRequesting(false),
+      m_redirectTimeout(300)
+{
+}
 
 void Authorization::reset()
 {
@@ -65,7 +70,6 @@ void Authorization::reset()
     m_pushedAuthorizationRequestEndpoint.clear();
     m_authorizationEndpoint.clear();
     m_tokenEndopoint.clear();
-    m_scopesSupported.clear();
     //
     m_redirectUri.clear();
     m_clientId.clear();
@@ -95,35 +99,27 @@ void Authorization::start(const QString &pds, const QString &handle)
 
     startRedirectServer();
 
-    AtProtocolInterface::AccountData account;
-    account.service = pds;
-    m_handle = handle;
-
-    ComAtprotoRepoDescribeRepo *repo = new ComAtprotoRepoDescribeRepo(this);
-    connect(repo, &ComAtprotoRepoDescribeRepo::finished, this, [=](bool success) {
+    // handle(またはDID) -> DID -> DIDドキュメント -> PDS を双方向で検証しながら解決する
+    // pdsはDNS/HTTPSでハンドルを解決できなかったときの問い合わせ先
+    IdentityResolver *resolver = new IdentityResolver(this);
+    connect(resolver, &IdentityResolver::errorOccurred, this, &Authorization::errorOccurred);
+    connect(resolver, &IdentityResolver::finished, this, [=](bool success) {
         if (success) {
-            auto did_doc = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                    AtProtocolType::DirectoryPlcDefs::DidDoc>(repo->didDoc());
-            if (!did_doc.service.isEmpty()) {
-                // tokenのsubと照合するため
-                m_did = repo->did();
-                setServiceEndpoint(did_doc.service.first().serviceEndpoint);
+            // tokenのsubと照合するため
+            m_did = resolver->did();
+            m_handle = resolver->handle();
+            setServiceEndpoint(resolver->pdsEndpoint());
 
-                // next step
-                requestOauthProtectedResource();
-            } else {
-                emit errorOccurred("Invalid oauth-protected-resource",
-                                   "authorization_servers is empty.");
-                emit finished(false);
-            }
+            // next step
+            requestOauthProtectedResource();
         } else {
-            emit errorOccurred(repo->errorCode(), repo->errorMessage());
             emit finished(false);
         }
-        repo->deleteLater();
+        resolver->deleteLater();
     });
-    repo->setAccount(account);
-    repo->describeRepo(handle);
+    resolver->setHandleResolutionService(pds);
+    resolver->setPlcDirectory(plcDirectory());
+    resolver->resolve(handle);
 }
 
 void Authorization::requestOauthProtectedResource()
@@ -172,20 +168,11 @@ void Authorization::requestOauthAuthorizationServer()
         if (success) {
             QString error_message;
             if (validateServerMetadata(server->serverMetadata(), error_message)) {
-                const QStringList scope_candidates = QStringList() << "atproto"
-                                                                   << "transition:generic"
-                                                                   << "transition:chat.bsky";
                 m_issuer = server->serverMetadata().issuer;
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
                 setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
                 setTokenEndopoint(server->serverMetadata().token_endpoint);
-                for (const auto &scope : scope_candidates) {
-                    if (server->serverMetadata().scopes_supported.contains(scope)) {
-                        m_scopesSupported.append(scope);
-                    }
-                }
-
                 // next step
                 par();
             } else {
@@ -273,6 +260,50 @@ QString Authorization::did() const
     return m_did;
 }
 
+QString Authorization::handle() const
+{
+    return m_handle;
+}
+
+QStringList Authorization::defaultScopes()
+{
+    const QString appview = QStringLiteral("aud=did:web:api.bsky.app%23bsky_appview");
+    const QString chat = QStringLiteral("aud=did:web:api.bsky.chat%23bsky_chat");
+    return QStringList() << QStringLiteral("atproto")
+                         << QStringLiteral("include:app.bsky.authFullApp?") + appview
+                         << QStringLiteral("include:chat.bsky.authFullChatClient?") + chat
+                         // 下書きはapp.bsky.authFullAppに含まれていない
+                         << QStringLiteral("rpc:app.bsky.draft.createDraft?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.deleteDraft?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.getDrafts?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.updateDraft?") + appview
+                         << QStringLiteral("repo:tech.tokimeki.poll.poll")
+                         << QStringLiteral("repo:tech.tokimeki.poll.vote")
+                         << QStringLiteral("blob:*/*")
+                         // ラベラーへの通報
+                         << QStringLiteral("rpc:com.atproto.moderation.createReport?aud=*");
+}
+
+QStringList Authorization::scopes() const
+{
+    return m_scopes;
+}
+
+void Authorization::setScopes(const QStringList &newScopes)
+{
+    m_scopes = newScopes;
+}
+
+QString Authorization::plcDirectory() const
+{
+    return m_plcDirectory;
+}
+
+void Authorization::setPlcDirectory(const QString &newPlcDirectory)
+{
+    m_plcDirectory = newPlcDirectory;
+}
+
 void Authorization::setListenPort(const QString &newListenPort)
 {
     m_listenPort = newListenPort;
@@ -313,7 +344,8 @@ QByteArray Authorization::makeParPayload()
     m_state = generateRandomValues().toBase64(QByteArray::Base64UrlEncoding
                                               | QByteArray::OmitTrailingEquals);
 
-    QString login_hint = m_handle;
+    // ハンドルを検証できなかった場合はDIDで指定する
+    QString login_hint = m_handle.isEmpty() ? m_did : m_handle;
 
     QUrlQuery query;
     query.addQueryItem("response_type", "code");
@@ -322,7 +354,8 @@ QByteArray Authorization::makeParPayload()
     query.addQueryItem("client_id", simplyEncode(m_clientId));
     query.addQueryItem("state", m_state);
     query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
-    query.addQueryItem("scope", m_scopesSupported.join(" "));
+    // scopeは ? = & % などを含むのでそのまま届くようにすべてエンコードする
+    query.addQueryItem("scope", QString::fromUtf8(QUrl::toPercentEncoding(m_scopes.join(" "))));
     query.addQueryItem("login_hint", simplyEncode(login_hint));
 
     return query.query(QUrl::FullyEncoded).toLocal8Bit();
@@ -524,7 +557,14 @@ void Authorization::requestToken(bool refresh)
         emit finished(false);
         return;
     }
+    if (m_tokenRequesting) {
+        // refresh tokenは使い捨てなので同時に使うと片方が失敗してセッションを失う
+        // 結果は要求中のリクエストのfinished/tokenChangedで通知される
+        qDebug().noquote() << "Token request is already in progress";
+        return;
+    }
 
+    m_tokenRequesting = true;
     postTokenRequest(refresh, false);
 }
 
@@ -544,6 +584,7 @@ void Authorization::postTokenRequest(bool refresh, bool retried)
             req->deleteLater();
             return;
         }
+        m_tokenRequesting = false;
         bool ret = false;
         if (success) {
             QString error_message;

@@ -14,6 +14,6 @@
     "response_types": [
         "code"
     ],
-    "scope": "atproto transition:generic transition:chat.bsky",
+    "scope": "atproto include:app.bsky.authFullApp?aud=did:web:api.bsky.app%23bsky_appview include:chat.bsky.authFullChatClient?aud=did:web:api.bsky.chat%23bsky_chat rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview repo:tech.tokimeki.poll.poll repo:tech.tokimeki.poll.vote blob:*/* rpc:com.atproto.moderation.createReport?aud=*",
     "token_endpoint_auth_method": "none"
 }

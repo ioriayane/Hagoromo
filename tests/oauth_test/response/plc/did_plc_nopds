@@ -1,0 +1,13 @@
+{
+    "id": "did:plc:nopds",
+    "alsoKnownAs": [
+        "at://ioriayane.test"
+    ],
+    "service": [
+        {
+            "id": "#bsky_notif",
+            "type": "BskyNotificationService",
+            "serviceEndpoint": "http://localhost:{{SERVER_PORT_NO}}/response/1"
+        }
+    ]
+}
