@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QMetaEnum>
+#include <QThread>
 
 namespace AtProtocolInterface {
 
@@ -71,7 +72,7 @@ void ComAtprotoSyncSubscribeReposEx::open(const QUrl &url, SubScribeMode mode)
 
 void ComAtprotoSyncSubscribeReposEx::close()
 {
-    m_webSocket.close();
+    closeWebSocket();
 }
 
 QAbstractSocket::SocketState ComAtprotoSyncSubscribeReposEx::state() const
@@ -129,7 +130,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
             // error payload
             qDebug().noquote() << QJsonDocument(json).toJson();
             emit errorOccurred(json.value("error").toString(), json.value("message").toString());
-            m_webSocket.close();
+            closeWebSocket();
         } else if (json.contains("seq")) {
             if (!m_payloadTypeList.contains(payload_type)) {
                 // unknown payload type
@@ -144,7 +145,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
             // decode error
             qDebug().noquote() << QJsonDocument(json).toJson();
             emit errorOccurred("DecodeError", "Unknown data format.");
-            m_webSocket.close();
+            closeWebSocket();
         }
     }
 
@@ -152,77 +153,103 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
         qDebug().noquote() << "Invalid offset ?";
         emit errorOccurred("InvalidDataSize",
                            "The size of the decoded data does not match the total.");
-        m_webSocket.close();
+        closeWebSocket();
     }
 }
 
 void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArray &message)
 {
-
-    QString payload_type;
-
     QJsonDocument doc = QJsonDocument::fromJson(message);
-    QJsonObject json_src = doc.object();
-    QHash<QString, QString> commit_kind_to;
-    commit_kind_to["create"] = "create";
-    commit_kind_to["update"] = "update";
-    commit_kind_to["delete"] = "delete";
+    QJsonObject json_top = doc.object();
 
-    if (doc.isNull() || json_src.isEmpty()) {
+    if (doc.isNull() || json_top.isEmpty()) {
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
         emit errorOccurred("InvalidData", "Unreadable JSON data.");
-        m_webSocket.close();
-    } else if (!json_src.contains("kind") || !json_src.contains("did")
-               || !json_src.contains("commit")) {
-        // qDebug().noquote() << "Unsupport data:" << message;
+        closeWebSocket();
+        return;
+    }
+
+    const QString frame_type = json_top.value("$type").toString();
+    if (frame_type == "error") {
+        // Jetstream v2 closes the connection right after sending this frame.
+        qDebug().noquote() << "JetStream error:" << json_top.value("error").toString()
+                           << json_top.value("message").toString();
+        emit errorOccurred(json_top.value("error").toString(),
+                           json_top.value("message").toString());
+        closeWebSocket();
+        return;
+    } else if (frame_type != "message") {
+        qDebug().noquote() << "Unsupported JetStream frame:" << frame_type;
+        return;
+    }
+
+    QJsonObject json_src = json_top.value("payload").toObject();
+    if (!json_src.value("$type").toString().endsWith(QStringLiteral("#commit"))) {
+        // #identity / #account / #sync / #info : not handled yet
+        return;
+    }
+
+    QString payload_type = "#commit";
+    QJsonObject json_dest;
+
+    json_dest.insert("repo", json_src.value("did").toString());
+    json_dest.insert("rev", json_src.value("rev").toString());
+    json_dest.insert("time", json_src.value("time").toString());
+    json_dest.insert("seq", json_src.value("seq"));
+
+    QJsonObject json_dest_commit;
+    json_dest_commit.insert("$link", json_src.value("cid").toString());
+    json_dest.insert("commit", json_dest_commit);
+
+    QJsonObject json_dest_op;
+    QString commit_op = json_src.value("operation").toString();
+    json_dest_op.insert("action", commit_op);
+    json_dest_op.insert("path",
+                        QString("%1/%2").arg(json_src.value("collection").toString(),
+                                             json_src.value("rkey").toString()));
+    if (commit_op == "delete") {
+        json_dest_op.insert("cid", QJsonValue());
     } else {
-        payload_type = "#commit";
+        json_dest_op.insert("cid", json_dest_commit);
+    }
+    QJsonArray json_dest_ops;
+    json_dest_ops.append(json_dest_op);
+    json_dest.insert("ops", json_dest_ops);
 
-        QJsonObject json_src_commit = json_src.value("commit").toObject();
-        QJsonObject json_dest;
+    QJsonArray json_dest_blocks;
+    if (json_src.contains("record")) {
+        QJsonObject json_dest_block;
+        json_dest_block.insert("cid", json_src.value("cid").toString());
+        json_dest_block.insert("uri",
+                               QString("at://%1/%2/%3")
+                                       .arg(json_src.value("did").toString(),
+                                            json_src.value("collection").toString(),
+                                            json_src.value("rkey").toString()));
+        json_dest_block.insert("value", json_src.value("record").toObject());
+        json_dest_blocks.append(json_dest_block);
+    }
+    json_dest.insert("blocks", json_dest_blocks);
 
-        json_dest.insert("repo", json_src.value("did").toString());
-        json_dest.insert("rev", json_src_commit.value("rev").toString());
-        json_dest.insert("time",
-                         QDateTime::fromMSecsSinceEpoch(
-                                 static_cast<qint64>(json_src.value("time_us").toDouble() / 1000))
-                                 .toString(Qt::ISODateWithMs));
+    emit received(payload_type, json_dest, message.length());
+}
 
-        QJsonObject json_dest_commit;
-        json_dest_commit.insert("$link", json_src_commit.value("cid").toString());
-        json_dest.insert("commit", json_dest_commit);
-
-        QJsonObject json_dest_op;
-        QString commit_op = commit_kind_to.value(json_src_commit.value("operation").toString());
-        json_dest_op.insert("action", commit_op);
-        json_dest_op.insert("path",
-                            QString("%1/%2").arg(json_src_commit.value("collection").toString(),
-                                                 json_src_commit.value("rkey").toString()));
-        if (commit_op == "delete") {
-            json_dest_op.insert("cid", QJsonValue());
-        } else {
-            json_dest_op.insert("cid", json_dest_commit);
-        }
-        QJsonArray json_dest_ops;
-        json_dest_ops.append(json_dest_op);
-        json_dest.insert("ops", json_dest_ops);
-
-        QJsonArray json_dest_blocks;
-        if (json_src_commit.contains("record")) {
-            QJsonObject json_dest_block;
-            json_dest_block.insert("cid", json_src_commit.value("cid").toString());
-            json_dest_block.insert("uri",
-                                   QString("at://%1/%2/%3")
-                                           .arg(json_src.value("did").toString(),
-                                                json_src_commit.value("collection").toString(),
-                                                json_src_commit.value("rkey").toString()));
-            json_dest_block.insert("value", json_src_commit.value("record").toObject());
-            json_dest_blocks.append(json_dest_block);
-        }
-        json_dest.insert("blocks", json_dest_blocks);
-
-        emit received(payload_type, json_dest, message.length());
+void ComAtprotoSyncSubscribeReposEx::closeWebSocket()
+{
+    // m_webSocketは親を持たないのでmoveToThread()されたこのオブジェクトとは所属スレッドが異なる
+    // 受信処理はこのオブジェクトのスレッドで動くため、所属スレッド以外からは直接操作しない
+    if (QThread::currentThread() == m_webSocket.thread()) {
+        m_webSocket.close();
+    } else {
+        QMetaObject::invokeMethod(
+                &m_webSocket, [this]() { m_webSocket.close(); }, Qt::QueuedConnection);
     }
 }
+
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+void ComAtprotoSyncSubscribeReposEx::testMessageReceivedFromJetStream(const QByteArray &message)
+{
+    messageReceivedFromJetStream(message);
+}
+#endif
 }

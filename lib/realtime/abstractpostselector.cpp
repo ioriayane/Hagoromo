@@ -381,6 +381,15 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                 // selectorのツリー構造のrootで保存することになる
                 if (info.action == OperationActionType::Create) {
                     appendReactionCandidate(info.uri, info.cid);
+                    info.reply_parent_uri = getBlock(object, path)
+                                                    .value("value")
+                                                    .toObject()
+                                                    .value("reply")
+                                                    .toObject()
+                                                    .value("parent")
+                                                    .toObject()
+                                                    .value("uri")
+                                                    .toString();
                 } else if (info.action == OperationActionType::Delete) {
                     info.cid = m_reationCandidatesCids.value(info.uri, QString());
                 }

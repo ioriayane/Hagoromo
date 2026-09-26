@@ -78,8 +78,8 @@ private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);
     void appendThreadSelector(AbstractPostSelector *selector);
     void removeThreadSelector(QObject *parent);
-    void updateTimeOfLastReceivedData(const QJsonObject &json);
-    QString getCursorTime() const;
+    void updateReceivedCursorState(const QJsonObject &json);
+    QString getCursor() const;
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -97,6 +97,7 @@ private:
     QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
     qsizetype m_receivedDataSize; // byte
     qint64 m_timeOfReceivedData; // 最終受信時刻
+    qint64 m_lastSeq; // JetStreamの最終受信seq(カーソル再開用)
 };
 
 }

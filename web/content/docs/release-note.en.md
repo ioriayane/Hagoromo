@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Move the error message display to the bottom-right of the window (clicking it reverts to the original display)
   - Change to the Real-Time Feed Initialization Process
+  - Upgrade JetStream to V2
 
 ### v0.63.0 - 2026/6/18
 

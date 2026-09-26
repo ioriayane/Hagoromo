@@ -7,6 +7,7 @@
 #include <QWebSocketServer>
 
 #include "webserver.h"
+#include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
@@ -14,6 +15,7 @@
 #include "tools/accountmanager.h"
 
 using namespace RealtimeFeed;
+using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
 class realtime_test : public QObject
 {
@@ -28,6 +30,8 @@ private slots:
     void cleanupTestCase();
     void test_PostSelector();
     void test_FirehoseReceiver();
+    void test_JetStreamV2MessageParsing();
+    void test_JetStreamV2ErrorFrameCloseOnWorkerThread();
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
@@ -200,6 +204,131 @@ void realtime_test::test_FirehoseReceiver()
     // recv->removeAllSelector();
 }
 
+void realtime_test::test_JetStreamV2MessageParsing()
+{
+    ComAtprotoSyncSubscribeReposEx client;
+
+    QSignalSpy receivedSpy(&client, &ComAtprotoSyncSubscribeReposEx::received);
+    QSignalSpy errorSpy(&client, &ComAtprotoSyncSubscribeReposEx::errorOccurred);
+
+    QFile fileCreate(":/data/jetstream/commit_create.json");
+    QVERIFY(fileCreate.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileCreate.readAll());
+
+    QCOMPARE(receivedSpy.count(), 1);
+    QCOMPARE(errorSpy.count(), 0);
+    {
+        QList<QVariant> args = receivedSpy.takeFirst();
+        QCOMPARE(args.at(0).toString(), "#commit");
+        QJsonObject json = args.at(1).toJsonObject();
+        QCOMPARE(json.value("repo").toString(), "did:plc:7e6kocyzb77xkncplrkoojej");
+        QCOMPARE(json.value("rev").toString(), "3msx2efqjtc27");
+        QCOMPARE(json.value("time").toString(), "2026-08-13T06:47:43.959305Z");
+        QCOMPARE(json.value("seq").toVariant().toLongLong(), 24664288881LL);
+        QCOMPARE(json.value("commit").toObject().value("$link").toString(),
+                 "bafyreigwnxqttkhzha2ig4io6wwht3qiugtor4ruglceyfdbnyq53a55fe");
+
+        QJsonArray ops = json.value("ops").toArray();
+        QCOMPARE(ops.count(), 1);
+        QCOMPARE(ops.at(0).toObject().value("action").toString(), "create");
+        QCOMPARE(ops.at(0).toObject().value("path").toString(), "app.bsky.feed.like/3msx2efqdxs27");
+        QCOMPARE(ops.at(0).toObject().value("cid").toObject().value("$link").toString(),
+                 "bafyreigwnxqttkhzha2ig4io6wwht3qiugtor4ruglceyfdbnyq53a55fe");
+
+        QJsonArray blocks = json.value("blocks").toArray();
+        QCOMPARE(blocks.count(), 1);
+        QCOMPARE(blocks.at(0).toObject().value("uri").toString(),
+                 "at://did:plc:7e6kocyzb77xkncplrkoojej/app.bsky.feed.like/3msx2efqdxs27");
+        QCOMPARE(blocks.at(0).toObject().value("value").toObject().value("$type").toString(),
+                 "app.bsky.feed.like");
+    }
+
+    // delete: no record -> cid is null and blocks is empty
+    QFile fileDelete(":/data/jetstream/commit_delete.json");
+    QVERIFY(fileDelete.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileDelete.readAll());
+
+    QCOMPARE(receivedSpy.count(), 1);
+    QCOMPARE(errorSpy.count(), 0);
+    {
+        QList<QVariant> args = receivedSpy.takeFirst();
+        QJsonObject json = args.at(1).toJsonObject();
+        QJsonArray ops = json.value("ops").toArray();
+        QCOMPARE(ops.count(), 1);
+        QCOMPARE(ops.at(0).toObject().value("action").toString(), "delete");
+        QVERIFY(ops.at(0).toObject().value("cid").isNull());
+        QCOMPARE(json.value("blocks").toArray().count(), 0);
+    }
+
+    // #identity is not handled yet: silently ignored, no signal at all
+    QFile fileIdentity(":/data/jetstream/identity.json");
+    QVERIFY(fileIdentity.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileIdentity.readAll());
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 0);
+
+    // a server "error" frame is reported and does not emit "received"
+    QFile fileError(":/data/jetstream/error.json");
+    QVERIFY(fileError.open(QFile::ReadOnly));
+    client.testMessageReceivedFromJetStream(fileError.readAll());
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 1);
+    {
+        QList<QVariant> args = errorSpy.takeFirst();
+        QCOMPARE(args.at(0).toString(), "ConsumerTooSlow");
+        QVERIFY(args.at(1).toString().contains("cursor=42"));
+    }
+
+    // unreadable JSON is reported as InvalidData
+    client.testMessageReceivedFromJetStream(QByteArray("not json"));
+    QCOMPARE(receivedSpy.count(), 0);
+    QCOMPARE(errorSpy.count(), 1);
+    QCOMPARE(errorSpy.takeFirst().at(0).toString(), "InvalidData");
+}
+
+void realtime_test::test_JetStreamV2ErrorFrameCloseOnWorkerThread()
+{
+    // FirehoseReceiverと同じくクライアントを別スレッドへ移した状態で、
+    // 受信処理(ワーカースレッド)からの切断がスレッドをまたいだ操作にならないことを確認する
+    QTest::failOnWarning(QRegularExpression("another thread|different thread|device not open"));
+
+    QWebSocketServer server("realtime_test", QWebSocketServer::NonSecureMode);
+    QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+    connect(&server, &QWebSocketServer::newConnection, this, [&server]() {
+        QWebSocket *socket = server.nextPendingConnection();
+        for (int i = 0; i < 100; i++) {
+            socket->sendTextMessage(
+                    "{\"$type\":\"message\",\"payload\":{\"$type\":\"x#identity\"}}");
+        }
+        // サーバー側からは切断せず、クライアント側のclose()で切断させる
+        socket->sendTextMessage(
+                "{\"$type\":\"error\",\"error\":\"ConsumerTooSlow\",\"message\":\"test\"}");
+    });
+
+    ComAtprotoSyncSubscribeReposEx client;
+    QThread thread;
+    client.moveToThread(&thread);
+    thread.start();
+
+    // ワーカースレッドから発行されるシグナルをこのスレッドで受ける
+    QStringList errors;
+    int disconnected = 0;
+    connect(&client, &ComAtprotoSyncSubscribeReposEx::errorOccurred, this,
+            [&errors](const QString &code, const QString &) { errors.append(code); });
+    connect(&client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, this,
+            [&disconnected]() { disconnected++; });
+
+    client.open(QUrl(QString("ws://127.0.0.1:%1").arg(server.serverPort())),
+                ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream);
+
+    QTRY_COMPARE_WITH_TIMEOUT(disconnected, 1, 10 * 1000);
+    QCOMPARE(errors, QStringList() << "ConsumerTooSlow");
+    QTRY_COMPARE(client.state(), QAbstractSocket::UnconnectedState);
+
+    thread.quit();
+    thread.wait();
+}
+
 void realtime_test::test_Websock()
 {
 
@@ -292,6 +421,17 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
     QCOMPARE(model.item(0, TimelineListModel::RecordTextPlainRole).toString(), "reply3");
+    // リプライ先は同じgetPostsのリクエストで取得する
+    {
+        const QList<OperationInfo> infos = s->getOperationInfos(json_doc.object());
+        QCOMPARE(infos.count(), 1);
+        QCOMPARE(infos.first().reply_parent_uri,
+                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kx6eow2kyr25");
+    }
+    QCOMPARE(model.item(0, TimelineListModel::HasReplyRole).toBool(), true);
+    QCOMPARE(model.item(0, TimelineListModel::ReplyParentDisplayNameRole).toString(), "iori2");
+    QCOMPARE(model.item(0, TimelineListModel::ReplyParentHandleRole).toString(),
+             "ioriayane2.bsky.social");
 
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
@@ -320,6 +460,7 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
     QCOMPARE(model.item(1, TimelineListModel::RecordTextPlainRole).toString(), "reply3");
     QCOMPARE(model.item(1, TimelineListModel::IsRepostedByRole).toBool(), false);
+    QCOMPARE(model.item(0, TimelineListModel::HasReplyRole).toBool(), false);
 
     // /////////////////
 

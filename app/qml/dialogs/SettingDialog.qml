@@ -42,7 +42,7 @@ Dialog {
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
-        property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        property string realtimeServiceEndpoint: "wss://jetstream.us-west.bsky.network"
         // Notification
         property bool enableChatNotification: true
         property bool enableNotificationsForReactionsOnReposts: true

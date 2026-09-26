@@ -4,21 +4,24 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlist.h"
-#include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 
 using namespace RealtimeFeed;
 using AtProtocolInterface::AppBskyFeedGetPosts;
-using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
 using AtProtocolInterface::AppBskyGraphGetFollows;
 using AtProtocolInterface::AppBskyGraphGetList;
 
 RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
-    : TimelineListModel { parent }, m_receiving(false)
+    : TimelineListModel { parent }, m_runningCue(false), m_receiving(false)
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::receivingChanged, this,
             &RealtimeFeedListModel::setReceiving);
+
+    m_reactionFlushTimer.setInterval(1000);
+    connect(&m_reactionFlushTimer, &QTimer::timeout, this,
+            &RealtimeFeedListModel::flushReactionCounts);
+    m_reactionFlushTimer.start();
 }
 
 RealtimeFeedListModel::~RealtimeFeedListModel()
@@ -69,17 +72,21 @@ bool RealtimeFeedListModel::getLatest()
     selector->setDisplayName(account().displayName);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         // qDebug().noquote() << QJsonDocument(object).toJson();
-        m_cueGetPostThread.append(selector->getOperationInfos(object));
-        if (!m_cueGetPostThread.isEmpty()) {
+        for (const auto &info : selector->getOperationInfos(object)) {
+            if (info.action == OperationActionType::Create) {
+                m_cueGetPosts.append(info);
+            }
+        }
+        if (!m_cueGetPosts.isEmpty() && !m_runningCue) {
 #ifdef QT_DEBUG
             {
                 QDateTime date =
-                        QDateTime::fromString(m_cueGetPostThread.first().time, Qt::ISODateWithMs);
+                        QDateTime::fromString(m_cueGetPosts.first().time, Qt::ISODateWithMs);
                 qDebug().noquote()
                         << "DIFF" << QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
             }
 #endif
-            getPostThread();
+            getQueuedPosts();
         }
     });
     connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
@@ -93,38 +100,33 @@ bool RealtimeFeedListModel::getLatest()
             }
 #endif
             const QList<int> rows = indexsOf(info.cid);
-            bool first = true;
-            for (const auto row : rows) {
-                if (info.is_repost) {
-                    if (first) {
-                        // ポストデータの実態は1つだけなのでupdateは1回だけ
-                        if (info.reacted_by_did == account().did) {
-                            update(row, RepostedUriRole, info.reaction_uri);
-                        }
-                        update(row, TimelineListModelRoles::RepostCountRole,
-                               info.action == OperationActionType::Create);
-                    } else {
-                        emit dataChanged(index(row), index(row), QVector<int>() << RepostCountRole);
-                    }
-                } else if (info.is_like) {
-                    if (first) {
-                        // ポストデータの実態は1つだけなのでupdateは1回だけ
-                        if (info.reacted_by_did == account().did) {
-                            update(row, LikedUriRole, info.reaction_uri);
-                        }
-                        update(row, TimelineListModelRoles::LikeCountRole,
-                               info.action == OperationActionType::Create);
-                    } else {
-                        emit dataChanged(index(row), index(row), QVector<int>() << LikeCountRole);
-                    }
-                } else {
-                    // delete post
-                    qDebug().noquote() << "delete" << rows << info.uri << info.cid;
-                    beginRemoveRows(QModelIndex(), row, row);
-                    m_cidList.removeAt(row);
+            if (rows.isEmpty()) {
+                continue;
+            }
+            if (info.is_repost) {
+                // 自分のリポスト状態はボタン表示に直結するので即時反映
+                if (info.reacted_by_did == account().did) {
+                    update(rows.first(), RepostedUriRole, info.reaction_uri);
+                }
+                // カウントはポストデータの実態が1つなので1回だけ更新し、
+                // GUIへの通知(dataChanged)はflushReactionCounts()でまとめて行う
+                updateReactionCount(info.cid, TimelineListModelRoles::RepostCountRole,
+                                    info.action == OperationActionType::Create);
+            } else if (info.is_like) {
+                if (info.reacted_by_did == account().did) {
+                    update(rows.first(), LikedUriRole, info.reaction_uri);
+                }
+                updateReactionCount(info.cid, TimelineListModelRoles::LikeCountRole,
+                                    info.action == OperationActionType::Create);
+            } else {
+                // delete post
+                qDebug().noquote() << "delete" << rows << info.uri << info.cid;
+                for (auto it = rows.crbegin(); it != rows.crend(); ++it) {
+                    beginRemoveRows(QModelIndex(), *it, *it);
+                    m_cidList.removeAt(*it);
                     endRemoveRows();
                 }
-                first = false;
+                m_dirtyReactionCountRoles.remove(info.cid);
             }
         }
     });
@@ -394,72 +396,139 @@ void RealtimeFeedListModel::copyListMembers(
     }
 }
 
-void RealtimeFeedListModel::getPostThread()
+void RealtimeFeedListModel::getQueuedPosts()
 {
-    if (m_cueGetPostThread.isEmpty()) {
+    if (m_cueGetPosts.isEmpty()) {
         // Tokimekiの投票を取得
         QTimer::singleShot(50, this, &RealtimeFeedListModel::getTokimekiPoll);
         m_runningCue = false;
         return;
     }
 
-    RealtimeFeed::OperationInfo ope_info = m_cueGetPostThread.first();
-    m_cueGetPostThread.removeFirst();
+    // 1回のgetPostsで取得できる上限(25件)までキューからまとめて取り出す
+    // リプライ先のポストも同じリクエストで取得する
+    const int max_uris = 25;
+    QList<RealtimeFeed::OperationInfo> ope_infos;
+    QStringList uris;
+    while (!m_cueGetPosts.isEmpty()) {
+        const RealtimeFeed::OperationInfo &info = m_cueGetPosts.first();
+        QStringList adding;
+        if (!uris.contains(info.uri)) {
+            adding.append(info.uri);
+        }
+        if (!info.reply_parent_uri.isEmpty() && !uris.contains(info.reply_parent_uri)
+            && !adding.contains(info.reply_parent_uri)) {
+            adding.append(info.reply_parent_uri);
+        }
+        if (!uris.isEmpty() && (uris.count() + adding.count()) > max_uris) {
+            break;
+        }
+        uris.append(adding);
+        ope_infos.append(m_cueGetPosts.takeFirst());
+    }
 
     m_runningCue = true;
 
-    AppBskyFeedGetPostThread *post_thread = new AppBskyFeedGetPostThread(this);
-    connect(post_thread, &AppBskyFeedGetPostThread::finished, this, [=](bool success) {
+    AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
+    connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
-
-            AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
-            view_post.post = post_thread->threadViewPost().post;
-            if (ope_info.is_repost) {
-                view_post.reason_type = AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::
-                        reason_ReasonRepost;
-                view_post.reason_ReasonRepost.by.did = ope_info.reacted_by_did;
-                view_post.reason_ReasonRepost.by.handle = ope_info.reacted_by_handle;
-                view_post.reason_ReasonRepost.by.displayName = ope_info.reacted_by_display_name;
-                view_post.reason_ReasonRepost.cid = ope_info.reaction_cid;
-                view_post.reason_ReasonRepost.uri = ope_info.reaction_uri;
+            QHash<QString, AtProtocolType::AppBskyFeedDefs::PostView> post_hash; // <uri, post>
+            for (const auto &post : posts->postsList()) {
+                post_hash[post.uri] = post;
             }
-            if (post_thread->threadViewPost().parent_type
-                        == AtProtocolType::AppBskyFeedDefs::ThreadViewPostParentType::
-                                parent_ThreadViewPost
-                && post_thread->threadViewPost().parent_ThreadViewPost) {
-                view_post.reply.parent_type =
-                        AtProtocolType::AppBskyFeedDefs::ReplyRefParentType::parent_PostView;
-                view_post.reply.parent_PostView =
-                        post_thread->threadViewPost().parent_ThreadViewPost->post;
-            }
-            m_viewPostHash[view_post.post.cid] = view_post;
-            bool visible = checkVisibility(view_post.post.cid);
-            if (visible) {
-                beginInsertRows(QModelIndex(), 0, 0);
-                m_cidList.insert(0, view_post.post.cid);
-                endInsertRows();
+            for (const auto &ope_info : ope_infos) {
+                if (!post_hash.contains(ope_info.uri)) {
+                    // 削除済みなどで取得できなかった
+                    qDebug().noquote() << "Not found:" << ope_info.uri;
+                    continue;
+                }
+                AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
+                view_post.post = post_hash.value(ope_info.uri);
+                if (ope_info.is_repost) {
+                    view_post.reason_type = AtProtocolType::AppBskyFeedDefs::
+                            FeedViewPostReasonType::reason_ReasonRepost;
+                    view_post.reason_ReasonRepost.by.did = ope_info.reacted_by_did;
+                    view_post.reason_ReasonRepost.by.handle = ope_info.reacted_by_handle;
+                    view_post.reason_ReasonRepost.by.displayName = ope_info.reacted_by_display_name;
+                    view_post.reason_ReasonRepost.cid = ope_info.reaction_cid;
+                    view_post.reason_ReasonRepost.uri = ope_info.reaction_uri;
+                }
+                if (!ope_info.reply_parent_uri.isEmpty()
+                    && post_hash.contains(ope_info.reply_parent_uri)) {
+                    view_post.reply.parent_type =
+                            AtProtocolType::AppBskyFeedDefs::ReplyRefParentType::parent_PostView;
+                    view_post.reply.parent_PostView = post_hash.value(ope_info.reply_parent_uri);
+                }
+                m_viewPostHash[view_post.post.cid] = view_post;
+                bool visible = checkVisibility(view_post.post.cid);
+                if (visible) {
+                    beginInsertRows(QModelIndex(), 0, 0);
+                    m_cidList.insert(0, view_post.post.cid);
+                    endInsertRows();
 
-                // Tokimekiの投票の取得のキューに入れる
-                appendTokimekiPollToCue(view_post.post.cid,
-                                        view_post.post.embed_AppBskyEmbedExternal_View);
+                    // Tokimekiの投票の取得のキューに入れる
+                    appendTokimekiPollToCue(view_post.post.cid,
+                                            view_post.post.embed_AppBskyEmbedExternal_View);
+                }
+                m_originalCidList.insert(0, view_post.post.cid);
             }
-            m_originalCidList.insert(0, view_post.post.cid);
-
         } else {
-            if (post_thread->errorCode() == "NotFound") {
-                qDebug().noquote()
-                        << "Error:" << post_thread->errorCode() << post_thread->errorMessage();
-            } else {
-                emit errorOccurred(post_thread->errorCode(), post_thread->errorMessage());
-            }
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
-        QTimer::singleShot(0, this, &RealtimeFeedListModel::getPostThread);
-        post_thread->deleteLater();
+        QTimer::singleShot(0, this, &RealtimeFeedListModel::getQueuedPosts);
+        posts->deleteLater();
     });
-    post_thread->setAccount(account());
-    post_thread->setLabelers(labelerDids());
-    post_thread->getPostThread(ope_info.uri, 0, 1);
+    posts->setAccount(account());
+    posts->setLabelers(labelerDids());
+    posts->getPosts(uris);
+}
+
+void RealtimeFeedListModel::updateReactionCount(const QString &cid,
+                                                TimelineListModel::TimelineListModelRoles role,
+                                                bool increment)
+{
+    if (!m_viewPostHash.contains(cid)) {
+        return;
+    }
+    AtProtocolType::AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash[cid];
+    if (role == RepostCountRole) {
+        current.post.repostCount += increment ? 1 : -1;
+        if (current.post.repostCount < 0) {
+            current.post.repostCount = 0;
+        }
+    } else if (role == LikeCountRole) {
+        current.post.likeCount += increment ? 1 : -1;
+        if (current.post.likeCount < 0) {
+            current.post.likeCount = 0;
+        }
+    } else {
+        return;
+    }
+    m_dirtyReactionCountRoles[cid].insert(role);
+}
+
+void RealtimeFeedListModel::flushReactionCounts()
+{
+    if (m_dirtyReactionCountRoles.isEmpty()) {
+        return;
+    }
+    const QHash<QString, QSet<int>> dirty = m_dirtyReactionCountRoles;
+    m_dirtyReactionCountRoles.clear();
+
+    for (auto it = dirty.constBegin(); it != dirty.constEnd(); ++it) {
+        const QList<int> rows = indexsOf(it.key());
+        if (rows.isEmpty()) {
+            continue;
+        }
+        QVector<int> roles;
+        for (int role : it.value()) {
+            roles.append(role);
+        }
+        for (const auto row : rows) {
+            emit dataChanged(index(row), index(row), roles);
+        }
+    }
 }
 
 bool RealtimeFeedListModel::receiving() const
