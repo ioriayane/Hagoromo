@@ -6,5 +6,7 @@
         <file>response/2/oauth/par</file>
         <file>response/2/oauth/authorize</file>
         <file>response/2/oauth/token</file>
+        <file>response/2/oauth/token_invalid_sub</file>
+        <file>response/2/oauth/token_no_atproto_scope</file>
     </qresource>
 </RCC>

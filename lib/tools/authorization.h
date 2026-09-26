@@ -52,6 +52,8 @@ public:
     QString listenPort() const;
     void setListenPort(const QString &newListenPort);
     QByteArray state() const;
+    QString issuer() const;
+    QString did() const;
 
 signals:
     void errorOccurred(const QString &code, const QString &message);
@@ -77,13 +79,17 @@ private:
     bool
     validateServerMetadata(const AtProtocolType::WellKnownDefs::ServerMetadata &server_metadata,
                            QString &error_message);
+    bool validateTokenResponse(const AtProtocolType::OauthDefs::TokenResponse &token,
+                               QString &error_message) const;
 
     // user
     QString m_handle;
+    QString m_did; // セッションで想定するアカウントのDID
     // server info
     QString m_serviceEndpoint;
     QString m_authorizationServer;
     // server meta data
+    QString m_issuer;
     QString m_pushedAuthorizationRequestEndpoint;
     QString m_authorizationEndpoint;
     QString m_tokenEndopoint;

@@ -1,5 +1,5 @@
 {
-    "issuer": "http://localhost:{{SERVER_PORT_NO}}/response/2/issuer",
+    "issuer": "http://localhost:{{SERVER_PORT_NO}}",
     "scopes_supported": [
         "atproto",
         "transition:generic",
