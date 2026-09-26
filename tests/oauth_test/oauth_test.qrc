@@ -12,6 +12,6 @@
         <file>response/2/oauth/token</file>
         <file>response/2/oauth/token_invalid_sub</file>
         <file>response/2/oauth/token_no_atproto_scope</file>
-        <file alias="client-metadata.json">../../lib/tools/oauth/client-metadata.json</file>
+        <file alias="oauth-client-metadata.json">../../lib/tools/oauth/oauth-client-metadata.json</file>
     </qresource>
 </RCC>

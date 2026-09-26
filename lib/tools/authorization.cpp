@@ -324,7 +324,7 @@ void Authorization::makeClientId()
     m_redirectUri.append("http://127.0.0.1");
     m_redirectUri.append(port);
     m_redirectUri.append("/tech/relog/hagoromo/oauth-callback");
-    m_clientId = "https://oauth.hagoromo.relog.tech/client-metadata.json";
+    m_clientId = "https://oauth.hagoromo.relog.tech/oauth-client-metadata.json";
 }
 
 void Authorization::makeCodeChallenge()

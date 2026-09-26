@@ -60,7 +60,7 @@ public:
     QString did() const;
     QString handle() const;
 
-    // client-metadata.jsonのscopeに同じ文字列で宣言されている必要がある
+    // oauth-client-metadata.jsonのscopeに同じ文字列で宣言されている必要がある
     static QStringList defaultScopes();
     QStringList scopes() const;
     void setScopes(const QStringList &newScopes);

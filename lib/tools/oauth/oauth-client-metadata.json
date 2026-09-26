@@ -1,5 +1,5 @@
 {
-    "client_id": "https://oauth.hagoromo.relog.tech/client-metadata.json",
+    "client_id": "https://oauth.hagoromo.relog.tech/oauth-client-metadata.json",
     "application_type": "native",
     "client_name": "Hagoromo",
     "client_uri": "https://oauth.hagoromo.relog.tech",

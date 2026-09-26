@@ -342,7 +342,7 @@ void oauth_test::test_oauth()
                  (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
                   + QStringLiteral("/response/2/oauth/"
                                    "authorize?client_id=https%3A%2F%2Foauth.hagoromo.relog.tech%"
-                                   "2Fclient-metadata.json&request_uri=urn%3Aietf%"
+                                   "2Foauth-client-metadata.json&request_uri=urn%3Aietf%"
                                    "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
                                    "05650c01604941dc674f0af9cb032aca")));
     }
@@ -690,9 +690,9 @@ void oauth_test::test_identity_resolver_online()
 
 void oauth_test::test_client_metadata()
 {
-    // サーバーに置くclient-metadata.jsonの原本とアプリの設定が一致していること
+    // サーバーに置くoauth-client-metadata.jsonの原本とアプリの設定が一致していること
     QByteArray data;
-    QVERIFY(SimpleHttpServer::readFile(":/client-metadata.json", data));
+    QVERIFY(SimpleHttpServer::readFile(":/oauth-client-metadata.json", data));
     const QJsonObject metadata = QJsonDocument::fromJson(data).object();
     QVERIFY(!metadata.isEmpty());
 
