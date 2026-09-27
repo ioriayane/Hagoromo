@@ -8,6 +8,9 @@
         <file>response/plc/did_plc_mismatch</file>
         <file>response/2/.well-known/oauth-authorization-server</file>
         <file>response/2/oauth/par</file>
+        <file>response/4/xrpc/com.atproto.test.get</file>
+        <file>response/4/xrpc/com.atproto.test.post</file>
+        <file>response/4/xrpc/com.atproto.test.upload</file>
         <file>response/2/oauth/authorize</file>
         <file>response/2/oauth/token</file>
         <file>response/2/oauth/token_invalid_sub</file>

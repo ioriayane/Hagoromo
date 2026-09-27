@@ -20,6 +20,11 @@ enum class AccountScope : int {
     DirectMessage,
 };
 
+enum class AuthType : int {
+    Password, // createSession(アプリパスワード)、Bearer
+    OAuth, // DPoPに紐づいたアクセストークン
+};
+
 struct RealtimeFeedRule
 {
     QString name;
@@ -56,6 +61,7 @@ struct AccountData
 
     AccountStatus status = AccountStatus::Unknown;
     QList<AccountScope> scope;
+    AuthType auth_type = AuthType::Password;
 
     bool isValid() const
     {
@@ -121,6 +127,8 @@ protected:
     // JSONとして扱わずrecvImage()に渡すContent-Type
     virtual bool isRawContentType(const QString &content_type) const;
     bool checkReply(HttpReply *reply);
+    // 直前のcheckReply()でDPoPのnonceの更新を求められたか
+    bool dPopNonceRequired() const;
 
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
     void setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject &json_aspect_ratio);
@@ -138,6 +146,12 @@ protected:
     QString m_listKey;
 
 private:
+    void sendGet(QNetworkRequest request, const QString &endpoint, const bool with_auth_header,
+                 const bool retried);
+    void sendPost(QNetworkRequest request, const QByteArray &data, const bool with_auth_header,
+                  const bool retried);
+    bool setAuthorizationHeader(QNetworkRequest &request, const QByteArray &method);
+    bool canRetryWithDPopNonce(const bool with_auth_header, const bool retried) const;
     void setAdditionalRawHeader(QNetworkRequest &request);
     void setAtprotoProxyHeader(QNetworkRequest &request);
 
@@ -151,6 +165,7 @@ private:
     QString m_contentType;
     QHash<QString, QString> m_additionalRawHeaders;
     QString m_dPopNonce;
+    bool m_dPopNonceRequired;
     // PDSによるAPIのプロキシ先はアカウントごとに置き換えて使う可能性あり（将来的に）
     QHash<QString, QString> m_atprotoProxyDids;
     QStringList m_excludedAtprotoProxyEndpoints;
@@ -158,6 +173,7 @@ private:
 }
 
 Q_DECLARE_METATYPE(AtProtocolInterface::AccountStatus)
+Q_DECLARE_METATYPE(AtProtocolInterface::AuthType)
 Q_DECLARE_METATYPE(AtProtocolInterface::AccountData)
 
 #endif // ACCESSATPROTOCOL_H

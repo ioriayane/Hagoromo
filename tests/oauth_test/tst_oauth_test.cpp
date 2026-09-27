@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDesktopServices>
+#include <QTemporaryFile>
 
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
@@ -15,6 +16,7 @@
 #include "tools/jsonwebtoken.h"
 #include "tools/es256.h"
 #include "tools/identityresolver.h"
+#include "tools/dpopsessionstore.h"
 #include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"
 
@@ -35,6 +37,27 @@ public:
     bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder) override
     {
         const QString path = request.url().path();
+        if (!m_resourceNonce.isEmpty() && path.contains("/response/4/xrpc/")
+            && request.headers().value("Authorization").toByteArray().startsWith("DPoP ")
+            && nonceInDPop(request.headers().value("DPoP").toByteArray()) != m_resourceNonce) {
+            // Resource Server(PDS)は401とWWW-Authenticateでnonceを要求する
+            m_resourceChallengeCount++;
+            QHttpHeaders headers;
+            headers.append(QHttpHeaders::WellKnownHeader::ContentType, "application/json");
+            headers.append("DPoP-Nonce", m_resourceNonce);
+            headers.append("WWW-Authenticate",
+                           "DPoP error=\"use_dpop_nonce\", error_description=\"Resource server "
+                           "requires nonce in DPoP proof\"");
+            if (m_rotateAlways) {
+                m_resourceNonce =
+                        QString("resource-nonce-rotated-%1").arg(m_resourceChallengeCount);
+            }
+            responder.write(QByteArray("{\"error\":\"use_dpop_nonce\","
+                                       "\"message\":\"Resource server requires nonce in DPoP "
+                                       "proof\"}"),
+                            headers, QHttpServerResponder::StatusCode::Unauthorized);
+            return true;
+        }
         if (!m_nonce.isEmpty() && (path.endsWith("/oauth/par") || path.endsWith("/oauth/token"))
             && nonceInDPop(request.headers().value("DPoP").toByteArray()) != m_nonce) {
             m_challengeCount++;
@@ -57,6 +80,8 @@ public:
     QString m_nonce;
     bool m_rotateAlways;
     int m_challengeCount;
+    QString m_resourceNonce;
+    int m_resourceChallengeCount = 0;
 
 private:
     static QString nonceInDPop(const QByteArray &jwt)
@@ -67,6 +92,33 @@ private:
         const QByteArray payload = QByteArray::fromBase64(
                 parts.at(1), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
         return QJsonDocument::fromJson(payload).object().value("nonce").toString();
+    }
+};
+
+// AccessAtProtocolの送信処理を直接呼ぶ
+class TestAccess : public AtProtocolInterface::AccessAtProtocol
+{
+public:
+    explicit TestAccess(QObject *parent = nullptr) : AtProtocolInterface::AccessAtProtocol(parent)
+    {
+    }
+    void testGet()
+    {
+        QUrlQuery query;
+        query.addQueryItem("actor", "did:plc:ipj5qejfoqu6eukvt72uhyit");
+        get(QStringLiteral("xrpc/com.atproto.test.get"), query);
+    }
+    void testPost() { post(QStringLiteral("xrpc/com.atproto.test.post"), QByteArray("{}")); }
+    void testPostWithImage(const QString &path)
+    {
+        postWithImage(QStringLiteral("xrpc/com.atproto.test.upload"), path);
+    }
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json)
+    {
+        Q_UNUSED(reply_json)
+        return success;
     }
 };
 
@@ -93,6 +145,8 @@ private slots:
     void test_identity_resolver_online();
     void test_oauth_par_online();
     void test_well_known_atproto_did();
+    void test_access_password();
+    void test_access_oauth();
     void test_jwt();
     void test_es256();
 #endif
@@ -106,6 +160,9 @@ private:
     QList<QJsonObject> m_dPopPayloads;
     // サーバーが受け付けたPARのリクエストボディ
     QList<QByteArray> m_parBodies;
+    // サーバーが受け付けたResource Serverへのリクエストのヘッダー
+    QList<QByteArray> m_resourceAuthorizations;
+    QList<QByteArray> m_resourceDPops;
 
     void test_get(const QString &url, const QByteArray &except_data);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
@@ -134,6 +191,15 @@ oauth_test::oauth_test()
                 }
                 if (path.endsWith("/oauth/par")) {
                     m_parBodies.append(request.body());
+                }
+                if (path.contains("/response/4/xrpc/")) {
+                    m_resourceAuthorizations.append(
+                            request.headers().value("Authorization").toByteArray());
+                    const QByteArray dpop = request.headers().value("DPoP").toByteArray();
+                    if (!dpop.isEmpty()) {
+                        verify_jwt(dpop, nullptr);
+                    }
+                    m_resourceDPops.append(dpop);
                 }
                 if (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")) {
                     qDebug().noquote() << "Verify jwt";
@@ -759,6 +825,184 @@ void oauth_test::test_well_known_atproto_did()
     QCOMPARE(spy.count(), 1);
     QVERIFY(spy.takeFirst().at(0).toBool());
     QCOMPARE(well_known.did(), QString("did:plc:ipj5qejfoqu6eukvt72uhyit"));
+}
+
+void oauth_test::test_access_password()
+{
+    // パスワード方式は従来どおりBearerでDPoPを付けない
+    m_server.m_resourceNonce = "resource-nonce";
+    m_server.m_resourceChallengeCount = 0;
+    m_resourceAuthorizations.clear();
+    m_resourceDPops.clear();
+
+    AtProtocolInterface::AccountData account;
+    account.uuid = "uuid-password";
+    account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    account.accessJwt = "access token";
+    QCOMPARE(account.auth_type, AtProtocolInterface::AuthType::Password);
+
+    QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+    QVERIFY(image.open());
+    image.write(QByteArray("dummy image"));
+    image.close();
+
+    for (int i = 0; i < 3; i++) {
+        TestAccess access;
+        access.setAccount(account);
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        if (i == 0) {
+            access.testGet();
+        } else if (i == 1) {
+            access.testPost();
+        } else {
+            access.testPostWithImage(image.fileName());
+        }
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+    }
+    QCOMPARE(m_server.m_resourceChallengeCount, 0);
+    QCOMPARE(m_resourceAuthorizations.length(), 3);
+    for (int i = 0; i < 3; i++) {
+        QCOMPARE(m_resourceAuthorizations.at(i), QByteArray("Bearer access token"));
+        QVERIFY(m_resourceDPops.at(i).isEmpty());
+    }
+    m_server.m_resourceNonce.clear();
+}
+
+void oauth_test::test_access_oauth()
+{
+    const QString uuid = "uuid-oauth";
+    const QString access_token = "access token";
+    const QString base = QString("http://localhost:%1/response/4/xrpc/").arg(m_listenPort);
+
+    Es256 key;
+    QVERIFY(key.generateKey());
+    QByteArray x_coord;
+    QByteArray y_coord;
+    QVERIFY(key.getAffineCoordinates(x_coord, y_coord));
+    DPopSessionStore *store = DPopSessionStore::getInstance();
+    QVERIFY(!store->setPrivateKey(QString(), key.privateKeyPem()));
+    QVERIFY(!store->setPrivateKey(uuid, QByteArray("invalid")));
+    QVERIFY(!store->hasSession(uuid));
+    QVERIFY(store->setPrivateKey(uuid, key.privateKeyPem()));
+    QVERIFY(store->hasSession(uuid));
+
+    AtProtocolInterface::AccountData account;
+    account.uuid = uuid;
+    account.auth_type = AtProtocolInterface::AuthType::OAuth;
+    account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    account.accessJwt = access_token;
+
+    QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+    QVERIFY(image.open());
+    image.write(QByteArray("dummy image"));
+    image.close();
+
+    const QString ath = QString::fromUtf8(
+            QCryptographicHash::hash(access_token.toUtf8(), QCryptographicHash::Sha256)
+                    .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
+    struct TestCase
+    {
+        int kind; // 0:get 1:post 2:postWithImage
+        QString server_nonce;
+        QString htm;
+        QString htu;
+        int challenge_count; // このリクエストでのnonce要求の回数
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 最初はnonceがないので1回要求されて再送
+            << TestCase { 0, "resource-nonce-1", "GET", base + "com.atproto.test.get", 1 }
+            // 覚えたnonceをそのまま使う
+            << TestCase { 1, "resource-nonce-1", "POST", base + "com.atproto.test.post", 0 }
+            // nonceがローテーションされたら再送
+            << TestCase { 2, "resource-nonce-2", "POST", base + "com.atproto.test.upload", 1 }
+            << TestCase { 0, "resource-nonce-3", "GET", base + "com.atproto.test.get", 1 };
+
+    for (const auto &item : cases) {
+        m_server.m_resourceNonce = item.server_nonce;
+        m_server.m_rotateAlways = false;
+        m_server.m_resourceChallengeCount = 0;
+        m_resourceAuthorizations.clear();
+        m_resourceDPops.clear();
+
+        TestAccess access;
+        access.setAccount(account);
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        if (item.kind == 0) {
+            access.testGet();
+        } else if (item.kind == 1) {
+            access.testPost();
+        } else {
+            access.testPostWithImage(image.fileName());
+        }
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_server.m_resourceChallengeCount, item.challenge_count);
+        QCOMPARE(store->nonce(uuid, QUrl(base)), item.server_nonce);
+
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+        QCOMPARE(m_resourceAuthorizations.first(), QByteArray("DPoP ") + access_token.toUtf8());
+        const QByteArrayList parts = m_resourceDPops.first().split('.');
+        QCOMPARE(parts.length(), 3);
+        const QJsonObject jwk = decode_jwt_part(parts.at(0)).value("jwk").toObject();
+        QCOMPARE(jwk.value("x").toString(), QString::fromUtf8(x_coord));
+        QCOMPARE(jwk.value("y").toString(), QString::fromUtf8(y_coord));
+        const QJsonObject payload = decode_jwt_part(parts.at(1));
+        QCOMPARE(payload.value("htm").toString(), item.htm);
+        // htuはクエリを含まない
+        QCOMPARE(payload.value("htu").toString(), item.htu);
+        QCOMPARE(payload.value("ath").toString(), ath);
+        QCOMPARE(payload.value("nonce").toString(), item.server_nonce);
+    }
+
+    {
+        // 再送してもnonceを要求される場合は1回で諦める
+        m_server.m_resourceNonce = "resource-nonce-4";
+        m_server.m_rotateAlways = true;
+        m_server.m_resourceChallengeCount = 0;
+        TestAccess access;
+        access.setAccount(account);
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_server.m_resourceChallengeCount, 2);
+        QCOMPARE(access.errorCode(), QString("use_dpop_nonce"));
+        m_server.m_rotateAlways = false;
+    }
+
+    {
+        // DPoPの鍵がないOAuthのアカウントはリクエストを送らない
+        m_resourceAuthorizations.clear();
+        AtProtocolInterface::AccountData no_key = account;
+        no_key.uuid = "uuid-no-key";
+        for (int i = 0; i < 3; i++) {
+            TestAccess access;
+            access.setAccount(no_key);
+            QSignalSpy spy(&access, SIGNAL(finished(bool)));
+            if (i == 0) {
+                access.testGet();
+            } else if (i == 1) {
+                access.testPost();
+            } else {
+                access.testPostWithImage(image.fileName());
+            }
+            QCOMPARE(spy.count(), 1);
+            QVERIFY(!spy.takeFirst().at(0).toBool());
+            QCOMPARE(access.errorCode(), QString("IncompleteAuthenticationInformation"));
+        }
+        QCOMPARE(m_resourceAuthorizations.length(), 0);
+    }
+
+    store->removeSession(uuid);
+    QVERIFY(!store->hasSession(uuid));
+    QVERIFY(store->nonce(uuid, QUrl(base)).isEmpty());
+    m_server.m_resourceNonce.clear();
 }
 
 void oauth_test::test_jwt()
