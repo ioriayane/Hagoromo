@@ -9,23 +9,30 @@
 #include <openssl/pem.h>
 #include <openssl/bn.h>
 
+// DPoP用のES256(P-256)の鍵
+// 鍵はセッションごとに生成し、セッションと一緒に保存・復元する
 class Es256
 {
+public:
     explicit Es256();
     ~Es256();
 
-public:
-    static Es256 *getInstance();
+    Es256(const Es256 &) = delete;
+    Es256 &operator=(const Es256 &) = delete;
 
     void clear();
-    void loadKey();
-    QByteArray sign(const QByteArray &data);
-    void getAffineCoordinates(QByteArray &x_coord, QByteArray &y_coord);
+    bool isValid() const;
+    bool generateKey();
+    bool loadPrivateKeyPem(const QByteArray &pem);
+    QByteArray privateKeyPem() const;
+
+    QByteArray sign(const QByteArray &data) const;
+    bool getAffineCoordinates(QByteArray &x_coord, QByteArray &y_coord) const;
     EVP_PKEY *pKey() const;
 
 private:
-    void createPrivateKey(const QString &path);
-    QByteArray bn2ba(const BIGNUM *bn);
+    static bool isP256Key(EVP_PKEY *pkey);
+    static QByteArray bn2ba(const BIGNUM *bn, int length);
 
     EVP_PKEY *m_pKey;
 };

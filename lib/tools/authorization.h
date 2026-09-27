@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMimeDatabase>
 #include "atprotocol/lexicons.h"
+#include "tools/es256.h"
 
 class Authorization : public QObject
 {
@@ -45,6 +46,9 @@ public:
     void setClientId(const QString &newClientId);
     QString dPopNonce() const;
     void setDPopNonce(const QString &newDPopNonce);
+    // セッションに紐づくDPoPの秘密鍵(PEM)。tokenと一緒に保存し、refresh前に復元する
+    QByteArray dPopPrivateKey() const;
+    bool setDPopPrivateKey(const QByteArray &pem);
 
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
@@ -52,6 +56,16 @@ public:
     QString listenPort() const;
     void setListenPort(const QString &newListenPort);
     QByteArray state() const;
+    QString issuer() const;
+    QString did() const;
+    QString handle() const;
+
+    // oauth-client-metadata.jsonのscopeに同じ文字列で宣言されている必要がある
+    static QStringList defaultScopes();
+    QStringList scopes() const;
+    void setScopes(const QStringList &newScopes);
+    QString plcDirectory() const;
+    void setPlcDirectory(const QString &newPlcDirectory);
 
 signals:
     void errorOccurred(const QString &code, const QString &message);
@@ -68,27 +82,35 @@ private:
     QByteArray generateRandomValues() const;
     QString simplyEncode(QString text) const;
 
+    void postPushedAuthorizationRequest(const QByteArray &payload, bool retried);
+    void postTokenRequest(bool refresh, bool retried);
+
     // server info
     void requestOauthProtectedResource();
     void requestOauthAuthorizationServer();
     bool
     validateServerMetadata(const AtProtocolType::WellKnownDefs::ServerMetadata &server_metadata,
                            QString &error_message);
+    bool validateTokenResponse(const AtProtocolType::OauthDefs::TokenResponse &token,
+                               QString &error_message) const;
 
     // user
     QString m_handle;
+    QString m_did; // セッションで想定するアカウントのDID
     // server info
     QString m_serviceEndpoint;
     QString m_authorizationServer;
     // server meta data
+    QString m_issuer;
     QString m_pushedAuthorizationRequestEndpoint;
     QString m_authorizationEndpoint;
     QString m_tokenEndopoint;
-    QStringList m_scopesSupported;
+    QStringList m_scopes;
     //
     QString m_redirectUri;
     QString m_clientId;
     QString m_dPopNonce;
+    Es256 m_dPopKey;
     // par
     QByteArray m_codeChallenge;
     QByteArray m_codeVerifier;
@@ -96,6 +118,10 @@ private:
     // request token
     QByteArray m_code;
     AtProtocolType::OauthDefs::TokenResponse m_token;
+
+    QString m_plcDirectory;
+    // tokenの要求中(refresh tokenは使い捨てなので同時に要求しない)
+    bool m_tokenRequesting;
 
     QString m_listenPort;
     int m_redirectTimeout;

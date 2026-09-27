@@ -188,8 +188,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 
             bool success = false;
             if (checkReply(reply)) {
-                if (reply->contentType().startsWith("image/")
-                    || reply->contentType().startsWith("application/vnd.ipld.car")) {
+                if (isRawContentType(reply->contentType())) {
                     success = recvImage(reply->recvData(), reply->contentType());
                 } else if (reply->contentType().startsWith("application/json")
                            || reply->contentType().startsWith("application/did+ld+json")) {
@@ -326,6 +325,11 @@ bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_
     return true;
 }
 
+bool AccessAtProtocol::isRawContentType(const QString &content_type) const
+{
+    return content_type.startsWith("image/") || content_type.startsWith("application/vnd.ipld.car");
+}
+
 bool AccessAtProtocol::checkReply(HttpReply *reply)
 {
     bool status = false;
@@ -380,8 +384,13 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
                 }
             }
         }
-        qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
-        qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        if (m_errorCode == QStringLiteral("use_dpop_nonce")) {
+            // DPoPのnonceの更新要求は通常の流れで、呼び出し側で再送する
+            qDebug().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+        } else {
+            qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+            qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        }
     } else {
         status = true;
     }

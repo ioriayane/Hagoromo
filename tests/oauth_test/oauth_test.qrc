@@ -1,10 +1,17 @@
 <RCC>
     <qresource prefix="/">
         <file>response/1/.well-known/oauth-protected-resource</file>
-        <file>response/2/xrpc/com.atproto.repo.describeRepo</file>
+        <file>response/2/xrpc/com.atproto.identity.resolveHandle</file>
+        <file>response/3/.well-known/atproto-did</file>
+        <file>response/plc/did_plc_ipj5qejfoqu6eukvt72uhyit</file>
+        <file>response/plc/did_plc_nopds</file>
+        <file>response/plc/did_plc_mismatch</file>
         <file>response/2/.well-known/oauth-authorization-server</file>
         <file>response/2/oauth/par</file>
         <file>response/2/oauth/authorize</file>
         <file>response/2/oauth/token</file>
+        <file>response/2/oauth/token_invalid_sub</file>
+        <file>response/2/oauth/token_no_atproto_scope</file>
+        <file alias="oauth-client-metadata.json">../../lib/tools/oauth/oauth-client-metadata.json</file>
     </qresource>
 </RCC>
