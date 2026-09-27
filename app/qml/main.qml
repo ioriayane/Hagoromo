@@ -54,7 +54,8 @@ ApplicationWindow {
                                   postDialogRepeater.working
 
     function errorHandler(account_uuid, code, message) {
-        if(code === "ExpiredToken" && account_uuid.length > 0){
+        // OAuthのアクセストークンの期限切れはinvalid_tokenで返る
+        if((code === "ExpiredToken" || code === "invalid_token") && account_uuid.length > 0){
             accountListModel.refreshAccountSession(account_uuid)
         }else if(message.length === 0){
         }else{

@@ -321,9 +321,9 @@ void Authorization::makeClientId()
         port.append(":");
         port.append(m_listenPort);
     }
-    m_redirectUri.append("http://127.0.0.1");
-    m_redirectUri.append(port);
-    m_redirectUri.append("/tech/relog/hagoromo/oauth-callback");
+    // 同じインスタンスで何度呼んでも連結されないようにする
+    m_redirectUri = QStringLiteral("http://127.0.0.1") + port
+            + QStringLiteral("/tech/relog/hagoromo/oauth-callback");
     m_clientId = "https://oauth.hagoromo.relog.tech/oauth-client-metadata.json";
 }
 
@@ -437,8 +437,8 @@ void Authorization::startRedirectServer()
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
+                // クエリには認可コードが含まれるのでパスだけ出力する
                 qDebug().noquote() << "received by startRedirectServer";
-                qDebug().noquote() << "  " << request.url().toString();
                 qDebug().noquote() << "  " << request.url().path();
 
                 if (request.url().path() != "/tech/relog/hagoromo/oauth-callback") {
@@ -594,12 +594,9 @@ void Authorization::postTokenRequest(bool refresh, bool retried)
                 }
                 setToken(req->tokenResponse());
 
-                qDebug().noquote() << "--- Success oauth ----";
-                qDebug().noquote() << "  handle :" << m_handle;
-                qDebug().noquote() << "  access :" << m_token.access_token;
-                qDebug().noquote() << "  refresh:" << m_token.refresh_token;
-                qDebug().noquote() << req->replyJson();
-                qDebug().noquote() << "----------------------";
+                // tokenはログに出さない
+                qDebug().noquote() << "Success oauth token request :" << m_token.sub << "expires_in"
+                                   << m_token.expires_in;
                 // finish oauth sequence
                 ret = true;
             } else {

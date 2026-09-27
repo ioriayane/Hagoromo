@@ -17,6 +17,8 @@
 #include "tools/es256.h"
 #include "tools/identityresolver.h"
 #include "tools/dpopsessionstore.h"
+#include "tools/accountmanager.h"
+#include "common.h"
 #include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"
 
@@ -147,6 +149,7 @@ private slots:
     void test_well_known_atproto_did();
     void test_access_password();
     void test_access_oauth();
+    void test_account_manager_oauth();
     void test_jwt();
     void test_es256();
 #endif
@@ -173,7 +176,8 @@ private:
 oauth_test::oauth_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
+    // account.jsonを保存するので、並列で動く他のテストとは別のフォルダにする
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest_oauth"));
 
     m_listenPort = m_server.listen(QHostAddress::LocalHost, 0);
     connect(&m_server, &SimpleHttpServer::received, this,
@@ -1003,6 +1007,195 @@ void oauth_test::test_access_oauth()
     QVERIFY(!store->hasSession(uuid));
     QVERIFY(store->nonce(uuid, QUrl(base)).isEmpty());
     m_server.m_resourceNonce.clear();
+}
+
+void oauth_test::test_account_manager_oauth()
+{
+    AccountManager *manager = AccountManager::getInstance();
+    DPopSessionStore *store = DPopSessionStore::getInstance();
+    manager->clear();
+    QFile::remove(Common::appDataFolder() + "/account.json");
+    m_server.m_resourceNonce = "resource-nonce-account";
+    m_server.m_rotateAlways = false;
+    m_server.m_resourceChallengeCount = 0;
+    m_dPopPayloads.clear();
+    m_resourceAuthorizations.clear();
+
+    const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    const QString pds = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    const QString token_endpoint =
+            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort);
+    const QByteArray private_key = generate_private_key_pem();
+
+    OAuthSession session;
+    session.handle = "ioriayane.test";
+    session.service_endpoint = pds;
+    session.issuer = QString("http://localhost:%1").arg(m_listenPort);
+    session.token_endpoint = token_endpoint;
+    session.dpop_private_key = private_key;
+    session.token.access_token = "first access token";
+    session.token.refresh_token = "first refresh token";
+    session.token.token_type = "DPoP";
+    session.token.sub = did;
+    session.token.scope =
+            "atproto include:app.bsky.authFullApp?aud=did:web:api.bsky.app%23bsky_appview";
+    session.token.expires_in = 2677;
+
+    // 追加
+    const QString uuid = manager->updateOAuthAccount(QString(), "https://bsky.social", session);
+    QVERIFY(!uuid.isEmpty());
+    QCOMPARE(manager->count(), 1);
+    {
+        const AtProtocolInterface::AccountData account = manager->getAccount(uuid);
+        QCOMPARE(account.auth_type, AtProtocolInterface::AuthType::OAuth);
+        QCOMPARE(account.service, QString("https://bsky.social"));
+        QCOMPARE(account.service_endpoint, pds);
+        QCOMPARE(account.did, did);
+        QCOMPARE(account.handle, QString("ioriayane.test"));
+        QCOMPARE(account.accessJwt, QString("first access token"));
+        QCOMPARE(account.status, AtProtocolInterface::AccountStatus::Authorized);
+        QVERIFY(account.password.isEmpty());
+        // chatの権限がないのでDMは使えない
+        QVERIFY(!account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage));
+    }
+    QVERIFY(store->hasSession(uuid));
+
+    // 保存したファイルに秘密情報が平文で含まれないこと
+    {
+        QFile file(Common::appDataFolder() + "/account.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        const QByteArray raw = file.readAll();
+        QVERIFY(raw.contains("\"auth_type\": \"oauth\""));
+        QVERIFY(!raw.contains("first refresh token"));
+        QVERIFY(!raw.contains("first access token"));
+        QVERIFY(!raw.contains("PRIVATE KEY"));
+    }
+
+    // 同じDIDなら同じuuidのまま置き換える
+    session.token.scope =
+            "atproto include:chat.bsky.authFullChatClient?aud=did:web:api.bsky.chat%23bsky_chat";
+    QCOMPARE(manager->updateOAuthAccount(QString(), "https://bsky.social", session), uuid);
+    QCOMPARE(manager->count(), 1);
+    QVERIFY(manager->getAccount(uuid).scope.contains(
+            AtProtocolInterface::AccountScope::DirectMessage));
+
+    // refresh(tokenの取得、プロフィールの取得はDPoPで行う)
+    {
+        QSignalSpy spy(manager, SIGNAL(updatedAccount(const QString &)));
+        QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        manager->refreshSession(manager->indexAt(uuid));
+        // 同時にrefreshしてもtokenのリクエストは1回
+        manager->refreshSession(manager->indexAt(uuid));
+        spy.wait(10 * 1000);
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(spy.takeFirst().at(0).toString(), uuid);
+        for (const auto &error : spy_error) {
+            qDebug().noquote() << "error :" << error.at(0).toString() << error.at(1).toString();
+        }
+        QCOMPARE(spy_error.count(), 0);
+    }
+    QCOMPARE(m_dPopPayloads.length(), 1);
+    QCOMPARE(m_dPopPayloads.first().value("htu").toString(), token_endpoint);
+    // PDSへのリクエスト(getPreferences/getProfile)はrefreshしたtokenとDPoPで送る
+    QVERIFY(m_resourceAuthorizations.contains(QByteArray("DPoP access token")));
+    for (const auto &authorization : std::as_const(m_resourceAuthorizations)) {
+        QVERIFY(!authorization.startsWith("Bearer"));
+    }
+    // PDSのnonceは最初の1回だけ要求される
+    QCOMPARE(m_server.m_resourceChallengeCount, 1);
+    {
+        const AtProtocolInterface::AccountData account = manager->getAccount(uuid);
+        QCOMPARE(account.accessJwt, QString("access token"));
+        QCOMPARE(account.refreshJwt, QString("refresh token"));
+        QCOMPARE(account.displayName, QString("Iori Ayane"));
+        QCOMPARE(account.service_endpoint, pds);
+        QCOMPARE(account.status, AtProtocolInterface::AccountStatus::Authorized);
+        // tokenのレスポンスのscope(transition:chat.bsky)でDMを判断する
+        QVERIFY(account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage));
+    }
+
+    // 再起動した想定で読み込み直す
+    manager->clear();
+    store->clear();
+    QCOMPARE(manager->count(), 0);
+    {
+        QSignalSpy spy(manager, SIGNAL(updatedAccount(const QString &)));
+        manager->load();
+        spy.wait(10 * 1000);
+        QCOMPARE(spy.count(), 1);
+    }
+    QCOMPARE(manager->count(), 1);
+    QVERIFY(store->hasSession(uuid));
+    {
+        const AtProtocolInterface::AccountData account = manager->getAccount(uuid);
+        QCOMPARE(account.auth_type, AtProtocolInterface::AuthType::OAuth);
+        QCOMPARE(account.did, did);
+        QCOMPARE(account.handle, QString("ioriayane.test"));
+        QCOMPARE(account.service_endpoint, pds);
+        QCOMPARE(account.status, AtProtocolInterface::AccountStatus::Authorized);
+        QVERIFY(account.password.isEmpty());
+    }
+    QCOMPARE(m_dPopPayloads.length(), 2);
+    // 保存した鍵で署名していること
+    {
+        Es256 key;
+        QVERIFY(key.loadPrivateKeyPem(private_key));
+        QByteArray x_coord;
+        QByteArray y_coord;
+        QVERIFY(key.getAffineCoordinates(x_coord, y_coord));
+        QCOMPARE(m_dPopHeaders.last().value("jwk").toObject().value("x").toString(),
+                 QString::fromUtf8(x_coord));
+    }
+
+    // OAuthのアカウントはパスワードでセッションを作り直さない
+    {
+        QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        manager->createSession(manager->indexAt(uuid));
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("OAuthLoginRequired"));
+        QCOMPARE(manager->getAccount(uuid).status,
+                 AtProtocolInterface::AccountStatus::Unauthorized);
+    }
+
+    // refreshに失敗したら再ログインが必要な状態になる
+    {
+        session.token_endpoint =
+                QString("http://localhost:%1/response/2/oauth/token_notfound").arg(m_listenPort);
+        manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+        QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        manager->refreshSession(manager->indexAt(uuid));
+        spy_error.wait(10 * 1000);
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(manager->getAccount(uuid).status,
+                 AtProtocolInterface::AccountStatus::Unauthorized);
+        // 失敗してもセッションの情報は残す
+        QCOMPARE(manager->getAccount(uuid).auth_type, AtProtocolInterface::AuthType::OAuth);
+        QVERIFY(store->hasSession(uuid));
+    }
+
+    // パスワード方式に切り替え
+    manager->updateAccount(uuid, "https://bsky.social", "ioriayane.test", "password", did,
+                           "ioriayane.test", "email", "access_jwt", "refresh_jwt", true);
+    QCOMPARE(manager->getAccount(uuid).auth_type, AtProtocolInterface::AuthType::Password);
+    QVERIFY(!store->hasSession(uuid));
+    {
+        QFile file(Common::appDataFolder() + "/account.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        const QByteArray raw = file.readAll();
+        QVERIFY(raw.contains("\"auth_type\": \"password\""));
+        QVERIFY(!raw.contains("\"oauth\""));
+    }
+
+    // 削除するとDPoPのセッションも消える
+    manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+    QVERIFY(store->hasSession(uuid));
+    manager->removeAccount(uuid);
+    QCOMPARE(manager->count(), 0);
+    QVERIFY(!store->hasSession(uuid));
+
+    m_server.m_resourceNonce.clear();
+    manager->clear();
+    QFile::remove(Common::appDataFolder() + "/account.json");
 }
 
 void oauth_test::test_jwt()
