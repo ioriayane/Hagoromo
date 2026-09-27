@@ -64,6 +64,10 @@ ApplicationWindow {
             if(row >= 0){
                 handle = accountListModel.item(row, AccountListModel.HandleRole)
             }
+            if(code === "OAuthLoginRequired"){
+                // OAuthのセッションが切れたので再ログインが必要
+                message = qsTr("The login session has expired. Please log in again from the account management.")
+            }
             console.log("ERROR: " + handle + "(" + account_uuid + ") " + code + ":" + message)
             message += "\n\n@" + handle
             errorNotificationManager.notify(code, message)

@@ -26,11 +26,18 @@ Dialog {
     LoginDialog {
         id: login
         onAccepted: {
-            accountModel.updateAccount(session.service, session.identifier, session.password,
-                                       session.did, session.handle, session.email,
-                                       session.accessJwt, session.refreshJwt,
-                                       session.authorized)
-            accountModel.updateAccountProfile(session.service, session.identifier)
+            if(login.useOAuth){
+                var uuid = accountModel.updateOAuthAccount(oauthLogin.service, oauthLogin)
+                if(uuid.length > 0){
+                    accountModel.refreshAccountProfile(uuid)
+                }
+            }else{
+                accountModel.updateAccount(session.service, session.identifier, session.password,
+                                           session.did, session.handle, session.email,
+                                           session.accessJwt, session.refreshJwt,
+                                           session.authorized)
+                accountModel.updateAccountProfile(session.service, session.identifier)
+            }
         }
         onErrorOccurred: (code, message) => accountDialog.errorOccurred("", code, message)
     }
@@ -112,6 +119,7 @@ Dialog {
                     }
                 }
                 onClicked: {
+                    login.authMethod = "oauth"
                     login.serviceText = "https://bsky.social"
                     login.idText = ""
                     login.passwordText = ""
@@ -123,10 +131,18 @@ Dialog {
                 width: accountList.width
                 height: implicitHeight * AdjustedValues.ratio
                 onClicked: {
+                    // 同じ方式でログインし直す(ダイアログで切り替えもできる)
                     var i = model.index
+                    login.authMethod = accountList.model.item(i, AccountListModel.AuthTypeRole)
                     login.serviceText = accountList.model.item(i, AccountListModel.ServiceRole)
-                    login.idText = accountList.model.item(i, AccountListModel.IdentifierRole)
-                    login.passwordText = accountList.model.item(i, AccountListModel.PasswordRole)
+                    if(login.useOAuth){
+                        var handle = accountList.model.item(i, AccountListModel.HandleRole)
+                        login.idText = handle.length > 0 ? handle : accountList.model.item(i, AccountListModel.DidRole)
+                        login.passwordText = ""
+                    }else{
+                        login.idText = accountList.model.item(i, AccountListModel.IdentifierRole)
+                        login.passwordText = accountList.model.item(i, AccountListModel.PasswordRole)
+                    }
                     login.open()
                 }
 
@@ -156,6 +172,12 @@ Dialog {
                         text: " DM "
                         fontPointSize: AdjustedValues.f8
                         visible: model.allowedDirectMessage
+                    }
+                    TagLabel {
+                        source: ""
+                        text: " OAuth "
+                        fontPointSize: AdjustedValues.f8
+                        visible: model.authType === "oauth"
                     }
                     TagLabel {
                         source: ""

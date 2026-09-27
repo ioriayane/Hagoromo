@@ -22,6 +22,9 @@
 #include "tools/labelerprovider.h"
 #include "controls/calendartablemodel.h"
 #include "tools/accountmanager.h"
+#include "account/accountlistmodel.h"
+#include "account/oauthlogin.h"
+#include "tools/es256.h"
 #include "operation/tokimekipolloperator.h"
 #include "tools/tid.h"
 #include "draft/draftlistmodel.h"
@@ -70,6 +73,8 @@ private slots:
     void test_SearchProfileListModel_suggestion();
     void test_SearchPostListModel_text();
     void test_ContentFilterSettingListModel();
+    void test_AccountListModelOAuth();
+    void test_OAuthLogin();
     void test_CalendarTableModel();
 
     void test_TokimekiPollOperator_convertUrlToUri();
@@ -2655,6 +2660,106 @@ void hagoromo_test::test_SearchPostListModel_text()
 
     QCOMPARE(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000))),
              "fuga from:hogehoge.bsky.social hoge");
+}
+
+void hagoromo_test::test_AccountListModelOAuth()
+{
+    const QString did = "did:plc:oauth_account_list_test";
+    Es256 key;
+    QVERIFY(key.generateKey());
+
+    OAuthSession session;
+    session.handle = "oauth.test";
+    session.service_endpoint = m_service + "/oauth";
+    session.issuer = "https://bsky.social";
+    session.token_endpoint = "https://bsky.social/oauth/token";
+    session.dpop_private_key = key.privateKeyPem();
+    session.token.access_token = "access token";
+    session.token.refresh_token = "refresh token";
+    session.token.token_type = "DPoP";
+    session.token.sub = did;
+    session.token.scope = "atproto";
+    session.token.expires_in = 3600;
+
+    OAuthLogin login;
+    login.setSession(session);
+
+    AccountListModel model;
+    const int before = model.rowCount();
+    QSignalSpy spy_inserted(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+
+    // 追加
+    const QString uuid = model.updateOAuthAccount("https://bsky.social", &login);
+    QVERIFY(!uuid.isEmpty());
+    QCOMPARE(spy_inserted.count(), 1);
+    QCOMPARE(model.rowCount(), before + 1);
+    int row = model.indexAt(uuid);
+    QCOMPARE(model.item(row, AccountListModel::AuthTypeRole).toString(), QString("oauth"));
+    QCOMPARE(model.item(row, AccountListModel::HandleRole).toString(), QString("oauth.test"));
+    QCOMPARE(model.item(row, AccountListModel::DidRole).toString(), did);
+    QVERIFY(model.item(row, AccountListModel::AuthorizedRole).toBool());
+
+    // 同じDIDは行を増やさず置き換える
+    QCOMPARE(model.updateOAuthAccount("https://bsky.social", &login), uuid);
+    QCOMPARE(spy_inserted.count(), 1);
+    QCOMPARE(model.rowCount(), before + 1);
+
+    // パスワード方式でログインし直すと同じアカウントのまま切り替わる(identifierが違ってもDIDで照合)
+    QCOMPARE(model.updateAccount("https://bsky.social", "oauth@example.com", "password", did,
+                                 "oauth.test", "oauth@example.com", "access_jwt", "refresh_jwt",
+                                 true),
+             uuid);
+    QCOMPARE(model.rowCount(), before + 1);
+    row = model.indexAt(uuid);
+    QCOMPARE(model.item(row, AccountListModel::AuthTypeRole).toString(), QString("password"));
+
+    // OAuthに戻す
+    QCOMPARE(model.updateOAuthAccount("https://bsky.social", &login), uuid);
+    QCOMPARE(model.item(model.indexAt(uuid), AccountListModel::AuthTypeRole).toString(),
+             QString("oauth"));
+
+    // 不正なセッションは追加しない
+    OAuthSession invalid = session;
+    invalid.token.sub = QString();
+    login.setSession(invalid);
+    QVERIFY(model.updateOAuthAccount("https://bsky.social", &login).isEmpty());
+    QVERIFY(model.updateOAuthAccount("https://bsky.social", nullptr).isEmpty());
+    QCOMPARE(model.rowCount(), before + 1);
+
+    model.removeAccount(model.indexAt(uuid));
+    QCOMPARE(model.rowCount(), before);
+}
+
+void hagoromo_test::test_OAuthLogin()
+{
+    OAuthLogin login;
+    QVERIFY(!login.running());
+    {
+        // 入力が足りない
+        QSignalSpy spy(&login, SIGNAL(finished(bool)));
+        QSignalSpy spy_error(&login, SIGNAL(errorOccurred(const QString &, const QString &)));
+        login.setService("https://bsky.social");
+        login.start();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+        QCOMPARE(spy_error.count(), 1);
+        QVERIFY(!login.running());
+    }
+    {
+        // 開始してすぐにキャンセルしても結果は通知されない
+        QSignalSpy spy(&login, SIGNAL(finished(bool)));
+        QSignalSpy spy_running(&login, SIGNAL(runningChanged()));
+        login.setService(m_service + "/oauth");
+        login.setIdentifier("hagoromo.invalid.test");
+        login.start();
+        QVERIFY(login.running());
+        login.cancel();
+        QVERIFY(!login.running());
+        QVERIFY(login.authorizationUrl().isEmpty());
+        QCOMPARE(spy_running.count(), 2);
+        QTest::qWait(3000);
+        QCOMPARE(spy.count(), 0);
+    }
 }
 
 void hagoromo_test::test_ContentFilterSettingListModel()

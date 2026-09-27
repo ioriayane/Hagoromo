@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import tech.relog.hagoromo.createsession 1.0
+import tech.relog.hagoromo.oauthlogin 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 Dialog {
@@ -14,13 +15,20 @@ Dialog {
     property int parentWidth: parent.width
 
     property alias session: session
+    property alias oauthLogin: oauthLogin
     property alias serviceText: serviceTextInput.text
     property alias idText: idTextInput.text
     property alias passwordText: passwordTextInput.text
+    // "oauth" or "password"
+    property string authMethod: "oauth"
+    readonly property bool useOAuth: authMethod === "oauth"
+    readonly property bool running: session.running || oauthLogin.running
 
     signal errorOccurred(string code, string message)
 
     onClosed: {
+        // ブラウザでの認可を待っていたら止める
+        oauthLogin.cancel()
         mfaCodeTextInput.visible = false
         mfaCodeTextInput.text = ""
     }
@@ -49,10 +57,49 @@ Dialog {
                         }
     }
 
+    OAuthLogin {
+        id: oauthLogin
+        service: serviceTextInput.text
+        identifier: idTextInput.text
+
+        onRequestOpenUrl: (url) => Qt.openUrlExternally(url)
+        onFinished: (success) => {
+                        if(success){
+                            loginDialog.accept()
+                        }
+                    }
+        onErrorOccurred: (code, message) => loginDialog.errorOccurred(code, message)
+    }
+
     GridLayout {
         columns: 2
         columnSpacing: AdjustedValues.s10
         rowSpacing: AdjustedValues.s10
+
+        Label {
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Login method")
+        }
+        RowLayout {
+            enabled: !loginDialog.running
+            ButtonGroup {
+                id: authMethodButtonGroup
+            }
+            RadioButton {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Browser (OAuth)")
+                checked: loginDialog.useOAuth
+                ButtonGroup.group: authMethodButtonGroup
+                onClicked: loginDialog.authMethod = "oauth"
+            }
+            RadioButton {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("App password")
+                checked: !loginDialog.useOAuth
+                ButtonGroup.group: authMethodButtonGroup
+                onClicked: loginDialog.authMethod = "password"
+            }
+        }
 
         Label {
             font.pointSize: AdjustedValues.f10
@@ -61,7 +108,7 @@ Dialog {
         TextField {
             id: serviceTextInput
             Layout.minimumWidth: loginDialog.parentWidth
-            enabled: !session.running
+            enabled: !loginDialog.running
             placeholderText: "https://bsky.social etc..."
             font.pointSize: AdjustedValues.f10
         }
@@ -72,18 +119,20 @@ Dialog {
         TextField {
             id: idTextInput
             Layout.fillWidth: true
-            enabled: !session.running
-            placeholderText: "Handle or Email address or DID"
+            enabled: !loginDialog.running
+            placeholderText: loginDialog.useOAuth ? "Handle or DID" : "Handle or Email address or DID"
             font.pointSize: AdjustedValues.f10
         }
         Label {
             font.pointSize: AdjustedValues.f10
             text: qsTr("Password")
+            visible: !loginDialog.useOAuth
         }
         TextField {
             id: passwordTextInput
             Layout.fillWidth: true
-            enabled: !session.running
+            enabled: !loginDialog.running
+            visible: !loginDialog.useOAuth
             echoMode: TextInput.Password
             placeholderText: "The use of App Password is recommended."
             font.pointSize: AdjustedValues.f10
@@ -96,11 +145,47 @@ Dialog {
         TextField {
             id: mfaCodeTextInput
             Layout.fillWidth: true
-            enabled: !session.running
+            enabled: !loginDialog.running
             visible: false
             echoMode: TextInput.Password
             placeholderText: "Confirmation code"
             font.pointSize: AdjustedValues.f10
+        }
+
+        Label {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.maximumWidth: loginDialog.parentWidth * 1.3
+            visible: loginDialog.useOAuth && !oauthLogin.running
+            wrapMode: Text.WrapAnywhere
+            font.pointSize: AdjustedValues.f8
+            text: qsTr("Log in on the page opened in your web browser. When the session expires, you will need to log in again.")
+        }
+        ColumnLayout {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            visible: oauthLogin.running
+            RowLayout {
+                BusyIndicator {
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
+                    running: oauthLogin.running
+                }
+                Label {
+                    Layout.fillWidth: true
+                    font.pointSize: AdjustedValues.f10
+                    text: oauthLogin.authorizationUrl.length > 0 ?
+                              qsTr("Waiting for authorization in your web browser...") :
+                              qsTr("Preparing authorization...")
+                }
+            }
+            Button {
+                flat: true
+                visible: oauthLogin.authorizationUrl.length > 0
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("Open the browser again")
+                onClicked: Qt.openUrlExternally(oauthLogin.authorizationUrl)
+            }
         }
 
         Button {
@@ -112,14 +197,27 @@ Dialog {
         }
         Button {
             Layout.alignment: Qt.AlignRight
-            enabled: !(session.running ||
-                       serviceTextInput.text.length == 0 ||
-                       idTextInput.text.length == 0 ||
-                       passwordTextInput.text.length == 0 ||
-                       (mfaCodeTextInput.visible && mfaCodeTextInput.text.length === 0))
+            enabled: {
+                if(loginDialog.running ||
+                        serviceTextInput.text.length == 0 ||
+                        idTextInput.text.length == 0){
+                    return false
+                }else if(loginDialog.useOAuth){
+                    return true
+                }else{
+                    return !(passwordTextInput.text.length == 0 ||
+                             (mfaCodeTextInput.visible && mfaCodeTextInput.text.length === 0))
+                }
+            }
             font.pointSize: AdjustedValues.f10
             text: qsTr("Login")
-            onClicked: session.create()
+            onClicked: {
+                if(loginDialog.useOAuth){
+                    oauthLogin.start()
+                }else{
+                    session.create()
+                }
+            }
         }
     }
 }
