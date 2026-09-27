@@ -551,9 +551,8 @@ ApplicationWindow {
                 return
             }
             var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
-            var accessJwt = accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole)
-            if(accessJwt.length === 0){
-                console.log("Empty accessJwt. load next.")
+            if(!accountListModel.item(currentAccountIndex, AccountListModel.AuthorizedRole)){
+                console.log("Not authorized. load next.")
                 currentAccountIndex -= 1
                 load(true)
             }else{

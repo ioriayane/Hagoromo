@@ -127,9 +127,7 @@ Dialog {
 
                 model: MutedWordListModel {
                     id: mutedWordListModel
-                    service: addMutedWordDialog.account.service
-                    handle: addMutedWordDialog.account.handle
-                    accessJwt: addMutedWordDialog.account.accessJwt
+                    account: addMutedWordDialog.account.uuid
                     onFinished: modified = false
                 }
                 footer: BusyIndicator {

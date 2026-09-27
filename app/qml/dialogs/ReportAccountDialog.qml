@@ -57,9 +57,7 @@ Dialog {
         LabelerComboBox {
             id: labelerDidComboBox
             Layout.fillWidth: true
-            service: account.service
-            handle: account.handle
-            accessJwt: account.accessJwt
+            accountUuid: account.uuid
 
             onCurrentValueChanged: {
                 console.log("currentText=" + currentText + ", currentValue=" + currentValue)

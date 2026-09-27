@@ -1588,16 +1588,6 @@ QString AtpAbstractListModel::email() const
     return account().email;
 }
 
-QString AtpAbstractListModel::accessJwt() const
-{
-    return account().accessJwt;
-}
-
-QString AtpAbstractListModel::refreshJwt() const
-{
-    return account().refreshJwt;
-}
-
 bool AtpAbstractListModel::visibleContainingMutedWord() const
 {
     return m_visibleContainingMutedWord;

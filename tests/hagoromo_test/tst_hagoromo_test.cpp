@@ -2660,10 +2660,12 @@ void hagoromo_test::test_SearchPostListModel_text()
 void hagoromo_test::test_ContentFilterSettingListModel()
 {
     int i = 0;
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/content_filter/1", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email", "access_jwt", "refresh_jwt",
+            true);
     ContentFilterSettingListModel model;
-    model.setService(m_service + "/content_filter/1");
-    model.setHandle(QString());
-    model.setAccessJwt("access_jwt");
+    model.setAccount(uuid);
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
