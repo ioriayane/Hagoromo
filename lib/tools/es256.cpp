@@ -1,5 +1,10 @@
 #include "es256.h"
 
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/bn.h>
 #include <openssl/core_names.h>
 #include <openssl/objects.h>
 
