@@ -18,6 +18,7 @@
 #include "tools/identityresolver.h"
 #include "tools/dpopsessionstore.h"
 #include "tools/accountmanager.h"
+#include "tools/encryption.h"
 #include "common.h"
 #include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"
@@ -152,6 +153,7 @@ private slots:
     void test_access_password();
     void test_access_oauth();
     void test_account_manager_oauth();
+    void test_account_manager_legacy_encryption();
     void test_oauth_revoke();
     void test_no_secret_in_logs();
     void test_jwt();
@@ -1239,6 +1241,86 @@ void oauth_test::test_account_manager_oauth()
     m_server.m_resourceNonce.clear();
     manager->clear();
     QFile::remove(Common::appDataFolder() + "/account.json");
+}
+
+void oauth_test::test_account_manager_legacy_encryption()
+{
+    // 以前のバージョン(IV固定の暗号化)で保存したaccount.jsonを読み込み、保存し直すと新しい形式になる
+    AccountManager *manager = AccountManager::getInstance();
+    manager->clear();
+    DPopSessionStore::getInstance()->clear();
+    const QString path = Common::appDataFolder() + "/account.json";
+    QFile::remove(path);
+
+    const QString uuid = "uuid-legacy-encryption";
+    const QByteArray private_key = generate_private_key_pem();
+    Encryption encryption;
+    {
+        // パスワード方式とOAuthのアカウント(ログインはできないサービスにしておく)
+        const QString service = QString("http://localhost:%1/response/notfound").arg(m_listenPort);
+        QJsonObject password_account;
+        password_account["uuid"] = uuid;
+        password_account["is_main"] = true;
+        password_account["service"] = service;
+        password_account["identifier"] = "legacy.test";
+        password_account["password"] = encryption.encryptLegacy("legacy password");
+        password_account["refresh_jwt"] = encryption.encryptLegacy("legacy refresh jwt");
+
+        QJsonObject oauth;
+        oauth["issuer"] = service;
+        oauth["token_endpoint"] = service + "/oauth/token";
+        oauth["dpop_private_key"] = encryption.encryptLegacy(QString::fromUtf8(private_key));
+        QJsonObject oauth_account;
+        oauth_account["uuid"] = uuid + "-oauth";
+        oauth_account["is_main"] = false;
+        oauth_account["service"] = service;
+        oauth_account["identifier"] = "legacy-oauth.test";
+        oauth_account["password"] = encryption.encryptLegacy(QString());
+        oauth_account["refresh_jwt"] = encryption.encryptLegacy("legacy oauth refresh token");
+        oauth_account["auth_type"] = "oauth";
+        oauth_account["did"] = "did:plc:legacyoauth";
+        oauth_account["handle"] = "legacy-oauth.test";
+        oauth_account["service_endpoint"] = service;
+        oauth_account["oauth"] = oauth;
+
+        QJsonArray accounts;
+        accounts.append(password_account);
+        accounts.append(oauth_account);
+        Common::saveJsonDocument(QJsonDocument(accounts), "account.json");
+    }
+
+    {
+        // 読み込むとセッションの復元を試みて失敗するまで待つ
+        QSignalSpy spy(manager, SIGNAL(finished()));
+        manager->load();
+        spy.wait(10 * 1000);
+    }
+    QCOMPARE(manager->count(), 2);
+    QCOMPARE(manager->getAccount(uuid).password, QString("legacy password"));
+    // OAuthの鍵も読めている
+    QVERIFY(DPopSessionStore::getInstance()->hasSession(uuid + "-oauth"));
+
+    manager->save();
+    {
+        QFile file(path);
+        QVERIFY(file.open(QFile::ReadOnly));
+        const QJsonArray accounts = QJsonDocument::fromJson(file.readAll()).array();
+        QCOMPARE(accounts.count(), 2);
+        const QJsonObject password_account = accounts.at(0).toObject();
+        QVERIFY(password_account.value("password").toString().startsWith("v2:"));
+        QVERIFY(password_account.value("refresh_jwt").toString().startsWith("v2:"));
+        QCOMPARE(encryption.decrypt(password_account.value("password").toString()),
+                 QString("legacy password"));
+        const QJsonObject oauth_account = accounts.at(1).toObject();
+        const QString key =
+                oauth_account.value("oauth").toObject().value("dpop_private_key").toString();
+        QVERIFY(key.startsWith("v2:"));
+        QCOMPARE(encryption.decrypt(key).toUtf8(), private_key);
+    }
+
+    manager->clear();
+    DPopSessionStore::getInstance()->clear();
+    QFile::remove(path);
 }
 
 void oauth_test::test_oauth_revoke()

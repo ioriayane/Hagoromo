@@ -8,6 +8,7 @@
 #include "tools/leb128.h"
 #include "tools/cardecoder.h"
 #include "tools/tid.h"
+#include "tools/encryption.h"
 
 class tools_test : public QObject
 {
@@ -26,6 +27,7 @@ private slots:
     void test_tid();
     void test_Leb128();
     void test_CarDecoder();
+    void test_Encryption();
 };
 
 tools_test::tools_test()
@@ -39,6 +41,54 @@ tools_test::~tools_test() { }
 void tools_test::initTestCase() { }
 
 void tools_test::cleanupTestCase() { }
+
+void tools_test::test_Encryption()
+{
+    Encryption encryption;
+    const QStringList plains = QStringList()
+            << QString() << "a"
+            << "password" << QString("0123456789abcdef") // ブロック長ちょうど
+            << QString::fromUtf8("日本語のパスワード")
+            << "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49\n-----END PRIVATE KEY-----\n"
+            << QString(1000, 'x');
+
+    for (const auto &plain : plains) {
+        const QString encrypted = encryption.encrypt(plain);
+        QVERIFY(encrypted.startsWith("v2:"));
+        QVERIFY(!encrypted.contains(plain) || plain.length() < 2);
+        QCOMPARE(encryption.decrypt(encrypted), plain);
+
+        // 同じ平文でも毎回違う暗号文になる(IV/nonceが固定でない)
+        const QString encrypted2 = encryption.encrypt(plain);
+        QVERIFY(encrypted != encrypted2);
+        QCOMPARE(encryption.decrypt(encrypted2), plain);
+
+        // 別のインスタンスでも復号できる
+        Encryption other;
+        QCOMPARE(other.decrypt(encrypted), plain);
+
+        // 従来形式(IV固定のCBC)で保存したものも読める
+        const QString legacy = encryption.encryptLegacy(plain);
+        QVERIFY(!legacy.startsWith("v2:"));
+        QCOMPARE(encryption.decrypt(legacy), plain);
+    }
+
+    // 改ざんされたものは復号しない
+    {
+        const QString encrypted = encryption.encrypt("password");
+        QByteArray raw = QByteArray::fromBase64(encrypted.mid(3).toUtf8());
+        for (int i = 0; i < raw.size(); i++) {
+            QByteArray tampered = raw;
+            tampered[i] = static_cast<char>(tampered.at(i) ^ 0x01);
+            QCOMPARE(encryption.decrypt("v2:" + QString::fromUtf8(tampered.toBase64())), QString());
+        }
+        // 短すぎる・壊れている
+        QCOMPARE(encryption.decrypt("v2:"), QString());
+        QCOMPARE(encryption.decrypt("v2:AAAA"), QString());
+        QCOMPARE(encryption.decrypt("v2:!!!!"), QString());
+    }
+    QCOMPARE(encryption.decrypt(QString()), QString());
+}
 
 void tools_test::test_base32()
 {
