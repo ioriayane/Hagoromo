@@ -2273,17 +2273,17 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="81"/>
         <source>Login method</source>
-        <translation type="unfinished"></translation>
+        <translation>ログイン方法</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="90"/>
         <source>Browser (OAuth)</source>
-        <translation type="unfinished"></translation>
+        <translation>ブラウザ（OAuth）</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="97"/>
         <source>App password</source>
-        <translation type="unfinished"></translation>
+        <translation>アプリパスワード</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="106"/>
@@ -2308,22 +2308,22 @@ Please recreate AppPassword in the official application.</source>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="162"/>
         <source>Log in on the page opened in your web browser. When the session expires, you will need to log in again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Webブラウザで開いたページでログインしてください。セッションが切れると再ログインが必要です。</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="178"/>
         <source>Waiting for authorization in your web browser...</source>
-        <translation type="unfinished"></translation>
+        <translation>Webブラウザでの認証を待機中...</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="179"/>
         <source>Preparing authorization...</source>
-        <translation type="unfinished"></translation>
+        <translation>認証の準備中...</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="186"/>
         <source>Open the browser again</source>
-        <translation type="unfinished"></translation>
+        <translation>ブラウザをもう一度開いてください</translation>
     </message>
     <message>
         <location filename="qml/dialogs/LoginDialog.qml" line="195"/>
@@ -4901,7 +4901,7 @@ Who do you want to enable this for?</source>
     <message>
         <location filename="qml/main.qml" line="69"/>
         <source>The login session has expired. Please log in again from the account management.</source>
-        <translation type="unfinished"></translation>
+        <translation>ログインセッションの有効期限が切れました。アカウント管理画面から再度ログインしてください。</translation>
     </message>
     <message>
         <location filename="qml/main.qml" line="196"/>
