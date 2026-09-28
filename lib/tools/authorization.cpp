@@ -5,6 +5,7 @@
 #include "extension/well-known/wellknownoauthauthorizationserver.h"
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "extension/oauth/oauthrequesttoken.h"
+#include "extension/oauth/oauthrevoketoken.h"
 #include "tools/jsonwebtoken.h"
 #include "tools/identityresolver.h"
 
@@ -22,6 +23,7 @@
 
 using AtProtocolInterface::OauthPushedAuthorizationRequest;
 using AtProtocolInterface::OauthRequestToken;
+using AtProtocolInterface::OauthRevokeToken;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
@@ -70,6 +72,7 @@ void Authorization::reset()
     m_pushedAuthorizationRequestEndpoint.clear();
     m_authorizationEndpoint.clear();
     m_tokenEndopoint.clear();
+    m_revocationEndpoint.clear();
     //
     m_redirectUri.clear();
     m_clientId.clear();
@@ -173,6 +176,7 @@ void Authorization::requestOauthAuthorizationServer()
                         server->serverMetadata().pushed_authorization_request_endpoint);
                 setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
                 setTokenEndopoint(server->serverMetadata().token_endpoint);
+                setRevocationEndpoint(server->serverMetadata().revocation_endpoint);
                 // next step
                 par();
             } else {
@@ -642,6 +646,79 @@ bool Authorization::validateTokenResponse(const AtProtocolType::OauthDefs::Token
     return ret;
 }
 
+void Authorization::revokeToken()
+{
+    const QString token =
+            m_token.refresh_token.isEmpty() ? m_token.access_token : m_token.refresh_token;
+    if (token.isEmpty() || !m_dPopKey.isValid()) {
+        // DPoPの鍵がないとサーバーはクライアントを確認できない
+        emit revokeFinished(false);
+        return;
+    }
+    if (m_clientId.isEmpty()) {
+        makeClientId();
+    }
+    QUrlQuery query;
+    query.addQueryItem("token", QString::fromUtf8(QUrl::toPercentEncoding(token)));
+    query.addQueryItem("token_type_hint",
+                       m_token.refresh_token.isEmpty() ? "access_token" : "refresh_token");
+    query.addQueryItem("client_id", simplyEncode(m_clientId));
+    const QByteArray payload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+
+    if (!revocationEndpoint().isEmpty()) {
+        postRevokeRequest(payload, false);
+        return;
+    }
+    if (authorizationServer().isEmpty()) {
+        emit revokeFinished(false);
+        return;
+    }
+
+    // 失効のエンドポイントを知らない(以前に保存したセッション)ときはメタデータから取得する
+    AtProtocolInterface::AccountData account;
+    account.service = authorizationServer();
+    WellKnownOauthAuthorizationServer *server = new WellKnownOauthAuthorizationServer(this);
+    connect(server, &WellKnownOauthAuthorizationServer::finished, this, [=](bool success) {
+        const QString issuer = server->serverMetadata().issuer;
+        const QString endpoint = server->serverMetadata().revocation_endpoint;
+        server->deleteLater();
+        if (success && isSameOrigin(issuer, authorizationServer()) && !endpoint.isEmpty()) {
+            setRevocationEndpoint(endpoint);
+            postRevokeRequest(payload, false);
+        } else {
+            emit revokeFinished(false);
+        }
+    });
+    server->setAccount(account);
+    server->oauthAuthorizationServer();
+}
+
+void Authorization::postRevokeRequest(const QByteArray &payload, bool retried)
+{
+    AtProtocolInterface::AccountData account;
+    account.service = revocationEndpoint();
+
+    OauthRevokeToken *req = new OauthRevokeToken(this);
+    connect(req, &OauthRevokeToken::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
+        if (!success && canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry revoke request with new DPoP nonce";
+            postRevokeRequest(payload, true);
+        } else {
+            qDebug().noquote() << "Revoke oauth token :" << success << m_token.sub;
+            emit revokeFinished(success);
+        }
+        req->deleteLater();
+    });
+    req->appendRawHeader(
+            "DPoP", JsonWebToken::generate(m_dPopKey, revocationEndpoint(), "POST", dPopNonce()));
+    req->setContentType("application/x-www-form-urlencoded");
+    req->setAccount(account);
+    req->revokeToken(payload);
+}
+
 QByteArray Authorization::generateRandomValues() const
 {
     QByteArray values;
@@ -716,6 +793,16 @@ void Authorization::setAuthorizationEndpoint(const QString &newAuthorizationEndp
         return;
     m_authorizationEndpoint = newAuthorizationEndpoint;
     emit authorizationEndpointChanged();
+}
+
+QString Authorization::revocationEndpoint() const
+{
+    return m_revocationEndpoint;
+}
+
+void Authorization::setRevocationEndpoint(const QString &newRevocationEndpoint)
+{
+    m_revocationEndpoint = newRevocationEndpoint;
 }
 
 QString Authorization::tokenEndopoint() const

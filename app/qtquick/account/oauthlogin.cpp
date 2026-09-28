@@ -42,6 +42,7 @@ void OAuthLogin::start()
             m_session.service_endpoint = authorization->serviceEndpoint();
             m_session.issuer = authorization->issuer();
             m_session.token_endpoint = authorization->tokenEndopoint();
+            m_session.revocation_endpoint = authorization->revocationEndpoint();
             m_session.dpop_private_key = authorization->dPopPrivateKey();
             m_session.token = authorization->token();
         }

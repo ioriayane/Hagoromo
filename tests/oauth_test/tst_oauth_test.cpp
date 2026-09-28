@@ -60,7 +60,9 @@ public:
                             headers, QHttpServerResponder::StatusCode::Unauthorized);
             return true;
         }
-        if (!m_nonce.isEmpty() && (path.endsWith("/oauth/par") || path.endsWith("/oauth/token"))
+        if (!m_nonce.isEmpty()
+            && (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")
+                || path.endsWith("/oauth/revoke"))
             && nonceInDPop(request.headers().value("DPoP").toByteArray()) != m_nonce) {
             m_challengeCount++;
             QHttpHeaders headers;
@@ -150,6 +152,8 @@ private slots:
     void test_access_password();
     void test_access_oauth();
     void test_account_manager_oauth();
+    void test_oauth_revoke();
+    void test_no_secret_in_logs();
     void test_jwt();
     void test_es256();
 #endif
@@ -163,6 +167,8 @@ private:
     QList<QJsonObject> m_dPopPayloads;
     // サーバーが受け付けたPARのリクエストボディ
     QList<QByteArray> m_parBodies;
+    // サーバーが受け付けた失効のリクエストボディ
+    QList<QByteArray> m_revokeBodies;
     // サーバーが受け付けたResource Serverへのリクエストのヘッダー
     QList<QByteArray> m_resourceAuthorizations;
     QList<QByteArray> m_resourceDPops;
@@ -205,7 +211,11 @@ oauth_test::oauth_test()
                     }
                     m_resourceDPops.append(dpop);
                 }
-                if (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")) {
+                if (path.endsWith("/oauth/revoke")) {
+                    m_revokeBodies.append(request.body());
+                }
+                if (path.endsWith("/oauth/par") || path.endsWith("/oauth/token")
+                    || path.endsWith("/oauth/revoke")) {
                     qDebug().noquote() << "Verify jwt";
                     bool exist = false;
                     for (const auto &header : request.headers().toListOfPairs()) {
@@ -290,6 +300,20 @@ void oauth_test::test_oauth_server()
         QCOMPARE(oauth.token().sub, oauth.did());
         // refresh tokenは使い捨てで更新される
         QVERIFY(oauth.token().refresh_token != old_refresh_token);
+    }
+    {
+        // 失効させると、そのrefresh tokenではもう更新できない
+        QSignalSpy spy_revoke(&oauth, SIGNAL(revokeFinished(bool)));
+        oauth.revokeToken();
+        spy_revoke.wait(30 * 1000);
+        QCOMPARE(spy_revoke.count(), 1);
+        QVERIFY(spy_revoke.takeFirst().at(0).toBool());
+
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait(30 * 1000);
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
     }
 #elif defined(REFRESH_TEST_IN_PRODUCTION_ENVIRONMENT)
     AtProtocolType::OauthDefs::TokenResponse token;
@@ -1032,6 +1056,8 @@ void oauth_test::test_account_manager_oauth()
     session.service_endpoint = pds;
     session.issuer = QString("http://localhost:%1").arg(m_listenPort);
     session.token_endpoint = token_endpoint;
+    session.revocation_endpoint =
+            QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort);
     session.dpop_private_key = private_key;
     session.token.access_token = "first access token";
     session.token.refresh_token = "first refresh token";
@@ -1173,9 +1199,17 @@ void oauth_test::test_account_manager_oauth()
         QVERIFY(store->hasSession(uuid));
     }
 
-    // パスワード方式に切り替え
+    // パスワード方式に切り替えるとOAuthのセッションは失効させる
+    m_revokeBodies.clear();
     manager->updateAccount(uuid, "https://bsky.social", "ioriayane.test", "password", did,
                            "ioriayane.test", "email", "access_jwt", "refresh_jwt", true);
+    for (int i = 0; i < 50 && m_revokeBodies.isEmpty(); i++) {
+        QTest::qWait(100);
+    }
+    QCOMPARE(m_revokeBodies.length(), 1);
+    QCOMPARE(QUrlQuery(QString::fromUtf8(m_revokeBodies.first()))
+                     .queryItemValue("token", QUrl::FullyDecoded),
+             QString("first refresh token"));
     QCOMPARE(manager->getAccount(uuid).auth_type, AtProtocolInterface::AuthType::Password);
     QVERIFY(!store->hasSession(uuid));
     {
@@ -1186,16 +1220,188 @@ void oauth_test::test_account_manager_oauth()
         QVERIFY(!raw.contains("\"oauth\""));
     }
 
-    // 削除するとDPoPのセッションも消える
+    // 削除するとDPoPのセッションも消え、サーバーでも失効させる
+    session.token.refresh_token = "last refresh token";
     manager->updateOAuthAccount(uuid, "https://bsky.social", session);
     QVERIFY(store->hasSession(uuid));
+    m_revokeBodies.clear();
     manager->removeAccount(uuid);
     QCOMPARE(manager->count(), 0);
     QVERIFY(!store->hasSession(uuid));
+    for (int i = 0; i < 50 && m_revokeBodies.isEmpty(); i++) {
+        QTest::qWait(100);
+    }
+    QCOMPARE(m_revokeBodies.length(), 1);
+    QCOMPARE(QUrlQuery(QString::fromUtf8(m_revokeBodies.first()))
+                     .queryItemValue("token", QUrl::FullyDecoded),
+             QString("last refresh token"));
 
     m_server.m_resourceNonce.clear();
     manager->clear();
     QFile::remove(Common::appDataFolder() + "/account.json");
+}
+
+void oauth_test::test_oauth_revoke()
+{
+    const QString revoke_endpoint =
+            QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort);
+    m_server.m_nonce = "nonce-revoke";
+    m_server.m_rotateAlways = false;
+    m_server.m_challengeCount = 0;
+
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.access_token = "access token";
+    token.refresh_token = "refresh token";
+    token.sub = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+
+    {
+        // エンドポイントを指定して失効
+        m_revokeBodies.clear();
+        m_dPopPayloads.clear();
+        Authorization oauth;
+        QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
+        oauth.setToken(token);
+        oauth.setRevocationEndpoint(revoke_endpoint);
+        QSignalSpy spy(&oauth, SIGNAL(revokeFinished(bool)));
+        oauth.revokeToken();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        // nonceを要求されて1回再送
+        QCOMPARE(m_server.m_challengeCount, 1);
+        QCOMPARE(m_revokeBodies.length(), 1);
+        const QUrlQuery query(QString::fromUtf8(m_revokeBodies.first()));
+        QCOMPARE(query.queryItemValue("token", QUrl::FullyDecoded), QString("refresh token"));
+        QCOMPARE(query.queryItemValue("token_type_hint", QUrl::FullyDecoded),
+                 QString("refresh_token"));
+        QCOMPARE(query.queryItemValue("client_id", QUrl::FullyDecoded),
+                 QString("https://oauth.hagoromo.relog.tech/oauth-client-metadata.json"));
+        QCOMPARE(m_dPopPayloads.last().value("htu").toString(), revoke_endpoint);
+        QCOMPARE(m_dPopPayloads.last().value("nonce").toString(), QString("nonce-revoke"));
+    }
+    {
+        // エンドポイントを知らないときは認可サーバーのメタデータから取得する
+        m_revokeBodies.clear();
+        Authorization oauth;
+        QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
+        oauth.setToken(token);
+        oauth.setAuthorizationServer(QString("http://localhost:%1/response/2").arg(m_listenPort));
+        QSignalSpy spy(&oauth, SIGNAL(revokeFinished(bool)));
+        oauth.revokeToken();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(oauth.revocationEndpoint(), revoke_endpoint);
+        QCOMPARE(m_revokeBodies.length(), 1);
+    }
+    {
+        // 鍵やtokenがなければ送らない
+        m_revokeBodies.clear();
+        Authorization no_key;
+        no_key.setToken(token);
+        no_key.setRevocationEndpoint(revoke_endpoint);
+        QSignalSpy spy(&no_key, SIGNAL(revokeFinished(bool)));
+        no_key.revokeToken();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+
+        Authorization no_token;
+        QVERIFY(no_token.setDPopPrivateKey(generate_private_key_pem()));
+        no_token.setRevocationEndpoint(revoke_endpoint);
+        QSignalSpy spy2(&no_token, SIGNAL(revokeFinished(bool)));
+        no_token.revokeToken();
+        QCOMPARE(spy2.count(), 1);
+        QVERIFY(!spy2.takeFirst().at(0).toBool());
+
+        // エンドポイントもメタデータの取得先もない
+        Authorization no_endpoint;
+        QVERIFY(no_endpoint.setDPopPrivateKey(generate_private_key_pem()));
+        no_endpoint.setToken(token);
+        QSignalSpy spy3(&no_endpoint, SIGNAL(revokeFinished(bool)));
+        no_endpoint.revokeToken();
+        QCOMPARE(spy3.count(), 1);
+        QVERIFY(!spy3.takeFirst().at(0).toBool());
+        QCOMPARE(m_revokeBodies.length(), 0);
+    }
+    m_server.m_nonce.clear();
+}
+
+static QStringList g_capturedLogs;
+static QtMessageHandler g_previousHandler = nullptr;
+static void captureLogHandler(QtMsgType type, const QMessageLogContext &context,
+                              const QString &message)
+{
+    g_capturedLogs.append(message);
+    if (g_previousHandler != nullptr) {
+        g_previousHandler(type, context, message);
+    }
+}
+
+void oauth_test::test_no_secret_in_logs()
+{
+    // 各処理のログにトークン、パスワード、DPoPのproofが出ないこと
+    const QString access_token = "secret-access-token-for-log-test";
+    const QString refresh_token = "secret-refresh-token-for-log-test";
+    const QString uuid = "uuid-log-test";
+    QVERIFY(DPopSessionStore::getInstance()->setPrivateKey(uuid, generate_private_key_pem()));
+
+    g_capturedLogs.clear();
+    g_previousHandler = qInstallMessageHandler(captureLogHandler);
+
+    for (int i = 0; i < 2; i++) {
+        // Bearer(パスワード方式)とDPoP(OAuth)
+        AtProtocolInterface::AccountData account;
+        account.uuid = uuid;
+        account.auth_type = (i == 0) ? AtProtocolInterface::AuthType::Password
+                                     : AtProtocolInterface::AuthType::OAuth;
+        account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+        account.accessJwt = access_token;
+        account.refreshJwt = refresh_token;
+        TestAccess access;
+        access.setAccount(account);
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+    }
+    {
+        // OAuthのrefreshと失効
+        AtProtocolType::OauthDefs::TokenResponse token;
+        token.refresh_token = refresh_token;
+        token.sub = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+        Authorization oauth;
+        QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
+        oauth.setToken(token);
+        oauth.setTokenEndopoint(
+                QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+        oauth.setRevocationEndpoint(
+                QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort));
+        oauth.makeClientId();
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        // 応答のtoken("access token"/"refresh token")も出さない
+        oauth.setToken(token);
+        QSignalSpy spy_revoke(&oauth, SIGNAL(revokeFinished(bool)));
+        oauth.revokeToken();
+        spy_revoke.wait();
+        QCOMPARE(spy_revoke.count(), 1);
+    }
+
+    qInstallMessageHandler(g_previousHandler);
+    g_previousHandler = nullptr;
+    DPopSessionStore::getInstance()->removeSession(uuid);
+
+    QVERIFY(!g_capturedLogs.isEmpty());
+    for (const auto &log : std::as_const(g_capturedLogs)) {
+        QVERIFY2(!log.contains(access_token), qPrintable(log));
+        QVERIFY2(!log.contains(refresh_token), qPrintable(log));
+        QVERIFY2(!log.contains(QStringLiteral("\"access token\"")), qPrintable(log));
+        QVERIFY2(!log.contains(QStringLiteral("\"refresh token\"")), qPrintable(log));
+        // DPoPのproof(JWTのヘッダー部分 {"alg":"ES256" をbase64urlにしたもの)
+        QVERIFY2(!log.contains(QStringLiteral("eyJhbGciOiJFUzI1NiI")), qPrintable(log));
+    }
 }
 
 void oauth_test::test_jwt()

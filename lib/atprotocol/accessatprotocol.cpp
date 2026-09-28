@@ -236,8 +236,10 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
     qDebug().noquote() << LOG_DATETIME << "   " << handle();
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
-    if (m_contentType.startsWith("application/x-www-form-urlencoded")) {
-        // OAuthのPAR/tokenリクエストはcode_verifierやrefresh tokenを含むので出力しない
+    if (m_contentType.startsWith("application/x-www-form-urlencoded")
+        || endpoint == QStringLiteral("xrpc/com.atproto.server.createSession")) {
+        // OAuthのPAR/tokenリクエストはcode_verifierやrefresh tokenを、
+        // createSessionはパスワードを含むので出力しない
         qDebug().noquote() << LOG_DATETIME << "   "
                            << "(form data:" << json.size() << "bytes)";
     } else {

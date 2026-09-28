@@ -25,6 +25,8 @@ public:
 
     QByteArray makeRequestTokenPayload(bool refresh);
     void requestToken(bool refresh = false);
+    // セッションのtoken(refresh token)を失効させる。結果はrevokeFinishedで通知する
+    void revokeToken();
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
@@ -37,6 +39,8 @@ public:
     void setAuthorizationEndpoint(const QString &newAuthorizationEndpoint);
     QString tokenEndopoint() const;
     void setTokenEndopoint(const QString &newTokenEndopoint);
+    QString revocationEndpoint() const;
+    void setRevocationEndpoint(const QString &newRevocationEndpoint);
     int redirectTimeout() const;
     void setRedirectTimeout(int newRedirectTimeout);
     AtProtocolType::OauthDefs::TokenResponse token() const;
@@ -76,6 +80,7 @@ signals:
     void tokenEndopointChanged();
     void tokenChanged();
     void finished(bool success);
+    void revokeFinished(bool success);
     void madeRequestUrl(const QString &url); // このシグナルを受けてブラウザに飛ばすなりする
 
 private:
@@ -84,6 +89,7 @@ private:
 
     void postPushedAuthorizationRequest(const QByteArray &payload, bool retried);
     void postTokenRequest(bool refresh, bool retried);
+    void postRevokeRequest(const QByteArray &payload, bool retried);
 
     // server info
     void requestOauthProtectedResource();
@@ -105,6 +111,7 @@ private:
     QString m_pushedAuthorizationRequestEndpoint;
     QString m_authorizationEndpoint;
     QString m_tokenEndopoint;
+    QString m_revocationEndpoint;
     QStringList m_scopes;
     //
     QString m_redirectUri;

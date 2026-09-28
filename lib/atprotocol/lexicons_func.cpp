@@ -6603,6 +6603,7 @@ void copyServerMetadata(const QJsonObject &src, WellKnownDefs::ServerMetadata &d
         dest.pushed_authorization_request_endpoint =
                 src.value("pushed_authorization_request_endpoint").toString();
         dest.token_endpoint = src.value("token_endpoint").toString();
+        dest.revocation_endpoint = src.value("revocation_endpoint").toString();
         dest.require_pushed_authorization_requests =
                 src.value("require_pushed_authorization_requests").toBool();
         for (const auto &value : src.value("dpop_signing_alg_values_supported").toArray()) {

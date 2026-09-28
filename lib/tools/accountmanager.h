@@ -14,6 +14,7 @@ struct OAuthSession
     QString service_endpoint; // PDS
     QString issuer;
     QString token_endpoint;
+    QString revocation_endpoint;
     QByteArray dpop_private_key; // PEM
     AtProtocolType::OauthDefs::TokenResponse token;
 };

@@ -70,6 +70,8 @@ public:
     // OAuth
     void setOAuthSession(const QString &uuid, const QString &service, const OAuthSession &session);
     void clearOAuthSession();
+    // 使わなくなるOAuthのセッションをサーバー側でも失効させる
+    void revokeOAuthSession();
 
 private:
     void refreshOAuthSession(bool initial);
@@ -88,6 +90,7 @@ private:
     QByteArray m_dPopPrivateKey;
     QString m_oauthIssuer;
     QString m_oauthTokenEndpoint;
+    QString m_oauthRevocationEndpoint;
     QString m_oauthScope;
     Authorization *m_oauth;
     QTimer m_oauthRefreshTimer;
@@ -125,6 +128,7 @@ QJsonObject AccountManager::Private::save() const
         QJsonObject oauth;
         oauth["issuer"] = m_oauthIssuer;
         oauth["token_endpoint"] = m_oauthTokenEndpoint;
+        oauth["revocation_endpoint"] = m_oauthRevocationEndpoint;
         oauth["scope"] = m_oauthScope;
         oauth["dpop_private_key"] = m_encryption.encrypt(QString::fromUtf8(m_dPopPrivateKey));
         account_item["oauth"] = oauth;
@@ -192,6 +196,7 @@ void AccountManager::Private::load(const QJsonObject &object)
         const QJsonObject oauth = object.value("oauth").toObject();
         m_oauthIssuer = oauth.value("issuer").toString();
         m_oauthTokenEndpoint = oauth.value("token_endpoint").toString();
+        m_oauthRevocationEndpoint = oauth.value("revocation_endpoint").toString();
         m_oauthScope = oauth.value("scope").toString();
         m_dPopPrivateKey =
                 m_encryption.decrypt(oauth.value("dpop_private_key").toString()).toUtf8();
@@ -296,6 +301,10 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
                                             const QString &thread_gate_type,
                                             const AccountStatus status)
 {
+    if (m_account.auth_type == AuthType::OAuth) {
+        // パスワード方式に切り替えるのでOAuthのセッションは失効させる(上書きする前に)
+        revokeOAuthSession();
+    }
     m_account.uuid = uuid;
     m_account.service = service;
     m_account.identifier = identifier;
@@ -613,11 +622,12 @@ void AccountManager::Private::getAccountScope()
     if (items.length() != 3)
         return;
     QByteArray json = QByteArray::fromBase64(items.at(1).toUtf8());
-    qDebug().noquote() << "Decoded accessJwt:" << json;
     QJsonDocument doc = QJsonDocument::fromJson(json);
     if (!doc.object().contains("scope"))
         return;
     QString scope = doc.object().value("scope").toString();
+    // アクセストークンの中身は出力しない
+    qDebug().noquote() << "Access token scope:" << scope;
     if (scope == "com.atproto.appPassPrivileged") {
         qDebug().noquote() << "Direct Message is allowed:" << m_account.handle;
         if (!m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
@@ -634,6 +644,11 @@ void AccountManager::Private::getAccountScope()
 void AccountManager::Private::setOAuthSession(const QString &uuid, const QString &service,
                                               const OAuthSession &session)
 {
+    if (m_account.auth_type == AuthType::OAuth && !m_account.refreshJwt.isEmpty()
+        && m_account.refreshJwt != session.token.refresh_token) {
+        // ログインし直したので以前のセッションは失効させる
+        revokeOAuthSession();
+    }
     m_account.uuid = uuid;
     m_account.auth_type = AuthType::OAuth;
     m_account.service = service;
@@ -651,6 +666,7 @@ void AccountManager::Private::setOAuthSession(const QString &uuid, const QString
 
     m_oauthIssuer = session.issuer;
     m_oauthTokenEndpoint = session.token_endpoint;
+    m_oauthRevocationEndpoint = session.revocation_endpoint;
     m_oauthScope = session.token.scope;
     m_dPopPrivateKey = session.dpop_private_key;
     if (!DPopSessionStore::getInstance()->setPrivateKey(uuid, m_dPopPrivateKey)) {
@@ -670,11 +686,42 @@ void AccountManager::Private::clearOAuthSession()
     m_dPopPrivateKey.clear();
     m_oauthIssuer.clear();
     m_oauthTokenEndpoint.clear();
+    m_oauthRevocationEndpoint.clear();
     m_oauthScope.clear();
     if (m_oauth != nullptr) {
         m_oauth->deleteLater();
         m_oauth = nullptr;
     }
+}
+
+void AccountManager::Private::revokeOAuthSession()
+{
+    if (m_account.auth_type != AuthType::OAuth || m_dPopPrivateKey.isEmpty()
+        || (m_account.refreshJwt.isEmpty() && m_account.accessJwt.isEmpty())) {
+        return;
+    }
+    // アカウント(Private)が削除されても終わるまで動くようにAccountManagerを親にする
+    Authorization *authorization = new Authorization(q);
+    if (!authorization->setDPopPrivateKey(m_dPopPrivateKey)) {
+        delete authorization;
+        return;
+    }
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.access_token = m_account.accessJwt;
+    token.refresh_token = m_account.refreshJwt;
+    token.sub = m_account.did;
+    authorization->setToken(token);
+    authorization->setRevocationEndpoint(m_oauthRevocationEndpoint);
+    authorization->setAuthorizationServer(m_oauthIssuer);
+    authorization->makeClientId();
+    connect(authorization, &Authorization::revokeFinished, q, [=](bool success) {
+        if (!success) {
+            // 失効に失敗してもアカウントの操作は続ける(期限が来れば無効になる)
+            qWarning().noquote() << "Failed to revoke OAuth session :" << token.sub;
+        }
+        authorization->deleteLater();
+    });
+    authorization->revokeToken();
 }
 
 void AccountManager::Private::refreshOAuthSession(bool initial)
@@ -947,6 +994,7 @@ void AccountManager::removeAccount(const QString &uuid)
     if (!dIndex.contains(uuid)) {
         return;
     }
+    dList.at(dIndex.value(uuid))->revokeOAuthSession();
     DPopSessionStore::getInstance()->removeSession(uuid);
     int i = dIndex.value(uuid);
     delete dList.at(i);
