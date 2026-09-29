@@ -115,9 +115,7 @@ Dialog {
                 model: ContentFilterSettingListModel {
                     id: contentFilterSettingListModel
                     enableAdultContent: enableAdultContentCheckbox.checked
-                    service: account.service
-                    handle: account.handle
-                    accessJwt: account.accessJwt
+                    account: contentFilterSettingDialog.account.uuid
                     onFinished: {
                         enableAdultContentCheckbox.checked = enableAdultContent
                         labelerDidComboBox.model.clear()

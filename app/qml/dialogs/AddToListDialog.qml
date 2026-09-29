@@ -34,8 +34,6 @@ Dialog {
         addListDialog.account.service = account.service
         addListDialog.account.did = account.did
         addListDialog.account.handle = account.handle
-        addListDialog.account.accessJwt = account.accessJwt
-        addListDialog.account.refreshJwt = account.refreshJwt
         addListDialog.account.avatar = account.avatar
 
         listsListModel.clear()

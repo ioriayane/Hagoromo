@@ -8,8 +8,6 @@ QtObject {
     property string did: ""
     property string handle: ""
     property string email: ""
-    property string accessJwt: ""
-    property string refreshJwt: ""
     property string avatar: ""
     property string serviceEndpoint: ""
 
@@ -21,8 +19,6 @@ QtObject {
             obj.did = model.item(row, AccountListModel.DidRole)
             obj.handle = model.item(row, AccountListModel.HandleRole)
             obj.email = model.item(row, AccountListModel.EmailRole)
-            obj.accessJwt = model.item(row, AccountListModel.AccessJwtRole)
-            obj.refreshJwt = model.item(row, AccountListModel.RefreshJwtRole)
             obj.avatar = model.item(row, AccountListModel.AvatarRole)
             obj.serviceEndpoint = model.item(row, AccountListModel.ServiceEndpointRole)
 

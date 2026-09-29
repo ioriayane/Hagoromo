@@ -1,6 +1,7 @@
 #include "labelerlistmodel.h"
 
 #include "atprotocol/accessatprotocol.h"
+#include "tools/accountmanager.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/labeler/appbskylabelergetservices.h"
 
@@ -46,11 +47,8 @@ void LabelerListModel::load()
         return;
     setRunning(true);
 
-    AtProtocolInterface::AccountData account;
-
-    account.service = service();
-    account.handle = handle();
-    account.accessJwt = accessJwt();
+    const AtProtocolInterface::AccountData account =
+            AccountManager::getInstance()->getAccount(m_account);
 
     if (!m_labelerList.isEmpty()) {
         beginRemoveRows(QModelIndex(), 0, m_labelerList.count() - 1);
@@ -110,43 +108,17 @@ void LabelerListModel::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-QString LabelerListModel::service() const
+QString LabelerListModel::account() const
 {
-    return m_service;
+    return m_account;
 }
 
-void LabelerListModel::setService(const QString &newService)
+void LabelerListModel::setAccount(const QString &uuid)
 {
-    if (m_service == newService)
+    if (m_account == uuid)
         return;
-    m_service = newService;
-    emit serviceChanged();
-}
-
-QString LabelerListModel::handle() const
-{
-    return m_handle;
-}
-
-void LabelerListModel::setHandle(const QString &newHandle)
-{
-    if (m_handle == newHandle)
-        return;
-    m_handle = newHandle;
-    emit handleChanged();
-}
-
-QString LabelerListModel::accessJwt() const
-{
-    return m_accessJwt;
-}
-
-void LabelerListModel::setAccessJwt(const QString &newAccessJwt)
-{
-    if (m_accessJwt == newAccessJwt)
-        return;
-    m_accessJwt = newAccessJwt;
-    emit accessJwtChanged();
+    m_account = uuid;
+    emit accountChanged();
 }
 
 QHash<int, QByteArray> LabelerListModel::roleNames() const

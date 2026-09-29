@@ -12,12 +12,15 @@
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/pinnedpostcache.h"
+#include "tools/authorization.h"
+#include "tools/dpopsessionstore.h"
 #include "common.h"
 
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QTimer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
@@ -25,6 +28,7 @@ using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferencesEx;
+using AtProtocolInterface::AuthType;
 using AtProtocolInterface::ChatBskyConvoListConvos;
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
@@ -63,16 +67,43 @@ public:
 
     void removeScope(AtProtocolInterface::AccountScope scope);
 
+    // OAuth
+    void setOAuthSession(const QString &uuid, const QString &service, const OAuthSession &session);
+    void clearOAuthSession();
+    // 使わなくなるOAuthのセッションをサーバー側でも失効させる
+    void revokeOAuthSession();
+
 private:
+    void refreshOAuthSession(bool initial);
+    void finishOAuthRefresh(bool success);
+    void failSession(const QString &code, const QString &message);
+    void scheduleOAuthRefresh(int expires_in);
+    Authorization *oauth();
+    static bool allowedChatScope(const QString &scope);
+
     AccountManager *q;
 
     AccountData m_account;
     Encryption m_encryption;
+
+    // OAuth(DPoPの秘密鍵はAccountDataに入れず、リクエストごとにコピーされないようにする)
+    QByteArray m_dPopPrivateKey;
+    QString m_oauthIssuer;
+    QString m_oauthTokenEndpoint;
+    QString m_oauthRevocationEndpoint;
+    QString m_oauthScope;
+    Authorization *m_oauth;
+    QTimer m_oauthRefreshTimer;
+    QString m_oauthErrorCode;
+    QString m_oauthErrorMessage;
 };
 
-AccountManager::Private::Private(AccountManager *parent) : q(parent)
+AccountManager::Private::Private(AccountManager *parent) : q(parent), m_oauth(nullptr)
 {
     qDebug().noquote() << this << "AccountManager::Private()";
+
+    m_oauthRefreshTimer.setSingleShot(true);
+    connect(&m_oauthRefreshTimer, &QTimer::timeout, this, [=]() { refreshSession(); });
 }
 
 AccountManager::Private::~Private()
@@ -89,6 +120,21 @@ QJsonObject AccountManager::Private::save() const
     account_item["identifier"] = m_account.identifier;
     account_item["password"] = m_encryption.encrypt(m_account.password);
     account_item["refresh_jwt"] = m_encryption.encrypt(m_account.refreshJwt);
+    if (m_account.auth_type == AuthType::OAuth) {
+        account_item["auth_type"] = "oauth";
+        account_item["did"] = m_account.did;
+        account_item["handle"] = m_account.handle;
+        account_item["service_endpoint"] = m_account.service_endpoint;
+        QJsonObject oauth;
+        oauth["issuer"] = m_oauthIssuer;
+        oauth["token_endpoint"] = m_oauthTokenEndpoint;
+        oauth["revocation_endpoint"] = m_oauthRevocationEndpoint;
+        oauth["scope"] = m_oauthScope;
+        oauth["dpop_private_key"] = m_encryption.encrypt(QString::fromUtf8(m_dPopPrivateKey));
+        account_item["oauth"] = oauth;
+    } else {
+        account_item["auth_type"] = "password";
+    }
 
     if (!m_account.post_languages.isEmpty()) {
         QJsonArray post_langs;
@@ -140,6 +186,26 @@ void AccountManager::Private::load(const QJsonObject &object)
     m_account.password = m_encryption.decrypt(object.value("password").toString());
     m_account.refreshJwt = m_encryption.decrypt(temp_refresh);
     m_account.handle = m_account.identifier;
+    // auth_typeがない(従来の)アカウントはパスワード方式
+    if (object.value("auth_type").toString() == "oauth") {
+        m_account.auth_type = AuthType::OAuth;
+        m_account.did = object.value("did").toString();
+        m_account.handle = object.value("handle").toString(m_account.identifier);
+        m_account.service_endpoint =
+                object.value("service_endpoint").toString(m_account.service_endpoint);
+        const QJsonObject oauth = object.value("oauth").toObject();
+        m_oauthIssuer = oauth.value("issuer").toString();
+        m_oauthTokenEndpoint = oauth.value("token_endpoint").toString();
+        m_oauthRevocationEndpoint = oauth.value("revocation_endpoint").toString();
+        m_oauthScope = oauth.value("scope").toString();
+        m_dPopPrivateKey =
+                m_encryption.decrypt(oauth.value("dpop_private_key").toString()).toUtf8();
+        if (!DPopSessionStore::getInstance()->setPrivateKey(m_account.uuid, m_dPopPrivateKey)) {
+            qWarning().noquote() << "Failed to load DPoP key :" << m_account.handle;
+        }
+    } else {
+        m_account.auth_type = AuthType::Password;
+    }
     for (const auto &value : object.value("post_languages").toArray()) {
         m_account.post_languages.append(value.toString());
     }
@@ -164,7 +230,10 @@ void AccountManager::Private::load(const QJsonObject &object)
         }
     }
 
-    if (temp_refresh.isEmpty()) {
+    if (m_account.auth_type == AuthType::OAuth) {
+        // OAuthはパスワードで作り直せないのでrefreshのみ
+        refreshSession(true);
+    } else if (temp_refresh.isEmpty()) {
         createSession();
     } else {
         refreshSession(true);
@@ -232,6 +301,10 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
                                             const QString &thread_gate_type,
                                             const AccountStatus status)
 {
+    if (m_account.auth_type == AuthType::OAuth) {
+        // パスワード方式に切り替えるのでOAuthのセッションは失効させる(上書きする前に)
+        revokeOAuthSession();
+    }
     m_account.uuid = uuid;
     m_account.service = service;
     m_account.identifier = identifier;
@@ -243,6 +316,10 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.refreshJwt = refreshJwt;
     m_account.thread_gate_type = thread_gate_type;
     m_account.status = status;
+    if (m_account.auth_type == AuthType::OAuth) {
+        // パスワード方式に切り替え
+        clearOAuthSession();
+    }
 
     getAccountScope();
 }
@@ -283,6 +360,11 @@ void AccountManager::Private::removeRealtimeFeedRule(const QString &name)
 
 void AccountManager::Private::createSession()
 {
+    if (m_account.auth_type == AuthType::OAuth) {
+        failSession(QStringLiteral("OAuthLoginRequired"),
+                    QStringLiteral("Please sign in again with OAuth."));
+        return;
+    }
     ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
     connect(session, &ComAtprotoServerCreateSessionEx::finished, this, [=](bool success) {
         //        qDebug() << session << session->service() << session->did() <<
@@ -318,6 +400,10 @@ void AccountManager::Private::createSession()
 
 void AccountManager::Private::refreshSession(bool initial)
 {
+    if (m_account.auth_type == AuthType::OAuth) {
+        refreshOAuthSession(initial);
+        return;
+    }
 
     ComAtprotoServerRefreshSessionEx *session = new ComAtprotoServerRefreshSessionEx(this);
     connect(session, &ComAtprotoServerRefreshSessionEx::finished, this, [=](bool success) {
@@ -358,7 +444,12 @@ void AccountManager::Private::refreshSession(bool initial)
 void AccountManager::Private::getProfile()
 {
 
-    getServiceEndpoint(m_account.did, m_account.service, [=](const QString &service_endpoint) {
+    // OAuthはログイン時に検証したPDSを使うので、取得できなければ今のPDSのまま
+    const QString fallback_service =
+            (m_account.auth_type == AuthType::OAuth && !m_account.service_endpoint.isEmpty())
+            ? m_account.service_endpoint
+            : m_account.service;
+    getServiceEndpoint(m_account.did, fallback_service, [=](const QString &service_endpoint) {
         m_account.service_endpoint = service_endpoint;
         qDebug().noquote() << "Update service endpoint" << m_account.service << "->"
                            << m_account.service_endpoint;
@@ -516,15 +607,27 @@ void AccountManager::Private::putPostInteractionSettings()
 
 void AccountManager::Private::getAccountScope()
 {
+    if (m_account.auth_type == AuthType::OAuth) {
+        // アクセストークンの中身は読まず、tokenのレスポンスで許可されたscopeで判断する
+        if (allowedChatScope(m_oauthScope)) {
+            if (!m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+                m_account.scope.append(AtProtocolInterface::AccountScope::DirectMessage);
+            }
+        } else {
+            m_account.scope.removeAll(AtProtocolInterface::AccountScope::DirectMessage);
+        }
+        return;
+    }
     QStringList items = m_account.accessJwt.split(".");
     if (items.length() != 3)
         return;
     QByteArray json = QByteArray::fromBase64(items.at(1).toUtf8());
-    qDebug().noquote() << "Decoded accessJwt:" << json;
     QJsonDocument doc = QJsonDocument::fromJson(json);
     if (!doc.object().contains("scope"))
         return;
     QString scope = doc.object().value("scope").toString();
+    // アクセストークンの中身は出力しない
+    qDebug().noquote() << "Access token scope:" << scope;
     if (scope == "com.atproto.appPassPrivileged") {
         qDebug().noquote() << "Direct Message is allowed:" << m_account.handle;
         if (!m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
@@ -536,6 +639,195 @@ void AccountManager::Private::getAccountScope()
             m_account.scope.removeAll(AtProtocolInterface::AccountScope::DirectMessage);
         }
     }
+}
+
+void AccountManager::Private::setOAuthSession(const QString &uuid, const QString &service,
+                                              const OAuthSession &session)
+{
+    if (m_account.auth_type == AuthType::OAuth && !m_account.refreshJwt.isEmpty()
+        && m_account.refreshJwt != session.token.refresh_token) {
+        // ログインし直したので以前のセッションは失効させる
+        revokeOAuthSession();
+    }
+    m_account.uuid = uuid;
+    m_account.auth_type = AuthType::OAuth;
+    m_account.service = service;
+    m_account.service_endpoint = session.service_endpoint;
+    m_account.identifier = session.handle.isEmpty() ? session.token.sub : session.handle;
+    m_account.password.clear();
+    m_account.did = session.token.sub;
+    m_account.handle = session.handle;
+    m_account.accessJwt = session.token.access_token;
+    m_account.refreshJwt = session.token.refresh_token;
+    m_account.status = AccountStatus::Authorized;
+    if (m_account.thread_gate_type.isEmpty()) {
+        m_account.thread_gate_type = "everybody";
+    }
+
+    m_oauthIssuer = session.issuer;
+    m_oauthTokenEndpoint = session.token_endpoint;
+    m_oauthRevocationEndpoint = session.revocation_endpoint;
+    m_oauthScope = session.token.scope;
+    m_dPopPrivateKey = session.dpop_private_key;
+    if (!DPopSessionStore::getInstance()->setPrivateKey(uuid, m_dPopPrivateKey)) {
+        qWarning().noquote() << "Failed to set DPoP key :" << m_account.handle;
+        m_account.status = AccountStatus::Unauthorized;
+    }
+
+    getAccountScope();
+    scheduleOAuthRefresh(session.token.expires_in);
+}
+
+void AccountManager::Private::clearOAuthSession()
+{
+    m_oauthRefreshTimer.stop();
+    DPopSessionStore::getInstance()->removeSession(m_account.uuid);
+    m_account.auth_type = AuthType::Password;
+    m_dPopPrivateKey.clear();
+    m_oauthIssuer.clear();
+    m_oauthTokenEndpoint.clear();
+    m_oauthRevocationEndpoint.clear();
+    m_oauthScope.clear();
+    if (m_oauth != nullptr) {
+        m_oauth->deleteLater();
+        m_oauth = nullptr;
+    }
+}
+
+void AccountManager::Private::revokeOAuthSession()
+{
+    if (m_account.auth_type != AuthType::OAuth || m_dPopPrivateKey.isEmpty()
+        || (m_account.refreshJwt.isEmpty() && m_account.accessJwt.isEmpty())) {
+        return;
+    }
+    // アカウント(Private)が削除されても終わるまで動くようにAccountManagerを親にする
+    Authorization *authorization = new Authorization(q);
+    if (!authorization->setDPopPrivateKey(m_dPopPrivateKey)) {
+        delete authorization;
+        return;
+    }
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.access_token = m_account.accessJwt;
+    token.refresh_token = m_account.refreshJwt;
+    token.sub = m_account.did;
+    authorization->setToken(token);
+    authorization->setRevocationEndpoint(m_oauthRevocationEndpoint);
+    authorization->setAuthorizationServer(m_oauthIssuer);
+    authorization->makeClientId();
+    connect(authorization, &Authorization::revokeFinished, q, [=](bool success) {
+        if (!success) {
+            // 失効に失敗してもアカウントの操作は続ける(期限が来れば無効になる)
+            qWarning().noquote() << "Failed to revoke OAuth session :" << token.sub;
+        }
+        authorization->deleteLater();
+    });
+    authorization->revokeToken();
+}
+
+void AccountManager::Private::refreshOAuthSession(bool initial)
+{
+    Q_UNUSED(initial)
+    m_oauthRefreshTimer.stop();
+
+    if (m_account.refreshJwt.isEmpty() || m_oauthTokenEndpoint.isEmpty()
+        || !DPopSessionStore::getInstance()->hasSession(m_account.uuid)) {
+        failSession(QStringLiteral("OAuthLoginRequired"),
+                    QStringLiteral("Please sign in again with OAuth."));
+        return;
+    }
+
+    // refresh tokenは使い捨てなので、アカウントごとに1つのAuthorizationで排他する
+    Authorization *authorization = oauth();
+    AtProtocolType::OauthDefs::TokenResponse token = authorization->token();
+    token.refresh_token = m_account.refreshJwt;
+    token.sub = m_account.did;
+    authorization->setToken(token);
+    authorization->setTokenEndopoint(m_oauthTokenEndpoint);
+    if (authorization->dPopPrivateKey() != m_dPopPrivateKey) {
+        authorization->setDPopPrivateKey(m_dPopPrivateKey);
+    }
+    authorization->makeClientId();
+    m_oauthErrorCode.clear();
+    m_oauthErrorMessage.clear();
+    authorization->requestToken(true);
+}
+
+void AccountManager::Private::finishOAuthRefresh(bool success)
+{
+    if (!success) {
+        failSession(m_oauthErrorCode.isEmpty() ? QStringLiteral("OAuthLoginRequired")
+                                               : m_oauthErrorCode,
+                    m_oauthErrorMessage.isEmpty()
+                            ? QStringLiteral("Please sign in again with OAuth.")
+                            : m_oauthErrorMessage);
+        return;
+    }
+    const AtProtocolType::OauthDefs::TokenResponse token = m_oauth->token();
+    qDebug() << "Refresh OAuth session" << m_account.did << m_account.handle;
+    m_account.accessJwt = token.access_token;
+    m_account.refreshJwt = token.refresh_token;
+    if (!token.scope.isEmpty()) {
+        m_oauthScope = token.scope;
+    }
+    getAccountScope();
+    scheduleOAuthRefresh(token.expires_in);
+    // refresh tokenは更新されて古いものは使えなくなるので、すぐに保存する
+    q->save();
+
+    // 詳細を取得
+    getProfile();
+}
+
+void AccountManager::Private::failSession(const QString &code, const QString &message)
+{
+    qDebug().noquote() << "Fail session :" << m_account.handle << code;
+    m_account.status = AccountStatus::Unauthorized;
+    emit q->errorOccurred(code, message);
+
+    q->checkAllAccountsReady();
+    if (q->allAccountTried()) {
+        emit q->finished();
+    }
+}
+
+void AccountManager::Private::scheduleOAuthRefresh(int expires_in)
+{
+    // アクセストークンの期限の少し前にrefreshする
+    const int margin = 5 * 60;
+    int sec = (expires_in > 0) ? expires_in - margin : 15 * 60;
+    if (sec < 60) {
+        sec = 60;
+    }
+    m_oauthRefreshTimer.start(sec * 1000);
+}
+
+Authorization *AccountManager::Private::oauth()
+{
+    if (m_oauth == nullptr) {
+        m_oauth = new Authorization(this);
+        connect(m_oauth, &Authorization::errorOccurred, this,
+                [=](const QString &code, const QString &message) {
+                    m_oauthErrorCode = code;
+                    m_oauthErrorMessage = message;
+                });
+        connect(m_oauth, &Authorization::finished, this,
+                [=](bool success) { finishOAuthRefresh(success); });
+    }
+    return m_oauth;
+}
+
+bool AccountManager::Private::allowedChatScope(const QString &scope)
+{
+    for (const auto &item : scope.split(' ', Qt::SkipEmptyParts)) {
+        if (item == "transition:chat.bsky" || item.startsWith("include:chat.bsky.")) {
+            return true;
+        }
+        // includeはtokenのレスポンスでrpcに展開される
+        if (item.startsWith("rpc") && item.contains("chat.bsky.convo.")) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void AccountManager::Private::setMain(bool is)
@@ -665,11 +957,45 @@ QString AccountManager::updateAccount(const QString &uuid, const QString &servic
     return ret;
 }
 
+QString AccountManager::updateOAuthAccount(const QString &uuid, const QString &service,
+                                           const OAuthSession &session)
+{
+    if (!session.token.sub.startsWith("did:")) {
+        return QString();
+    }
+    QString target_uuid;
+    if (!uuid.isEmpty() && dIndex.contains(uuid)) {
+        target_uuid = uuid;
+    } else {
+        // 同じアカウントを追加し直した場合(パスワード方式からの切り替えを含む)はuuidを引き継ぐ
+        for (const auto d : std::as_const(dList)) {
+            if (d->getAccount().did == session.token.sub) {
+                target_uuid = d->getAccount().uuid;
+                break;
+            }
+        }
+    }
+    if (target_uuid.isEmpty()) {
+        target_uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        dList.append(new AccountManager::Private(this));
+        dIndex[target_uuid] = dList.count() - 1;
+        dList.last()->setOAuthSession(target_uuid, service, session);
+        emit countChanged();
+    } else {
+        dList.at(dIndex[target_uuid])->setOAuthSession(target_uuid, service, session);
+    }
+    save();
+    checkAllAccountsReady();
+    return target_uuid;
+}
+
 void AccountManager::removeAccount(const QString &uuid)
 {
     if (!dIndex.contains(uuid)) {
         return;
     }
+    dList.at(dIndex.value(uuid))->revokeOAuthSession();
+    DPopSessionStore::getInstance()->removeSession(uuid);
     int i = dIndex.value(uuid);
     delete dList.at(i);
     dList.removeAt(i);

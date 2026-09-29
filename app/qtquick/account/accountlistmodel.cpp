@@ -1,4 +1,5 @@
 #include "accountlistmodel.h"
+#include "oauthlogin.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -156,6 +157,10 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return static_cast<int>(account.status);
     else if (role == AuthorizedRole)
         return account.status == AccountStatus::Authorized;
+    else if (role == AuthTypeRole)
+        return account.auth_type == AtProtocolInterface::AuthType::OAuth
+                ? QStringLiteral("oauth")
+                : QStringLiteral("password");
 
     else if (role == AllowedDirectMessageRole)
         return account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage);
@@ -187,12 +192,15 @@ QString AccountListModel::updateAccount(const QString &service, const QString &i
     for (const auto &uuid : uuids) {
         int i = manager->indexAt(uuid);
         const AtProtocolInterface::AccountData account = manager->getAccount(uuid);
-        if (account.service == service && account.identifier == identifier) {
+        // 同じDIDのアカウント(OAuthからの切り替えを含む)も更新する
+        if ((account.service == service && account.identifier == identifier)
+            || (!did.isEmpty() && account.did == did)) {
             // update
             manager->updateAccount(uuid, service, identifier, password, did, handle, email,
                                    accessJwt, refreshJwt, authorized);
             ret_uuid = uuid;
             emit dataChanged(index(i), index(i));
+            break;
         }
     }
     if (ret_uuid.isEmpty()) {
@@ -203,6 +211,32 @@ QString AccountListModel::updateAccount(const QString &service, const QString &i
         endInsertRows();
     }
     return ret_uuid;
+}
+
+QString AccountListModel::updateOAuthAccount(const QString &service, OAuthLogin *login)
+{
+    if (login == nullptr || !login->session().token.sub.startsWith("did:"))
+        return QString();
+
+    AccountManager *manager = AccountManager::getInstance();
+    // 同じDIDのアカウントは置き換えられる
+    int row = -1;
+    for (const auto &uuid : manager->getUuids()) {
+        if (manager->getAccount(uuid).did == login->session().token.sub) {
+            row = manager->indexAt(uuid);
+            break;
+        }
+    }
+    QString uuid;
+    if (row < 0) {
+        beginInsertRows(QModelIndex(), count(), count());
+        uuid = manager->updateOAuthAccount(QString(), service, login->session());
+        endInsertRows();
+    } else {
+        uuid = manager->updateOAuthAccount(manager->getUuid(row), service, login->session());
+        emit dataChanged(index(row), index(row));
+    }
+    return uuid;
 }
 
 void AccountListModel::removeAccount(int row)
@@ -344,6 +378,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[PostGateQuoteEnabledRole] = "postGateQuoteEnabled";
     roles[StatusRole] = "status";
     roles[AuthorizedRole] = "authorized";
+    roles[AuthTypeRole] = "authType";
     roles[AllowedDirectMessageRole] = "allowedDirectMessage";
 
     return roles;

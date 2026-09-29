@@ -3,11 +3,9 @@
 
 #include <QByteArray>
 
-#include <openssl/ec.h>
-#include <openssl/ecdsa.h>
-#include <openssl/evp.h>
-#include <openssl/pem.h>
-#include <openssl/bn.h>
+// 利用側にOpenSSLのインクルードパスを要求しないよう前方宣言にとどめる
+typedef struct evp_pkey_st EVP_PKEY;
+typedef struct bignum_st BIGNUM;
 
 // DPoP用のES256(P-256)の鍵
 // 鍵はセッションごとに生成し、セッションと一緒に保存・復元する

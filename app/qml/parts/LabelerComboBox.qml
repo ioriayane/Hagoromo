@@ -12,9 +12,7 @@ ComboBox {
     textRole: "title"
     valueRole: "did"
 
-    property alias service: labelerListModel.service
-    property alias handle: labelerListModel.handle
-    property alias accessJwt: labelerListModel.accessJwt
+    property alias accountUuid: labelerListModel.account
 
     signal errorOccurred(string code, string message)
     function load(){

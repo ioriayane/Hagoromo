@@ -12,9 +12,8 @@ class ContentFilterSettingListModel : public QAbstractListModel
     Q_PROPERTY(bool enableAdultContent READ enableAdultContent WRITE setEnableAdultContent NOTIFY
                        enableAdultContentChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
-    Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
-    Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
-    Q_PROPERTY(QString accessJwt READ accessJwt WRITE setAccessJwt NOTIFY accessJwtChanged)
+    // アカウントのuuid
+    Q_PROPERTY(QString account READ account WRITE setAccount NOTIFY accountChanged)
     // モデルとして提供されるラベラーのDIDを設定する
     Q_PROPERTY(
             QString labelerDid READ labelerDid WRITE setLabelerDid NOTIFY labelerDidChanged FINAL)
@@ -59,12 +58,8 @@ public:
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
     bool running() const;
-    QString service() const;
-    void setService(const QString &newService);
-    QString handle() const;
-    void setHandle(const QString &newHandle);
-    QString accessJwt() const;
-    void setAccessJwt(const QString &newAccessJwt);
+    QString account() const;
+    void setAccount(const QString &uuid);
 
     QString labelerDid() const;
     void setLabelerDid(const QString &newLabelerDid);
@@ -84,9 +79,7 @@ signals:
     void finished();
     void enableAdultContentChanged();
     void runningChanged();
-    void serviceChanged();
-    void handleChanged();
-    void accessJwtChanged();
+    void accountChanged();
 
     void labelerDidChanged();
 
@@ -105,9 +98,7 @@ private:
     bool m_saving;
     bool m_enableAdultContent;
     bool m_running;
-    QString m_service;
-    QString m_handle;
-    QString m_accessJwt;
+    QString m_account;
     QString m_labelerDid;
     QStringList m_selectableLabelerDids;
     bool m_labelerHasAdultOnly;

@@ -25,6 +25,8 @@ add_library(HagoromoGuiLib STATIC
     account/accountlistmodel.h
     account/createsession.cpp
     account/createsession.h
+    account/oauthlogin.cpp
+    account/oauthlogin.h
     atpabstractlistmodel.cpp
     atpabstractlistmodel.h
     blog/blogentrylistmodel.cpp

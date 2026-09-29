@@ -54,7 +54,8 @@ ApplicationWindow {
                                   postDialogRepeater.working
 
     function errorHandler(account_uuid, code, message) {
-        if(code === "ExpiredToken" && account_uuid.length > 0){
+        // OAuthのアクセストークンの期限切れはinvalid_tokenで返る
+        if((code === "ExpiredToken" || code === "invalid_token") && account_uuid.length > 0){
             accountListModel.refreshAccountSession(account_uuid)
         }else if(message.length === 0){
         }else{
@@ -62,6 +63,10 @@ ApplicationWindow {
             var handle = ""
             if(row >= 0){
                 handle = accountListModel.item(row, AccountListModel.HandleRole)
+            }
+            if(code === "OAuthLoginRequired"){
+                // OAuthのセッションが切れたので再ログインが必要
+                message = qsTr("The login session has expired. Please log in again from the account management.")
             }
             console.log("ERROR: " + handle + "(" + account_uuid + ") " + code + ":" + message)
             message += "\n\n@" + handle
@@ -551,9 +556,8 @@ ApplicationWindow {
                 return
             }
             var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
-            var accessJwt = accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole)
-            if(accessJwt.length === 0){
-                console.log("Empty accessJwt. load next.")
+            if(!accountListModel.item(currentAccountIndex, AccountListModel.AuthorizedRole)){
+                console.log("Not authorized. load next.")
                 currentAccountIndex -= 1
                 load(true)
             }else{
