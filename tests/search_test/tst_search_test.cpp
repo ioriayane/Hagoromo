@@ -33,7 +33,7 @@ search_test::search_test()
     QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
-    m_service = QString("http://localhost:%1/response").arg(m_listenPort);
+    m_service = QString("http://127.0.0.1:%1/response").arg(m_listenPort);
 }
 
 search_test::~search_test() { }
