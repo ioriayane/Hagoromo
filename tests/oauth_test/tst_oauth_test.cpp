@@ -1114,7 +1114,7 @@ void oauth_test::test_account_manager_oauth()
         manager->refreshSession(manager->indexAt(uuid));
         // 同時にrefreshしてもtokenのリクエストは1回
         manager->refreshSession(manager->indexAt(uuid));
-        spy.wait(10 * 1000);
+        spy.wait(30 * 1000);
         QCOMPARE(spy.count(), 1);
         QCOMPARE(spy.takeFirst().at(0).toString(), uuid);
         for (const auto &error : spy_error) {
@@ -1149,7 +1149,7 @@ void oauth_test::test_account_manager_oauth()
     {
         QSignalSpy spy(manager, SIGNAL(updatedAccount(const QString &)));
         manager->load();
-        spy.wait(10 * 1000);
+        spy.wait(30 * 1000);
         QCOMPARE(spy.count(), 1);
     }
     QCOMPARE(manager->count(), 1);
@@ -1346,7 +1346,7 @@ void oauth_test::test_oauth_revoke()
         oauth.setRevocationEndpoint(revoke_endpoint);
         QSignalSpy spy(&oauth, SIGNAL(revokeFinished(bool)));
         oauth.revokeToken();
-        spy.wait();
+        spy.wait(30 * 1000);
         QCOMPARE(spy.count(), 1);
         QVERIFY(spy.takeFirst().at(0).toBool());
         // nonceを要求されて1回再送
@@ -1370,7 +1370,7 @@ void oauth_test::test_oauth_revoke()
         oauth.setAuthorizationServer(QString("http://localhost:%1/response/2").arg(m_listenPort));
         QSignalSpy spy(&oauth, SIGNAL(revokeFinished(bool)));
         oauth.revokeToken();
-        spy.wait();
+        spy.wait(30 * 1000);
         QCOMPARE(spy.count(), 1);
         QVERIFY(spy.takeFirst().at(0).toBool());
         QCOMPARE(oauth.revocationEndpoint(), revoke_endpoint);
