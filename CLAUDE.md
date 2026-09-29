@@ -165,6 +165,9 @@ pre-commit run --all-files
 - ユーザー向けの文言を追加する場合は `.ts` ファイルを手動編集せず、CMake の `update_translations` ターゲット(`qt_add_translations` で生成)経由で `app/Hagoromo_*.ts` / `lib/HagoromoLib_*.ts` を更新する
 - プロトコル、モデル、操作の挙動を変える場合は、対象のテストと記録済みレスポンスデータも更新する
 - 新規ユニットテストは `tests/<name>_test/`(`tst_*.cpp` + `data/` + `response/` + `.qrc`)の既存構成に倣う
+- テストのモックサーバーへの URL は `http://localhost:` ではなく `http://127.0.0.1:` を使う(テストコード・レスポンスデータの `{{SERVER_PORT_NO}}` 等を含む)
+  - モックサーバーは `QHostAddress::LocalHost`(IPv4)で待ち受けるが、Windows では `localhost` が先に IPv6 の `::1` に解決され、接続拒否後の再試行で 1 リクエストごとに約 2 秒遅延する
+  - この遅延で `QSignalSpy::wait()` がタイムアウトしたり、テスト全体が大幅に遅くなったりする
 - Windows 開発では CRLF を維持する前提があるため、改行コードの取り扱いに注意する
 
 ## 重要な注意事項

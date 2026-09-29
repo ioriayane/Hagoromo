@@ -380,10 +380,10 @@ void oauth_test::test_oauth()
 
     Authorization oauth;
     oauth.setRedirectTimeout(20);
-    oauth.setPlcDirectory(QString("http://localhost:%1/response/plc").arg(m_listenPort));
+    oauth.setPlcDirectory(QString("http://127.0.0.1:%1/response/plc").arg(m_listenPort));
 
     // DNS/HTTPSでは解決できないハンドルにして、pdsのresolveHandleで解決させる
-    QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
+    QString pds = QString("http://127.0.0.1:%1/response/2").arg(m_listenPort);
     QString handle = "@IoriAyane.test";
 
     m_server.m_nonce = "nonce-par";
@@ -403,7 +403,7 @@ void oauth_test::test_oauth()
         spy.wait(20 * 1000);
         QCOMPARE(spy.count(), 1);
     }
-    QCOMPARE(oauth.serviceEndpoint(), QString("http://localhost:%1/response/1").arg(m_listenPort));
+    QCOMPARE(oauth.serviceEndpoint(), QString("http://127.0.0.1:%1/response/1").arg(m_listenPort));
     QCOMPARE(oauth.handle(), QString("ioriayane.test"));
 
     {
@@ -412,7 +412,7 @@ void oauth_test::test_oauth()
         QCOMPARE(spy.count(), 1);
     }
     QVERIFY(oauth.authorizationServer()
-            == QString("http://localhost:%1/response/2").arg(m_listenPort));
+            == QString("http://127.0.0.1:%1/response/2").arg(m_listenPort));
 
     {
         QSignalSpy spy(&oauth, SIGNAL(pushedAuthorizationRequestEndpointChanged()));
@@ -420,10 +420,10 @@ void oauth_test::test_oauth()
         QCOMPARE(spy.count(), 1);
     }
     QVERIFY(oauth.pushedAuthorizationRequestEndpoint()
-            == QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort));
+            == QString("http://127.0.0.1:%1/response/2/oauth/par").arg(m_listenPort));
     QVERIFY(oauth.authorizationEndpoint()
-            == QString("http://localhost:%1/response/2/oauth/authorize").arg(m_listenPort));
-    QCOMPARE(oauth.issuer(), QString("http://localhost:%1").arg(m_listenPort));
+            == QString("http://127.0.0.1:%1/response/2/oauth/authorize").arg(m_listenPort));
+    QCOMPARE(oauth.issuer(), QString("http://127.0.0.1:%1").arg(m_listenPort));
     QCOMPARE(oauth.did(), QString("did:plc:ipj5qejfoqu6eukvt72uhyit"));
 
     //
@@ -435,7 +435,7 @@ void oauth_test::test_oauth()
         QList<QVariant> arguments = spy.takeFirst();
         request_url = arguments.at(0).toString();
         QCOMPARE(request_url,
-                 (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
+                 (QStringLiteral("http://127.0.0.1:") + QString::number(m_listenPort)
                   + QStringLiteral("/response/2/oauth/"
                                    "authorize?client_id=https%3A%2F%2Foauth.hagoromo.relog.tech%"
                                    "2Foauth-client-metadata.json&request_uri=urn%3Aietf%"
@@ -542,8 +542,8 @@ void oauth_test::test_oauth()
     QVERIFY(session_key.getAffineCoordinates(x_coord, y_coord));
 
     const QStringList htu_list = QStringList()
-            << QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort)
-            << QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort);
+            << QString("http://127.0.0.1:%1/response/2/oauth/par").arg(m_listenPort)
+            << QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort);
     QCOMPARE(m_dPopHeaders.length(), 2);
     QCOMPARE(m_dPopPayloads.length(), 2);
     for (int i = 0; i < m_dPopHeaders.length(); i++) {
@@ -573,7 +573,7 @@ void oauth_test::test_oauth_dpop_nonce_retry_limit()
     oauth.setToken(token);
     QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
     oauth.setTokenEndopoint(
-            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+            QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort));
     oauth.makeClientId();
     {
         QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
@@ -603,7 +603,7 @@ void oauth_test::test_oauth_token_validation()
         // DPoPの鍵がない場合はtokenを要求しない
         Authorization oauth;
         oauth.setTokenEndopoint(
-                QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort));
         QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         oauth.requestToken(true);
@@ -621,7 +621,7 @@ void oauth_test::test_oauth_token_validation()
         token.sub = expected_did;
         oauth.setToken(token);
         QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
-        oauth.setTokenEndopoint(QString("http://localhost:%1/response/2/oauth/%2")
+        oauth.setTokenEndopoint(QString("http://127.0.0.1:%1/response/2/oauth/%2")
                                         .arg(m_listenPort)
                                         .arg(item.first));
         oauth.makeClientId();
@@ -657,7 +657,7 @@ void oauth_test::test_oauth_token_request_lock()
     oauth.setToken(token);
     QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
     oauth.setTokenEndopoint(
-            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+            QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort));
     oauth.makeClientId();
 
     QSignalSpy spy_token(&oauth, SIGNAL(tokenChanged()));
@@ -680,9 +680,9 @@ void oauth_test::test_oauth_token_request_lock()
 
 void oauth_test::test_identity_resolver()
 {
-    const QString plc = QString("http://localhost:%1/response/plc").arg(m_listenPort);
-    const QString service = QString("http://localhost:%1/response/2").arg(m_listenPort);
-    const QString pds = QString("http://localhost:%1/response/1").arg(m_listenPort);
+    const QString plc = QString("http://127.0.0.1:%1/response/plc").arg(m_listenPort);
+    const QString service = QString("http://127.0.0.1:%1/response/2").arg(m_listenPort);
+    const QString pds = QString("http://127.0.0.1:%1/response/1").arg(m_listenPort);
     const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
 
     struct TestCase
@@ -845,7 +845,7 @@ void oauth_test::test_oauth_par_online()
 void oauth_test::test_well_known_atproto_did()
 {
     AtProtocolInterface::AccountData account;
-    account.service = QString("http://localhost:%1/response/3").arg(m_listenPort);
+    account.service = QString("http://127.0.0.1:%1/response/3").arg(m_listenPort);
 
     AtProtocolInterface::WellKnownAtprotoDid well_known;
     well_known.setAccount(account);
@@ -867,7 +867,7 @@ void oauth_test::test_access_password()
 
     AtProtocolInterface::AccountData account;
     account.uuid = "uuid-password";
-    account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    account.service = QString("http://127.0.0.1:%1/response/4").arg(m_listenPort);
     account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
     account.accessJwt = "access token";
     QCOMPARE(account.auth_type, AtProtocolInterface::AuthType::Password);
@@ -905,7 +905,7 @@ void oauth_test::test_access_oauth()
 {
     const QString uuid = "uuid-oauth";
     const QString access_token = "access token";
-    const QString base = QString("http://localhost:%1/response/4/xrpc/").arg(m_listenPort);
+    const QString base = QString("http://127.0.0.1:%1/response/4/xrpc/").arg(m_listenPort);
 
     Es256 key;
     QVERIFY(key.generateKey());
@@ -922,7 +922,7 @@ void oauth_test::test_access_oauth()
     AtProtocolInterface::AccountData account;
     account.uuid = uuid;
     account.auth_type = AtProtocolInterface::AuthType::OAuth;
-    account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    account.service = QString("http://127.0.0.1:%1/response/4").arg(m_listenPort);
     account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
     account.accessJwt = access_token;
 
@@ -1048,18 +1048,18 @@ void oauth_test::test_account_manager_oauth()
     m_resourceAuthorizations.clear();
 
     const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
-    const QString pds = QString("http://localhost:%1/response/4").arg(m_listenPort);
+    const QString pds = QString("http://127.0.0.1:%1/response/4").arg(m_listenPort);
     const QString token_endpoint =
-            QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort);
+            QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort);
     const QByteArray private_key = generate_private_key_pem();
 
     OAuthSession session;
     session.handle = "ioriayane.test";
     session.service_endpoint = pds;
-    session.issuer = QString("http://localhost:%1").arg(m_listenPort);
+    session.issuer = QString("http://127.0.0.1:%1").arg(m_listenPort);
     session.token_endpoint = token_endpoint;
     session.revocation_endpoint =
-            QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort);
+            QString("http://127.0.0.1:%1/response/2/oauth/revoke").arg(m_listenPort);
     session.dpop_private_key = private_key;
     session.token.access_token = "first access token";
     session.token.refresh_token = "first refresh token";
@@ -1188,7 +1188,7 @@ void oauth_test::test_account_manager_oauth()
     // refreshに失敗したら再ログインが必要な状態になる
     {
         session.token_endpoint =
-                QString("http://localhost:%1/response/2/oauth/token_notfound").arg(m_listenPort);
+                QString("http://127.0.0.1:%1/response/2/oauth/token_notfound").arg(m_listenPort);
         manager->updateOAuthAccount(uuid, "https://bsky.social", session);
         QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
         manager->refreshSession(manager->indexAt(uuid));
@@ -1257,7 +1257,7 @@ void oauth_test::test_account_manager_legacy_encryption()
     Encryption encryption;
     {
         // パスワード方式とOAuthのアカウント(ログインはできないサービスにしておく)
-        const QString service = QString("http://localhost:%1/response/notfound").arg(m_listenPort);
+        const QString service = QString("http://127.0.0.1:%1/response/notfound").arg(m_listenPort);
         QJsonObject password_account;
         password_account["uuid"] = uuid;
         password_account["is_main"] = true;
@@ -1326,7 +1326,7 @@ void oauth_test::test_account_manager_legacy_encryption()
 void oauth_test::test_oauth_revoke()
 {
     const QString revoke_endpoint =
-            QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort);
+            QString("http://127.0.0.1:%1/response/2/oauth/revoke").arg(m_listenPort);
     m_server.m_nonce = "nonce-revoke";
     m_server.m_rotateAlways = false;
     m_server.m_challengeCount = 0;
@@ -1367,7 +1367,7 @@ void oauth_test::test_oauth_revoke()
         Authorization oauth;
         QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
         oauth.setToken(token);
-        oauth.setAuthorizationServer(QString("http://localhost:%1/response/2").arg(m_listenPort));
+        oauth.setAuthorizationServer(QString("http://127.0.0.1:%1/response/2").arg(m_listenPort));
         QSignalSpy spy(&oauth, SIGNAL(revokeFinished(bool)));
         oauth.revokeToken();
         spy.wait(30 * 1000);
@@ -1408,11 +1408,14 @@ void oauth_test::test_oauth_revoke()
     m_server.m_nonce.clear();
 }
 
+// HttpAccessのワーカースレッドからもログが出るので排他する
+static QMutex g_capturedLogsMutex;
 static QStringList g_capturedLogs;
 static QtMessageHandler g_previousHandler = nullptr;
 static void captureLogHandler(QtMsgType type, const QMessageLogContext &context,
                               const QString &message)
 {
+    QMutexLocker locker(&g_capturedLogsMutex);
     g_capturedLogs.append(message);
     if (g_previousHandler != nullptr) {
         g_previousHandler(type, context, message);
@@ -1427,8 +1430,11 @@ void oauth_test::test_no_secret_in_logs()
     const QString uuid = "uuid-log-test";
     QVERIFY(DPopSessionStore::getInstance()->setPrivateKey(uuid, generate_private_key_pem()));
 
-    g_capturedLogs.clear();
-    g_previousHandler = qInstallMessageHandler(captureLogHandler);
+    {
+        QMutexLocker locker(&g_capturedLogsMutex);
+        g_capturedLogs.clear();
+        g_previousHandler = qInstallMessageHandler(captureLogHandler);
+    }
 
     for (int i = 0; i < 2; i++) {
         // Bearer(パスワード方式)とDPoP(OAuth)
@@ -1436,7 +1442,7 @@ void oauth_test::test_no_secret_in_logs()
         account.uuid = uuid;
         account.auth_type = (i == 0) ? AtProtocolInterface::AuthType::Password
                                      : AtProtocolInterface::AuthType::OAuth;
-        account.service = QString("http://localhost:%1/response/4").arg(m_listenPort);
+        account.service = QString("http://127.0.0.1:%1/response/4").arg(m_listenPort);
         account.accessJwt = access_token;
         account.refreshJwt = refresh_token;
         TestAccess access;
@@ -1455,9 +1461,9 @@ void oauth_test::test_no_secret_in_logs()
         QVERIFY(oauth.setDPopPrivateKey(generate_private_key_pem()));
         oauth.setToken(token);
         oauth.setTokenEndopoint(
-                QString("http://localhost:%1/response/2/oauth/token").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/2/oauth/token").arg(m_listenPort));
         oauth.setRevocationEndpoint(
-                QString("http://localhost:%1/response/2/oauth/revoke").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/2/oauth/revoke").arg(m_listenPort));
         oauth.makeClientId();
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         oauth.requestToken(true);
@@ -1471,12 +1477,17 @@ void oauth_test::test_no_secret_in_logs()
         QCOMPARE(spy_revoke.count(), 1);
     }
 
-    qInstallMessageHandler(g_previousHandler);
-    g_previousHandler = nullptr;
+    QStringList captured_logs;
+    {
+        QMutexLocker locker(&g_capturedLogsMutex);
+        qInstallMessageHandler(g_previousHandler);
+        g_previousHandler = nullptr;
+        captured_logs = g_capturedLogs;
+    }
     DPopSessionStore::getInstance()->removeSession(uuid);
 
-    QVERIFY(!g_capturedLogs.isEmpty());
-    for (const auto &log : std::as_const(g_capturedLogs)) {
+    QVERIFY(!captured_logs.isEmpty());
+    for (const auto &log : std::as_const(captured_logs)) {
         QVERIFY2(!log.contains(access_token), qPrintable(log));
         QVERIFY2(!log.contains(refresh_token), qPrintable(log));
         QVERIFY2(!log.contains(QStringLiteral("\"access token\"")), qPrintable(log));
