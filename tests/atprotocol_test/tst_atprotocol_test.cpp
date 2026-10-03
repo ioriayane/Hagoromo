@@ -49,6 +49,7 @@ private slots:
     void test_ComAtprotoServerCreateSession();
     void test_ComAtprotoServerRefreshSession();
     void test_OpenGraphProtocol();
+    void test_ogpSiteRule();
     void test_ogpDecodeHtml();
     void test_getTimeline();
     void test_ConfigurableLabels();
@@ -459,6 +460,63 @@ void atprotocol_test::test_OpenGraphProtocol()
         QCOMPARE(ogp.thumb(),
                  QString("http://127.0.0.1:%1/response/ogp/images/file7.png")
                          .arg(QString::number(m_listenPort)));
+    }
+
+    {
+        // ボット対策のチャレンジページなどOGPもタイトルも無い
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file8.html");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(!arguments.at(0).toBool());
+
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file8.html");
+        QCOMPARE(ogp.title(), QString());
+        QCOMPARE(ogp.description(), QString());
+        QCOMPARE(ogp.thumb(), QString());
+    }
+}
+
+void atprotocol_test::test_ogpSiteRule()
+{
+    const QString p_bandai = QStringLiteral("Premium Bandai");
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000256954/"));
+        QCOMPARE(ogp.uri(), "https://p-bandai.jp/item/item-1000256954/");
+        QCOMPARE(ogp.title(), p_bandai);
+        QCOMPARE(ogp.description(), QString());
+        QCOMPARE(ogp.thumb(), "https://bandai-a.akamaihd.net/bc/img/model/b/1000256954_1.jpg");
+    }
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000230000?ref=top"));
+        QCOMPARE(ogp.uri(), "https://p-bandai.jp/item/item-1000230000?ref=top");
+        QCOMPARE(ogp.title(), p_bandai);
+        QCOMPARE(ogp.thumb(), "https://bandai-a.akamaihd.net/bc/img/model/b/1000230000_1.jpg");
+    }
+    {
+        // 取得済みの情報は上書きしない
+        OpenGraphProtocol ogp;
+        ogp.setUri("https://p-bandai.jp/item/item-1000256954/");
+        ogp.setTitle("original title");
+        ogp.setThumb("https://example.com/original.jpg");
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000256954/"));
+        QCOMPARE(ogp.title(), "original title");
+        QCOMPARE(ogp.thumb(), "https://example.com/original.jpg");
+    }
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/item/item-abc/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/item/item-10002569540x/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/"));
+        QVERIFY(!ogp.applySiteRule("https://example.com/item/item-1000256954/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp.example.com/item/item-1000256954/"));
+        QCOMPARE(ogp.uri(), QString());
+        QCOMPARE(ogp.title(), QString());
+        QCOMPARE(ogp.thumb(), QString());
     }
 }
 
