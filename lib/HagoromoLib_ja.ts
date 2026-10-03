@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ja" sourcelanguage="en">
+<TS version="2.1" language="ja_JP" sourcelanguage="en_US">
 <context>
     <name>ConfigurableLabels</name>
     <message>
@@ -257,6 +257,14 @@
         <location filename="log/logaccess.cpp" line="672"/>
         <source>Number of registrations for list</source>
         <translation>リストに登録しているアカウント数</translation>
+    </message>
+</context>
+<context>
+    <name>OpenGraphProtocol</name>
+    <message>
+        <location filename="tools/opengraphprotocol.cpp" line="74"/>
+        <source>Premium Bandai</source>
+        <translation>プレミアムバンダイ</translation>
     </message>
 </context>
 <context>
