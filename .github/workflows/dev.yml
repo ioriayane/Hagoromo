@@ -52,9 +52,12 @@ jobs:
       VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: true
 
+  check-sources:
+    uses: ./.github/workflows/check_sources.yml
+
   result:
     runs-on: ubuntu-22.04
-    needs: [linux, windows, mac]
+    needs: [linux, windows, mac, check-sources]
     steps:
       - name: Information
         run: echo "Finish"
