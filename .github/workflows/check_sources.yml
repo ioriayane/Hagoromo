@@ -10,9 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Install dependencies (linux)
-        run: |
-          sudo apt install ninja-build zlib1g-dev
-          python3 -m pip install jinja2 pre-commit
+        run: sudo apt install ninja-build zlib1g-dev
       - name: Install Qt
         uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
         with:
@@ -22,6 +20,9 @@ jobs:
           target: 'desktop'
           arch: 'linux_gcc_64'
           modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+      - name: Install python packages
+        # install-qt-action switches python3 via setup-python, so install after it
+        run: python3 -m pip install jinja2 pre-commit
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
