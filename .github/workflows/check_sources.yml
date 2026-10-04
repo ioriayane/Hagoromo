@@ -1,0 +1,67 @@
+name: Check sources
+on:
+  workflow_dispatch:
+  workflow_call:
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  check-sources:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install dependencies (linux)
+        run: |
+          sudo apt install ninja-build zlib1g-dev
+          python3 -m pip install jinja2 pre-commit
+      - name: Install Qt
+        uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
+        with:
+          aqtversion: '==3.3.*'
+          version: '6.11.0'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Check generated code and formatting
+        run: |
+          echo "::group::Generate lexicon code"
+          python3 scripts/defs2struct.py
+          echo "::endgroup::"
+          echo "::group::Run pre-commit"
+          python3 -m pre_commit run -a || true
+          echo "::endgroup::"
+          if [ -n "$(git status --porcelain)" ]; then
+              git status --short
+              git diff
+              echo "::error::Generated code or formatting is out of date. Please run scripts/defs2struct.py and pre-commit run -a."
+              exit 1
+          fi
+          echo ok
+      - name: Check translations are up to date
+        run: |
+          cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
+          echo "::group::Update translations"
+          cmake -S . -B build-hagoromo -G Ninja \
+              -DCMAKE_PREFIX_PATH:PATH="${QT_ROOT_DIR}" \
+              -DCMAKE_BUILD_TYPE:STRING=Release
+          cmake --build build-hagoromo --target update_translations
+          echo "::endgroup::"
+          if [ -n "$(git status --porcelain)" ]; then
+              git status --short
+              git diff
+              echo "::error::Translation files are out of date. Please run the update_translations target."
+              exit 1
+          fi
+          echo ok
+      - name: Check unfinished translations
+        run: |
+          if grep -n '<translation type="unfinished"' app/*.ts lib/*.ts; then
+              echo "::error::Unfinished translations found."
+              exit 1
+          fi
+          echo ok
