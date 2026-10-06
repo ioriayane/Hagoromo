@@ -31,11 +31,13 @@ private slots:
     void test_PostSelector();
     void test_FirehoseReceiver();
     void test_FirehoseReceiver_initialCursor();
+    void test_FirehoseReceiver_catchingUp();
     void test_JetStreamV2MessageParsing();
     void test_JetStreamV2ErrorFrameCloseOnWorkerThread();
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
+    void test_RealtimeFeedListModel_backfill();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
     void test_EditSelectorListModel_save();
@@ -227,6 +229,52 @@ void realtime_test::test_FirehoseReceiver_initialCursor()
     json.insert("time", "2026-08-13T06:47:43.959305Z");
     recv->testUpdateReceivedCursorState(json);
     QCOMPARE(recv->testTakeCursor(), QString("24664288882"));
+
+    recv->testResetCursorState();
+}
+
+void realtime_test::test_FirehoseReceiver_catchingUp()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->testResetCursorState();
+    QCOMPARE(recv->catchingUp(), false);
+    QVERIFY(recv->testSubscribeCollections().contains("app.bsky.feed.like"));
+
+    // 最初の接続はさかのぼり受信なので追いつくまでいいねを購読しない
+    {
+        QSignalSpy spy(recv, SIGNAL(catchingUpChanged(bool)));
+        QVERIFY(!recv->testTakeCursor().isEmpty());
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(recv->catchingUp(), true);
+    }
+    QCOMPARE(recv->testSubscribeCollections(),
+             QStringList() << "app.bsky.feed.post"
+                           << "app.bsky.feed.repost"
+                           << "app.bsky.graph.follow"
+                           << "app.bsky.graph.listitem");
+
+    QJsonObject json;
+    // 現在時刻から離れている間は追いつき中のまま
+    json.insert("time", QDateTime::currentDateTimeUtc().addSecs(-60).toString(Qt::ISODateWithMs));
+    recv->testUpdateCatchingUpState(json);
+    QCOMPARE(recv->catchingUp(), true);
+    // 現在時刻に近づいたら追いついた
+    {
+        QSignalSpy spy(recv, SIGNAL(catchingUpChanged(bool)));
+        json.insert("time",
+                    QDateTime::currentDateTimeUtc().addSecs(-1).toString(Qt::ISODateWithMs));
+        recv->testUpdateCatchingUpState(json);
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(recv->catchingUp(), false);
+    }
+    QVERIFY(recv->testSubscribeCollections().contains("app.bsky.feed.like"));
+
+    // 受信前の再接続でリアルタイムからの受信になった場合も追いつき中を解除する
+    recv->testResetCursorState();
+    recv->testTakeCursor();
+    QCOMPARE(recv->catchingUp(), true);
+    QCOMPARE(recv->testTakeCursor(), QString());
+    QCOMPARE(recv->catchingUp(), false);
 
     recv->testResetCursorState();
 }
@@ -615,6 +663,48 @@ void realtime_test::test_RealtimeFeedListModel_recoverAfterError()
     QCOMPARE(recv->selectorIsReady(&model), true);
 
     recv->removeSelector(&model);
+}
+
+void realtime_test::test_RealtimeFeedListModel_backfill()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->testResetCursorState();
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
+    RealtimeFeedListModel model;
+    model.setAccount(uuid);
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 2);
+    }
+    QCOMPARE(recv->selectorIsReady(&model), true);
+    QCOMPARE(model.running(), false);
+
+    // 追いつくまでは取得せずに溜めておく
+    recv->testSetCatchingUp(true);
+    QCOMPARE(model.running(), true);
+    const QJsonDocument json_doc = loadJson(":/data/realtimemodel/recv_data_1.json");
+    QVERIFY(json_doc.isObject());
+    for (int i = 0; i < 150; i++) {
+        recv->testReceived(json_doc.object());
+    }
+    QTest::qWait(500);
+    QCOMPARE(model.rowCount(), 0);
+
+    // 追いついたら新しいものから上限件数まで取得する
+    recv->testSetCatchingUp(false);
+    QCOMPARE(model.running(), false);
+    QTRY_COMPARE_WITH_TIMEOUT(model.rowCount(), 100, 10 * 1000);
+    QTest::qWait(500);
+    QCOMPARE(model.rowCount(), 100);
+
+    recv->testResetCursorState();
 }
 
 void realtime_test::test_EditSelectorListModel()

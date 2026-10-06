@@ -56,6 +56,9 @@ public:
     void testUpdateReceivedCursorState(const QJsonObject &json);
     QString testTakeCursor();
     void testResetCursorState();
+    void testUpdateCatchingUpState(const QJsonObject &json);
+    void testSetCatchingUp(bool newCatchingUp);
+    QStringList testSubscribeCollections() const;
 #endif
 
     QString serviceEndpoint() const;
@@ -67,6 +70,8 @@ public:
 
     QHash<QString, QString> nsidsReceivePerSecond() const;
 
+    bool catchingUp() const;
+
 signals:
     void errorOccurred(const QString &code, const QString &message);
     void connectedToService();
@@ -76,6 +81,7 @@ signals:
     void analysisChanged();
     void judgeSelectionAndReaction(const QJsonObject &object);
     void serviceEndpointChanged(const QString &endpoint);
+    void catchingUpChanged(bool catchingUp);
 
 private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);
@@ -85,6 +91,9 @@ private:
     QString getCursor() const;
     QString getInitialCursor() const;
     QString takeCursor();
+    void setCatchingUp(bool newCatchingUp);
+    void updateCatchingUpState(const QJsonObject &json);
+    QStringList subscribeCollections() const;
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -104,6 +113,9 @@ private:
     qint64 m_timeOfReceivedData; // 最終受信時刻(ローカル時刻)
     qint64 m_lastSeq; // JetStreamの最終受信seq(カーソル再開用)
     bool m_initialCursorRequested; // 起動後最初の接続でさかのぼり受信を要求したか
+    bool m_catchingUp; // さかのぼり受信で現在時刻に追いつくまでの間
+    QElapsedTimer m_catchingUpTimer;
+    bool m_restartAfterDisconnect; // 切断後に再接続する(追いついたあとの購読の切り替え用)
 };
 
 }

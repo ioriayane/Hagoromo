@@ -48,9 +48,12 @@ private:
                              bool increment);
     void flushReactionCounts();
     bool isReactionCountIncluded(const QString &cid, const QString &time) const;
+    void onCatchingUpChanged(bool catching_up);
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
+    // さかのぼり受信で追いつくまでの間に選択されたポスト(新しいものから上限件数まで)
+    QList<RealtimeFeed::OperationInfo> m_backfillPosts;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
     QMap<QString, QList<RealtimeFeed::UserInfo>> m_list_members; // QMap<list_uri, List<UserInfo>>

@@ -7,6 +7,9 @@
 
 #include <QDateTime>
 
+// さかのぼり受信で表示するポストの上限
+#define BACKFILL_POSTS_MAX 100
+
 using namespace RealtimeFeed;
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
@@ -19,6 +22,8 @@ RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::receivingChanged, this,
             &RealtimeFeedListModel::setReceiving);
+    connect(receiver, &FirehoseReceiver::catchingUpChanged, this,
+            &RealtimeFeedListModel::onCatchingUpChanged);
 
     m_reactionFlushTimer.setInterval(1000);
     connect(&m_reactionFlushTimer, &QTimer::timeout, this,
@@ -31,6 +36,8 @@ RealtimeFeedListModel::~RealtimeFeedListModel()
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     disconnect(receiver, &FirehoseReceiver::receivingChanged, this,
                &RealtimeFeedListModel::setReceiving);
+    disconnect(receiver, &FirehoseReceiver::catchingUpChanged, this,
+               &RealtimeFeedListModel::onCatchingUpChanged);
     receiver->removeSelector(this);
 }
 
@@ -48,7 +55,7 @@ bool RealtimeFeedListModel::getLatest()
             qDebug().noquote() << "Restart firehose(start)";
             receiver->start();
         }
-        setRunning(false);
+        setRunning(receiver->selectorIsReady(this) && receiver->catchingUp());
         return true;
     }
     if (selectorJson().isEmpty()) {
@@ -74,10 +81,23 @@ bool RealtimeFeedListModel::getLatest()
     selector->setDisplayName(account().displayName);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         // qDebug().noquote() << QJsonDocument(object).toJson();
+        const bool catching_up = FirehoseReceiver::getInstance()->catchingUp();
         for (const auto &info : selector->getOperationInfos(object)) {
-            if (info.action == OperationActionType::Create) {
+            if (info.action != OperationActionType::Create) {
+                continue;
+            }
+            if (catching_up) {
+                m_backfillPosts.append(info);
+            } else {
                 m_cueGetPosts.append(info);
             }
+        }
+        if (catching_up) {
+            // 追いつくまでは取得せずに新しいものだけ残しておく
+            while (m_backfillPosts.count() > BACKFILL_POSTS_MAX) {
+                m_backfillPosts.removeFirst();
+            }
+            return;
         }
         if (!m_cueGetPosts.isEmpty() && !m_runningCue) {
 #ifdef QT_DEBUG
@@ -351,6 +371,8 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
 #else
         FirehoseReceiver::getInstance()->start();
 #endif
+        // さかのぼり受信中は追いつくまで取得中の扱いにする
+        setRunning(FirehoseReceiver::getInstance()->catchingUp());
     }
 }
 
@@ -550,6 +572,26 @@ bool RealtimeFeedListModel::isReactionCountIncluded(const QString &cid, const QS
         return false;
     }
     return reacted_time.toMSecsSinceEpoch() <= m_postFetchedTime.value(cid);
+}
+
+void RealtimeFeedListModel::onCatchingUpChanged(bool catching_up)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    if (!receiver->selectorIsReady(this)) {
+        // フォローなどの取得中はfinishGetting()で設定する
+        return;
+    }
+    setRunning(catching_up);
+    if (catching_up || m_backfillPosts.isEmpty()) {
+        return;
+    }
+    qDebug().noquote() << "Backfill posts :" << m_backfillPosts.count();
+    // 追いつくまでに受信したものの方が古いので先に取得する
+    m_cueGetPosts = m_backfillPosts + m_cueGetPosts;
+    m_backfillPosts.clear();
+    if (!m_runningCue) {
+        getQueuedPosts();
+    }
 }
 
 bool RealtimeFeedListModel::receiving() const

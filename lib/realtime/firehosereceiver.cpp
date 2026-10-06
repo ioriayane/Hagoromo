@@ -10,6 +10,10 @@
 
 // 起動後最初の接続でさかのぼって受信する時間(ms)
 #define INITIAL_LOOKBACK_MSECS (10 * 60 * 1000)
+// 受信データの時刻と現在時刻の差がこれ以下になったら追いついたとみなす(ms)
+#define CATCHING_UP_LAG_MSECS (5 * 1000)
+// 時計のずれなどで追いついたと判定できないときに打ち切る時間(ms)
+#define CATCHING_UP_TIMEOUT_MSECS (3 * 60 * 1000)
 
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
@@ -27,7 +31,9 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       m_receivedDataSize(0),
       m_timeOfReceivedData(0),
       m_lastSeq(0),
-      m_initialCursorRequested(false)
+      m_initialCursorRequested(false),
+      m_catchingUp(false),
+      m_restartAfterDisconnect(false)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream.us-west.bsky.network";
@@ -49,6 +55,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
             [=](const QString &type, const QJsonObject &json, const qsizetype size) {
                 m_wdgCounter = 0;
                 updateReceivedCursorState(json);
+                updateCatchingUpState(json);
                 emit receivingChanged(true);
 
                 if (type != "#commit")
@@ -65,6 +72,10 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
         setStatus(FirehoseReceiverStatus::Disconnected);
         emit receivingChanged(false);
         emit disconnectFromService();
+        if (m_restartAfterDisconnect) {
+            m_restartAfterDisconnect = false;
+            start();
+        }
     });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::socketStateChanged, this,
             [this](QAbstractSocket::SocketState state) {
@@ -145,16 +156,15 @@ void FirehoseReceiver::start()
         path.resize(path.length() - 1);
     }
 #ifdef USE_JETSTREAM
+    m_restartAfterDisconnect = false;
     QString cursor = takeCursor();
     if (!cursor.isEmpty()) {
         cursor = "&cursor=" + cursor;
     }
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
-    QUrl url(path + "/xrpc/network.bsky.jetstream.subscribeEvents?collections=app.bsky.feed.post"
-             + "&collections=app.bsky.feed.repost" + "&collections=app.bsky.feed.like"
-             + "&collections=app.bsky.graph.follow" + "&collections=app.bsky.graph.listitem"
-             + "&kinds=commit" + cursor);
+    QUrl url(path + "/xrpc/network.bsky.jetstream.subscribeEvents?collections="
+             + subscribeCollections().join("&collections=") + "&kinds=commit" + cursor);
 #else
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
@@ -287,6 +297,22 @@ void FirehoseReceiver::testResetCursorState()
     m_timeOfReceivedData = 0;
     m_lastSeq = 0;
     m_initialCursorRequested = false;
+    setCatchingUp(false);
+}
+
+void FirehoseReceiver::testUpdateCatchingUpState(const QJsonObject &json)
+{
+    updateCatchingUpState(json);
+}
+
+void FirehoseReceiver::testSetCatchingUp(bool newCatchingUp)
+{
+    setCatchingUp(newCatchingUp);
+}
+
+QStringList FirehoseReceiver::testSubscribeCollections() const
+{
+    return subscribeCollections();
 }
 #endif
 
@@ -445,12 +471,72 @@ QString FirehoseReceiver::takeCursor()
         // 失敗して再接続するときは通常の処理(リアルタイムから受信)に戻す
         m_initialCursorRequested = true;
         cursor = getInitialCursor();
+        m_catchingUpTimer.start();
+        setCatchingUp(true);
+    } else if (cursor.isEmpty()) {
+        // リアルタイムから受信するので追いつく必要がない
+        setCatchingUp(false);
     }
     return cursor;
+}
+
+void FirehoseReceiver::setCatchingUp(bool newCatchingUp)
+{
+    if (m_catchingUp == newCatchingUp)
+        return;
+    m_catchingUp = newCatchingUp;
+    qDebug().noquote() << "catchingUp:" << m_catchingUp;
+    emit catchingUpChanged(m_catchingUp);
+}
+
+void FirehoseReceiver::updateCatchingUpState(const QJsonObject &json)
+{
+    if (!m_catchingUp)
+        return;
+    const QDateTime time = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs);
+    if (!time.isValid())
+        return;
+    const qint64 lag = time.msecsTo(QDateTime::currentDateTimeUtc());
+    if (lag > CATCHING_UP_LAG_MSECS && m_catchingUpTimer.elapsed() < CATCHING_UP_TIMEOUT_MSECS)
+        return;
+
+    qDebug().noquote() << "Caught up : lag" << lag << "ms, elapsed" << m_catchingUpTimer.elapsed()
+                       << "ms";
+    setCatchingUp(false);
+
+    if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected
+        || status() == FirehoseReceiver::FirehoseReceiverStatus::Connecting) {
+        // いいねを含めた購読に切り替えるため、続きから再接続する
+        m_restartAfterDisconnect = true;
+        stop();
+        // 切断が通知されなかったときは監視タイマーで再接続する
+        m_wdgCounter = 0;
+        m_wdgTimer.start();
+    }
+}
+
+QStringList FirehoseReceiver::subscribeCollections() const
+{
+    QStringList collections;
+    collections << "app.bsky.feed.post"
+                << "app.bsky.feed.repost";
+    if (!m_catchingUp) {
+        // 追いつくまでのいいねはポスト取得時のカウントに含まれるため使わない
+        // (受信量の大半を占めるので除外して負荷を下げる)
+        collections << "app.bsky.feed.like";
+    }
+    collections << "app.bsky.graph.follow"
+                << "app.bsky.graph.listitem";
+    return collections;
 }
 
 QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const
 {
     return m_nsidsReceivePerSecond;
+}
+
+bool FirehoseReceiver::catchingUp() const
+{
+    return m_catchingUp;
 }
 }
