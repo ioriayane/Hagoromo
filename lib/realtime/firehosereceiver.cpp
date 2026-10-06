@@ -8,6 +8,9 @@
 
 #define USE_JETSTREAM
 
+// 起動後最初の接続でさかのぼって受信する時間(ms)
+#define INITIAL_LOOKBACK_MSECS (10 * 60 * 1000)
+
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
 namespace RealtimeFeed {
@@ -23,7 +26,8 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       m_status(FirehoseReceiverStatus::Disconnected),
       m_receivedDataSize(0),
       m_timeOfReceivedData(0),
-      m_lastSeq(0)
+      m_lastSeq(0),
+      m_initialCursorRequested(false)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream.us-west.bsky.network";
@@ -141,7 +145,7 @@ void FirehoseReceiver::start()
         path.resize(path.length() - 1);
     }
 #ifdef USE_JETSTREAM
-    QString cursor = getCursor();
+    QString cursor = takeCursor();
     if (!cursor.isEmpty()) {
         cursor = "&cursor=" + cursor;
     }
@@ -267,6 +271,23 @@ void FirehoseReceiver::testReceived(const QJsonObject &json)
         }
     }
 }
+
+void FirehoseReceiver::testUpdateReceivedCursorState(const QJsonObject &json)
+{
+    updateReceivedCursorState(json);
+}
+
+QString FirehoseReceiver::testTakeCursor()
+{
+    return takeCursor();
+}
+
+void FirehoseReceiver::testResetCursorState()
+{
+    m_timeOfReceivedData = 0;
+    m_lastSeq = 0;
+    m_initialCursorRequested = false;
+}
 #endif
 
 QString FirehoseReceiver::serviceEndpoint() const
@@ -384,8 +405,8 @@ void FirehoseReceiver::removeThreadSelector(QObject *parent)
 
 void FirehoseReceiver::updateReceivedCursorState(const QJsonObject &json)
 {
-    m_timeOfReceivedData = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs)
-                                   .toMSecsSinceEpoch();
+    // さかのぼり受信中はイベントの時刻が過去になるため、再開可否はローカルの受信時刻で判断する
+    m_timeOfReceivedData = QDateTime::currentMSecsSinceEpoch();
     if (json.contains("seq")) {
         m_lastSeq = json.value("seq").toVariant().toLongLong();
     }
@@ -405,6 +426,27 @@ QString FirehoseReceiver::getCursor() const
     if ((now < m_timeOfReceivedData) || ((now - m_timeOfReceivedData) > (5 * 60 * 1000)))
         return QString();
     return QString::number(m_lastSeq + 1);
+}
+
+QString FirehoseReceiver::getInitialCursor() const
+{
+    // JetStreamのcursorはunixマイクロ秒のタイムスタンプも指定できる(値の大きさで判別される)
+    const qint64 time = (QDateTime::currentMSecsSinceEpoch() - INITIAL_LOOKBACK_MSECS)
+            * static_cast<qint64>(1000);
+    qDebug().noquote() << "getInitialCursor:" << time;
+    return QString::number(time);
+}
+
+QString FirehoseReceiver::takeCursor()
+{
+    QString cursor = getCursor();
+    if (cursor.isEmpty() && m_lastSeq <= 0 && !m_initialCursorRequested) {
+        // 起動後最初の接続のみさかのぼって受信する
+        // 失敗して再接続するときは通常の処理(リアルタイムから受信)に戻す
+        m_initialCursorRequested = true;
+        cursor = getInitialCursor();
+    }
+    return cursor;
 }
 
 QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const

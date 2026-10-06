@@ -53,6 +53,9 @@ public:
 #ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
     bool forUnittest;
     void testReceived(const QJsonObject &json);
+    void testUpdateReceivedCursorState(const QJsonObject &json);
+    QString testTakeCursor();
+    void testResetCursorState();
 #endif
 
     QString serviceEndpoint() const;
@@ -80,6 +83,8 @@ private:
     void removeThreadSelector(QObject *parent);
     void updateReceivedCursorState(const QJsonObject &json);
     QString getCursor() const;
+    QString getInitialCursor() const;
+    QString takeCursor();
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -96,8 +101,9 @@ private:
     QHash<QString, int> m_nsidsCount; // QHash<nsid, count>
     QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
     qsizetype m_receivedDataSize; // byte
-    qint64 m_timeOfReceivedData; // 最終受信時刻
+    qint64 m_timeOfReceivedData; // 最終受信時刻(ローカル時刻)
     qint64 m_lastSeq; // JetStreamの最終受信seq(カーソル再開用)
+    bool m_initialCursorRequested; // 起動後最初の接続でさかのぼり受信を要求したか
 };
 
 }

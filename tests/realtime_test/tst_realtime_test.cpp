@@ -30,6 +30,7 @@ private slots:
     void cleanupTestCase();
     void test_PostSelector();
     void test_FirehoseReceiver();
+    void test_FirehoseReceiver_initialCursor();
     void test_JetStreamV2MessageParsing();
     void test_JetStreamV2ErrorFrameCloseOnWorkerThread();
     void test_Websock();
@@ -40,6 +41,8 @@ private slots:
     void test_EditSelectorListModel_save();
 
 private:
+    QJsonObject makeLikeData(const QString &subject_uri, const QString &subject_cid,
+                             const QDateTime &time) const;
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
     QJsonDocument loadJson(const QString &path);
 
@@ -202,6 +205,30 @@ void realtime_test::test_FirehoseReceiver()
     QCOMPARE(recv->containsSelector(&parent2), true);
 
     // recv->removeAllSelector();
+}
+
+void realtime_test::test_FirehoseReceiver_initialCursor()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->testResetCursorState();
+
+    // 起動後最初の接続は10分前からのタイムスタンプ(マイクロ秒)
+    {
+        const qint64 expect = (QDateTime::currentMSecsSinceEpoch() - 10 * 60 * 1000) * 1000;
+        const qint64 cursor = recv->testTakeCursor().toLongLong();
+        QVERIFY2(qAbs(cursor - expect) < 5 * 1000 * 1000, QString::number(cursor).toLocal8Bit());
+    }
+    // 受信前に再接続した場合はリアルタイムから
+    QCOMPARE(recv->testTakeCursor(), QString());
+
+    // 受信後はseqから再開(受信データの時刻が古くても受信した時刻で判断する)
+    QJsonObject json;
+    json.insert("seq", 24664288881LL);
+    json.insert("time", "2026-08-13T06:47:43.959305Z");
+    recv->testUpdateReceivedCursorState(json);
+    QCOMPARE(recv->testTakeCursor(), QString("24664288882"));
+
+    recv->testResetCursorState();
 }
 
 void realtime_test::test_JetStreamV2MessageParsing()
@@ -432,6 +459,21 @@ void realtime_test::test_RealtimeFeedListModel()
     QCOMPARE(model.item(0, TimelineListModel::ReplyParentDisplayNameRole).toString(), "iori2");
     QCOMPARE(model.item(0, TimelineListModel::ReplyParentHandleRole).toString(),
              "ioriayane2.bsky.social");
+
+    // ポスト取得より前のリアクションは取得したカウントに含まれているので加算しない
+    {
+        const QString uri =
+                "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kx6ffqxzkj2u";
+        const QString cid = "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq";
+        const int like_count = model.item(0, TimelineListModel::LikeCountRole).toInt();
+        s->judgeSelectionAndReaction(
+                makeLikeData(uri, cid, QDateTime::currentDateTimeUtc().addSecs(-10 * 60)));
+        QCOMPARE(model.item(0, TimelineListModel::LikeCountRole).toInt(), like_count);
+        // 取得後のリアクションは反映する
+        s->judgeSelectionAndReaction(
+                makeLikeData(uri, cid, QDateTime::currentDateTimeUtc().addSecs(10 * 60)));
+        QCOMPARE(model.item(0, TimelineListModel::LikeCountRole).toInt(), like_count + 1);
+    }
 
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
@@ -879,6 +921,44 @@ void realtime_test::test_EditSelectorListModel_save()
                     << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
                     << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x");
     selector->deleteLater();
+}
+
+QJsonObject realtime_test::makeLikeData(const QString &subject_uri, const QString &subject_cid,
+                                        const QDateTime &time) const
+{
+    const QString repo = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    const QString path = "app.bsky.feed.like/3kx6ffqxzkj3a";
+    const QString cid = "bafyreihr2hrmavhzdpmnc65udreph5vfmd3xceqtw2jm3b4ffkagedoqzm";
+
+    QJsonObject subject;
+    subject.insert("uri", subject_uri);
+    subject.insert("cid", subject_cid);
+    QJsonObject value;
+    value.insert("$type", "app.bsky.feed.like");
+    value.insert("createdAt", time.toString(Qt::ISODateWithMs));
+    value.insert("subject", subject);
+    QJsonObject block;
+    block.insert("cid", cid);
+    block.insert("uri", QString("at://%1/%2").arg(repo, path));
+    block.insert("value", value);
+    QJsonArray blocks;
+    blocks.append(block);
+
+    QJsonObject op_cid;
+    op_cid.insert("$link", cid);
+    QJsonObject op;
+    op.insert("action", "create");
+    op.insert("cid", op_cid);
+    op.insert("path", path);
+    QJsonArray ops;
+    ops.append(op);
+
+    QJsonObject json;
+    json.insert("repo", repo);
+    json.insert("time", time.toString(Qt::ISODateWithMs));
+    json.insert("blocks", blocks);
+    json.insert("ops", ops);
+    return json;
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

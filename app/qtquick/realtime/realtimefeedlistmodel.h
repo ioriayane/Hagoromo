@@ -47,6 +47,7 @@ private:
     void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
                              bool increment);
     void flushReactionCounts();
+    bool isReactionCountIncluded(const QString &cid, const QString &time) const;
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
@@ -63,6 +64,9 @@ private:
     // (件数はイベント受信時に即時反映し、GUIへの通知のみタイマーでまとめて行う)
     QTimer m_reactionFlushTimer;
     QHash<QString, QSet<int>> m_dirtyReactionCountRoles; // QHash<cid, roles>
+    // ポストを取得した時刻。これより前のリアクションは取得したカウントに含まれている
+    // (さかのぼり受信で過去のリアクションを二重にカウントしないようにする)
+    QHash<QString, qint64> m_postFetchedTime; // QHash<cid, msecs since epoch>
 };
 
 #endif // REALTIMEFEEDLISTMODEL_H

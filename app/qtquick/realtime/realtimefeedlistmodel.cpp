@@ -5,6 +5,8 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlist.h"
 
+#include <QDateTime>
+
 using namespace RealtimeFeed;
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
@@ -110,14 +112,18 @@ bool RealtimeFeedListModel::getLatest()
                 }
                 // カウントはポストデータの実態が1つなので1回だけ更新し、
                 // GUIへの通知(dataChanged)はflushReactionCounts()でまとめて行う
-                updateReactionCount(info.cid, TimelineListModelRoles::RepostCountRole,
-                                    info.action == OperationActionType::Create);
+                if (!isReactionCountIncluded(info.cid, info.time)) {
+                    updateReactionCount(info.cid, TimelineListModelRoles::RepostCountRole,
+                                        info.action == OperationActionType::Create);
+                }
             } else if (info.is_like) {
                 if (info.reacted_by_did == account().did) {
                     update(rows.first(), LikedUriRole, info.reaction_uri);
                 }
-                updateReactionCount(info.cid, TimelineListModelRoles::LikeCountRole,
-                                    info.action == OperationActionType::Create);
+                if (!isReactionCountIncluded(info.cid, info.time)) {
+                    updateReactionCount(info.cid, TimelineListModelRoles::LikeCountRole,
+                                        info.action == OperationActionType::Create);
+                }
             } else {
                 // delete post
                 qDebug().noquote() << "delete" << rows << info.uri << info.cid;
@@ -127,6 +133,7 @@ bool RealtimeFeedListModel::getLatest()
                     endRemoveRows();
                 }
                 m_dirtyReactionCountRoles.remove(info.cid);
+                m_postFetchedTime.remove(info.cid);
             }
         }
     });
@@ -432,6 +439,7 @@ void RealtimeFeedListModel::getQueuedPosts()
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
     connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
+            const qint64 fetched_time = QDateTime::currentMSecsSinceEpoch();
             QHash<QString, AtProtocolType::AppBskyFeedDefs::PostView> post_hash; // <uri, post>
             for (const auto &post : posts->postsList()) {
                 post_hash[post.uri] = post;
@@ -460,6 +468,7 @@ void RealtimeFeedListModel::getQueuedPosts()
                     view_post.reply.parent_PostView = post_hash.value(ope_info.reply_parent_uri);
                 }
                 m_viewPostHash[view_post.post.cid] = view_post;
+                m_postFetchedTime[view_post.post.cid] = fetched_time;
                 bool visible = checkVisibility(view_post.post.cid);
                 if (visible) {
                     beginInsertRows(QModelIndex(), 0, 0);
@@ -529,6 +538,18 @@ void RealtimeFeedListModel::flushReactionCounts()
             emit dataChanged(index(row), index(row), roles);
         }
     }
+}
+
+bool RealtimeFeedListModel::isReactionCountIncluded(const QString &cid, const QString &time) const
+{
+    if (!m_postFetchedTime.contains(cid)) {
+        return false;
+    }
+    const QDateTime reacted_time = QDateTime::fromString(time, Qt::ISODateWithMs);
+    if (!reacted_time.isValid()) {
+        return false;
+    }
+    return reacted_time.toMSecsSinceEpoch() <= m_postFetchedTime.value(cid);
 }
 
 bool RealtimeFeedListModel::receiving() const
