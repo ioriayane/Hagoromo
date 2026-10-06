@@ -8,8 +8,6 @@
 
 #define USE_JETSTREAM
 
-// 起動後最初の接続でさかのぼって受信する時間(ms)
-#define INITIAL_LOOKBACK_MSECS (10 * 60 * 1000)
 // 受信データの時刻と現在時刻の差がこれ以下になったら追いついたとみなす(ms)
 #define CATCHING_UP_LAG_MSECS (5 * 1000)
 // 時計のずれなどで追いついたと判定できないときに打ち切る時間(ms)
@@ -31,6 +29,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       m_receivedDataSize(0),
       m_timeOfReceivedData(0),
       m_lastSeq(0),
+      m_initialLookbackMinutes(10),
       m_initialCursorRequested(false),
       m_catchingUp(false),
       m_restartAfterDisconnect(false)
@@ -457,8 +456,9 @@ QString FirehoseReceiver::getCursor() const
 QString FirehoseReceiver::getInitialCursor() const
 {
     // JetStreamのcursorはunixマイクロ秒のタイムスタンプも指定できる(値の大きさで判別される)
-    const qint64 time = (QDateTime::currentMSecsSinceEpoch() - INITIAL_LOOKBACK_MSECS)
-            * static_cast<qint64>(1000);
+    const qint64 lookback = static_cast<qint64>(m_initialLookbackMinutes) * 60 * 1000;
+    const qint64 time =
+            (QDateTime::currentMSecsSinceEpoch() - lookback) * static_cast<qint64>(1000);
     qDebug().noquote() << "getInitialCursor:" << time;
     return QString::number(time);
 }
@@ -466,7 +466,8 @@ QString FirehoseReceiver::getInitialCursor() const
 QString FirehoseReceiver::takeCursor()
 {
     QString cursor = getCursor();
-    if (cursor.isEmpty() && m_lastSeq <= 0 && !m_initialCursorRequested) {
+    if (cursor.isEmpty() && m_lastSeq <= 0 && !m_initialCursorRequested
+        && m_initialLookbackMinutes > 0) {
         // 起動後最初の接続のみさかのぼって受信する
         // 失敗して再接続するときは通常の処理(リアルタイムから受信)に戻す
         m_initialCursorRequested = true;
@@ -538,5 +539,16 @@ QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const
 bool FirehoseReceiver::catchingUp() const
 {
     return m_catchingUp;
+}
+
+int FirehoseReceiver::initialLookbackMinutes() const
+{
+    return m_initialLookbackMinutes;
+}
+
+void FirehoseReceiver::setInitialLookbackMinutes(int newInitialLookbackMinutes)
+{
+    // 起動後最初の接続にのみ反映される
+    m_initialLookbackMinutes = newInitialLookbackMinutes < 0 ? 0 : newInitialLookbackMinutes;
 }
 }

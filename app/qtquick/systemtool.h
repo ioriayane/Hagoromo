@@ -27,6 +27,8 @@ public:
     Q_INVOKABLE static void setFlicableWheelDeceleration(qreal deceleration);
     Q_INVOKABLE static QStringList possibleRealtimeFeedServiceEndpoints();
     Q_INVOKABLE void changeRealtimeFeedServiceEndpoint(const QString &endpoint);
+    Q_INVOKABLE static QList<int> possibleRealtimeFeedLookbackMinutes();
+    Q_INVOKABLE void changeRealtimeFeedLookbackMinutes(int minutes);
 
     QString applicationVersion() const;
     QString qtVersion() const;

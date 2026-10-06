@@ -104,6 +104,21 @@ void SystemTool::changeRealtimeFeedServiceEndpoint(const QString &endpoint)
     receiver->changeServiceEndpoint(endpoint);
 }
 
+QList<int> SystemTool::possibleRealtimeFeedLookbackMinutes()
+{
+    return QList<int>() << 0 << 5 << 10 << 15;
+}
+
+void SystemTool::changeRealtimeFeedLookbackMinutes(int minutes)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    if (!possibleRealtimeFeedLookbackMinutes().contains(minutes))
+        return;
+    receiver->setInitialLookbackMinutes(minutes);
+}
+
 QString SystemTool::applicationVersion() const
 {
     return QCoreApplication::applicationVersion();

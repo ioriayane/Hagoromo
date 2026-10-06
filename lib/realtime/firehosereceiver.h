@@ -72,6 +72,9 @@ public:
 
     bool catchingUp() const;
 
+    int initialLookbackMinutes() const;
+    void setInitialLookbackMinutes(int newInitialLookbackMinutes);
+
 signals:
     void errorOccurred(const QString &code, const QString &message);
     void connectedToService();
@@ -112,6 +115,7 @@ private:
     qsizetype m_receivedDataSize; // byte
     qint64 m_timeOfReceivedData; // 最終受信時刻(ローカル時刻)
     qint64 m_lastSeq; // JetStreamの最終受信seq(カーソル再開用)
+    int m_initialLookbackMinutes; // 起動後最初の接続でさかのぼって受信する時間(0:さかのぼらない)
     bool m_initialCursorRequested; // 起動後最初の接続でさかのぼり受信を要求したか
     bool m_catchingUp; // さかのぼり受信で現在時刻に追いつくまでの間
     QElapsedTimer m_catchingUpTimer;

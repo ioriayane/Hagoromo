@@ -223,6 +223,21 @@ void realtime_test::test_FirehoseReceiver_initialCursor()
     // 受信前に再接続した場合はリアルタイムから
     QCOMPARE(recv->testTakeCursor(), QString());
 
+    // さかのぼる時間の設定
+    recv->testResetCursorState();
+    recv->setInitialLookbackMinutes(5);
+    {
+        const qint64 expect = (QDateTime::currentMSecsSinceEpoch() - 5 * 60 * 1000) * 1000;
+        const qint64 cursor = recv->testTakeCursor().toLongLong();
+        QVERIFY2(qAbs(cursor - expect) < 5 * 1000 * 1000, QString::number(cursor).toLocal8Bit());
+    }
+    // 0のときはさかのぼらない
+    recv->testResetCursorState();
+    recv->setInitialLookbackMinutes(0);
+    QCOMPARE(recv->testTakeCursor(), QString());
+    QCOMPARE(recv->catchingUp(), false);
+    recv->setInitialLookbackMinutes(10);
+
     // 受信後はseqから再開(受信データの時刻が古くても受信した時刻で判断する)
     QJsonObject json;
     json.insert("seq", 24664288881LL);

@@ -41,6 +41,22 @@ void setRealtimeFeedEndpoint(QSettings &settings)
     receiver->setServiceEndpoint(endpoint);
 }
 
+void setRealtimeFeedLookback(QSettings &settings)
+{
+    RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    const int defaultMinutes = 10;
+    int minutes = settings.value("realtimeLookbackMinutes", defaultMinutes).toInt();
+    if (!SystemTool::possibleRealtimeFeedLookbackMinutes().contains(minutes)) {
+        qDebug() << "Invalid realtime feed lookback, reset to default:" << minutes;
+        minutes = defaultMinutes;
+        settings.setValue("realtimeLookbackMinutes", minutes);
+    }
+    qDebug() << "Load realtime feed lookback :" << minutes;
+    receiver->setInitialLookbackMinutes(minutes);
+}
+
 void setDefaultValue(QSettings &settings, const QString &key, const QVariant &value)
 {
     if (!settings.contains(key)) {
@@ -64,6 +80,7 @@ void setDefaultSettings(QSettings &settings)
     setDefaultValue(settings, "updateSeenNotification", true);
     setDefaultValue(settings, "realtimeServiceEndpoint",
                     QStringLiteral("wss://jetstream.us-west.bsky.network"));
+    setDefaultValue(settings, "realtimeLookbackMinutes", 10);
     // Notification
     setDefaultValue(settings, "enableChatNotification", true);
     setDefaultValue(settings, "enableNotificationsForReactionsOnReposts", true);
@@ -91,6 +108,7 @@ void setGlobalSettings(QGuiApplication &app)
     setAppFont(app, settings);
     // qDebug() << "2" << settings.allKeys();
     setRealtimeFeedEndpoint(settings);
+    setRealtimeFeedLookback(settings);
     // qDebug() << "3" << settings.allKeys();
     setDefaultSettings(settings);
     // qDebug() << "4" << settings.allKeys();
