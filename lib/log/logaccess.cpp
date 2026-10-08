@@ -388,6 +388,8 @@ bool LogAccess::Private::dbCreateTable() const
                 "record TEXT NOT NULL, "
                 "view TEXT "
                 ")");
+    // 表示用データの更新(dbUpdateRecords)をuriで検索するため
+    sqls.append("CREATE INDEX IF NOT EXISTS record_uri ON record(uri)");
     // sqls.append("CREATE TABLE IF NOT EXISTS mention("
     //             "did TEXT NOT NULL, "
     //             "handle TEXT NOT NULL, "
