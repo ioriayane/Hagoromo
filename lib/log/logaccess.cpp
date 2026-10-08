@@ -9,6 +9,7 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QFile>
+#include <QSet>
 #include <QThread>
 
 #include <QDateTime>
@@ -38,18 +39,24 @@ public:
     ~Private();
 
     QString dbPath(QString did) const;
+    QString connectionName() const { return m_dbConnectionName; }
     void dbInit();
     void dbRelease() const;
     bool dbOpen(const QString &did) const;
     void dbClose() const;
     bool dbCreateTable() const;
     void dbDropTable() const;
-    bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                        const QJsonObject &json) const;
-    bool dbDeleteRecord(const QString &cid) const;
+    bool dbPrepareInsertRecord(QSqlQuery &query) const;
+    bool dbInsertRecord(QSqlQuery &query, const QString &uri, const QString &cid,
+                        const QString &type, const QJsonObject &json) const;
+    bool dbPrepareDeleteRecord(QSqlQuery &query) const;
+    bool dbDeleteRecord(QSqlQuery &query, const QString &cid) const;
+    bool dbBeginTransaction() const;
+    bool dbCommit() const;
+    void dbRollback() const;
     bool dbSelect(QSqlQuery &query, const QString &sql,
                   const QStringList &bind_values = QStringList()) const;
-    QStringList dbGetSavedCids() const;
+    QSet<QString> dbGetSavedCids() const;
     QList<TotalItem> dbMakeDailyTotals(int &max) const;
     QList<TotalItem> dbMakeMonthlyTotals(int &max) const;
     QList<TotalItem> dbMakeStatistics() const;
@@ -126,38 +133,55 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
 
                 qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
                 emit progressMessage("Updating local database ...");
+                const QStringList cids = decoder.cids();
+                const QSet<QString> saved_cids = d->dbGetSavedCids();
+                QSet<QString> received_cids;
+                received_cids.reserve(cids.length());
+                // 1件ずつコミットするとディスクへの書き込みが件数分発生するのでまとめる
+                ret = d->dbBeginTransaction();
+                QSqlQuery insert_query(QSqlDatabase::database(d->connectionName()));
+                if (ret) {
+                    ret = d->dbPrepareInsertRecord(insert_query);
+                }
                 int i = 0;
-                const QStringList saved_cids = d->dbGetSavedCids();
-                for (const auto &cid : decoder.cids()) {
+                for (const auto &cid : cids) {
+                    if (!ret)
+                        break;
                     if (i++ % 100 == 0) {
-                        qDebug().noquote() << LOG_DATETIME
-                                           << QString("Updating local database ... (%1%)")
-                                                      .arg(static_cast<int>(
-                                                              100 * i / decoder.cids().length()));
+                        qDebug().noquote()
+                                << LOG_DATETIME
+                                << QString("Updating local database ... (%1%)")
+                                           .arg(static_cast<int>(100 * i / cids.length()));
                         emit progressMessage(
                                 QString("Updating local database ... (%1%)")
-                                        .arg(static_cast<int>(100 * i / decoder.cids().length())));
+                                        .arg(static_cast<int>(100 * i / cids.length())));
                     }
+                    received_cids.insert(cid);
                     if (!saved_cids.contains(cid)) {
-                        if (!d->dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
-                                               decoder.json(cid))) {
-                            emit finishedUpdateDb(false);
+                        ret = d->dbInsertRecord(insert_query, decoder.uri(cid), cid,
+                                                decoder.type(cid), decoder.json(cid));
+                    }
+                }
+                if (ret) {
+                    emit progressMessage(QString("Updating local database ... (100%)"));
+
+                    // 保存されているけど取得したデータにないものは消す
+                    qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
+                    emit progressMessage("Checking deleted data ...");
+                    QSqlQuery delete_query(QSqlDatabase::database(d->connectionName()));
+                    ret = d->dbPrepareDeleteRecord(delete_query);
+                    for (const auto &cid : saved_cids) {
+                        if (!ret)
                             break;
+                        if (!received_cids.contains(cid)) {
+                            ret = d->dbDeleteRecord(delete_query, cid);
                         }
                     }
                 }
-                emit progressMessage(QString("Updating local database ... (100%)"));
-
-                // 保存されているけど取得したデータにないものは消す
-                qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
-                emit progressMessage("Checking deleted data ...");
-                for (const auto &cid : saved_cids) {
-                    if (!decoder.cids().contains(cid)) {
-                        if (!d->dbDeleteRecord(cid)) {
-                            emit finishedUpdateDb(false);
-                            break;
-                        }
-                    }
+                if (ret) {
+                    ret = d->dbCommit();
+                } else {
+                    d->dbRollback();
                 }
             }
         }
@@ -416,8 +440,20 @@ void LogAccess::Private::dbDropTable() const
     }
 }
 
-bool LogAccess::Private::dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                                        const QJsonObject &json) const
+bool LogAccess::Private::dbPrepareInsertRecord(QSqlQuery &query) const
+{
+    if (!query.prepare("INSERT INTO record(cid, uri, parent_uri, name,"
+                       " day, month, createdAt, text, type,"
+                       " record, view)"
+                       " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool LogAccess::Private::dbInsertRecord(QSqlQuery &query, const QString &uri, const QString &cid,
+                                        const QString &type, const QJsonObject &json) const
 {
     bool ret = true;
     QString parent_uri = json.value("list").toString();
@@ -426,60 +462,81 @@ bool LogAccess::Private::dbInsertRecord(const QString &uri, const QString &cid, 
     QString created_at_str = json.value("createdAt").toString();
     QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs).toLocalTime();
 
-    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("INSERT INTO record(cid, uri, parent_uri, name,"
-                      " day, month, createdAt, text, type,"
-                      " record, view)"
-                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-        query.addBindValue(cid);
-        query.addBindValue(uri);
-        query.addBindValue(parent_uri);
-        query.addBindValue(name);
-        if (!created_at_str.isEmpty() && created_at.isValid()) {
-            // 集計結果の見た目や検索条件に使うのでローカルタイム
-            query.addBindValue(created_at.toString("yyyy/MM/dd"));
-            query.addBindValue(created_at.toString("yyyy/MM"));
-            // カーソルで使うのでrecordの値を同じ
-            query.addBindValue(created_at_str);
-        } else {
-            query.addBindValue(QVariant());
-            query.addBindValue(QVariant());
-            query.addBindValue(QVariant());
-        }
-        query.addBindValue(text);
-        query.addBindValue(type);
-        query.addBindValue(QJsonDocument(json).toJson(QJsonDocument::Compact));
+    query.addBindValue(cid);
+    query.addBindValue(uri);
+    query.addBindValue(parent_uri);
+    query.addBindValue(name);
+    if (!created_at_str.isEmpty() && created_at.isValid()) {
+        // 集計結果の見た目や検索条件に使うのでローカルタイム
+        query.addBindValue(created_at.toString("yyyy/MM/dd"));
+        query.addBindValue(created_at.toString("yyyy/MM"));
+        // カーソルで使うのでrecordの値を同じ
+        query.addBindValue(created_at_str);
+    } else {
         query.addBindValue(QVariant());
-        if (query.exec()) {
-            // qDebug() << query.lastInsertId().toLongLong() << "added";
-        } else {
-            qDebug().noquote() << LOG_DATETIME << query.lastError();
-            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
-            ret = false;
-        }
+        query.addBindValue(QVariant());
+        query.addBindValue(QVariant());
+    }
+    query.addBindValue(text);
+    query.addBindValue(type);
+    query.addBindValue(QJsonDocument(json).toJson(QJsonDocument::Compact));
+    query.addBindValue(QVariant());
+    if (query.exec()) {
+        // qDebug() << query.lastInsertId().toLongLong() << "added";
     } else {
         qDebug().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
         ret = false;
     }
     return ret;
 }
 
-bool LogAccess::Private::dbDeleteRecord(const QString &cid) const
+bool LogAccess::Private::dbPrepareDeleteRecord(QSqlQuery &query) const
 {
-    bool ret = true;
-    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("DELETE FROM record WHERE cid = ?")) {
-        query.addBindValue(cid);
-        if (!query.exec()) {
-            qDebug().noquote() << LOG_DATETIME << query.lastError();
-            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
-            ret = false;
-        }
-    } else {
+    if (!query.prepare("DELETE FROM record WHERE cid = ?")) {
         qDebug().noquote() << LOG_DATETIME << query.lastError();
-        ret = false;
+        return false;
     }
-    return ret;
+    return true;
+}
+
+bool LogAccess::Private::dbDeleteRecord(QSqlQuery &query, const QString &cid) const
+{
+    query.addBindValue(cid);
+    if (!query.exec()) {
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+        return false;
+    }
+    return true;
+}
+
+bool LogAccess::Private::dbBeginTransaction() const
+{
+    QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
+    if (!db.transaction()) {
+        qDebug().noquote() << LOG_DATETIME << db.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool LogAccess::Private::dbCommit() const
+{
+    QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
+    if (!db.commit()) {
+        qDebug().noquote() << LOG_DATETIME << db.lastError();
+        return false;
+    }
+    return true;
+}
+
+void LogAccess::Private::dbRollback() const
+{
+    QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
+    if (!db.rollback()) {
+        qDebug().noquote() << LOG_DATETIME << db.lastError();
+    }
 }
 
 bool LogAccess::Private::dbSelect(QSqlQuery &query, const QString &sql,
@@ -502,13 +559,13 @@ bool LogAccess::Private::dbSelect(QSqlQuery &query, const QString &sql,
     return ret;
 }
 
-QStringList LogAccess::Private::dbGetSavedCids() const
+QSet<QString> LogAccess::Private::dbGetSavedCids() const
 {
-    QStringList cids;
+    QSet<QString> cids;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query, "SELECT cid FROM record")) {
         while (query.next()) {
-            cids.append(query.value(0).toString());
+            cids.insert(query.value(0).toString());
         }
     }
     return cids;

@@ -105,6 +105,8 @@ void LogManager::update(const QString &service, const QString &did)
         repo->deleteLater();
     });
     repo->setService(service);
+    // リポジトリは数十MBになるので圧縮して受け取る(展開はhttplibが行う)
+    repo->appendRawHeader("Accept-Encoding", "gzip");
     repo->getRepo(did, QString());
 }
 
