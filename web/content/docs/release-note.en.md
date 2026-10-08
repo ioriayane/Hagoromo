@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Support for displaying indexes in post threads (Excluding real-time feeds)
   - Add OAuth as an authentication method (the existing app password can still be used)
   - Add a setting for the lookback time of real-time feeds
+  - Real-time feed columns added later also show posts already received within the lookback time
 - Update
   - Move the error message display to the bottom-right of the window (clicking it reverts to the original display)
   - Change to the Real-Time Feed Initialization Process

@@ -81,23 +81,15 @@ bool RealtimeFeedListModel::getLatest()
     selector->setDisplayName(account().displayName);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         // qDebug().noquote() << QJsonDocument(object).toJson();
-        const bool catching_up = FirehoseReceiver::getInstance()->catchingUp();
+        if (FirehoseReceiver::getInstance()->catchingUp()) {
+            // 追いつくまでは取得せずに新しいものだけ残しておく
+            appendBackfillPosts(selector, QList<QJsonObject>() << object);
+            return;
+        }
         for (const auto &info : selector->getOperationInfos(object)) {
-            if (info.action != OperationActionType::Create) {
-                continue;
-            }
-            if (catching_up) {
-                m_backfillPosts.append(info);
-            } else {
+            if (info.action == OperationActionType::Create) {
                 m_cueGetPosts.append(info);
             }
-        }
-        if (catching_up) {
-            // 追いつくまでは取得せずに新しいものだけ残しておく
-            while (m_backfillPosts.count() > BACKFILL_POSTS_MAX) {
-                m_backfillPosts.removeFirst();
-            }
-            return;
         }
         if (!m_cueGetPosts.isEmpty() && !m_runningCue) {
 #ifdef QT_DEBUG
@@ -111,6 +103,14 @@ bool RealtimeFeedListModel::getLatest()
             getQueuedPosts();
         }
     });
+    connect(selector, &AbstractPostSelector::backfilled, this,
+            [=](const QList<QJsonObject> &objects) {
+                // 開始前に受信して保持されていたデータのうち選択されたもの
+                appendBackfillPosts(selector, objects);
+                if (!FirehoseReceiver::getInstance()->catchingUp()) {
+                    flushBackfillPosts();
+                }
+            });
     connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
         const QList<OperationInfo> infos = selector->getOperationInfos(object, true);
         for (const auto &info : infos) {
@@ -364,7 +364,8 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
                                << list_uri;
             selector->setListMembers(list_uri, m_list_members.value(list_uri));
         }
-        selector->setReady(true);
+        // 保持している受信データを流してから受信を始める
+        FirehoseReceiver::getInstance()->activateSelector(this, BACKFILL_POSTS_MAX);
 #ifdef HAGOROMO_UNIT_TEST
         qDebug().noquote()
                 << "FirehoseReceiver::getInstance()->start() --- No start on unit test mode";
@@ -582,11 +583,37 @@ void RealtimeFeedListModel::onCatchingUpChanged(bool catching_up)
         return;
     }
     setRunning(catching_up);
-    if (catching_up || m_backfillPosts.isEmpty()) {
+    if (!catching_up) {
+        flushBackfillPosts();
+    }
+}
+
+void RealtimeFeedListModel::appendBackfillPosts(RealtimeFeed::AbstractPostSelector *selector,
+                                                const QList<QJsonObject> &objects)
+{
+    if (selector == nullptr) {
+        return;
+    }
+    for (const auto &object : objects) {
+        for (const auto &info : selector->getOperationInfos(object)) {
+            if (info.action == OperationActionType::Create) {
+                m_backfillPosts.append(info);
+            }
+        }
+    }
+    // 新しいものから上限件数まで残す
+    while (m_backfillPosts.count() > BACKFILL_POSTS_MAX) {
+        m_backfillPosts.removeFirst();
+    }
+}
+
+void RealtimeFeedListModel::flushBackfillPosts()
+{
+    if (m_backfillPosts.isEmpty()) {
         return;
     }
     qDebug().noquote() << "Backfill posts :" << m_backfillPosts.count();
-    // 追いつくまでに受信したものの方が古いので先に取得する
+    // リアルタイムに受信したものより古いので先に取得する
     m_cueGetPosts = m_backfillPosts + m_cueGetPosts;
     m_backfillPosts.clear();
     if (!m_runningCue) {

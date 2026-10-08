@@ -13,6 +13,12 @@
 
 namespace RealtimeFeed {
 
+struct RetainedEvent
+{
+    qint64 time = 0; // 受信データの時刻(ms since epoch)
+    QByteArray message; // JetStreamの受信データ
+};
+
 class FirehoseReceiver : public QObject
 {
     Q_OBJECT
@@ -49,6 +55,7 @@ public:
     bool containsSelector(QObject *parent) const;
     int countSelector() const;
     bool selectorIsReady(QObject *parent);
+    void activateSelector(QObject *parent, int max_backfill);
 
 #ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
     bool forUnittest;
@@ -59,6 +66,9 @@ public:
     void testUpdateCatchingUpState(const QJsonObject &json);
     void testSetCatchingUp(bool newCatchingUp);
     QStringList testSubscribeCollections() const;
+    void testRetainReceivedData(const QByteArray &message);
+    int testRetainedEventCount() const;
+    void testClearRetainedEvents();
 #endif
 
     QString serviceEndpoint() const;
@@ -97,6 +107,7 @@ private:
     void setCatchingUp(bool newCatchingUp);
     void updateCatchingUpState(const QJsonObject &json);
     QStringList subscribeCollections() const;
+    void retainReceivedData(const QJsonObject &json, const QByteArray &message);
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -120,6 +131,8 @@ private:
     bool m_catchingUp; // さかのぼり受信で現在時刻に追いつくまでの間
     QElapsedTimer m_catchingUpTimer;
     bool m_restartAfterDisconnect; // 切断後に再接続する(追いついたあとの購読の切り替え用)
+    // 後から開始するセレクター用に保持しているポストとリポストの受信データ(古い順)
+    QList<RetainedEvent> m_retainedEvents;
 };
 
 }

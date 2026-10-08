@@ -12,6 +12,8 @@
 #define CATCHING_UP_LAG_MSECS (5 * 1000)
 // 時計のずれなどで追いついたと判定できないときに打ち切る時間(ms)
 #define CATCHING_UP_TIMEOUT_MSECS (3 * 60 * 1000)
+// 後から開始するセレクター用に保持する受信データの上限(ポストとリポストで約10分)
+#define RETAINED_EVENTS_MAX 60000
 
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
@@ -51,7 +53,8 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                 emit receivingChanged(false);
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received, this,
-            [=](const QString &type, const QJsonObject &json, const qsizetype size) {
+            [=](const QString &type, const QJsonObject &json, const qsizetype size,
+                const QByteArray &message) {
                 m_wdgCounter = 0;
                 updateReceivedCursorState(json);
                 updateCatchingUpState(json);
@@ -59,6 +62,8 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 
                 if (type != "#commit")
                     return;
+                // セレクターへの通知より前に保持して、受け渡しの漏れと重複を防ぐ
+                retainReceivedData(json, message);
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
                 analizeReceivingData(json, size);
                 emit judgeSelectionAndReaction(json); // スレッドのselectorへ通知
@@ -266,6 +271,44 @@ bool FirehoseReceiver::selectorIsReady(QObject *parent)
     return selector->ready();
 }
 
+void FirehoseReceiver::activateSelector(QObject *parent, int max_backfill)
+{
+    AbstractPostSelector *selector = getSelector(parent);
+    if (selector == nullptr) {
+        return;
+    }
+    // 保持している受信データを流し終えるまで、セレクターにはリアルタイムの受信データを無視させる
+    // 保持とセレクターへの通知はどちらもこのスレッドで行うので、
+    // ここまでに通知した受信データはすべて保持しているデータに含まれ、
+    // 以降に通知する受信データはセレクターのスレッドで保持データの後に処理される
+    selector->setBackfillPending(true);
+    selector->setReady(true);
+    const QList<RetainedEvent> events = m_retainedEvents;
+    qDebug().noquote() << "activateSelector" << selector->type() << "retained" << events.count();
+    QMetaObject::invokeMethod(
+            selector,
+            [selector, events, max_backfill]() {
+                QList<QJsonObject> objects;
+                for (const auto &event : events) {
+                    const QJsonObject json =
+                            ComAtprotoSyncSubscribeReposEx::convertJetStreamMessage(event.message);
+                    if (!json.isEmpty() && selector->judge(json)) {
+                        objects.append(json);
+                        // 条件が広いと大半が選択されるので新しいものだけ残す
+                        if (objects.count() > max_backfill) {
+                            objects.removeFirst();
+                        }
+                    }
+                }
+                selector->setBackfillPending(false);
+                qDebug().noquote() << "backfilled" << selector->type() << objects.count();
+                if (!objects.isEmpty()) {
+                    emit selector->backfilled(objects);
+                }
+            },
+            Qt::QueuedConnection);
+}
+
 #ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
 void FirehoseReceiver::testReceived(const QJsonObject &json)
 {
@@ -312,6 +355,21 @@ void FirehoseReceiver::testSetCatchingUp(bool newCatchingUp)
 QStringList FirehoseReceiver::testSubscribeCollections() const
 {
     return subscribeCollections();
+}
+
+void FirehoseReceiver::testRetainReceivedData(const QByteArray &message)
+{
+    retainReceivedData(ComAtprotoSyncSubscribeReposEx::convertJetStreamMessage(message), message);
+}
+
+int FirehoseReceiver::testRetainedEventCount() const
+{
+    return m_retainedEvents.count();
+}
+
+void FirehoseReceiver::testClearRetainedEvents()
+{
+    m_retainedEvents.clear();
 }
 #endif
 
@@ -516,6 +574,37 @@ void FirehoseReceiver::updateCatchingUpState(const QJsonObject &json)
     }
 }
 
+void FirehoseReceiver::retainReceivedData(const QJsonObject &json, const QByteArray &message)
+{
+    if (m_initialLookbackMinutes <= 0 || message.isEmpty())
+        return;
+    const QJsonArray ops = json.value("ops").toArray();
+    if (ops.isEmpty())
+        return;
+    const QJsonObject op = ops.first().toObject();
+    if (op.value("action").toString() != "create")
+        return;
+    const QString path = op.value("path").toString();
+    if (!path.startsWith("app.bsky.feed.post/") && !path.startsWith("app.bsky.feed.repost/"))
+        return;
+    const QDateTime time = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs);
+    if (!time.isValid())
+        return;
+
+    RetainedEvent event;
+    event.time = time.toMSecsSinceEpoch();
+    // 受信時のバッファは実際のサイズより大きく確保されていることがあるのでコピーして詰める
+    event.message = QByteArray(message.constData(), message.size());
+    m_retainedEvents.append(event);
+
+    const qint64 oldest = event.time - static_cast<qint64>(m_initialLookbackMinutes) * 60 * 1000;
+    while (!m_retainedEvents.isEmpty()
+           && (m_retainedEvents.count() > RETAINED_EVENTS_MAX
+               || m_retainedEvents.first().time < oldest)) {
+        m_retainedEvents.removeFirst();
+    }
+}
+
 QStringList FirehoseReceiver::subscribeCollections() const
 {
     QStringList collections;
@@ -548,7 +637,11 @@ int FirehoseReceiver::initialLookbackMinutes() const
 
 void FirehoseReceiver::setInitialLookbackMinutes(int newInitialLookbackMinutes)
 {
-    // 起動後最初の接続にのみ反映される
+    // さかのぼり受信は起動後最初の接続にのみ反映される
+    // 後から開始するセレクター用に保持する受信データの期間にも使う
     m_initialLookbackMinutes = newInitialLookbackMinutes < 0 ? 0 : newInitialLookbackMinutes;
+    if (m_initialLookbackMinutes == 0) {
+        m_retainedEvents.clear();
+    }
 }
 }

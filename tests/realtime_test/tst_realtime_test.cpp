@@ -32,17 +32,22 @@ private slots:
     void test_FirehoseReceiver();
     void test_FirehoseReceiver_initialCursor();
     void test_FirehoseReceiver_catchingUp();
+    void test_FirehoseReceiver_retainReceivedData();
     void test_JetStreamV2MessageParsing();
     void test_JetStreamV2ErrorFrameCloseOnWorkerThread();
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_RealtimeFeedListModel_recoverAfterError();
     void test_RealtimeFeedListModel_backfill();
+    void test_RealtimeFeedListModel_retainedData();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
     void test_EditSelectorListModel_save();
 
 private:
+    QByteArray makeJetStreamMessage(const QString &did, const QString &collection,
+                                    const QString &rkey, const QString &cid,
+                                    const QJsonObject &record, const QDateTime &time) const;
     QJsonObject makeLikeData(const QString &subject_uri, const QString &subject_cid,
                              const QDateTime &time) const;
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
@@ -292,6 +297,47 @@ void realtime_test::test_FirehoseReceiver_catchingUp()
     QCOMPARE(recv->catchingUp(), false);
 
     recv->testResetCursorState();
+}
+
+void realtime_test::test_FirehoseReceiver_retainReceivedData()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->setInitialLookbackMinutes(10);
+    recv->testClearRetainedEvents();
+
+    const QDateTime now = QDateTime::currentDateTimeUtc();
+    QJsonObject post;
+    post.insert("$type", "app.bsky.feed.post");
+    post.insert("text", "post");
+    QJsonObject repost;
+    repost.insert("$type", "app.bsky.feed.repost");
+
+    // いいねは保持しない
+    QFile file(":/data/jetstream/commit_create.json");
+    QVERIFY(file.open(QFile::ReadOnly));
+    recv->testRetainReceivedData(file.readAll());
+    QCOMPARE(recv->testRetainedEventCount(), 0);
+
+    // ポストとリポストを保持して、新しいものから設定の時間より古いものは捨てる
+    recv->testRetainReceivedData(makeJetStreamMessage("did:plc:a", "app.bsky.feed.post", "1",
+                                                      "cid1", post, now.addSecs(-20 * 60)));
+    QCOMPARE(recv->testRetainedEventCount(), 1);
+    recv->testRetainReceivedData(makeJetStreamMessage("did:plc:a", "app.bsky.feed.post", "2",
+                                                      "cid2", post, now.addSecs(-5 * 60)));
+    QCOMPARE(recv->testRetainedEventCount(), 1);
+    recv->testRetainReceivedData(
+            makeJetStreamMessage("did:plc:a", "app.bsky.feed.repost", "3", "cid3", repost, now));
+    QCOMPARE(recv->testRetainedEventCount(), 2);
+
+    // さかのぼらない設定にしたら保持しない
+    recv->setInitialLookbackMinutes(0);
+    QCOMPARE(recv->testRetainedEventCount(), 0);
+    recv->testRetainReceivedData(
+            makeJetStreamMessage("did:plc:a", "app.bsky.feed.post", "4", "cid4", post, now));
+    QCOMPARE(recv->testRetainedEventCount(), 0);
+
+    recv->setInitialLookbackMinutes(10);
+    recv->testClearRetainedEvents();
 }
 
 void realtime_test::test_JetStreamV2MessageParsing()
@@ -722,6 +768,56 @@ void realtime_test::test_RealtimeFeedListModel_backfill()
     recv->testResetCursorState();
 }
 
+void realtime_test::test_RealtimeFeedListModel_retainedData()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->testResetCursorState();
+    recv->setInitialLookbackMinutes(10);
+    recv->testClearRetainedEvents();
+
+    // カラムの開始前に受信したデータ(recv_data_1.jsonと同じポストと、対象外のユーザーのポスト)
+    const QJsonDocument json_doc = loadJson(":/data/realtimemodel/recv_data_1.json");
+    QVERIFY(json_doc.isObject());
+    const QJsonObject record = json_doc.object()
+                                       .value("blocks")
+                                       .toArray()
+                                       .first()
+                                       .toObject()
+                                       .value("value")
+                                       .toObject();
+    const QDateTime now = QDateTime::currentDateTimeUtc();
+    recv->testRetainReceivedData(makeJetStreamMessage("did:plc:unknownuser", "app.bsky.feed.post",
+                                                      "3kx6ffqxzkj2a", "bafyreiunknown", record,
+                                                      now.addSecs(-2 * 60)));
+    recv->testRetainReceivedData(makeJetStreamMessage(
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "app.bsky.feed.post", "3kx6ffqxzkj2u",
+            "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq", record,
+            now.addSecs(-1 * 60)));
+    QCOMPARE(recv->testRetainedEventCount(), 2);
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
+    RealtimeFeedListModel model;
+    model.setAccount(uuid);
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 2);
+    }
+
+    // 開始前に受信していたデータから条件に合うものが表示される
+    QTRY_COMPARE_WITH_TIMEOUT(model.rowCount(), 1, 10 * 1000);
+    QCOMPARE(model.item(0, TimelineListModel::CidRole).toString(),
+             "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
+    QCOMPARE(recv->getSelector(&model)->backfillPending(), false);
+
+    recv->testClearRetainedEvents();
+}
+
 void realtime_test::test_EditSelectorListModel()
 {
     EditSelectorListModel model;
@@ -1026,6 +1122,28 @@ void realtime_test::test_EditSelectorListModel_save()
                     << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
                     << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x");
     selector->deleteLater();
+}
+
+QByteArray realtime_test::makeJetStreamMessage(const QString &did, const QString &collection,
+                                               const QString &rkey, const QString &cid,
+                                               const QJsonObject &record,
+                                               const QDateTime &time) const
+{
+    QJsonObject payload;
+    payload.insert("$type", "network.bsky.jetstream.subscribeEvents#commit");
+    payload.insert("did", did);
+    payload.insert("seq", 1);
+    payload.insert("time", time.toString(Qt::ISODateWithMs));
+    payload.insert("operation", "create");
+    payload.insert("collection", collection);
+    payload.insert("rkey", rkey);
+    payload.insert("rev", "3msx2efqjtc27");
+    payload.insert("cid", cid);
+    payload.insert("record", record);
+    QJsonObject json;
+    json.insert("$type", "message");
+    json.insert("payload", payload);
+    return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
 QJsonObject realtime_test::makeLikeData(const QString &subject_uri, const QString &subject_cid,

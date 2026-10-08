@@ -49,6 +49,9 @@ private:
     void flushReactionCounts();
     bool isReactionCountIncluded(const QString &cid, const QString &time) const;
     void onCatchingUpChanged(bool catching_up);
+    void appendBackfillPosts(RealtimeFeed::AbstractPostSelector *selector,
+                             const QList<QJsonObject> &objects);
+    void flushBackfillPosts();
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
