@@ -11,10 +11,13 @@ description: This is a multi-column Bluesky client.
 - Add
   - Support for displaying indexes in post threads (Excluding real-time feeds)
   - Add OAuth as an authentication method (the existing app password can still be used)
+  - Add a setting for the lookback time of real-time feeds
+  - Real-time feed columns added later also show posts already received within the lookback time
 - Update
   - Move the error message display to the bottom-right of the window (clicking it reverts to the original display)
   - Change to the Real-Time Feed Initialization Process
   - Upgrade JetStream to V2
+  - Real-time feeds now start receiving from 10 minutes earlier when first connected
   - Change the encryption method used when saving settings (Once opened in this version, files can no longer be decrypted in previous versions)
 
 ### v0.63.0 - 2026/6/18

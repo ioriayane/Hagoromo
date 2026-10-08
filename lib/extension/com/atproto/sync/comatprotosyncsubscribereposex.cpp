@@ -139,7 +139,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
                 qDebug().noquote() << QJsonDocument(json).toJson();
             } else {
                 // payload
-                emit received(payload_type, json, message.length());
+                emit received(payload_type, json, message.length(), QByteArray());
             }
         } else {
             // decode error
@@ -190,7 +190,25 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         return;
     }
 
-    QString payload_type = "#commit";
+    emit received("#commit", convertJetStreamCommit(json_src), message.length(), message);
+}
+
+QJsonObject ComAtprotoSyncSubscribeReposEx::convertJetStreamMessage(const QByteArray &message)
+{
+    // JetStreamの受信データをFirehoseの形式に変換する(commit以外は空を返す)
+    const QJsonObject json_top = QJsonDocument::fromJson(message).object();
+    if (json_top.value("$type").toString() != "message") {
+        return QJsonObject();
+    }
+    const QJsonObject json_src = json_top.value("payload").toObject();
+    if (!json_src.value("$type").toString().endsWith(QStringLiteral("#commit"))) {
+        return QJsonObject();
+    }
+    return convertJetStreamCommit(json_src);
+}
+
+QJsonObject ComAtprotoSyncSubscribeReposEx::convertJetStreamCommit(const QJsonObject &json_src)
+{
     QJsonObject json_dest;
 
     json_dest.insert("repo", json_src.value("did").toString());
@@ -231,7 +249,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
     }
     json_dest.insert("blocks", json_dest_blocks);
 
-    emit received(payload_type, json_dest, message.length());
+    return json_dest;
 }
 
 void ComAtprotoSyncSubscribeReposEx::closeWebSocket()

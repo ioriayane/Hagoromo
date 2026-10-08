@@ -47,9 +47,16 @@ private:
     void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
                              bool increment);
     void flushReactionCounts();
+    bool isReactionCountIncluded(const QString &cid, const QString &time) const;
+    void onCatchingUpChanged(bool catching_up);
+    void appendBackfillPosts(RealtimeFeed::AbstractPostSelector *selector,
+                             const QList<QJsonObject> &objects);
+    void flushBackfillPosts();
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
+    // さかのぼり受信で追いつくまでの間に選択されたポスト(新しいものから上限件数まで)
+    QList<RealtimeFeed::OperationInfo> m_backfillPosts;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
     QMap<QString, QList<RealtimeFeed::UserInfo>> m_list_members; // QMap<list_uri, List<UserInfo>>
@@ -63,6 +70,9 @@ private:
     // (件数はイベント受信時に即時反映し、GUIへの通知のみタイマーでまとめて行う)
     QTimer m_reactionFlushTimer;
     QHash<QString, QSet<int>> m_dirtyReactionCountRoles; // QHash<cid, roles>
+    // ポストを取得した時刻。これより前のリアクションは取得したカウントに含まれている
+    // (さかのぼり受信で過去のリアクションを二重にカウントしないようにする)
+    QHash<QString, qint64> m_postFetchedTime; // QHash<cid, msecs since epoch>
 };
 
 #endif // REALTIMEFEEDLISTMODEL_H
