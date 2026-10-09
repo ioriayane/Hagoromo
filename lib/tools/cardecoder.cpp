@@ -26,7 +26,7 @@ bool CarDecoder::setContent(const QByteArray &content)
     // decode header
     int offset = 0;
     int leb_size = 0;
-    int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
+    int data_size = Leb128::decode_u(m_content, leb_size);
     offset += leb_size;
     if (data_size <= 0 || leb_size <= 0 || (offset + data_size) >= m_content.length()) {
         return false;
@@ -82,8 +82,10 @@ QString CarDecoder::uri(const QString &cid) const
 
 int CarDecoder::decodeData(int offset)
 {
-    int leb_size = 0;
-    int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
+    // 残り全体をmid()でコピーすると全体でO(N^2)になるので位置を指定してデコードする
+    int leb_size = offset;
+    int data_size = Leb128::decode_u(m_content, leb_size);
+    leb_size -= offset;
     offset += leb_size;
 
     if (data_size <= 0 || leb_size <= 0 || data_size >= m_content.length()) {

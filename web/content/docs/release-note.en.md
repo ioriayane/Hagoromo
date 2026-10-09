@@ -19,6 +19,7 @@ description: This is a multi-column Bluesky client.
   - Upgrade JetStream to V2
   - Real-time feeds now start receiving from 10 minutes earlier when first connected
   - Change the encryption method used when saving settings (Once opened in this version, files can no longer be decrypted in previous versions)
+  - Speeding Up Log Update Processing
 
 ### v0.63.0 - 2026/6/18
 
