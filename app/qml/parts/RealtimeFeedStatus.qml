@@ -53,6 +53,7 @@ Frame {
                             horizontalAlignment: Text.AlignRight
                             font.pointSize: AdjustedValues.f8
                             text: model.value
+                            color: model.useValueColor ? model.valueColor : Material.foreground
                         }
                         Label {
                             font.pointSize: AdjustedValues.f6

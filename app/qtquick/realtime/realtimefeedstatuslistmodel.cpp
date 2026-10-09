@@ -3,7 +3,7 @@
 using namespace RealtimeFeed;
 
 RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_theme(0)
+    : QAbstractListModel { parent }, m_theme(0), m_catchingUp(false)
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
 
@@ -38,9 +38,12 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
             &RealtimeFeedStatusListModel::receiverAnalysisChanged);
     connect(receiver, &FirehoseReceiver::serviceEndpointChanged, this,
             &RealtimeFeedStatusListModel::serviceEndpointChangedInFirehose);
+    connect(receiver, &FirehoseReceiver::catchingUpChanged, this,
+            &RealtimeFeedStatusListModel::receiverCatchingUpChanged);
 
     setServiceEndpoint(receiver->serviceEndpoint());
     receiverStatusChanged(receiver->status());
+    receiverCatchingUpChanged(receiver->catchingUp());
 }
 
 RealtimeFeedStatusListModel::~RealtimeFeedStatusListModel()
@@ -50,6 +53,8 @@ RealtimeFeedStatusListModel::~RealtimeFeedStatusListModel()
                &RealtimeFeedStatusListModel::receiverAnalysisChanged);
     disconnect(receiver, &FirehoseReceiver::statusChanged, this,
                &RealtimeFeedStatusListModel::receiverStatusChanged);
+    disconnect(receiver, &FirehoseReceiver::catchingUpChanged, this,
+               &RealtimeFeedStatusListModel::receiverCatchingUpChanged);
 }
 
 int RealtimeFeedStatusListModel::rowCount(const QModelIndex &parent) const
@@ -80,6 +85,10 @@ QVariant RealtimeFeedStatusListModel::item(int row, RealtimeFeedStatusListModelR
         return (!data.id.startsWith("_"));
     else if (role == ColorRole)
         return data.color;
+    else if (role == UseValueColorRole)
+        return (data.id == QStringLiteral("__difference") && m_catchingUp);
+    else if (role == ValueColorRole)
+        return m_catchingUpColor;
 
     return QVariant();
 }
@@ -177,6 +186,19 @@ void RealtimeFeedStatusListModel::serviceEndpointChangedInFirehose(const QString
     setServiceEndpoint(endpoint);
 }
 
+void RealtimeFeedStatusListModel::receiverCatchingUpChanged(bool catchingUp)
+{
+    if (m_catchingUp == catchingUp)
+        return;
+    m_catchingUp = catchingUp;
+
+    // さかのぼり受信中は遅延の値を強調して通常の遅れと区別する
+    const int row = m_feedStatusIds.indexOf("__difference");
+    if (row >= 0) {
+        emit dataChanged(index(row), index(row), QVector<int>() << UseValueColorRole);
+    }
+}
+
 QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -186,6 +208,8 @@ QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const
     roles[UnitRole] = "unit";
     roles[UseColorRole] = "useColor";
     roles[ColorRole] = "color";
+    roles[UseValueColorRole] = "useValueColor";
+    roles[ValueColorRole] = "valueColor";
 
     return roles;
 }
@@ -213,6 +237,7 @@ void RealtimeFeedStatusListModel::updateColorByTheme()
         m_feedStatusData["app.bsky.feed.like"].color = QColor(0xE9, 0x1E, 0x63); // Pink
         m_feedStatusData["app.bsky.graph.follow"].color = QColor(0x03, 0xA9, 0xF4); // LightBlue
         m_feedStatusData["app.bsky.graph.listitem"].color = QColor(0xFF, 0x98, 0x0); // Orange
+        m_catchingUpColor = QColor(0xF4, 0x43, 0x36); // Red
     } else {
         // Dark
         m_feedStatusData["app.bsky.feed.post"].color = QColor(0x9F, 0xA8, 0xDA);
@@ -220,6 +245,7 @@ void RealtimeFeedStatusListModel::updateColorByTheme()
         m_feedStatusData["app.bsky.feed.like"].color = QColor(0xF4, 0x8F, 0xB1);
         m_feedStatusData["app.bsky.graph.follow"].color = QColor(0x81, 0xD4, 0xFA);
         m_feedStatusData["app.bsky.graph.listitem"].color = QColor(0xFF, 0xCC, 0x80);
+        m_catchingUpColor = QColor(0xEF, 0x9A, 0x9A);
     }
     emit dataChanged(index(0), index(rowCount() - 1));
 }

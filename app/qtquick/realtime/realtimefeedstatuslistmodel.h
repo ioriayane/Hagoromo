@@ -35,6 +35,8 @@ public:
         UnitRole,
         UseColorRole,
         ColorRole,
+        UseValueColorRole,
+        ValueColorRole,
     };
     Q_ENUM(RealtimeFeedStatusListModelRoles)
 
@@ -56,6 +58,7 @@ public slots:
     void receiverStatusChanged(RealtimeFeed::FirehoseReceiver::FirehoseReceiverStatus newStatus);
     void receiverAnalysisChanged();
     void serviceEndpointChangedInFirehose(const QString &endpoint);
+    void receiverCatchingUpChanged(bool catchingUp);
 
 signals:
     void themeChanged();
@@ -72,6 +75,8 @@ private:
     QHash<QString, FeedStatusData> m_feedStatusData;
     int m_theme;
     QString m_serviceEndpoint;
+    bool m_catchingUp;
+    QColor m_catchingUpColor;
 };
 
 #endif // REALTIMEFEEDSTATUSLISTMODEL_H
