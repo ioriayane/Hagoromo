@@ -3,7 +3,10 @@
 using namespace RealtimeFeed;
 
 RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_theme(0), m_catchingUp(false)
+    : QAbstractListModel { parent },
+      m_theme(0),
+      m_receiverStatus(FirehoseReceiver::FirehoseReceiverStatus::Disconnected),
+      m_catchingUp(false)
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
 
@@ -127,36 +130,8 @@ void RealtimeFeedStatusListModel::update(int row, RealtimeFeedStatusListModelRol
 void RealtimeFeedStatusListModel::receiverStatusChanged(
         FirehoseReceiver::FirehoseReceiverStatus newStatus)
 {
-    const int row = m_feedStatusIds.indexOf("__status");
-    if (!m_feedStatusData.contains("__status") || row < 0)
-        return;
-
-    m_feedStatusData["__status"].value = "";
-    switch (newStatus) {
-    case FirehoseReceiver::FirehoseReceiverStatus::Connected:
-        m_feedStatusData["__status"].value = "Connected";
-        break;
-    case FirehoseReceiver::FirehoseReceiverStatus::Disconnected:
-        m_feedStatusData["__status"].value = "Disconnected";
-        break;
-    case FirehoseReceiver::FirehoseReceiverStatus::Connecting:
-        m_feedStatusData["__status"].value = "Connecting";
-        break;
-    case FirehoseReceiver::FirehoseReceiverStatus::HostLookup:
-        m_feedStatusData["__status"].value = "Looking up host";
-        break;
-    case FirehoseReceiver::FirehoseReceiverStatus::Bound:
-        m_feedStatusData["__status"].value = "Bound";
-        break;
-    case FirehoseReceiver::FirehoseReceiverStatus::Closing:
-        m_feedStatusData["__status"].value = "Closing";
-        break;
-    default:
-        m_feedStatusData["__status"].value = "Error";
-        break;
-    }
-
-    emit dataChanged(index(row), index(row), QVector<int>() << ValueRole);
+    m_receiverStatus = newStatus;
+    updateStatusValue();
 }
 
 void RealtimeFeedStatusListModel::receiverAnalysisChanged()
@@ -197,6 +172,45 @@ void RealtimeFeedStatusListModel::receiverCatchingUpChanged(bool catchingUp)
     if (row >= 0) {
         emit dataChanged(index(row), index(row), QVector<int>() << UseValueColorRole);
     }
+    updateStatusValue();
+}
+
+void RealtimeFeedStatusListModel::updateStatusValue()
+{
+    const int row = m_feedStatusIds.indexOf("__status");
+    if (!m_feedStatusData.contains("__status") || row < 0)
+        return;
+
+    m_feedStatusData["__status"].value = "";
+    switch (m_receiverStatus) {
+    case FirehoseReceiver::FirehoseReceiverStatus::Connected:
+        if (m_catchingUp) {
+            m_feedStatusData["__status"].value = "Catching up";
+        } else {
+            m_feedStatusData["__status"].value = "Connected";
+        }
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Disconnected:
+        m_feedStatusData["__status"].value = "Disconnected";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Connecting:
+        m_feedStatusData["__status"].value = "Connecting";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::HostLookup:
+        m_feedStatusData["__status"].value = "Looking up host";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Bound:
+        m_feedStatusData["__status"].value = "Bound";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Closing:
+        m_feedStatusData["__status"].value = "Closing";
+        break;
+    default:
+        m_feedStatusData["__status"].value = "Error";
+        break;
+    }
+
+    emit dataChanged(index(row), index(row), QVector<int>() << ValueRole);
 }
 
 QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const

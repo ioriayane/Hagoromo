@@ -71,10 +71,12 @@ private:
     void appendStatusData(const QString &id, const QString &name, const QString &value,
                           const QString &unit, const QColor &color);
     void updateColorByTheme();
+    void updateStatusValue();
     QStringList m_feedStatusIds;
     QHash<QString, FeedStatusData> m_feedStatusData;
     int m_theme;
     QString m_serviceEndpoint;
+    RealtimeFeed::FirehoseReceiver::FirehoseReceiverStatus m_receiverStatus;
     bool m_catchingUp;
     QColor m_catchingUpColor;
 };
