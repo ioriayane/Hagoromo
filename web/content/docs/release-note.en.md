@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.64.0 - 2026/10/10
+
 - Add
   - Support for displaying indexes in post threads (Excluding real-time feeds)
   - Add OAuth as an authentication method (the existing app password can still be used)

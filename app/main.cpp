@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.63.0"));
+    app.setApplicationVersion(QStringLiteral("0.64.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
