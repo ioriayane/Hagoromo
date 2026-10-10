@@ -12,11 +12,12 @@ void CreateSession::create()
 {
     if (running()) {
         qDebug() << "Already running 'ComAtprotoServerCreateSession()'.";
+        return;
     }
     setRunning(true);
 
     ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
-    connect(session, &ComAtprotoServerCreateSessionEx::finished, [=](bool success) {
+    connect(session, &ComAtprotoServerCreateSessionEx::finished, this, [=](bool success) {
         setDid(session->did());
         setHandle(session->handle());
         setEmail(session->email());

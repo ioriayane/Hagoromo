@@ -25,6 +25,8 @@ add_library(HagoromoGuiLib STATIC
     account/accountlistmodel.h
     account/createsession.cpp
     account/createsession.h
+    account/oauthlogin.cpp
+    account/oauthlogin.h
     atpabstractlistmodel.cpp
     atpabstractlistmodel.h
     blog/blogentrylistmodel.cpp
@@ -164,6 +166,10 @@ target_link_libraries(HagoromoGuiLib PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
     HagoromoLib
+)
+
+target_compile_definitions(HagoromoGuiLib PRIVATE
+    QT_NO_CONTEXTLESS_CONNECT
 )
 
 if(HAGOROMO_UNIT_TEST_BUILD)

@@ -10,9 +10,8 @@ class LabelerListModel : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
-    Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
-    Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
-    Q_PROPERTY(QString accessJwt READ accessJwt WRITE setAccessJwt NOTIFY accessJwtChanged)
+    // アカウントのuuid
+    Q_PROPERTY(QString account READ account WRITE setAccount NOTIFY accountChanged)
 
 public:
     explicit LabelerListModel(QObject *parent = nullptr);
@@ -39,20 +38,14 @@ public:
 
     bool running() const;
     void setRunning(bool newRunning);
-    QString service() const;
-    void setService(const QString &newService);
-    QString handle() const;
-    void setHandle(const QString &newHandle);
-    QString accessJwt() const;
-    void setAccessJwt(const QString &newAccessJwt);
+    QString account() const;
+    void setAccount(const QString &uuid);
 
 signals:
     void finished();
     void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
-    void serviceChanged();
-    void handleChanged();
-    void accessJwtChanged();
+    void accountChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -60,9 +53,7 @@ protected:
 private:
     QList<AtProtocolType::AppBskyLabelerDefs::LabelerView> m_labelerList;
     bool m_running;
-    QString m_service;
-    QString m_handle;
-    QString m_accessJwt;
+    QString m_account;
 };
 
 #endif // LABELERLISTMODEL_H

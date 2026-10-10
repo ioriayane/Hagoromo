@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <title></title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    (function() {
+      'use strict';
+      var originalHeaders = ["Cache-Control", "no-cache, max-age=0"];
+      function sendXhr(payloadHeaders = []) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          var isValid = xhr.getResponseHeader("ISTL-INFINITE-LOOP");
+          if (isValid != null && isValid != '') return;
+          var a = xhr.getResponseHeader("ISTL-REDIRECT-TO");
+          if (a != null && a != '') {
+            location.replace(a);
+          } else {
+            var responseText = xhr.responseText;
+            document.open();
+            document.write(responseText);
+            document.close();
+          }
+        };
+        xhr.open("get", location.href, true);
+        xhr.send();
+      }
+      sendXhr();
+    })();
+  </script>
+</body>
+</html>

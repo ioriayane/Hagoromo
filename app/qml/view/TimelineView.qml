@@ -151,6 +151,8 @@ ScrollView {
                 }
                 return text
             }
+            opThreadPostIndex: model.opThreadPostIndex
+            opThreadPostCount: model.opThreadPostCount
             skyblurContent.visible: model.hasSkyblurLink && contentMediaFilterFrame.showContent
             skyblurContent.postText.text: model.skyblurPostText
             skyblurContent.getPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)

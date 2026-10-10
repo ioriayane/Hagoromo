@@ -1,0 +1,8 @@
+{
+    "access_token": "access token",
+    "token_type": "DPoP",
+    "expires_in": 2677,
+    "refresh_token": "refresh token",
+    "scope": "transition:generic",
+    "sub": "did:plc:ipj5qejfoqu6eukvt72uhyit"
+}

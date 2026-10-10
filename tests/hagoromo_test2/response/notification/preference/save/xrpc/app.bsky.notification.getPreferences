@@ -1,9 +1,5 @@
 {
     "preferences": {
-        "chat": {
-            "include": "all",
-            "push": true
-        },
         "follow": {
             "include": "all",
             "list": true,

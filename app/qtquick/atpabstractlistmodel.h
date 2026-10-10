@@ -76,8 +76,6 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(QString did READ did CONSTANT)
     Q_PROPERTY(QString handle READ handle CONSTANT)
     Q_PROPERTY(QString email READ email CONSTANT)
-    Q_PROPERTY(QString accessJwt READ accessJwt CONSTANT)
-    Q_PROPERTY(QString refreshJwt READ refreshJwt CONSTANT)
 
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false,
@@ -203,8 +201,6 @@ public:
     QString did() const;
     QString handle() const;
     QString email() const;
-    QString accessJwt() const;
-    QString refreshJwt() const;
 
     QString cursor() const;
     void setCursor(const QString &newCursor);

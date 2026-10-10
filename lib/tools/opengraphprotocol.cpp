@@ -27,14 +27,23 @@ public:
     void setThumb(const QString &newThumb);
 
     bool parse(const QByteArray &data, const QString &src_uri);
+    bool applySiteRule(const QString &url);
     QString extractCharset(const QString &data) const;
     void rebuildHtml(const QString &text, QDomDocument &doc) const;
     bool rebuildTag(QString text, QDomElement &element) const;
 
 private:
+    struct SiteRule
+    {
+        QRegularExpression rx_url; // captured(1)をthumbの%1に埋め込む
+        QString title;
+        QString thumb;
+    };
+
     OpenGraphProtocol *q;
 
     QRegularExpression m_rxMeta;
+    QList<SiteRule> m_siteRules;
     QHash<QString, QString> m_listOfRedirectAllowed; // QHash<元URL, 先URL>
 
     QString m_uri;
@@ -56,6 +65,13 @@ OpenGraphProtocol::Private::Private(OpenGraphProtocol *parent) : q(parent)
     m_listOfRedirectAllowed["microsoftonline.com"] = "microsoft.com";
     m_listOfRedirectAllowed["amzn.asia"] = "www.amazon.co.jp";
     m_listOfRedirectAllowed["a.co"] = "www.amazon.com";
+
+    // ボット対策などでHTMLからOGPを取得できないサイト向けの補完ルール
+    // プレミアムバンダイ
+    m_siteRules.append(
+            { QRegularExpression("^https?://(?:www\\.)?p-bandai\\.jp/item/item-(\\d+)(?:[/?#]|$)",
+                                 QRegularExpression::CaseInsensitiveOption),
+              tr("Premium Bandai"), "https://bandai-a.akamaihd.net/bc/img/model/b/%1_1.jpg" });
 }
 
 OpenGraphProtocol::Private::~Private() { }
@@ -63,7 +79,7 @@ OpenGraphProtocol::Private::~Private() { }
 OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << this << "OpenGraphProtocol()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 OpenGraphProtocol::~OpenGraphProtocol()
@@ -91,13 +107,16 @@ void OpenGraphProtocol::getData(const QString &url)
     request.setTransferTimeout(60 * 1000);
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (!ret) {
             qCritical().noquote().nospace() << QString::fromUtf8(reply->readAll());
         } else {
             ret = d->parse(reply->readAll(), reply->url().toString());
+        }
+        if (!ret) {
+            ret = d->applySiteRule(url);
         }
         emit finished(ret);
         reply->deleteLater();
@@ -137,7 +156,7 @@ void OpenGraphProtocol::getData(const QString &url)
     //         }
     //     }
     // });
-    connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
+    connect(reply, &QNetworkReply::errorOccurred, this, [=](QNetworkReply::NetworkError code) {
         qDebug() << "Reply error:" << code << reply->request().url();
     });
 }
@@ -153,7 +172,7 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
     QNetworkRequest request((QUrl(thumb())));
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "downloadThumb reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (ret) {
@@ -199,6 +218,11 @@ QString OpenGraphProtocol::decodeHtml(const QString &encoded)
     decoded += encoded.mid(start_pos, encoded.length() - start_pos);
 
     return decoded;
+}
+
+bool OpenGraphProtocol::applySiteRule(const QString &url)
+{
+    return d->applySiteRule(url);
 }
 
 QString OpenGraphProtocol::uri() const
@@ -354,6 +378,27 @@ bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &sr
     }
 
     return ret;
+}
+
+bool OpenGraphProtocol::Private::applySiteRule(const QString &url)
+{
+    for (const SiteRule &rule : std::as_const(m_siteRules)) {
+        QRegularExpressionMatch match = rule.rx_url.match(url);
+        if (!match.hasMatch())
+            continue;
+        qDebug().noquote() << "Apply site rule:" << rule.rx_url.pattern();
+        if (uri().isEmpty()) {
+            setUri(QUrl(url).toString(QUrl::FullyEncoded));
+        }
+        if (title().isEmpty()) {
+            setTitle(rule.title);
+        }
+        if (thumb().isEmpty() && !rule.thumb.isEmpty()) {
+            setThumb(rule.thumb.arg(match.captured(1)));
+        }
+        return (!uri().isEmpty() && !title().isEmpty());
+    }
+    return false;
 }
 
 QString OpenGraphProtocol::Private::extractCharset(const QString &data) const

@@ -113,7 +113,7 @@ int HttpAccessManager::Private::signalIndex()
 HttpAccessManager::HttpAccessManager(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << LOG_DATETIME << this << "HttpAccessManager()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 HttpAccessManager::~HttpAccessManager()

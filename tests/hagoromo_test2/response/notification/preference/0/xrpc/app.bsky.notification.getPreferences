@@ -25,10 +25,6 @@
             "list": true,
             "push": true
         },
-        "chat": {
-            "include": "all",
-            "push": true
-        },
         "reply": {
             "include": "all",
             "list": true,

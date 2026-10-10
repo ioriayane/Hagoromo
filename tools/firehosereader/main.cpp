@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     qDebug().noquote() << "  " << url.query();
     qDebug().noquote() << "Stopper" << stopper_did;
     // wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos
-    // wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed.repost&wantedCollections=app.bsky.graph.follow
+    // wss://jetstream.us-west.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents?collections=app.bsky.feed.post&collections=app.bsky.feed.repost&collections=app.bsky.graph.follow&kinds=commit
 
     if (url.host().startsWith("jetstream")) {
         mode = ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;

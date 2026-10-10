@@ -12,7 +12,7 @@ bool ListMutesListModel::getLatest()
     setRunning(true);
 
     AppBskyGraphGetListMutes *lists = new AppBskyGraphGetListMutes(this);
-    connect(lists, &AppBskyGraphGetListMutes::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetListMutes::finished, this, [=](bool success) {
         if (success) {
             if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
@@ -38,7 +38,7 @@ bool ListMutesListModel::getNext()
     setRunning(true);
 
     AppBskyGraphGetListMutes *lists = new AppBskyGraphGetListMutes(this);
-    connect(lists, &AppBskyGraphGetListMutes::finished, [=](bool success) {
+    connect(lists, &AppBskyGraphGetListMutes::finished, this, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
             if (lists->listsList().isEmpty())

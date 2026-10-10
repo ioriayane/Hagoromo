@@ -14,7 +14,7 @@ bool MutesListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetMutes *profiles = new AppBskyGraphGetMutes(this);
-        connect(profiles, &AppBskyGraphGetMutes::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetMutes::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -41,7 +41,7 @@ bool MutesListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetMutes *profiles = new AppBskyGraphGetMutes(this);
-        connect(profiles, &AppBskyGraphGetMutes::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetMutes::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);

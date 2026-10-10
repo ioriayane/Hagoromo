@@ -65,7 +65,7 @@ void UserProfile::getProfile(const QString &did)
     m_labelDetails.clear();
     updateContentFilterLabels([=]() {
         AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+        connect(profile, &AppBskyActorGetProfile::finished, this, [=](bool success) {
             if (success) {
                 AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
                         profile->profileViewDetailed();

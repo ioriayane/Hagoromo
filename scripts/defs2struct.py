@@ -1107,6 +1107,9 @@ class Defs2Struct:
         elif pro_type == 'array_string':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyStringList'
             data['variable_type'] = 'QStringList'
+        elif pro_type == 'array_unknown':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
+            data['variable_type'] = 'QVariant'
         elif pro_type == 'boolean':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBool'
             data['variable_type'] = 'bool'
@@ -1284,11 +1287,13 @@ class Defs2Struct:
                             var_type = 'array_union'
                         elif item_type == 'string':
                             var_type = 'array_string'
+                        elif item_type == 'unknown':
+                            var_type = 'array_unknown'
                         else:
                             var_type = ''
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
 
-                        if var_type == 'array_string':
+                        if var_type == 'array_string' or var_type == 'array_unknown':
                             item_obj = self.output_api_class_data_primitive(var_type, key_name)
                             if len(item_obj) > 0:
                                 item_obj['variable_is_obj'] = True
@@ -1546,13 +1551,14 @@ def main(lexicons_path: str, output_path: str) -> None:
     def2struct = Defs2Struct()
     #atproto\lexicons
     lexicons_path = lexicons_path.replace('\\', '/')
-    file_list = glob.glob(lexicons_path + '/**/*.json', recursive=True)
+    # glob.globの列挙順はOS/ファイルシステム依存で不定なため、出力順を環境間で安定させるためにソートする
+    file_list = sorted(glob.glob(lexicons_path + '/**/*.json', recursive=True))
     for file in file_list:
         def2struct.open(file.replace('\\', '/'), lexicons_path)
 
     # 既存のlexiconに合体していないファイルを処理
     extend_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons')
-    file_list = glob.glob(extend_base_path + '/*.json')
+    file_list = sorted(glob.glob(extend_base_path + '/*.json'))
     for file in file_list:
         if file not in def2struct.converted_extend_paths:
             def2struct.open(file.replace('\\', '/'), extend_base_path.replace('\\', '/'), True)

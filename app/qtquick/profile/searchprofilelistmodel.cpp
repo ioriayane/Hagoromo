@@ -19,7 +19,7 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
     setRunning(true);
 
     AppBskyActorSearchActorsTypeahead *profiles = new AppBskyActorSearchActorsTypeahead(this);
-    connect(profiles, &AppBskyActorSearchActorsTypeahead::finished, [=](bool success) {
+    connect(profiles, &AppBskyActorSearchActorsTypeahead::finished, this, [=](bool success) {
         if (success) {
             clear();
             if (enabledSuggestion()) {
@@ -79,7 +79,7 @@ bool SearchProfileListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
-        connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
+        connect(profiles, &AppBskyActorSearchActors::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -106,7 +106,7 @@ bool SearchProfileListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
-        connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
+        connect(profiles, &AppBskyActorSearchActors::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);

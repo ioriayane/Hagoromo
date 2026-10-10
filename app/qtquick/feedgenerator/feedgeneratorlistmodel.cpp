@@ -98,23 +98,24 @@ bool FeedGeneratorListModel::getLatest()
 
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
             new AppBskyUnspeccedGetPopularFeedGenerators(this);
-    connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (success && !generators->feedsList().isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, generators->feedsList().count() - 1);
-            for (const auto &generator : generators->feedsList()) {
-                m_cidList.append(generator.cid);
-                m_generatorViewHash[generator.cid] = generator;
-            }
-            endInsertRows();
+    connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, this,
+            [=](bool success) {
+                if (success && !generators->feedsList().isEmpty()) {
+                    beginInsertRows(QModelIndex(), 0, generators->feedsList().count() - 1);
+                    for (const auto &generator : generators->feedsList()) {
+                        m_cidList.append(generator.cid);
+                        m_generatorViewHash[generator.cid] = generator;
+                    }
+                    endInsertRows();
 
-            m_cursor = generators->cursor();
-            getSavedGenerators();
-        } else {
-            emit errorOccurred(generators->errorCode(), generators->errorMessage());
-            setRunning(false);
-        }
-        generators->deleteLater();
-    });
+                    m_cursor = generators->cursor();
+                    getSavedGenerators();
+                } else {
+                    emit errorOccurred(generators->errorCode(), generators->errorMessage());
+                    setRunning(false);
+                }
+                generators->deleteLater();
+            });
     generators->setAccount(account());
     generators->getPopularFeedGenerators(50, QString(), query());
 
@@ -129,25 +130,26 @@ bool FeedGeneratorListModel::getNext()
 
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
             new AppBskyUnspeccedGetPopularFeedGenerators(this);
-    connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (success && !generators->feedsList().isEmpty()) {
-            beginInsertRows(QModelIndex(), m_cidList.count(),
-                            m_cidList.count() + generators->feedsList().count() - 1);
-            for (const auto &generator : generators->feedsList()) {
-                m_cidList.append(generator.cid);
-                m_generatorViewHash[generator.cid] = generator;
-            }
-            endInsertRows();
+    connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, this,
+            [=](bool success) {
+                if (success && !generators->feedsList().isEmpty()) {
+                    beginInsertRows(QModelIndex(), m_cidList.count(),
+                                    m_cidList.count() + generators->feedsList().count() - 1);
+                    for (const auto &generator : generators->feedsList()) {
+                        m_cidList.append(generator.cid);
+                        m_generatorViewHash[generator.cid] = generator;
+                    }
+                    endInsertRows();
 
-            m_cursor = generators->cursor();
-            // getSavedGenerators();
-        } else {
-            m_cursor.clear();
-            emit errorOccurred(generators->errorCode(), generators->errorMessage());
-        }
-        setRunning(false);
-        generators->deleteLater();
-    });
+                    m_cursor = generators->cursor();
+                    // getSavedGenerators();
+                } else {
+                    m_cursor.clear();
+                    emit errorOccurred(generators->errorCode(), generators->errorMessage());
+                }
+                setRunning(false);
+                generators->deleteLater();
+            });
     generators->setAccount(account());
     generators->getPopularFeedGenerators(50, m_cursor, query());
 
@@ -161,7 +163,7 @@ void FeedGeneratorListModel::saveGenerator(const QString &uri)
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
         } else {
@@ -181,7 +183,7 @@ void FeedGeneratorListModel::removeGenerator(const QString &uri)
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
         } else {
@@ -228,7 +230,7 @@ void FeedGeneratorListModel::getSavedGenerators()
     m_savedUriList.clear();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             for (const auto &prefs : pref->preferences().savedFeedsPrefV2) {
                 for (const auto &item : prefs.items) {
@@ -259,7 +261,7 @@ void FeedGeneratorListModel::getSavedGenerators()
 void FeedGeneratorListModel::putPreferences(const QJsonArray &json)
 {
     AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
-    connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorPutPreferences::finished, this, [=](bool success) {
         if (success) {
             qDebug() << "finish put preferences.";
             getSavedGenerators();

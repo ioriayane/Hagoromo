@@ -13,7 +13,7 @@ bool BookmarkPostListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         auto bookmarks = new AppBskyBookmarkGetBookmarks(this);
-        connect(bookmarks, &AppBskyBookmarkGetBookmarks::finished, [=](bool success) {
+        connect(bookmarks, &AppBskyBookmarkGetBookmarks::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = bookmarks->cursor();
@@ -46,7 +46,7 @@ bool BookmarkPostListModel::getNext()
 
     updateContentFilterLabels([=]() {
         auto bookmarks = new AppBskyBookmarkGetBookmarks(this);
-        connect(bookmarks, &AppBskyBookmarkGetBookmarks::finished, [=](bool success) {
+        connect(bookmarks, &AppBskyBookmarkGetBookmarks::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = bookmarks->cursor();
                 QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;

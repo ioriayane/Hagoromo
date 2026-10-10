@@ -42,7 +42,8 @@ Dialog {
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
-        property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        property string realtimeServiceEndpoint: "wss://jetstream.us-west.bsky.network"
+        property int realtimeLookbackMinutes: 10
         // Notification
         property bool enableChatNotification: true
         property bool enableNotificationsForReactionsOnReposts: true
@@ -81,6 +82,8 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
+            realtimeLookbackMinutesComboBox.currentIndex = -1
+            realtimeLookbackMinutesComboBox.setByValue(settings.realtimeLookbackMinutes)
             // Notification
             enableChatNotificationCheckBox.checked = settings.enableChatNotification
             enableNotificationsForReactionsOnRepostsCheckBox.checked = settings.enableNotificationsForReactionsOnReposts
@@ -601,6 +604,22 @@ Dialog {
                                 model: systemTool.possibleRealtimeFeedServiceEndpoints()
                             }
 
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Lookback time of Realtime feed")
+                            }
+                            ComboBoxEx {
+                                id: realtimeLookbackMinutesComboBox
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                model: ListModel {
+                                    ListElement { value: 0; text: qsTr("Off") }
+                                    ListElement { value: 5; text: qsTr("5 minutes") }
+                                    ListElement { value: 10; text: qsTr("10 minutes") }
+                                    ListElement { value: 15; text: qsTr("15 minutes") }
+                                }
+                            }
+
                             Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
@@ -972,6 +991,8 @@ Dialog {
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
                     systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
+                    settings.realtimeLookbackMinutes = realtimeLookbackMinutesComboBox.currentValue
+                    systemTool.changeRealtimeFeedLookbackMinutes(settings.realtimeLookbackMinutes)
                     // Notification
                     settings.enableChatNotification = enableChatNotificationCheckBox.checked
                     settings.enableNotificationsForReactionsOnReposts = enableNotificationsForReactionsOnRepostsCheckBox.checked

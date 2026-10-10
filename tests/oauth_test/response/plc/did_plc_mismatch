@@ -1,0 +1,13 @@
+{
+    "id": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "alsoKnownAs": [
+        "at://ioriayane.test"
+    ],
+    "service": [
+        {
+            "id": "#atproto_pds",
+            "type": "AtprotoPersonalDataServer",
+            "serviceEndpoint": "http://127.0.0.1:{{SERVER_PORT_NO}}/response/1"
+        }
+    ]
+}

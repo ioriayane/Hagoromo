@@ -87,6 +87,7 @@ qt_add_qml_module(Hagoromo
         qml/parts/RealtimeFeedStatus.qml
         qml/parts/ExternalLinkCard.qml
         qml/parts/PinnedIndicator.qml
+        qml/parts/BadgeLabel.qml
         qml/parts/PostControls.qml
         qml/parts/Author.qml
         qml/parts/CoverFrame.qml
@@ -118,6 +119,8 @@ qt_add_qml_module(Hagoromo
         qml/parts/PollOptions.qml
         qml/parts/OperationProgressFrame.qml
         qml/parts/OperationProgressManager.qml
+        qml/parts/ErrorNotificationFrame.qml
+        qml/parts/ErrorNotificationManager.qml
         qml/parts/IconMessage.qml
         qml/dialogs/SelectThreadGateDialog.qml
         qml/dialogs/SearchDialog.qml
@@ -206,6 +209,10 @@ target_link_libraries(Hagoromo PRIVATE
     Qt6::QuickControls2
     HagoromoLib
     HagoromoGuiLib
+)
+
+target_compile_definitions(Hagoromo PRIVATE
+    QT_NO_CONTEXTLESS_CONNECT
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

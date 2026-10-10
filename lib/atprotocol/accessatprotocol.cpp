@@ -1,4 +1,5 @@
 #include "accessatprotocol.h"
+#include "tools/dpopsessionstore.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -30,6 +31,8 @@ const AccountData &AtProtocolAccount::account() const
 
 void AtProtocolAccount::setAccount(const AccountData &account)
 {
+    m_account.uuid = account.uuid;
+    m_account.auth_type = account.auth_type;
     m_account.service = account.service;
     m_account.service_endpoint = account.service_endpoint;
     m_account.identifier.clear();
@@ -126,7 +129,7 @@ bool AtProtocolAccount::allowedScope(AccountScope scope) const
 }
 
 AccessAtProtocol::AccessAtProtocol(QObject *parent)
-    : AtProtocolAccount { parent }, m_contentType("application/json")
+    : AtProtocolAccount { parent }, m_contentType("application/json"), m_dPopNonceRequired(false)
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
     if (m_manager == nullptr) {
@@ -169,8 +172,10 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     if (with_auth_header) {
-        request.setRawHeader(QByteArray("Authorization"),
-                             QByteArray("Bearer ") + accessJwt().toUtf8());
+        if (!setAuthorizationHeader(request, QByteArrayLiteral("GET"))) {
+            emit finished(false);
+            return;
+        }
         if (!labelers().isEmpty()) {
             request.setRawHeader(QByteArray("atproto-accept-labelers"),
                                  labelers().join(",").toUtf8());
@@ -179,17 +184,22 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     setAdditionalRawHeader(request);
     setAtprotoProxyHeader(request);
 
+    sendGet(request, endpoint, with_auth_header, false);
+}
+
+void AccessAtProtocol::sendGet(QNetworkRequest request, const QString &endpoint,
+                               const bool with_auth_header, const bool retried)
+{
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->get(request);
-    connect(reply, &HttpReply::finished, [=]() {
+    connect(reply, &HttpReply::finished, this, [=]() mutable {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
         if (alive) {
             qDebug().noquote() << LOG_DATETIME << "  " << this->thread();
 
             bool success = false;
             if (checkReply(reply)) {
-                if (reply->contentType().startsWith("image/")
-                    || reply->contentType().startsWith("application/vnd.ipld.car")) {
+                if (isRawContentType(reply->contentType())) {
                     success = recvImage(reply->recvData(), reply->contentType());
                 } else if (reply->contentType().startsWith("application/json")
                            || reply->contentType().startsWith("application/did+ld+json")) {
@@ -204,6 +214,13 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                     m_errorMessage = "Invalid content type : " + reply->contentType();
                     m_errorMessage += "\n---\n" + endpoint;
                 }
+            } else if (canRetryWithDPopNonce(with_auth_header, retried)
+                       && setAuthorizationHeader(request, QByteArrayLiteral("GET"))) {
+                // 新しいnonceで1回だけ再送する
+                qDebug().noquote() << LOG_DATETIME << "Retry with new DPoP nonce";
+                sendGet(request, endpoint, with_auth_header, true);
+                reply->deleteLater();
+                return;
             }
             emit finished(success);
         } else {
@@ -211,7 +228,6 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
         }
         reply->deleteLater();
     });
-    return;
 }
 
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
@@ -220,7 +236,15 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
     qDebug().noquote() << LOG_DATETIME << "   " << handle();
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
-    qDebug().noquote() << LOG_DATETIME << "   " << json;
+    if (m_contentType.startsWith("application/x-www-form-urlencoded")
+        || endpoint == QStringLiteral("xrpc/com.atproto.server.createSession")) {
+        // OAuthのPAR/tokenリクエストはcode_verifierやrefresh tokenを、
+        // createSessionはパスワードを含むので出力しない
+        qDebug().noquote() << LOG_DATETIME << "   "
+                           << "(form data:" << json.size() << "bytes)";
+    } else {
+        qDebug().noquote() << LOG_DATETIME << "   " << json;
+    }
 
     QUrl url;
     if (endpoint.isEmpty()) {
@@ -240,29 +264,15 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
             emit finished(false);
             return;
         }
-
-        request.setRawHeader(QByteArray("Authorization"),
-                             QByteArray("Bearer ") + accessJwt().toUtf8());
+        if (!setAuthorizationHeader(request, QByteArrayLiteral("POST"))) {
+            emit finished(false);
+            return;
+        }
     }
     setAdditionalRawHeader(request);
     setAtprotoProxyHeader(request);
 
-    QPointer<AccessAtProtocol> alive = this;
-    HttpReply *reply = m_manager->post(request, json);
-    connect(reply, &HttpReply::finished, [=]() {
-        qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
-        if (alive) {
-            bool success = false;
-            if (checkReply(reply)) {
-                success = parseJson(true, m_replyJson);
-            }
-            emit finished(success);
-        } else {
-            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
-        }
-        reply->deleteLater();
-    });
-    return;
+    sendPost(request, json, with_auth_header, false);
 }
 
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
@@ -286,29 +296,45 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     QFileInfo info(path);
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
-    request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
-    request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
-    setAtprotoProxyHeader(request);
-
-    QFile *file = new QFile(path);
-    if (!file->open(QIODevice::ReadOnly)) {
-        qCritical().noquote() << LOG_DATETIME << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                              << "Not open" << path;
-        delete file;
+    if (!setAuthorizationHeader(request, QByteArrayLiteral("POST"))) {
         emit finished(false);
         return;
     }
-    request.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
+    setAtprotoProxyHeader(request);
 
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qCritical().noquote() << LOG_DATETIME << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                              << "Not open" << path;
+        emit finished(false);
+        return;
+    }
+    request.setHeader(QNetworkRequest::ContentLengthHeader, file.size());
+    const QByteArray data = file.readAll();
+    file.close();
+
+    sendPost(request, data, true, false);
+}
+
+void AccessAtProtocol::sendPost(QNetworkRequest request, const QByteArray &data,
+                                const bool with_auth_header, const bool retried)
+{
     QPointer<AccessAtProtocol> alive = this;
-    HttpReply *reply = m_manager->post(request, file->readAll());
-    file->setParent(reply);
-    connect(reply, &HttpReply::finished, [=]() {
+    HttpReply *reply = m_manager->post(request, data);
+    connect(reply, &HttpReply::finished, this, [=]() mutable {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
         if (alive) {
             bool success = false;
             if (checkReply(reply)) {
                 success = parseJson(true, m_replyJson);
+            } else if (canRetryWithDPopNonce(with_auth_header, retried)
+                       && setAuthorizationHeader(request, QByteArrayLiteral("POST"))) {
+                // 新しいnonceで1回だけ再送する
+                qDebug().noquote() << LOG_DATETIME << "Retry with new DPoP nonce";
+                sendPost(request, data, with_auth_header, true);
+                reply->deleteLater();
+                return;
             }
             emit finished(success);
         } else {
@@ -316,7 +342,35 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
         }
         reply->deleteLater();
     });
-    return;
+}
+
+bool AccessAtProtocol::setAuthorizationHeader(QNetworkRequest &request, const QByteArray &method)
+{
+    if (account().auth_type != AuthType::OAuth) {
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ") + accessJwt().toUtf8());
+        return true;
+    }
+
+    // OAuth: アクセストークンはDPoPの鍵に紐づいているので、リクエストごとにproofを付ける
+    const QByteArray proof = DPopSessionStore::getInstance()->generateProof(
+            account().uuid, QString::fromUtf8(method), request.url(), accessJwt());
+    if (proof.isEmpty()) {
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                              << "DPoP key is not set.";
+        m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
+        m_errorMessage = "DPoP key is not set.";
+        return false;
+    }
+    request.setRawHeader(QByteArray("Authorization"), QByteArray("DPoP ") + accessJwt().toUtf8());
+    request.setRawHeader(QByteArray("DPoP"), proof);
+    return true;
+}
+
+bool AccessAtProtocol::canRetryWithDPopNonce(const bool with_auth_header, const bool retried) const
+{
+    return with_auth_header && !retried && account().auth_type == AuthType::OAuth
+            && m_dPopNonceRequired;
 }
 
 bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_type)
@@ -326,12 +380,18 @@ bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_
     return true;
 }
 
+bool AccessAtProtocol::isRawContentType(const QString &content_type) const
+{
+    return content_type.startsWith("image/") || content_type.startsWith("application/vnd.ipld.car");
+}
+
 bool AccessAtProtocol::checkReply(HttpReply *reply)
 {
     bool status = false;
     m_replyJson = QString::fromUtf8(reply->readAll());
     m_errorCode.clear();
     m_errorMessage.clear();
+    m_dPopNonceRequired = false;
 
     QByteArray header_key;
     for (const auto &header : reply->rawHeaderPairs()) {
@@ -346,6 +406,16 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
             }
         } else if (header_key == "dpop-nonce") {
             m_dPopNonce = header.second;
+            if (account().auth_type == AuthType::OAuth) {
+                DPopSessionStore::getInstance()->setNonce(account().uuid, reply->url(),
+                                                          QString::fromUtf8(header.second));
+            }
+        } else if (header_key == "www-authenticate") {
+            // Resource Server(PDS)は401とWWW-Authenticateでnonceの更新を求める
+            if (header.second.startsWith("DPoP")
+                && header.second.contains("error=\"use_dpop_nonce\"")) {
+                m_dPopNonceRequired = true;
+            }
         }
     }
 
@@ -380,8 +450,14 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
                 }
             }
         }
-        qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
-        qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        if (m_errorCode == QStringLiteral("use_dpop_nonce")) {
+            m_dPopNonceRequired = true;
+            // DPoPのnonceの更新要求は通常の流れで、呼び出し側で再送する
+            qDebug().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+        } else {
+            qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+            qCritical().noquote() << LOG_DATETIME << m_replyJson;
+        }
     } else {
         status = true;
     }
@@ -515,6 +591,11 @@ void AccessAtProtocol::setAtprotoProxyHeader(QNetworkRequest &request)
             request.setRawHeader("atproto-proxy", i.value().toLocal8Bit());
         }
     }
+}
+
+bool AccessAtProtocol::dPopNonceRequired() const
+{
+    return m_dPopNonceRequired;
 }
 
 QString AccessAtProtocol::dPopNonce() const

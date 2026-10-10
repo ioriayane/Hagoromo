@@ -49,6 +49,7 @@ private slots:
     void test_ComAtprotoServerCreateSession();
     void test_ComAtprotoServerRefreshSession();
     void test_OpenGraphProtocol();
+    void test_ogpSiteRule();
     void test_ogpDecodeHtml();
     void test_getTimeline();
     void test_ConfigurableLabels();
@@ -112,7 +113,7 @@ atprotocol_test::atprotocol_test()
     QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
-    m_service = QString("http://localhost:%1/response").arg(m_listenPort);
+    m_service = QString("http://127.0.0.1:%1/response").arg(m_listenPort);
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
@@ -265,7 +266,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QCOMPARE(ogp.uri(), m_service + "/ogp/file1.html");
         QCOMPARE(ogp.title(), "file1 title");
         QCOMPARE(ogp.description(), "file1 description");
-        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file1.jpg");
+        QCOMPARE(ogp.thumb(), "http://127.0.0.1:%1/response/ogp/images/file1.jpg");
     }
     {
         QTemporaryFile temp_file;
@@ -304,7 +305,7 @@ void atprotocol_test::test_OpenGraphProtocol()
                          .append(QChar(0x30c8))
                          .append(QChar(0x30eb)));
         QCOMPARE(ogp.description(), QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
-        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file2.gif");
+        QCOMPARE(ogp.thumb(), "http://127.0.0.1:%1/response/ogp/images/file2.gif");
     }
     {
         QTemporaryFile temp_file;
@@ -344,7 +345,7 @@ void atprotocol_test::test_OpenGraphProtocol()
                          .append(QChar(0x30c8))
                          .append(QChar(0x30eb)));
         QCOMPARE(ogp.description(), QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
-        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
+        QCOMPARE(ogp.thumb(), "http://127.0.0.1:%1/response/ogp/images/file3.png");
     }
     {
         QTemporaryFile temp_file;
@@ -384,7 +385,7 @@ void atprotocol_test::test_OpenGraphProtocol()
                          .append(QChar(0x30c8))
                          .append(QChar(0x30eb)));
         QCOMPARE(ogp.description(), QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
-        QCOMPARE(ogp.thumb(), "http://localhost:%1/response/ogp/images/file3.png");
+        QCOMPARE(ogp.thumb(), "http://127.0.0.1:%1/response/ogp/images/file3.png");
     }
     {
         QTemporaryFile temp_file;
@@ -440,7 +441,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QCOMPARE(ogp.title(), QString("file6 TITLE"));
         QCOMPARE(ogp.description(), QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(),
-                 QString("http://localhost:%1/response/ogp/images/file6.png")
+                 QString("http://127.0.0.1:%1/response/ogp/images/file6.png")
                          .arg(QString::number(m_listenPort)));
     }
 
@@ -457,8 +458,65 @@ void atprotocol_test::test_OpenGraphProtocol()
         QCOMPARE(ogp.title(), QString("file7 TITLE"));
         QCOMPARE(ogp.description(), QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)));
         QCOMPARE(ogp.thumb(),
-                 QString("http://localhost:%1/response/ogp/images/file7.png")
+                 QString("http://127.0.0.1:%1/response/ogp/images/file7.png")
                          .arg(QString::number(m_listenPort)));
+    }
+
+    {
+        // ボット対策のチャレンジページなどOGPもタイトルも無い
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file8.html");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(!arguments.at(0).toBool());
+
+        QCOMPARE(ogp.uri(), m_service + "/ogp/file8.html");
+        QCOMPARE(ogp.title(), QString());
+        QCOMPARE(ogp.description(), QString());
+        QCOMPARE(ogp.thumb(), QString());
+    }
+}
+
+void atprotocol_test::test_ogpSiteRule()
+{
+    const QString p_bandai = QStringLiteral("Premium Bandai");
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000256954/"));
+        QCOMPARE(ogp.uri(), "https://p-bandai.jp/item/item-1000256954/");
+        QCOMPARE(ogp.title(), p_bandai);
+        QCOMPARE(ogp.description(), QString());
+        QCOMPARE(ogp.thumb(), "https://bandai-a.akamaihd.net/bc/img/model/b/1000256954_1.jpg");
+    }
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000230000?ref=top"));
+        QCOMPARE(ogp.uri(), "https://p-bandai.jp/item/item-1000230000?ref=top");
+        QCOMPARE(ogp.title(), p_bandai);
+        QCOMPARE(ogp.thumb(), "https://bandai-a.akamaihd.net/bc/img/model/b/1000230000_1.jpg");
+    }
+    {
+        // 取得済みの情報は上書きしない
+        OpenGraphProtocol ogp;
+        ogp.setUri("https://p-bandai.jp/item/item-1000256954/");
+        ogp.setTitle("original title");
+        ogp.setThumb("https://example.com/original.jpg");
+        QVERIFY(ogp.applySiteRule("https://p-bandai.jp/item/item-1000256954/"));
+        QCOMPARE(ogp.title(), "original title");
+        QCOMPARE(ogp.thumb(), "https://example.com/original.jpg");
+    }
+    {
+        OpenGraphProtocol ogp;
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/item/item-abc/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/item/item-10002569540x/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp/"));
+        QVERIFY(!ogp.applySiteRule("https://example.com/item/item-1000256954/"));
+        QVERIFY(!ogp.applySiteRule("https://p-bandai.jp.example.com/item/item-1000256954/"));
+        QCOMPARE(ogp.uri(), QString());
+        QCOMPARE(ogp.title(), QString());
+        QCOMPARE(ogp.thumb(), QString());
     }
 }
 
@@ -633,7 +691,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     labels.setAccount(m_account);
     labels.setRefreshLabelers(true);
     {
-        labels.setService(QString("http://localhost:%1/response/labels/hide").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/hide").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -677,7 +735,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     }
     //
     {
-        labels.setService(QString("http://localhost:%1/response/labels/show").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/show").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -716,7 +774,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     //
     {
         labels.setService(
-                QString("http://localhost:%1/response/labels/show_adult_false").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/labels/show_adult_false").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -751,7 +809,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     }
     //
     {
-        labels.setService(QString("http://localhost:%1/response/labels/warn").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/warn").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -788,7 +846,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     {
         int i = 0;
         labels.setService(
-                QString("http://localhost:%1/response/labels/mutedword/1").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/labels/mutedword/1").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -826,7 +884,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     {
         int i = 0;
         labels.setService(
-                QString("http://localhost:%1/response/labels/mutedword/2").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/labels/mutedword/2").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
@@ -1162,7 +1220,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
     m_account.accessJwt = "aaaa";
     labels.setAccount(m_account);
     {
-        labels.setService(QString("http://localhost:%1/response/labels/save/1").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/1").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait(10 * 1000);
@@ -1175,7 +1233,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         for (int i = 0; i < labels.count(); i++) {
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
-        labels.setService(QString("http://localhost:%1/response/labels/save/2").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/2").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
@@ -1188,7 +1246,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         for (int i = 0; i < labels.count(); i++) {
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
-        labels.setService(QString("http://localhost:%1/response/labels/save/3").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/3").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
@@ -1201,7 +1259,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         for (int i = 0; i < labels.count(); i++) {
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
-        labels.setService(QString("http://localhost:%1/response/labels/save/4").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/4").arg(m_listenPort));
         QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
@@ -1213,7 +1271,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
     {
         {
             labels.setService(
-                    QString("http://localhost:%1/response/labels/save/5.1").arg(m_listenPort));
+                    QString("http://127.0.0.1:%1/response/labels/save/5.1").arg(m_listenPort));
             QSignalSpy spy(&labels, SIGNAL(finished(bool)));
             labels.load();
             spy.wait();
@@ -1226,7 +1284,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         for (int i = 0; i < labels.count(); i++) {
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
-        labels.setService(QString("http://localhost:%1/response/labels/save/5").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/5").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
@@ -1240,7 +1298,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
         labels.clearMutedWord();
-        labels.setService(QString("http://localhost:%1/response/labels/save/6").arg(m_listenPort));
+        labels.setService(QString("http://127.0.0.1:%1/response/labels/save/6").arg(m_listenPort));
         QCOMPARE(labels.mutedWordCount(), 0);
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
@@ -1431,7 +1489,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
         m_account.accessJwt = "aaaa";
         labels.setAccount(m_account);
         labels.setService(
-                QString("http://localhost:%1/response/labels/mutedword/3").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/labels/mutedword/3").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait(10 * 1000);
@@ -1473,11 +1531,11 @@ void atprotocol_test::test_LabelerProvider()
     account.handle = "user_handle";
     account.accessJwt = "dummy_jwt";
     account.service_endpoint =
-            QString("http://localhost:%1/response/labels/provider").arg(m_listenPort);
+            QString("http://127.0.0.1:%1/response/labels/provider").arg(m_listenPort);
 
     qDebug().noquote() << "-- 1 ----------------------------------------";
 
-    account.service = QString("http://localhost:%1/response/labels/provider/1").arg(m_listenPort);
+    account.service = QString("http://127.0.0.1:%1/response/labels/provider/1").arg(m_listenPort);
     account.service_endpoint = account.service;
     provider->setAccount(account);
     {
@@ -1497,7 +1555,7 @@ void atprotocol_test::test_LabelerProvider()
 
     qDebug().noquote() << "-- 2 ----------------------------------------";
 
-    account.service = QString("http://localhost:%1/response/labels/provider/2").arg(m_listenPort);
+    account.service = QString("http://127.0.0.1:%1/response/labels/provider/2").arg(m_listenPort);
     account.service_endpoint = account.service;
     provider->setAccount(account);
     {
@@ -1562,7 +1620,7 @@ void atprotocol_test::test_LabelProvider()
     account.handle = "user_handle";
     account.accessJwt = "dummy_jwt";
     account.service_endpoint =
-            QString("http://localhost:%1/response/labels/provider/10").arg(m_listenPort);
+            QString("http://127.0.0.1:%1/response/labels/provider/10").arg(m_listenPort);
 
     QString labeler_did;
     QString id;
@@ -1573,11 +1631,11 @@ void atprotocol_test::test_LabelProvider()
     {
         QSignalSpy spy(connector2, SIGNAL(finished(const QString &)));
         account.service =
-                QString("http://localhost:%1/response/labels/provider/11").arg(m_listenPort);
+                QString("http://127.0.0.1:%1/response/labels/provider/11").arg(m_listenPort);
         account.service_endpoint = account.service;
         provider->update(QStringList() << "did:plc:original_labeler_did", account, connector1);
         account.service =
-                QString("http://localhost:%1/response/labels/provider/12").arg(m_listenPort);
+                QString("http://127.0.0.1:%1/response/labels/provider/12").arg(m_listenPort);
         account.service_endpoint = account.service;
         provider->update(QStringList() << "did:plc:original_labeler_did"
                                        << "did:plc:ar7c4by46qjdydhdevvrndac",
@@ -1646,7 +1704,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
 
     {
         createrecord.setService(
-                QString("http://localhost:%1/response/threadgate/1").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/threadgate/1").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
@@ -1664,7 +1722,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     rules.append(rule);
     {
         createrecord.setService(
-                QString("http://localhost:%2/response/threadgate/2").arg(m_listenPort));
+                QString("http://127.0.0.1:%2/response/threadgate/2").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
@@ -1680,7 +1738,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     rules.append(rule);
     {
         createrecord.setService(
-                QString("http://localhost:%2/response/threadgate/3").arg(m_listenPort));
+                QString("http://127.0.0.1:%2/response/threadgate/3").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
@@ -1697,7 +1755,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     rules.append(rule);
     {
         createrecord.setService(
-                QString("http://localhost:%2/response/threadgate/4").arg(m_listenPort));
+                QString("http://127.0.0.1:%2/response/threadgate/4").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
@@ -1718,7 +1776,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     rules.append(rule);
     {
         createrecord.setService(
-                QString("http://localhost:%2/response/threadgate/5").arg(m_listenPort));
+                QString("http://127.0.0.1:%2/response/threadgate/5").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
@@ -1740,7 +1798,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
 
     {
         createrecord.setService(
-                QString("http://localhost:%1/response/postgate/1").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/postgate/1").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.postGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l44kjwogjq2q",
@@ -1755,7 +1813,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
 
     {
         createrecord.setService(
-                QString("http://localhost:%1/response/postgate/2").arg(m_listenPort));
+                QString("http://127.0.0.1:%1/response/postgate/2").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
         createrecord.postGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l2zk2fehlz24",
@@ -1773,7 +1831,7 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
 {
     AtProtocolInterface::AppBskyFeedGetFeedGenerator generator;
     generator.setAccount(m_account);
-    generator.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    generator.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     QSignalSpy spy(&generator, SIGNAL(finished(bool)));
     generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
@@ -1812,7 +1870,7 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
 {
     AtProtocolInterface::ComAtprotoRepoGetRecordEx record;
     record.setAccount(m_account);
-    record.setService(QString("http://localhost:%1/response/profile").arg(m_listenPort));
+    record.setService(QString("http://127.0.0.1:%1/response/profile").arg(m_listenPort));
 
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
@@ -1849,7 +1907,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
 
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     record.setAccount(m_account);
-    record.setService(QString("http://localhost:%1/response/profile/1").arg(m_listenPort));
+    record.setService(QString("http://127.0.0.1:%1/response/profile/1").arg(m_listenPort));
     avatar.cid = "bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u";
     avatar.mimeType = "image/jpeg";
     avatar.size = 52880;
@@ -1865,7 +1923,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
 
     m_account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
     record.setAccount(m_account);
-    record.setService(QString("http://localhost:%1/response/profile/2").arg(m_listenPort));
+    record.setService(QString("http://127.0.0.1:%1/response/profile/2").arg(m_listenPort));
     avatar.cid = "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy";
     avatar.mimeType = "image/jpeg";
     avatar.size = 68308;
@@ -2053,7 +2111,7 @@ void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
     AtProtocolInterface::AppBskyActorSearchActorsTypeahead api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2075,7 +2133,7 @@ void atprotocol_test::test_AppBskyFeedGetActorFeeds()
 
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2098,7 +2156,7 @@ void atprotocol_test::test_AppBskyFeedGetActorLikes()
     AtProtocolInterface::AppBskyFeedGetActorLikes api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2119,7 +2177,7 @@ void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
     AtProtocolInterface::AppBskyFeedGetAuthorFeed api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2148,7 +2206,7 @@ void atprotocol_test::test_AppBskyFeedGetFeed()
     AtProtocolInterface::AppBskyFeedGetFeed api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2179,7 +2237,7 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerators()
     AtProtocolInterface::AppBskyFeedGetFeedGenerators api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2204,7 +2262,7 @@ void atprotocol_test::test_AppBskyGraphGetBlocks()
     AtProtocolInterface::AppBskyGraphGetBlocks api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2224,11 +2282,11 @@ void atprotocol_test::test_AppBskyGraphGetFollowers()
     AtProtocolInterface::AppBskyGraphGetFollowers api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.getFollowers("", 0, QString());
+        api.getFollowers("", 0, QString(), "latest");
         spy.wait();
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
@@ -2247,11 +2305,11 @@ void atprotocol_test::test_AppBskyGraphGetFollows()
     AtProtocolInterface::AppBskyGraphGetFollows api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.getFollows("", 0, QString());
+        api.getFollows("", 0, QString(), "latest");
         spy.wait();
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
@@ -2271,7 +2329,7 @@ void atprotocol_test::test_AppBskyGraphGetListMutes()
     AtProtocolInterface::AppBskyGraphGetListMutes api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2294,7 +2352,7 @@ void atprotocol_test::test_AppBskyGraphGetListBlocks()
     AtProtocolInterface::AppBskyGraphGetListBlocks api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
@@ -2317,7 +2375,7 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
     AtProtocolInterface::AppBskyGraphGetMutes api;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
     api.setAccount(m_account);
-    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+    api.setService(QString("http://127.0.0.1:%1/response").arg(m_listenPort));
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));

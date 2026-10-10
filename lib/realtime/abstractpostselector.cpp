@@ -18,6 +18,7 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
     : m_isArray(false),
       m_parentIsArray(true),
       m_ready(false),
+      m_backfillPending(false),
       m_key(parent),
       m_hasImage(false),
       m_imageCount(0),
@@ -381,6 +382,15 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                 // selectorのツリー構造のrootで保存することになる
                 if (info.action == OperationActionType::Create) {
                     appendReactionCandidate(info.uri, info.cid);
+                    info.reply_parent_uri = getBlock(object, path)
+                                                    .value("value")
+                                                    .toObject()
+                                                    .value("reply")
+                                                    .toObject()
+                                                    .value("parent")
+                                                    .toObject()
+                                                    .value("uri")
+                                                    .toString();
                 } else if (info.action == OperationActionType::Delete) {
                     info.cid = m_reationCandidatesCids.value(info.uri, QString());
                 }
@@ -715,6 +725,10 @@ void AbstractPostSelector::setRepostCondition(int newRepostCondition)
 // スレッドとして実行する場合にまとめて実行するスロット
 void AbstractPostSelector::judgeSelectionAndReaction(const QJsonObject &object)
 {
+    if (m_backfillPending) {
+        // 保持している受信データにも含まれているので、ここでは処理しない
+        return;
+    }
     if (judgeReaction(object)) {
         emit reacted(object);
     }
@@ -834,6 +848,16 @@ void AbstractPostSelector::setReady(bool newReady)
         child->setReady(newReady);
     }
     m_ready = newReady;
+}
+
+bool AbstractPostSelector::backfillPending() const
+{
+    return m_backfillPending;
+}
+
+void AbstractPostSelector::setBackfillPending(bool newBackfillPending)
+{
+    m_backfillPending = newBackfillPending;
 }
 
 bool AbstractPostSelector::parentIsArray() const

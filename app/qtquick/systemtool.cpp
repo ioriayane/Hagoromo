@@ -86,12 +86,10 @@ void SystemTool::setFlicableWheelDeceleration(qreal deceleration)
     qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", QString::number(deceleration).toLocal8Bit());
 }
 
-QStringList SystemTool::possibleRealtimeFeedServiceEndpoints() const
+QStringList SystemTool::possibleRealtimeFeedServiceEndpoints()
 {
-    return QStringList() << "wss://jetstream1.us-east.bsky.network"
-                         << "wss://jetstream2.us-east.bsky.network"
-                         << "wss://jetstream1.us-west.bsky.network"
-                         << "wss://jetstream2.us-west.bsky.network"
+    return QStringList() << "wss://jetstream.us-east.bsky.network"
+                         << "wss://jetstream.us-west.bsky.network"
 #ifdef QT_DEBUG
                          << "ws://localhost:19283"
 #endif
@@ -104,6 +102,21 @@ void SystemTool::changeRealtimeFeedServiceEndpoint(const QString &endpoint)
     if (receiver == nullptr)
         return;
     receiver->changeServiceEndpoint(endpoint);
+}
+
+QList<int> SystemTool::possibleRealtimeFeedLookbackMinutes()
+{
+    return QList<int>() << 0 << 5 << 10 << 15;
+}
+
+void SystemTool::changeRealtimeFeedLookbackMinutes(int minutes)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    if (!possibleRealtimeFeedLookbackMinutes().contains(minutes))
+        return;
+    receiver->setInitialLookbackMinutes(minutes);
 }
 
 QString SystemTool::applicationVersion() const

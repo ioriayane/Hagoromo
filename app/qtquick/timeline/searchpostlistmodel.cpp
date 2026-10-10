@@ -14,7 +14,7 @@ bool SearchPostListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
-        connect(posts, &AppBskyFeedSearchPosts::finished, [=](bool success) {
+        connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = posts->cursor();
@@ -49,7 +49,7 @@ bool SearchPostListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
-        connect(posts, &AppBskyFeedSearchPosts::finished, [=](bool success) {
+        connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = posts->cursor();
                 QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;

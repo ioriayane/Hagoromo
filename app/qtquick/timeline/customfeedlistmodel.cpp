@@ -9,7 +9,7 @@ using AtProtocolInterface::AppBskyFeedGetFeed;
 CustomFeedListModel::CustomFeedListModel(QObject *parent)
     : TimelineListModel { parent }, m_saving(false)
 {
-    connect(&m_feedGeneratorListModel, &FeedGeneratorListModel::runningChanged, [=]() {
+    connect(&m_feedGeneratorListModel, &FeedGeneratorListModel::runningChanged, this, [=]() {
         qDebug() << "m_feedGeneratorListModel" << m_feedGeneratorListModel.running();
         setRunning(m_feedGeneratorListModel.running());
         if (!m_feedGeneratorListModel.running()) {
@@ -30,7 +30,7 @@ bool CustomFeedListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
-        connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
+        connect(feed, &AppBskyFeedGetFeed::finished, this, [=](bool success) {
             if (success) {
                 copyFrom(feed->feedList());
             } else {
@@ -49,7 +49,7 @@ bool CustomFeedListModel::getLatest()
 void CustomFeedListModel::updateFeedSaveStatus()
 {
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    connect(pref, &AppBskyActorGetPreferences::finished, this, [=](bool success) {
         if (success) {
             bool exist = false;
             for (const auto &prefs : pref->preferences().savedFeedsPrefV2) {

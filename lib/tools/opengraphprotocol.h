@@ -12,6 +12,7 @@ public:
 
     void getData(const QString &url);
     void downloadThumb(const QString &path);
+    bool applySiteRule(const QString &url);
     static QString decodeHtml(const QString &encoded);
 
     QString uri() const;

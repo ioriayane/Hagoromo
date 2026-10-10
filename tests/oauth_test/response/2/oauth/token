@@ -2,5 +2,7 @@
     "access_token": "access token",
     "token_type": "DPoP",
     "expires_in": 2677,
-    "refresh_token": "refresh token"
+    "refresh_token": "refresh token",
+    "scope": "atproto transition:generic transition:chat.bsky",
+    "sub": "did:plc:ipj5qejfoqu6eukvt72uhyit"
 }

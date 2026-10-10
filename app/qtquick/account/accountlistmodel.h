@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QTimer>
 
+class OAuthLogin;
+
 class AccountListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -44,6 +46,7 @@ public:
         AllowedDirectMessageRole,
         StatusRole,
         AuthorizedRole,
+        AuthTypeRole, // "password" or "oauth"
     };
     Q_ENUM(AccountListModelRoles)
 
@@ -59,6 +62,8 @@ public:
                                       const QString &handle, const QString &email,
                                       const QString &accessJwt, const QString &refreshJwt,
                                       const bool authorized);
+    // OAuthLoginでログインしたアカウントを追加・更新する
+    Q_INVOKABLE QString updateOAuthAccount(const QString &service, OAuthLogin *login);
     Q_INVOKABLE void removeAccount(int row);
     Q_INVOKABLE void updateAccountProfile(const QString &service, const QString &identifier);
     Q_INVOKABLE int indexAt(const QString &uuid);

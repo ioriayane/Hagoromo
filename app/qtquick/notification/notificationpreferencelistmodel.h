@@ -46,7 +46,6 @@ public:
         RepostType,
         LikeViaRepostType,
         RepostViaRepostType,
-        ChatType,
         ReplyType,
         MentionType,
         QuoteType,
@@ -67,8 +66,7 @@ public:
 
     enum IncludeType {
         NoInclude, // include設定なし
-        FollowsInclude, // all/followsの選択
-        AcceptedInclude // all/acceptedの選択
+        FollowsInclude // all/followsの選択
     };
     Q_ENUM(IncludeType)
 

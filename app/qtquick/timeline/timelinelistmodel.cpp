@@ -369,6 +369,11 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == ReasonRepostedUriRole) {
         return current.reason_ReasonRepost.uri;
 
+    } else if (role == OpThreadPostIndexRole) {
+        return current.opThreadPostIndex;
+    } else if (role == OpThreadPostCountRole) {
+        return current.opThreadPostCount;
+
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
     else if (role == LabelIconsRole)
@@ -599,7 +604,7 @@ bool TimelineListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
-        connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+        connect(timeline, &AppBskyFeedGetTimeline::finished, this, [=](bool success) {
             if (success) {
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
@@ -626,7 +631,7 @@ bool TimelineListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
-        connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+        connect(timeline, &AppBskyFeedGetTimeline::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = timeline->cursor(); // 続きの読み込みの時は必ず上書き
 
@@ -905,7 +910,7 @@ bool TimelineListModel::detachQuote(int row)
                 if (success) {
                     // 更新後のポストを取得
                     AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
-                    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+                    connect(post, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
                         if (success && !post->postsList().isEmpty()) {
                             QString new_cid = post->postsList().at(0).cid;
                             if (m_viewPostHash.contains(new_cid)) {
@@ -1120,6 +1125,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[HasSkyblurLinkRole] = "hasSkyblurLink";
     roles[SkyblurPostTextRole] = "skyblurPostText";
+
+    roles[OpThreadPostIndexRole] = "opThreadPostIndex";
+    roles[OpThreadPostCountRole] = "opThreadPostCount";
 
     return roles;
 }
@@ -1344,7 +1352,7 @@ void TimelineListModel::getPinnedPost()
     }
 
     AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
-    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+    connect(post, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success && !post->postsList().isEmpty()) {
 
             QString new_cid = post->postsList().at(0).cid;

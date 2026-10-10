@@ -141,6 +141,8 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.h
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp
     atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h
+    atprotocol/app/bsky/unspecced/appbskyunspeccedgetpostthreadv2.cpp
+    atprotocol/app/bsky/unspecced/appbskyunspeccedgetpostthreadv2.h
     atprotocol/app/bsky/video/appbskyvideogetjobstatus.cpp
     atprotocol/app/bsky/video/appbskyvideogetjobstatus.h
     atprotocol/app/bsky/video/appbskyvideogetuploadlimits.cpp
@@ -247,10 +249,16 @@ add_library(HagoromoLib STATIC
     extension/directory/plc/directoryplc.h
     extension/directory/plc/directoryplclogaudit.cpp
     extension/directory/plc/directoryplclogaudit.h
+    extension/com/atproto/identity/comatprotoidentityresolvehandle.cpp
+    extension/com/atproto/identity/comatprotoidentityresolvehandle.h
     extension/oauth/oauthpushedauthorizationrequest.cpp
     extension/oauth/oauthpushedauthorizationrequest.h
     extension/oauth/oauthrequesttoken.cpp
     extension/oauth/oauthrequesttoken.h
+    extension/oauth/oauthrevoketoken.cpp
+    extension/oauth/oauthrevoketoken.h
+    extension/well-known/wellknownatprotodid.cpp
+    extension/well-known/wellknownatprotodid.h
     extension/well-known/wellknownoauthauthorizationserver.cpp
     extension/well-known/wellknownoauthauthorizationserver.h
     extension/well-known/wellknownoauthprotectedresource.cpp
@@ -292,6 +300,8 @@ add_library(HagoromoLib STATIC
     tools/accountmanager.h
     tools/authorization.cpp
     tools/authorization.h
+    tools/identityresolver.cpp
+    tools/identityresolver.h
     tools/base32.cpp
     tools/base32.h
     tools/cardecoder.cpp
@@ -302,6 +312,8 @@ add_library(HagoromoLib STATIC
     tools/configurablelabels.h
     tools/deviceinfo.cpp
     tools/deviceinfo.h
+    tools/dpopsessionstore.cpp
+    tools/dpopsessionstore.h
     tools/encryption.cpp
     tools/encryption.h
     tools/encryption_seed.h
@@ -352,6 +364,7 @@ target_link_libraries(HagoromoLib PRIVATE
 target_compile_definitions(HagoromoLib PRIVATE
     HAGOROMOLIB_LIBRARY
     CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
+    QT_NO_CONTEXTLESS_CONNECT
 )
 
 qt_add_translations(HagoromoLib)

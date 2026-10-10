@@ -108,7 +108,7 @@ ApplicationWindow {
             }
         }
         ImagePreview {
-            Layout.preferredWidth: parent.cellWidth  
+            Layout.preferredWidth: parent.cellWidth
             // height: 100
             layoutWidth: width
 

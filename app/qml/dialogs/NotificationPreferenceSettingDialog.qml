@@ -184,7 +184,7 @@ Dialog {
                         RowLayout {
                             Layout.fillWidth: true
                             Layout.leftMargin: 20 * AdjustedValues.ratio
-                            spacing: 10 * AdjustedValues.ratio
+                            spacing: 5 * AdjustedValues.ratio
                             visible: model.includeType !== undefined && model.includeType !== NotificationPreferenceListModel.NoInclude
 
                             Label {
@@ -220,7 +220,7 @@ Dialog {
                             ComboBoxEx {
                                 id: includeComboBox
                                 Layout.preferredWidth: 150 * AdjustedValues.ratio
-                                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                                Layout.preferredHeight: font.pixelSize * 2.5 * AdjustedValues.ratio
                                 font.pointSize: AdjustedValues.f8
                                 model: parent.includeType === NotificationPreferenceListModel.FollowsInclude ? includeOptionsFollowsModel : includeOptionsAcceptedModel
                                 onModelChanged: currentIndex = parent.optionIndex

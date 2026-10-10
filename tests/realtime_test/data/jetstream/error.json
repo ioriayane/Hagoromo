@@ -1,0 +1,5 @@
+{
+    "$type": "error",
+    "error": "ConsumerTooSlow",
+    "message": "reading below the floor rate 2100000 events behind the tip; reconnect with cursor=42"
+}

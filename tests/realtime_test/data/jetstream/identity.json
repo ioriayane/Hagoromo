@@ -1,0 +1,15 @@
+{
+    "$type": "message",
+    "payload": {
+        "$type": "network.bsky.jetstream.subscribeEvents#identity",
+        "did": "did:plc:7e6kocyzb77xkncplrkoojej",
+        "seq": 24664289000,
+        "time": "2026-08-13T06:50:01.000000Z",
+        "identity": {
+            "did": "did:plc:7e6kocyzb77xkncplrkoojej",
+            "handle": "example.bsky.social",
+            "seq": 24664289000,
+            "time": "2026-08-13T06:50:01.000000Z"
+        }
+    }
+}

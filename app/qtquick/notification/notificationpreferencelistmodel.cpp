@@ -128,7 +128,7 @@ void NotificationPreferenceListModel::loadPreferences()
 
     AtProtocolInterface::AppBskyNotificationGetPreferences *getPreferences =
             new AtProtocolInterface::AppBskyNotificationGetPreferences(this);
-    connect(getPreferences, &AtProtocolInterface::AppBskyNotificationGetPreferences::finished,
+    connect(getPreferences, &AtProtocolInterface::AppBskyNotificationGetPreferences::finished, this,
             [=](bool success) {
                 setRunning(false);
 
@@ -167,7 +167,7 @@ void NotificationPreferenceListModel::savePreferences()
     AtProtocolInterface::AppBskyNotificationPutPreferencesV2 *putPreferences =
             new AtProtocolInterface::AppBskyNotificationPutPreferencesV2(this);
     connect(putPreferences, &AtProtocolInterface::AppBskyNotificationPutPreferencesV2::finished,
-            [=](bool success) {
+            this, [=](bool success) {
                 setRunning(false);
 
                 if (!success) {
@@ -185,16 +185,13 @@ void NotificationPreferenceListModel::savePreferences()
     putPreferences->setAccount(accountData);
 
     // 各設定項目をJSONオブジェクトに変換
-    QJsonObject chat, follow, like, likeViaRepost, mention, quote, reply, repost, repostViaRepost;
+    QJsonObject follow, like, likeViaRepost, mention, quote, reply, repost, repostViaRepost;
     QJsonObject starterpackJoined, subscribedPost, unverified, verified;
 
     for (const auto &item : m_preferenceItems) {
         QJsonObject json = createPreferenceJson(item);
 
         switch (item.type) {
-        case ChatType:
-            chat = json;
-            break;
         case FollowType:
             follow = json;
             break;
@@ -234,9 +231,9 @@ void NotificationPreferenceListModel::savePreferences()
         }
     }
 
-    putPreferences->putPreferencesV2(chat, follow, like, likeViaRepost, mention, quote, reply,
-                                     repost, repostViaRepost, starterpackJoined, subscribedPost,
-                                     unverified, verified);
+    putPreferences->putPreferencesV2(follow, like, likeViaRepost, mention, quote, reply, repost,
+                                     repostViaRepost, starterpackJoined, subscribedPost, unverified,
+                                     verified);
 }
 
 QString NotificationPreferenceListModel::getIncludeDisplayName(const QString &include) const
@@ -245,8 +242,6 @@ QString NotificationPreferenceListModel::getIncludeDisplayName(const QString &in
         return tr("All");
     } else if (include == "follows") {
         return tr("Follows only");
-    } else if (include == "accepted") {
-        return tr("Accepted only");
     }
     return include;
 }
@@ -259,8 +254,6 @@ QStringList NotificationPreferenceListModel::getAvailableIncludeOptions(int type
     for (const auto &item : m_preferenceItems) {
         if (item.type == prefType) {
             switch (item.includeType) {
-            case AcceptedInclude:
-                return { "all", "accepted" };
             case FollowsInclude:
                 return { "all", "follows" };
             case NoInclude:
@@ -331,14 +324,6 @@ void NotificationPreferenceListModel::setupPreferenceItems()
             true // showList
     });
 
-    // インタラクションカテゴリ
-    m_preferenceItems.append({
-            ChatType, tr("Chat"), "all", false, false, InteractionCategory,
-            AcceptedInclude, // accepted/allの選択
-            true, // enabled
-            false // showList (Chatのみfalse)
-    });
-
     m_preferenceItems.append({
             ReplyType, tr("Reply"), "all", true, true, InteractionCategory,
             FollowsInclude, // follows/allの選択
@@ -398,10 +383,6 @@ void NotificationPreferenceListModel::updateFromAtProtocolPreferences(
 
     for (auto &item : m_preferenceItems) {
         switch (item.type) {
-        case ChatType:
-            item.include = prefs.chat.include;
-            item.push = prefs.chat.push;
-            break;
         case FollowType:
             item.include = prefs.follow.include;
             item.list = prefs.follow.list;
@@ -472,11 +453,7 @@ QJsonObject NotificationPreferenceListModel::createPreferenceJson(const Preferen
         json["include"] = item.include;
     }
 
-    // chatPreferenceにはlistフィールドがない
-    if (item.type != ChatType) {
-        json["list"] = item.list;
-    }
-
+    json["list"] = item.list;
     json["push"] = item.push;
 
     return json;

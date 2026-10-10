@@ -1,4 +1,5 @@
 #include "contentfiltersettinglistmodel.h"
+#include "tools/accountmanager.h"
 
 ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
     : QAbstractListModel { parent }, m_saving(false), m_running(false), m_modified(false)
@@ -116,8 +117,7 @@ void ContentFilterSettingListModel::load()
     m_saving = false;
     clear();
 
-    m_contentFilterLabels.setService(service());
-    m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
+    m_contentFilterLabels.setAccount(AccountManager::getInstance()->getAccount(account()));
     m_contentFilterLabels.load();
 }
 
@@ -127,8 +127,7 @@ void ContentFilterSettingListModel::save()
         return;
 
     m_saving = true;
-    m_contentFilterLabels.setService(service());
-    m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
+    m_contentFilterLabels.setAccount(AccountManager::getInstance()->getAccount(account()));
     m_contentFilterLabels.save();
 }
 
@@ -202,43 +201,17 @@ void ContentFilterSettingListModel::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-QString ContentFilterSettingListModel::service() const
+QString ContentFilterSettingListModel::account() const
 {
-    return m_service;
+    return m_account;
 }
 
-void ContentFilterSettingListModel::setService(const QString &newService)
+void ContentFilterSettingListModel::setAccount(const QString &uuid)
 {
-    if (m_service == newService)
+    if (m_account == uuid)
         return;
-    m_service = newService;
-    emit serviceChanged();
-}
-
-QString ContentFilterSettingListModel::handle() const
-{
-    return m_handle;
-}
-
-void ContentFilterSettingListModel::setHandle(const QString &newHandle)
-{
-    if (m_handle == newHandle)
-        return;
-    m_handle = newHandle;
-    emit handleChanged();
-}
-
-QString ContentFilterSettingListModel::accessJwt() const
-{
-    return m_accessJwt;
-}
-
-void ContentFilterSettingListModel::setAccessJwt(const QString &newAccessJwt)
-{
-    if (m_accessJwt == newAccessJwt)
-        return;
-    m_accessJwt = newAccessJwt;
-    emit accessJwtChanged();
+    m_account = uuid;
+    emit accountChanged();
 }
 
 QString ContentFilterSettingListModel::labelerDid() const

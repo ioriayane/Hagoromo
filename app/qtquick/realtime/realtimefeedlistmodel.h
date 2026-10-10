@@ -4,6 +4,9 @@
 #include "timeline/timelinelistmodel.h"
 #include "realtime/firehosereceiver.h"
 
+#include <QSet>
+#include <QTimer>
+
 class RealtimeFeedListModel : public TimelineListModel
 {
     Q_OBJECT
@@ -35,14 +38,25 @@ private:
     void getFollowers();
     void getListMembers();
     void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
+    void abortGetting();
     void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
                      bool is_following);
     void copyListMembers(const QString &list_uri,
                          const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
-    void getPostThread();
+    void getQueuedPosts();
+    void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
+                             bool increment);
+    void flushReactionCounts();
+    bool isReactionCountIncluded(const QString &cid, const QString &time) const;
+    void onCatchingUpChanged(bool catching_up);
+    void appendBackfillPosts(RealtimeFeed::AbstractPostSelector *selector,
+                             const QList<QJsonObject> &objects);
+    void flushBackfillPosts();
 
     bool m_runningCue;
-    QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
+    QList<RealtimeFeed::OperationInfo> m_cueGetPosts;
+    // さかのぼり受信で追いつくまでの間に選択されたポスト(新しいものから上限件数まで)
+    QList<RealtimeFeed::OperationInfo> m_backfillPosts;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
     QMap<QString, QList<RealtimeFeed::UserInfo>> m_list_members; // QMap<list_uri, List<UserInfo>>
@@ -51,6 +65,14 @@ private:
     QString m_cursor;
     QString m_selectorJson;
     bool m_receiving;
+
+    // like/repostカウントの更新頻度が高い場合にdataChangedの発行回数を間引くための仕組み
+    // (件数はイベント受信時に即時反映し、GUIへの通知のみタイマーでまとめて行う)
+    QTimer m_reactionFlushTimer;
+    QHash<QString, QSet<int>> m_dirtyReactionCountRoles; // QHash<cid, roles>
+    // ポストを取得した時刻。これより前のリアクションは取得したカウントに含まれている
+    // (さかのぼり受信で過去のリアクションを二重にカウントしないようにする)
+    QHash<QString, qint64> m_postFetchedTime; // QHash<cid, msecs since epoch>
 };
 
 #endif // REALTIMEFEEDLISTMODEL_H

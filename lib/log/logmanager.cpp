@@ -105,6 +105,8 @@ void LogManager::update(const QString &service, const QString &did)
         repo->deleteLater();
     });
     repo->setService(service);
+    // リポジトリは数十MBになるので圧縮して受け取る(展開はhttplibが行う)
+    repo->appendRawHeader("Accept-Encoding", "gzip");
     repo->getRepo(did, QString());
 }
 
@@ -188,7 +190,7 @@ void LogManager::getPosts()
     }
 
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
-    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+    connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
             m_postViews.append(posts->postsList());
 

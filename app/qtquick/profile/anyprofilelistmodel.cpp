@@ -18,7 +18,7 @@ bool AnyProfileListModel::getLatest()
 
     if (type() == AnyProfileListModelType::Like) {
         AppBskyFeedGetLikes *likes = new AppBskyFeedGetLikes(this);
-        connect(likes, &AppBskyFeedGetLikes::finished, [=](bool success) {
+        connect(likes, &AppBskyFeedGetLikes::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = likes->cursor();
                 for (const auto &like : likes->likesList()) {
@@ -45,7 +45,7 @@ bool AnyProfileListModel::getLatest()
 
     } else if (type() == AnyProfileListModelType::Repost) {
         AppBskyFeedGetRepostedBy *reposts = new AppBskyFeedGetRepostedBy(this);
-        connect(reposts, &AppBskyFeedGetRepostedBy::finished, [=](bool success) {
+        connect(reposts, &AppBskyFeedGetRepostedBy::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = reposts->cursor();
                 for (const auto &profile : reposts->followsList()) {
@@ -81,7 +81,7 @@ bool AnyProfileListModel::getNext()
 
     if (type() == AnyProfileListModelType::Like) {
         AppBskyFeedGetLikes *likes = new AppBskyFeedGetLikes(this);
-        connect(likes, &AppBskyFeedGetLikes::finished, [=](bool success) {
+        connect(likes, &AppBskyFeedGetLikes::finished, this, [=](bool success) {
             if (success) {
                 if (likes->likesList().isEmpty())
                     m_cursor.clear();
@@ -111,7 +111,7 @@ bool AnyProfileListModel::getNext()
 
     } else if (type() == AnyProfileListModelType::Repost) {
         AppBskyFeedGetRepostedBy *reposts = new AppBskyFeedGetRepostedBy(this);
-        connect(reposts, &AppBskyFeedGetRepostedBy::finished, [=](bool success) {
+        connect(reposts, &AppBskyFeedGetRepostedBy::finished, this, [=](bool success) {
             if (success) {
                 if (reposts->followsList().isEmpty())
                     m_cursor.clear();

@@ -14,7 +14,7 @@ bool FollowersListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
-        connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollowers::finished, this, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
                     m_cursor = profiles->cursor();
@@ -28,7 +28,7 @@ bool FollowersListModel::getLatest()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollowers(targetDid(), 50, QString());
+        profiles->getFollowers(targetDid(), 50, QString(), "latest");
     });
     return true;
 }
@@ -41,7 +41,7 @@ bool FollowersListModel::getNext()
 
     updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
-        connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
+        connect(profiles, &AppBskyGraphGetFollowers::finished, this, [=](bool success) {
             if (success) {
                 m_cursor = profiles->cursor();
                 copyProfiles(profiles);
@@ -53,7 +53,7 @@ bool FollowersListModel::getNext()
         });
         profiles->setAccount(account());
         profiles->setLabelers(labelerDids());
-        profiles->getFollowers(targetDid(), 50, m_cursor);
+        profiles->getFollowers(targetDid(), 50, m_cursor, "latest");
     });
     return true;
 }

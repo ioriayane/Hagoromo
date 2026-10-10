@@ -1,13 +1,13 @@
 #include "authorization.h"
 #include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
-#include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/well-known/wellknownoauthprotectedresource.h"
 #include "extension/well-known/wellknownoauthauthorizationserver.h"
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "extension/oauth/oauthrequesttoken.h"
-#include "atprotocol/lexicons_func_unknown.h"
+#include "extension/oauth/oauthrevoketoken.h"
 #include "tools/jsonwebtoken.h"
+#include "tools/identityresolver.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -21,26 +21,58 @@
 #include <QDesktopServices>
 #include <QTimer>
 
-using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::OauthPushedAuthorizationRequest;
 using AtProtocolInterface::OauthRequestToken;
+using AtProtocolInterface::OauthRevokeToken;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
-Authorization::Authorization(QObject *parent) : QObject { parent }, m_redirectTimeout(300) { }
+// issuerはメタデータを取得したAuthorization Serverのorigin(scheme/host/port)と一致すること
+// issuer自体はoriginなのでパスなどを含まない
+inline bool isSameOrigin(const QString &issuer, const QString &authorization_server)
+{
+    const QUrl issuer_url(issuer);
+    const QUrl server_url(authorization_server);
+    if (!issuer_url.isValid() || issuer_url.host().isEmpty() || !server_url.isValid())
+        return false;
+    if (!(issuer_url.path().isEmpty() || issuer_url.path() == "/") || issuer_url.hasQuery()
+        || issuer_url.hasFragment() || !issuer_url.userInfo().isEmpty())
+        return false;
+    const int issuer_default_port = (issuer_url.scheme() == "https") ? 443 : 80;
+    const int server_default_port = (server_url.scheme() == "https") ? 443 : 80;
+    return issuer_url.scheme() == server_url.scheme() && issuer_url.host() == server_url.host()
+            && issuer_url.port(issuer_default_port) == server_url.port(server_default_port);
+}
+
+// Authorization ServerからDPoP nonceの更新を求められた場合、新しいnonceで1回だけ再送する
+inline bool canRetryWithDPopNonce(const QString &error_code, const QString &new_nonce, bool retried)
+{
+    return !retried && error_code == QStringLiteral("use_dpop_nonce") && !new_nonce.isEmpty();
+}
+
+Authorization::Authorization(QObject *parent)
+    : QObject { parent },
+      m_scopes(defaultScopes()),
+      m_plcDirectory(QStringLiteral("https://plc.directory")),
+      m_tokenRequesting(false),
+      m_redirectTimeout(300)
+{
+}
 
 void Authorization::reset()
 {
     // user
     m_handle.clear();
+    m_did.clear();
     // server info
     m_serviceEndpoint.clear();
     m_authorizationServer.clear();
     // server meta data
+    m_issuer.clear();
     m_pushedAuthorizationRequestEndpoint.clear();
     m_authorizationEndpoint.clear();
     m_tokenEndopoint.clear();
-    m_scopesSupported.clear();
+    m_revocationEndpoint.clear();
     //
     m_redirectUri.clear();
     m_clientId.clear();
@@ -51,6 +83,7 @@ void Authorization::reset()
     // request token
     m_code.clear();
     m_token = AtProtocolType::OauthDefs::TokenResponse();
+    m_dPopKey.clear();
     //
     m_listenPort.clear();
 }
@@ -60,35 +93,36 @@ void Authorization::start(const QString &pds, const QString &handle)
     if (pds.isEmpty() || handle.isEmpty())
         return;
 
+    // 新しいセッションなのでDPoPの鍵も新しく作る
+    if (!m_dPopKey.generateKey()) {
+        emit errorOccurred("Invalid DPoP key", "Failed to generate DPoP key.");
+        emit finished(false);
+        return;
+    }
+
     startRedirectServer();
 
-    AtProtocolInterface::AccountData account;
-    account.service = pds;
-    m_handle = handle;
-
-    ComAtprotoRepoDescribeRepo *repo = new ComAtprotoRepoDescribeRepo(this);
-    connect(repo, &ComAtprotoRepoDescribeRepo::finished, this, [=](bool success) {
+    // handle(またはDID) -> DID -> DIDドキュメント -> PDS を双方向で検証しながら解決する
+    // pdsはDNS/HTTPSでハンドルを解決できなかったときの問い合わせ先
+    IdentityResolver *resolver = new IdentityResolver(this);
+    connect(resolver, &IdentityResolver::errorOccurred, this, &Authorization::errorOccurred);
+    connect(resolver, &IdentityResolver::finished, this, [=](bool success) {
         if (success) {
-            auto did_doc = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                    AtProtocolType::DirectoryPlcDefs::DidDoc>(repo->didDoc());
-            if (!did_doc.service.isEmpty()) {
-                setServiceEndpoint(did_doc.service.first().serviceEndpoint);
+            // tokenのsubと照合するため
+            m_did = resolver->did();
+            m_handle = resolver->handle();
+            setServiceEndpoint(resolver->pdsEndpoint());
 
-                // next step
-                requestOauthProtectedResource();
-            } else {
-                emit errorOccurred("Invalid oauth-protected-resource",
-                                   "authorization_servers is empty.");
-                emit finished(false);
-            }
+            // next step
+            requestOauthProtectedResource();
         } else {
-            emit errorOccurred(repo->errorCode(), repo->errorMessage());
             emit finished(false);
         }
-        repo->deleteLater();
+        resolver->deleteLater();
     });
-    repo->setAccount(account);
-    repo->describeRepo(handle);
+    resolver->setHandleResolutionService(pds);
+    resolver->setPlcDirectory(plcDirectory());
+    resolver->resolve(handle);
 }
 
 void Authorization::requestOauthProtectedResource()
@@ -137,19 +171,12 @@ void Authorization::requestOauthAuthorizationServer()
         if (success) {
             QString error_message;
             if (validateServerMetadata(server->serverMetadata(), error_message)) {
-                const QStringList scope_candidates = QStringList() << "atproto"
-                                                                   << "transition:generic"
-                                                                   << "transition:chat.bsky";
+                m_issuer = server->serverMetadata().issuer;
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
                 setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
                 setTokenEndopoint(server->serverMetadata().token_endpoint);
-                for (const auto &scope : scope_candidates) {
-                    if (server->serverMetadata().scopes_supported.contains(scope)) {
-                        m_scopesSupported.append(scope);
-                    }
-                }
-
+                setRevocationEndpoint(server->serverMetadata().revocation_endpoint);
                 // next step
                 par();
             } else {
@@ -172,8 +199,7 @@ bool Authorization::validateServerMetadata(
         QString &error_message)
 {
     bool ret = false;
-    if (QUrl(server_metadata.issuer).host() != QUrl(authorizationServer()).host()) {
-        // リダイレクトされると変わるので対応しないといけない
+    if (!isSameOrigin(server_metadata.issuer, authorizationServer())) {
         error_message = QString("'issuer' is an invalid value(%1).").arg(server_metadata.issuer);
     } else if (!server_metadata.response_types_supported.contains("code")) {
         error_message = QStringLiteral("'response_types_supported' must contain 'code'.");
@@ -228,6 +254,60 @@ QByteArray Authorization::state() const
     return m_state;
 }
 
+QString Authorization::issuer() const
+{
+    return m_issuer;
+}
+
+QString Authorization::did() const
+{
+    return m_did;
+}
+
+QString Authorization::handle() const
+{
+    return m_handle;
+}
+
+QStringList Authorization::defaultScopes()
+{
+    const QString appview = QStringLiteral("aud=did:web:api.bsky.app%23bsky_appview");
+    const QString chat = QStringLiteral("aud=did:web:api.bsky.chat%23bsky_chat");
+    return QStringList() << QStringLiteral("atproto")
+                         << QStringLiteral("include:app.bsky.authFullApp?") + appview
+                         << QStringLiteral("include:chat.bsky.authFullChatClient?") + chat
+                         // 下書きはapp.bsky.authFullAppに含まれていない
+                         << QStringLiteral("rpc:app.bsky.draft.createDraft?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.deleteDraft?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.getDrafts?") + appview
+                         << QStringLiteral("rpc:app.bsky.draft.updateDraft?") + appview
+                         << QStringLiteral("repo:tech.tokimeki.poll.poll")
+                         << QStringLiteral("repo:tech.tokimeki.poll.vote")
+                         << QStringLiteral("blob:*/*")
+                         // ラベラーへの通報
+                         << QStringLiteral("rpc:com.atproto.moderation.createReport?aud=*");
+}
+
+QStringList Authorization::scopes() const
+{
+    return m_scopes;
+}
+
+void Authorization::setScopes(const QStringList &newScopes)
+{
+    m_scopes = newScopes;
+}
+
+QString Authorization::plcDirectory() const
+{
+    return m_plcDirectory;
+}
+
+void Authorization::setPlcDirectory(const QString &newPlcDirectory)
+{
+    m_plcDirectory = newPlcDirectory;
+}
+
 void Authorization::setListenPort(const QString &newListenPort)
 {
     m_listenPort = newListenPort;
@@ -245,10 +325,10 @@ void Authorization::makeClientId()
         port.append(":");
         port.append(m_listenPort);
     }
-    m_redirectUri.append("http://127.0.0.1");
-    m_redirectUri.append(port);
-    m_redirectUri.append("/tech/relog/hagoromo/oauth-callback");
-    m_clientId = "https://oauth.hagoromo.relog.tech/client-metadata.json";
+    // 同じインスタンスで何度呼んでも連結されないようにする
+    m_redirectUri = QStringLiteral("http://127.0.0.1") + port
+            + QStringLiteral("/tech/relog/hagoromo/oauth-callback");
+    m_clientId = "https://oauth.hagoromo.relog.tech/oauth-client-metadata.json";
 }
 
 void Authorization::makeCodeChallenge()
@@ -264,10 +344,12 @@ QByteArray Authorization::makeParPayload()
 {
     makeClientId();
     makeCodeChallenge();
-    m_state = QCryptographicHash::hash(m_codeVerifier, QCryptographicHash::Sha256)
-                      .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+    // PKCEとは独立した乱数にする
+    m_state = generateRandomValues().toBase64(QByteArray::Base64UrlEncoding
+                                              | QByteArray::OmitTrailingEquals);
 
-    QString login_hint = m_handle;
+    // ハンドルを検証できなかった場合はDIDで指定する
+    QString login_hint = m_handle.isEmpty() ? m_did : m_handle;
 
     QUrlQuery query;
     query.addQueryItem("response_type", "code");
@@ -276,7 +358,8 @@ QByteArray Authorization::makeParPayload()
     query.addQueryItem("client_id", simplyEncode(m_clientId));
     query.addQueryItem("state", m_state);
     query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
-    query.addQueryItem("scope", m_scopesSupported.join(" "));
+    // scopeは ? = & % などを含むのでそのまま届くようにすべてエンコードする
+    query.addQueryItem("scope", QString::fromUtf8(QUrl::toPercentEncoding(m_scopes.join(" "))));
     query.addQueryItem("login_hint", simplyEncode(login_hint));
 
     return query.query(QUrl::FullyEncoded).toLocal8Bit();
@@ -286,31 +369,50 @@ void Authorization::par()
 {
     if (pushedAuthorizationRequestEndpoint().isEmpty())
         return;
+    if (!m_dPopKey.isValid() && !m_dPopKey.generateKey()) {
+        emit errorOccurred("Invalid DPoP key", "Failed to generate DPoP key.");
+        emit finished(false);
+        return;
+    }
 
+    // 再送時にcode_challengeやstateが変わらないようにペイロードは1回だけ作る
+    postPushedAuthorizationRequest(makeParPayload(), false);
+}
+
+void Authorization::postPushedAuthorizationRequest(const QByteArray &payload, bool retried)
+{
     AtProtocolInterface::AccountData account;
     account.service = pushedAuthorizationRequestEndpoint();
 
     OauthPushedAuthorizationRequest *req = new OauthPushedAuthorizationRequest(this);
     connect(req, &OauthPushedAuthorizationRequest::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
         if (success) {
             if (!req->pushedAuthorizationResponse().request_uri.isEmpty()) {
                 // next step
-                setDPopNonce(req->dPopNonce());
                 authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
                 emit errorOccurred("Invalid Pushed Authorization Request",
                                    "'request_uri' is empty.");
                 emit finished(false);
             }
+        } else if (canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry PAR with new DPoP nonce";
+            postPushedAuthorizationRequest(payload, true);
         } else {
             emit errorOccurred(req->errorCode(), req->errorMessage());
             emit finished(false);
         }
         req->deleteLater();
     });
+    req->appendRawHeader("DPoP",
+                         JsonWebToken::generate(m_dPopKey, pushedAuthorizationRequestEndpoint(),
+                                                "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
-    req->pushedAuthorizationRequest(makeParPayload());
+    req->pushedAuthorizationRequest(payload);
 }
 
 void Authorization::authorization(const QString &request_uri)
@@ -339,8 +441,8 @@ void Authorization::startRedirectServer()
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
+                // クエリには認可コードが含まれるのでパスだけ出力する
                 qDebug().noquote() << "received by startRedirectServer";
-                qDebug().noquote() << "  " << request.url().toString();
                 qDebug().noquote() << "  " << request.url().path();
 
                 if (request.url().path() != "/tech/relog/hagoromo/oauth-callback") {
@@ -352,21 +454,44 @@ void Authorization::startRedirectServer()
                     return;
                 }
 
-                if (request.query().hasQueryItem("iss") && request.query().hasQueryItem("state")
-                    && request.query().hasQueryItem("code")) {
+                bool authorized = false;
+                const QUrlQuery query = request.query();
+                if (query.hasQueryItem("iss") && query.hasQueryItem("state")
+                    && query.hasQueryItem("code")) {
                     // authorize
-                    QString state = request.query().queryItemValue("state");
-                    result = (state.toUtf8() == m_state);
-                    if (result) {
-                        m_code = request.query().queryItemValue("code").toUtf8();
+                    const QString iss = query.queryItemValue("iss", QUrl::FullyDecoded);
+                    const QString state = query.queryItemValue("state", QUrl::FullyDecoded);
+                    if (m_state.isEmpty() || state.toUtf8() != m_state) {
+                        qDebug().noquote() << "Unknown state in authorization redirect :" << state;
+                        emit errorOccurred("Invalid authorization response",
+                                           "'state' does not match.");
+                    } else if (m_issuer.isEmpty() || iss != m_issuer) {
+                        qDebug().noquote() << "Unknown iss in authorization redirect :" << iss;
+                        emit errorOccurred("Invalid authorization response",
+                                           QString("'iss' does not match(%1).").arg(iss));
+                    } else {
+                        authorized = true;
+                    }
+                    if (authorized) {
+                        m_code = query.queryItemValue("code", QUrl::FullyDecoded).toUtf8();
                         requestToken();
                     } else {
-                        qDebug().noquote() << "Unknown state in authorization redirect :" << state;
-                        emit finished(false);
                         m_code.clear();
+                        emit finished(false);
                     }
+                } else {
+                    // 拒否されたときなど
+                    const QString error = query.queryItemValue("error", QUrl::FullyDecoded);
+                    emit errorOccurred(
+                            error.isEmpty() ? QStringLiteral("Invalid authorization response")
+                                            : error,
+                            query.queryItemValue("error_description", QUrl::FullyDecoded));
+                    m_code.clear();
+                    emit finished(false);
                 }
-                if (result) {
+                // 結果のページはどちらの場合も返す
+                result = true;
+                if (authorized) {
                     SimpleHttpServer::readFile(
                             ":/tech/relog/hagoromo/tools/oauth/oauth_success.html", data);
                 } else {
@@ -395,7 +520,7 @@ void Authorization::startRedirectServer()
         }
         server->deleteLater();
     });
-    connect(server, &QObject::destroyed, [this]() {
+    connect(server, &QObject::destroyed, this, [this]() {
         qDebug().noquote() << "Destory webserver";
         m_listenPort.clear();
     });
@@ -430,33 +555,57 @@ void Authorization::requestToken(bool refresh)
 {
     if (tokenEndopoint().isEmpty())
         return;
+    if (!m_dPopKey.isValid()) {
+        // tokenはDPoPの鍵に紐づくので、別の鍵を作って続けることはできない
+        emit errorOccurred("Invalid DPoP key", "DPoP key is not set.");
+        emit finished(false);
+        return;
+    }
+    if (m_tokenRequesting) {
+        // refresh tokenは使い捨てなので同時に使うと片方が失敗してセッションを失う
+        // 結果は要求中のリクエストのfinished/tokenChangedで通知される
+        qDebug().noquote() << "Token request is already in progress";
+        return;
+    }
 
+    m_tokenRequesting = true;
+    postTokenRequest(refresh, false);
+}
+
+void Authorization::postTokenRequest(bool refresh, bool retried)
+{
     AtProtocolInterface::AccountData account;
     account.service = tokenEndopoint();
 
     OauthRequestToken *req = new OauthRequestToken(this);
     connect(req, &OauthRequestToken::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
+        if (!success && canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry token request with new DPoP nonce";
+            postTokenRequest(refresh, true);
+            req->deleteLater();
+            return;
+        }
+        m_tokenRequesting = false;
         bool ret = false;
         if (success) {
-            if (!req->tokenResponse().access_token.isEmpty()
-                && !req->tokenResponse().refresh_token.isEmpty()
-                && req->tokenResponse().token_type.toLower() == "dpop") {
-
-                if (!req->dPopNonce().isEmpty()) {
-                    setDPopNonce(req->dPopNonce());
+            QString error_message;
+            if (validateTokenResponse(req->tokenResponse(), error_message)) {
+                if (m_did.isEmpty()) {
+                    m_did = req->tokenResponse().sub;
                 }
                 setToken(req->tokenResponse());
 
-                qDebug().noquote() << "--- Success oauth ----";
-                qDebug().noquote() << "  handle :" << m_handle;
-                qDebug().noquote() << "  access :" << m_token.access_token;
-                qDebug().noquote() << "  refresh:" << m_token.refresh_token;
-                qDebug().noquote() << req->replyJson();
-                qDebug().noquote() << "----------------------";
+                // tokenはログに出さない
+                qDebug().noquote() << "Success oauth token request :" << m_token.sub << "expires_in"
+                                   << m_token.expires_in;
                 // finish oauth sequence
                 ret = true;
             } else {
-                emit errorOccurred("Invalid token response", req->replyJson());
+                qDebug().noquote() << error_message;
+                emit errorOccurred("Invalid token response", error_message);
             }
         } else {
             emit errorOccurred(req->errorCode(), req->errorMessage());
@@ -465,10 +614,109 @@ void Authorization::requestToken(bool refresh)
         req->deleteLater();
     });
     req->appendRawHeader("DPoP",
-                         JsonWebToken::generate(tokenEndopoint(), clientId(), "POST", dPopNonce()));
+                         JsonWebToken::generate(m_dPopKey, tokenEndopoint(), "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->requestToken(makeRequestTokenPayload(refresh));
+}
+
+bool Authorization::validateTokenResponse(const AtProtocolType::OauthDefs::TokenResponse &token,
+                                          QString &error_message) const
+{
+    // セッション開始時のDID、refreshの場合はこれまでのtokenのDIDと一致すること
+    const QString expected_did = m_did.isEmpty() ? m_token.sub : m_did;
+
+    bool ret = false;
+    if (token.access_token.isEmpty()) {
+        error_message = QStringLiteral("'access_token' is empty.");
+    } else if (token.refresh_token.isEmpty()) {
+        error_message = QStringLiteral("'refresh_token' is empty.");
+    } else if (token.token_type.toLower() != "dpop") {
+        error_message = QString("'token_type' is an invalid value(%1).").arg(token.token_type);
+    } else if (!token.scope.split(' ', Qt::SkipEmptyParts).contains("atproto")) {
+        error_message = QStringLiteral("'scope' must contain 'atproto'.");
+    } else if (!token.sub.startsWith("did:")) {
+        error_message = QString("'sub' is an invalid value(%1).").arg(token.sub);
+    } else if (!expected_did.isEmpty() && token.sub != expected_did) {
+        error_message = QString("'sub' does not match the expected DID(%1, expected %2).")
+                                .arg(token.sub, expected_did);
+    } else {
+        ret = true;
+    }
+    return ret;
+}
+
+void Authorization::revokeToken()
+{
+    const QString token =
+            m_token.refresh_token.isEmpty() ? m_token.access_token : m_token.refresh_token;
+    if (token.isEmpty() || !m_dPopKey.isValid()) {
+        // DPoPの鍵がないとサーバーはクライアントを確認できない
+        emit revokeFinished(false);
+        return;
+    }
+    if (m_clientId.isEmpty()) {
+        makeClientId();
+    }
+    QUrlQuery query;
+    query.addQueryItem("token", QString::fromUtf8(QUrl::toPercentEncoding(token)));
+    query.addQueryItem("token_type_hint",
+                       m_token.refresh_token.isEmpty() ? "access_token" : "refresh_token");
+    query.addQueryItem("client_id", simplyEncode(m_clientId));
+    const QByteArray payload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+
+    if (!revocationEndpoint().isEmpty()) {
+        postRevokeRequest(payload, false);
+        return;
+    }
+    if (authorizationServer().isEmpty()) {
+        emit revokeFinished(false);
+        return;
+    }
+
+    // 失効のエンドポイントを知らない(以前に保存したセッション)ときはメタデータから取得する
+    AtProtocolInterface::AccountData account;
+    account.service = authorizationServer();
+    WellKnownOauthAuthorizationServer *server = new WellKnownOauthAuthorizationServer(this);
+    connect(server, &WellKnownOauthAuthorizationServer::finished, this, [=](bool success) {
+        const QString issuer = server->serverMetadata().issuer;
+        const QString endpoint = server->serverMetadata().revocation_endpoint;
+        server->deleteLater();
+        if (success && isSameOrigin(issuer, authorizationServer()) && !endpoint.isEmpty()) {
+            setRevocationEndpoint(endpoint);
+            postRevokeRequest(payload, false);
+        } else {
+            emit revokeFinished(false);
+        }
+    });
+    server->setAccount(account);
+    server->oauthAuthorizationServer();
+}
+
+void Authorization::postRevokeRequest(const QByteArray &payload, bool retried)
+{
+    AtProtocolInterface::AccountData account;
+    account.service = revocationEndpoint();
+
+    OauthRevokeToken *req = new OauthRevokeToken(this);
+    connect(req, &OauthRevokeToken::finished, this, [=](bool success) {
+        if (!req->dPopNonce().isEmpty()) {
+            setDPopNonce(req->dPopNonce());
+        }
+        if (!success && canRetryWithDPopNonce(req->errorCode(), req->dPopNonce(), retried)) {
+            qDebug().noquote() << "Retry revoke request with new DPoP nonce";
+            postRevokeRequest(payload, true);
+        } else {
+            qDebug().noquote() << "Revoke oauth token :" << success << m_token.sub;
+            emit revokeFinished(success);
+        }
+        req->deleteLater();
+    });
+    req->appendRawHeader(
+            "DPoP", JsonWebToken::generate(m_dPopKey, revocationEndpoint(), "POST", dPopNonce()));
+    req->setContentType("application/x-www-form-urlencoded");
+    req->setAccount(account);
+    req->revokeToken(payload);
 }
 
 QByteArray Authorization::generateRandomValues() const
@@ -547,6 +795,16 @@ void Authorization::setAuthorizationEndpoint(const QString &newAuthorizationEndp
     emit authorizationEndpointChanged();
 }
 
+QString Authorization::revocationEndpoint() const
+{
+    return m_revocationEndpoint;
+}
+
+void Authorization::setRevocationEndpoint(const QString &newRevocationEndpoint)
+{
+    m_revocationEndpoint = newRevocationEndpoint;
+}
+
 QString Authorization::tokenEndopoint() const
 {
     return m_tokenEndopoint;
@@ -604,6 +862,16 @@ QString Authorization::dPopNonce() const
 void Authorization::setDPopNonce(const QString &newDPopNonce)
 {
     m_dPopNonce = newDPopNonce;
+}
+
+QByteArray Authorization::dPopPrivateKey() const
+{
+    return m_dPopKey.privateKeyPem();
+}
+
+bool Authorization::setDPopPrivateKey(const QByteArray &pem)
+{
+    return m_dPopKey.loadPrivateKeyPem(pem);
 }
 
 QByteArray Authorization::codeChallenge() const

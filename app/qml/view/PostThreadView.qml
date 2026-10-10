@@ -143,6 +143,8 @@ ColumnLayout {
                     }
                     return text
                 }
+                opThreadPostIndex: model.opThreadPostIndex
+                opThreadPostCount: model.opThreadPostCount
                 skyblurContent.visible: model.hasSkyblurLink
                 skyblurContent.postText.text: model.skyblurPostText
                 skyblurContent.getPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)

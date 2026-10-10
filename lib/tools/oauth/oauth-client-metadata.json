@@ -1,0 +1,19 @@
+{
+    "client_id": "https://oauth.hagoromo.relog.tech/oauth-client-metadata.json",
+    "application_type": "native",
+    "client_name": "Hagoromo",
+    "client_uri": "https://oauth.hagoromo.relog.tech",
+    "dpop_bound_access_tokens": true,
+    "grant_types": [
+        "authorization_code",
+        "refresh_token"
+    ],
+    "redirect_uris": [
+        "http://127.0.0.1/tech/relog/hagoromo/oauth-callback"
+    ],
+    "response_types": [
+        "code"
+    ],
+    "scope": "atproto include:app.bsky.authFullApp?aud=did:web:api.bsky.app%23bsky_appview include:chat.bsky.authFullChatClient?aud=did:web:api.bsky.chat%23bsky_chat rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview repo:tech.tokimeki.poll.poll repo:tech.tokimeki.poll.vote blob:*/* rpc:com.atproto.moderation.createReport?aud=*",
+    "token_endpoint_auth_method": "none"
+}

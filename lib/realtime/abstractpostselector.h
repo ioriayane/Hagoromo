@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QJsonObject>
 
+#include <atomic>
+
 namespace RealtimeFeed {
 
 enum class OperationActionType : int { Create, Delete };
@@ -28,6 +30,7 @@ struct OperationInfo
     QString reacted_by_did; // did
     QString reacted_by_handle;
     QString reacted_by_display_name;
+    QString reply_parent_uri; // ポスト作成時のリプライ先
     QString time;
 };
 
@@ -78,6 +81,8 @@ public:
     void setParentIsArray(bool newParentIsArray);
     bool ready() const;
     void setReady(bool newReady);
+    bool backfillPending() const;
+    void setBackfillPending(bool newBackfillPending);
     QString handle() const;
     void setHandle(const QString &newHandle);
     QString displayName() const;
@@ -111,6 +116,7 @@ public:
 signals:
     void selected(const QJsonObject &object);
     void reacted(const QJsonObject &object);
+    void backfilled(const QList<QJsonObject> &objects);
 
 public slots:
     void judgeSelectionAndReaction(const QJsonObject &object);
@@ -140,6 +146,9 @@ private:
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;
+    // 保持している受信データを流し終えるまでリアルタイムの受信データを無視する
+    // (設定はメインスレッド、参照はセレクターのスレッドから行うのでatomic)
+    std::atomic<bool> m_backfillPending;
     QObject *m_key;
 
     bool m_hasImage;

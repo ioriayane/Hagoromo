@@ -26,7 +26,7 @@ bool AnyFeedListModel::getLatest()
 
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
-        connect(records, &ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
+        connect(records, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
@@ -105,7 +105,7 @@ bool AnyFeedListModel::getNext()
 
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
-        connect(records, &ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
+        connect(records, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
@@ -241,7 +241,7 @@ void AnyFeedListModel::getPosts()
     }
 
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
-    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+    connect(posts, &AppBskyFeedGetPosts::finished, this, [=](bool success) {
         if (success) {
             QStringList new_cid;
 

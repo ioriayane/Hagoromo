@@ -86,7 +86,7 @@ void ListItemListModel::mute()
     if (muted()) {
         // -> unmute
         AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
-        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+        connect(list, &AppBskyGraphUnmuteActorList::finished, this, [=](bool success) {
             if (success) {
                 setMuted(false);
                 setRunning(false);
@@ -98,7 +98,7 @@ void ListItemListModel::mute()
     } else {
         // -> mute
         AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
-        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+        connect(list, &AppBskyGraphMuteActorList::finished, this, [=](bool success) {
             if (success) {
                 setMuted(true);
                 setRunning(false);
@@ -119,7 +119,7 @@ void ListItemListModel::block()
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
-    connect(ope, &RecordOperator::finished, [=](bool success) {
+    connect(ope, &RecordOperator::finished, this, [=](bool success) {
         if (success) {
             setBlocked(!blocked());
             setRunning(false);
@@ -143,7 +143,7 @@ bool ListItemListModel::getLatest()
     setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
-    connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
+    connect(list, &AppBskyGraphGetList::finished, this, [=](bool success) {
         if (success) {
             if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                 m_cursor = list->cursor();
@@ -169,7 +169,7 @@ bool ListItemListModel::getNext()
     setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
-    connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
+    connect(list, &AppBskyGraphGetList::finished, this, [=](bool success) {
         if (success) {
             m_cursor = list->cursor();
             copyFrom(list);

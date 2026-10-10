@@ -77,8 +77,18 @@ bool HttpAccess::Private::process(HttpReply *reply)
 
     httplib::Headers headers;
     for (const auto &header : reply->request().rawHeaderList()) {
-        qDebug().noquote() << LOG_DATETIME << "  header:" << header
-                           << reply->request().rawHeader(header);
+        const QByteArray header_key = header.toLower();
+        if (header_key == "authorization" || header_key == "dpop") {
+            // トークンやDPoPのproofは出力しない(方式と長さだけ)
+            const QByteArray value = reply->request().rawHeader(header);
+            qDebug().noquote() << LOG_DATETIME << "  header:" << header
+                               << (header_key == "authorization" ? value.split(' ').first()
+                                                                 : QByteArray())
+                               << "(" << value.size() << "bytes)";
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "  header:" << header
+                               << reply->request().rawHeader(header);
+        }
         headers.emplace(header.toStdString(), reply->request().rawHeader(header).toStdString());
     }
     QUrlQuery url_query(reply->request().url());
@@ -226,7 +236,7 @@ QStringList HttpAccess::Private::unixCertFolders() const
 HttpAccess::HttpAccess(QObject *parent) : QObject { parent }, d(new Private(this))
 {
     qDebug().noquote() << LOG_DATETIME << this << "HttpAccess()";
-    connect(this, &QObject::destroyed, [this]() { delete d; });
+    connect(this, &QObject::destroyed, this, [this]() { delete d; });
 }
 
 HttpAccess::~HttpAccess()

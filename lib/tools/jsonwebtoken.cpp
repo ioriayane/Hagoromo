@@ -4,8 +4,10 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QByteArray>
-#include <QFile>
-#include <QDebug>
+#include <QCryptographicHash>
+#include <QDateTime>
+#include <QRandomGenerator>
+#include <QUrl>
 
 inline QByteArray base64UrlEncode(const QByteArray &data)
 {
@@ -14,15 +16,13 @@ inline QByteArray base64UrlEncode(const QByteArray &data)
     return encoded;
 }
 
-inline QJsonObject createJwk()
+inline QJsonObject createJwk(const Es256 &key)
 {
     QJsonObject jwk;
 
     QByteArray x_coord;
     QByteArray y_coord;
-    Es256::getInstance()->getAffineCoordinates(x_coord, y_coord);
-
-    if (!x_coord.isEmpty() && !y_coord.isEmpty()) {
+    if (key.getAffineCoordinates(x_coord, y_coord)) {
         jwk["kty"] = "EC"; // Key Type
         jwk["crv"] = "P-256"; // Curve
         jwk["x"] = QString::fromUtf8(x_coord);
@@ -32,36 +32,49 @@ inline QJsonObject createJwk()
     return jwk;
 }
 
-QByteArray JsonWebToken::generate(const QString &endpoint, const QString &client_id,
-                                  const QString &method, const QString &nonce)
+QByteArray JsonWebToken::generate(const Es256 &key, const QString &endpoint, const QString &method,
+                                  const QString &nonce, const QString &access_token)
 {
+    if (!key.isValid()) {
+        return QByteArray();
+    }
+
     // ヘッダー
     QJsonObject header;
     header["alg"] = "ES256";
     header["typ"] = "dpop+jwt";
-    header["jwk"] = createJwk();
+    header["jwk"] = createJwk(key);
     QByteArray headerJson = QJsonDocument(header).toJson(QJsonDocument::Compact);
     QByteArray headerBase64 = base64UrlEncode(headerJson);
 
     // ペイロード
-    qint64 epoch = QDateTime::currentSecsSinceEpoch();
+    // 同一秒内の再送でも重複しないようにランダムな値にする
+    QByteArray jti;
+    for (int i = 0; i < 16; i++) {
+        jti.append(static_cast<char>(QRandomGenerator::system()->bounded(256)));
+    }
     QJsonObject payload;
-    payload["iss"] = "tech/relog/hagoromo";
-    payload["sub"] = client_id;
-    payload["htu"] = endpoint;
+    payload["jti"] = QString::fromUtf8(base64UrlEncode(jti));
     payload["htm"] = method;
-    payload["exp"] = epoch + 60000;
-    payload["jti"] = QString(QString::number(epoch).toUtf8().toBase64());
-    payload["iat"] = epoch; // 発行時間
+    // htuはクエリとフラグメントを除く
+    payload["htu"] = QUrl(endpoint).adjusted(QUrl::RemoveQuery | QUrl::RemoveFragment).toString();
+    payload["iat"] = QDateTime::currentSecsSinceEpoch(); // 発行時間
     if (!nonce.isEmpty()) {
         payload["nonce"] = nonce;
+    }
+    if (!access_token.isEmpty()) {
+        payload["ath"] = QString::fromUtf8(base64UrlEncode(
+                QCryptographicHash::hash(access_token.toUtf8(), QCryptographicHash::Sha256)));
     }
     QByteArray payloadJson = QJsonDocument(payload).toJson(QJsonDocument::Compact);
     QByteArray payloadBase64 = base64UrlEncode(payloadJson);
 
     // 署名
     QByteArray message = headerBase64 + "." + payloadBase64;
-    QByteArray signature = Es256::getInstance()->sign(message);
+    QByteArray signature = key.sign(message);
+    if (signature.isEmpty()) {
+        return QByteArray();
+    }
     QByteArray signatureBase64 = base64UrlEncode(signature);
 
     // JWTトークン

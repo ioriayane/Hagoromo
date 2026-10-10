@@ -40,7 +40,7 @@ void Translator::translate(const QString &cid, const QString &text)
     params.addQueryItem("target_lang", targetLanguage());
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         qDebug() << "Translator reply" << reply->error() << reply->url();
         QString json = QString::fromUtf8(reply->readAll());
         QString text;

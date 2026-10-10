@@ -88,6 +88,9 @@
                 "token_endpoint": {
                     "type": "string"
                 },
+                "revocation_endpoint": {
+                    "type": "string"
+                },
                 "require_pushed_authorization_requests": {
                     "type": "boolean"
                 },

@@ -1,0 +1,26 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/multikey/v1",
+        "https://w3id.org/security/suites/secp256k1-2019/v1"
+    ],
+    "id": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "alsoKnownAs": [
+        "at://ioriayane.test"
+    ],
+    "verificationMethod": [
+        {
+            "id": "did:plc:ipj5qejfoqu6eukvt72uhyit#atproto",
+            "type": "Multikey",
+            "controller": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "publicKeyMultibase": "zQ3shTLo5jA7J8aUoWCG1UGi9mz4Yyy7aGq8UWHhDeR1ZDF1x"
+        }
+    ],
+    "service": [
+        {
+            "id": "#atproto_pds",
+            "type": "AtprotoPersonalDataServer",
+            "serviceEndpoint": "http://127.0.0.1:{{SERVER_PORT_NO}}/response/1"
+        }
+    ]
+}

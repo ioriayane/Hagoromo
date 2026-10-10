@@ -7,6 +7,18 @@
 #include <QObject>
 #include <QJsonDocument>
 
+// OAuthでログインしたセッションの情報(Authorizationの結果)
+struct OAuthSession
+{
+    QString handle;
+    QString service_endpoint; // PDS
+    QString issuer;
+    QString token_endpoint;
+    QString revocation_endpoint;
+    QByteArray dpop_private_key; // PEM
+    AtProtocolType::OauthDefs::TokenResponse token;
+};
+
 class AccountManager : public QObject
 {
     Q_OBJECT
@@ -55,6 +67,9 @@ public:
                           const QString &password, const QString &did, const QString &handle,
                           const QString &email, const QString &accessJwt, const QString &refreshJwt,
                           const bool authorized);
+    // OAuthのアカウントを追加・更新する(同じDIDのアカウントがあれば、uuidを引き継いで置き換える)
+    QString updateOAuthAccount(const QString &uuid, const QString &service,
+                               const OAuthSession &session);
     void removeAccount(const QString &uuid);
     void updateAccountProfile(const QString &uuid);
     void updateServiceEndpoint(const QString &uuid, const QString &service_endpoint);
