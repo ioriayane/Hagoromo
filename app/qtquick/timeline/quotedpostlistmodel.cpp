@@ -33,7 +33,7 @@ bool QuotedPostListModel::getLatest()
         });
         posts->setAccount(account());
         posts->setLabelers(labelerDids());
-        posts->getQuotes(postUri(), QString(), 0, QString());
+        posts->getQuotes(postUri(), QString(), 0, QString(), QString());
     });
     return true;
 }
@@ -65,7 +65,7 @@ bool QuotedPostListModel::getNext()
 
         posts->setAccount(account());
         posts->setLabelers(labelerDids());
-        posts->getQuotes(postUri(), QString(), 0, m_cursor);
+        posts->getQuotes(postUri(), QString(), 0, m_cursor, QString());
     });
     return true;
 }

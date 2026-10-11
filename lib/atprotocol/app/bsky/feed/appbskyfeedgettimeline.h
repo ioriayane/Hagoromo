@@ -13,8 +13,10 @@ class AppBskyFeedGetTimeline : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetTimeline(QObject *parent = nullptr);
 
-    void getTimeline(const QString &algorithm, const int limit, const QString &cursor);
+    void getTimeline(const QString &algorithm, const int limit, const QString &cursor,
+                     const QString &since);
 
+    const QString &startCursor() const;
     const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedList() const;
 
 protected:
@@ -23,6 +25,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
+    QString m_startCursor;
     QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
 };
 

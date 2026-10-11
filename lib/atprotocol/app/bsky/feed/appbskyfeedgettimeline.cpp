@@ -3,6 +3,7 @@
 
 #include "appbskyfeedgettimeline.h"
 #include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -16,7 +17,7 @@ AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent)
 }
 
 void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int limit,
-                                         const QString &cursor)
+                                         const QString &cursor, const QString &since)
 {
     QUrlQuery url_query;
     if (!algorithm.isEmpty()) {
@@ -28,8 +29,16 @@ void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int lim
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
+    if (!since.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("since"), since);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), url_query);
+}
+
+const QString &AppBskyFeedGetTimeline::startCursor() const
+{
+    return m_startCursor;
 }
 
 const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &AppBskyFeedGetTimeline::feedList() const
@@ -44,6 +53,8 @@ bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("startCursor"),
+                                                        m_startCursor);
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::FeedViewPost data;
             AtProtocolType::AppBskyFeedDefs::copyFeedViewPost(value.toObject(), data);

@@ -38,6 +38,11 @@ AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::starterPacksList() c
     return m_starterPacksList;
 }
 
+const QString &AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::recIdStr() const
+{
+    return m_recIdStr;
+}
+
 bool AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::parseJson(bool success,
                                                                            const QString reply_json)
 {
@@ -47,6 +52,8 @@ bool AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton::parseJson(bool 
     } else {
         AtProtocolType::LexiconsTypeUnknown::copyStringList(
                 json_doc.object().value("starterPacks").toArray(), m_starterPacksList);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("recIdStr"),
+                                                        m_recIdStr);
     }
 
     return success;

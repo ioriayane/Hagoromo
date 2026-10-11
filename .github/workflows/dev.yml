@@ -58,6 +58,26 @@ jobs:
   result:
     runs-on: ubuntu-22.04
     needs: [linux, windows, mac, check-sources]
+    if: always() # 前提ジョブがスキップされても必ず実行する
     steps:
-      - name: Information
-        run: echo "Finish"
+      - name: Check results
+        run: |
+          # run-tests が「成功」または「スキップ」ならOK、失敗なら落とす
+          if [[ "${{ needs.linux.result }}" == "failure" || "${{ needs.linux.result }}" == "cancelled" ]]; then
+            echo "Linux tests failed or cancelled"
+            exit 1
+          fi
+          if [[ "${{ needs.windows.result }}" == "failure" || "${{ needs.windows.result }}" == "cancelled" ]]; then
+            echo "Windows tests failed or cancelled"
+            exit 1
+          fi
+          if [[ "${{ needs.mac.result }}" == "failure" || "${{ needs.mac.result }}" == "cancelled" ]]; then
+            echo "Mac tests failed or cancelled"
+            exit 1
+          fi
+          if [[ "${{ needs.check-sources.result }}" == "failure" || "${{ needs.check-sources.result }}" == "cancelled" ]]; then
+            echo "Check sources failed or cancelled"
+            exit 1
+          fi
+          echo "All tests passed or skipped"
+          exit 0

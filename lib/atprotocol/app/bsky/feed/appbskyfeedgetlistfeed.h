@@ -13,7 +13,8 @@ class AppBskyFeedGetListFeed : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetListFeed(QObject *parent = nullptr);
 
-    void getListFeed(const QString &list, const int limit, const QString &cursor);
+    void getListFeed(const QString &list, const int limit, const QString &cursor,
+                     const QString &since);
 };
 
 }

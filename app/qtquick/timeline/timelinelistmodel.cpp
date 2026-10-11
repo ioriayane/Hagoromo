@@ -618,7 +618,7 @@ bool TimelineListModel::getLatest()
         });
         timeline->setAccount(account());
         timeline->setLabelers(labelerDids());
-        timeline->getTimeline(QString(), 0, QString());
+        timeline->getTimeline(QString(), 0, QString(), QString());
     });
     return true;
 }
@@ -644,7 +644,7 @@ bool TimelineListModel::getNext()
         });
         timeline->setAccount(account());
         timeline->setLabelers(labelerDids());
-        timeline->getTimeline(QString(), 0, m_cursor);
+        timeline->getTimeline(QString(), 0, m_cursor, QString());
     });
     return true;
 }
