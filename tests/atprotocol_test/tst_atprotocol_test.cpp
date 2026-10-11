@@ -549,7 +549,7 @@ void atprotocol_test::test_getTimeline()
     timeline.setAccount(m_account);
 
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
-    timeline.getTimeline(QString(), 0, QString());
+    timeline.getTimeline(QString(), 0, QString(), QString());
     spy.wait();
     QCOMPARE(spy.count(), 1);
 
@@ -2532,7 +2532,7 @@ void atprotocol_test::test_atprotoProxyHttpHeader()
     timeline.setAccount(account);
 
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
-    timeline.getTimeline(QString(), 0, QString());
+    timeline.getTimeline(QString(), 0, QString(), QString());
     spy.wait();
     QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();

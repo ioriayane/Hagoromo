@@ -34,6 +34,7 @@ void copyVerificationState(const QJsonObject &src, AppBskyActorDefs::Verificatio
 void copyStatusView(const QJsonObject &src, AppBskyActorDefs::StatusView &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
+void copyProfileLinkView(const QJsonObject &src, AppBskyActorDefs::ProfileLinkView &dest);
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
@@ -106,6 +107,14 @@ void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal
 void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
 void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
+void copyViewArticlePublicationTheme(const QJsonObject &src,
+                                     AppBskyEmbedExternal::ViewArticlePublicationTheme &dest);
+void copyViewArticlePublication(const QJsonObject &src,
+                                AppBskyEmbedExternal::ViewArticlePublication &dest);
+void copyViewArticle(const QJsonObject &src, AppBskyEmbedExternal::ViewArticle &dest);
+void copyViewGalleryImage(const QJsonObject &src, AppBskyEmbedExternal::ViewGalleryImage &dest);
+void copyViewGallery(const QJsonObject &src, AppBskyEmbedExternal::ViewGallery &dest);
+void copyViewLivestream(const QJsonObject &src, AppBskyEmbedExternal::ViewLivestream &dest);
 }
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
@@ -123,6 +132,10 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest);
 namespace AppBskyFeedPostgate {
 void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest);
 void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
+}
+// app.bsky.actor.link
+namespace AppBskyActorLink {
+void copyMain(const QJsonObject &src, AppBskyActorLink::Main &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -344,6 +357,81 @@ void copyMain(const QJsonObject &src, AppBskyLabelerService::Main &dest);
 namespace AppBskyNotificationDeclaration {
 void copyMain(const QJsonObject &src, AppBskyNotificationDeclaration::Main &dest);
 }
+// app.bsky.notification.getGroupedNotifications
+namespace AppBskyNotificationGetGroupedNotifications {
+void copyLikeItem(const QJsonObject &src,
+                  AppBskyNotificationGetGroupedNotifications::LikeItem &dest);
+void copyLikeGroup(const QJsonObject &src,
+                   AppBskyNotificationGetGroupedNotifications::LikeGroup &dest);
+void copyMultiPostLikeItem(const QJsonObject &src,
+                           AppBskyNotificationGetGroupedNotifications::MultiPostLikeItem &dest);
+void copyMultiPostLikeGroup(const QJsonObject &src,
+                            AppBskyNotificationGetGroupedNotifications::MultiPostLikeGroup &dest);
+void copyMultiPostRepostItem(const QJsonObject &src,
+                             AppBskyNotificationGetGroupedNotifications::MultiPostRepostItem &dest);
+void copyMultiPostRepostGroup(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::MultiPostRepostGroup &dest);
+void copyMultiPostLikeViaRepostItem(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::MultiPostLikeViaRepostItem &dest);
+void copyMultiPostLikeViaRepostGroup(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::MultiPostLikeViaRepostGroup &dest);
+void copyMultiPostRepostViaRepostItem(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::MultiPostRepostViaRepostItem &dest);
+void copyMultiPostRepostViaRepostGroup(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::MultiPostRepostViaRepostGroup &dest);
+void copyRepostItem(const QJsonObject &src,
+                    AppBskyNotificationGetGroupedNotifications::RepostItem &dest);
+void copyRepostGroup(const QJsonObject &src,
+                     AppBskyNotificationGetGroupedNotifications::RepostGroup &dest);
+void copyLikeViaRepostItem(const QJsonObject &src,
+                           AppBskyNotificationGetGroupedNotifications::LikeViaRepostItem &dest);
+void copyLikeViaRepostGroup(const QJsonObject &src,
+                            AppBskyNotificationGetGroupedNotifications::LikeViaRepostGroup &dest);
+void copyRepostViaRepostItem(const QJsonObject &src,
+                             AppBskyNotificationGetGroupedNotifications::RepostViaRepostItem &dest);
+void copyRepostViaRepostGroup(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::RepostViaRepostGroup &dest);
+void copyFollowItem(const QJsonObject &src,
+                    AppBskyNotificationGetGroupedNotifications::FollowItem &dest);
+void copyFollowGroup(const QJsonObject &src,
+                     AppBskyNotificationGetGroupedNotifications::FollowGroup &dest);
+void copySubscribedPostItem(const QJsonObject &src,
+                            AppBskyNotificationGetGroupedNotifications::SubscribedPostItem &dest);
+void copySubscribedPostGroup(const QJsonObject &src,
+                             AppBskyNotificationGetGroupedNotifications::SubscribedPostGroup &dest);
+void copyGeneratorLikeItem(const QJsonObject &src,
+                           AppBskyNotificationGetGroupedNotifications::GeneratorLikeItem &dest);
+void copyGeneratorLikeGroup(const QJsonObject &src,
+                            AppBskyNotificationGetGroupedNotifications::GeneratorLikeGroup &dest);
+void copyReplyNotification(const QJsonObject &src,
+                           AppBskyNotificationGetGroupedNotifications::ReplyNotification &dest);
+void copyQuoteNotification(const QJsonObject &src,
+                           AppBskyNotificationGetGroupedNotifications::QuoteNotification &dest);
+void copyMentionNotification(const QJsonObject &src,
+                             AppBskyNotificationGetGroupedNotifications::MentionNotification &dest);
+void copyFollowBackNotification(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::FollowBackNotification &dest);
+void copyVerifiedNotification(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::VerifiedNotification &dest);
+void copyUnverifiedNotification(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::UnverifiedNotification &dest);
+void copyStarterPackJoinedNotification(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::StarterPackJoinedNotification &dest);
+void copyContactMatchNotification(
+        const QJsonObject &src,
+        AppBskyNotificationGetGroupedNotifications::ContactMatchNotification &dest);
+void copyGroup(const QJsonObject &src, AppBskyNotificationGetGroupedNotifications::Group &dest);
+}
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 void copyNotification(const QJsonObject &src,
@@ -366,6 +454,20 @@ void copyThreadItemNotFound(const QJsonObject &src, AppBskyUnspeccedDefs::Thread
 void copyThreadItemBlocked(const QJsonObject &src, AppBskyUnspeccedDefs::ThreadItemBlocked &dest);
 void copyAgeAssuranceState(const QJsonObject &src, AppBskyUnspeccedDefs::AgeAssuranceState &dest);
 void copyAgeAssuranceEvent(const QJsonObject &src, AppBskyUnspeccedDefs::AgeAssuranceEvent &dest);
+}
+// app.bsky.unspecced.getAtmosphereExploreTab
+namespace AppBskyUnspeccedGetAtmosphereExploreTab {
+void copyArticleItem(const QJsonObject &src,
+                     AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem &dest);
+void copyPublicationItem(const QJsonObject &src,
+                         AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem &dest);
+void copyGalleryItem(const QJsonObject &src,
+                     AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem &dest);
+void copyLivestreamItem(const QJsonObject &src,
+                        AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem &dest);
+void copyAnnouncementBanner(const QJsonObject &src,
+                            AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner &dest);
+void copyAppCard(const QJsonObject &src, AppBskyUnspeccedGetAtmosphereExploreTab::AppCard &dest);
 }
 // app.bsky.unspecced.getConfig
 namespace AppBskyUnspeccedGetConfig {
@@ -664,6 +766,50 @@ namespace ComGermnetworkDeclaration {
 void copyMessageMe(const QJsonObject &src, ComGermnetworkDeclaration::MessageMe &dest);
 void copyMain(const QJsonObject &src, ComGermnetworkDeclaration::Main &dest);
 }
+// place.stream.badge.defs
+namespace PlaceStreamBadgeDefs {
+void copyBadgeIssuanceView(const QJsonObject &src, PlaceStreamBadgeDefs::BadgeIssuanceView &dest);
+void copyBadgeSlot(const QJsonObject &src, PlaceStreamBadgeDefs::BadgeSlot &dest);
+void copyBadgeView(const QJsonObject &src, PlaceStreamBadgeDefs::BadgeView &dest);
+}
+// place.stream.chat.profile
+namespace PlaceStreamChatProfile {
+void copyColor(const QJsonObject &src, PlaceStreamChatProfile::Color &dest);
+void copyStreamerBadgeSelection(const QJsonObject &src,
+                                PlaceStreamChatProfile::StreamerBadgeSelection &dest);
+void copyBadgeSelections(const QJsonObject &src, PlaceStreamChatProfile::BadgeSelections &dest);
+void copySelfLabel(const QJsonValue &src, PlaceStreamChatProfile::SelfLabel &dest);
+void copyMain(const QJsonObject &src, PlaceStreamChatProfile::Main &dest);
+}
+// place.stream.chat.defs
+namespace PlaceStreamChatDefs {
+void copyMessageView(const QJsonObject &src, PlaceStreamChatDefs::MessageView &dest);
+void copyPinnedRecordView(const QJsonObject &src, PlaceStreamChatDefs::PinnedRecordView &dest);
+}
+// place.stream.chat.pinnedRecord
+namespace PlaceStreamChatPinnedRecord {
+void copyMain(const QJsonObject &src, PlaceStreamChatPinnedRecord::Main &dest);
+}
+// place.stream.defs
+namespace PlaceStreamDefs {
+void copyBlockView(const QJsonObject &src, PlaceStreamDefs::BlockView &dest);
+void copyRendition(const QJsonObject &src, PlaceStreamDefs::Rendition &dest);
+void copyRenditions(const QJsonObject &src, PlaceStreamDefs::Renditions &dest);
+void copyActivityGame(const QJsonObject &src, PlaceStreamDefs::ActivityGame &dest);
+void copyActivityLabel(const QJsonObject &src, PlaceStreamDefs::ActivityLabel &dest);
+}
+// place.stream.livestream
+namespace PlaceStreamLivestream {
+void copyNotificationSettings(const QJsonObject &src,
+                              PlaceStreamLivestream::NotificationSettings &dest);
+void copyMain(const QJsonObject &src, PlaceStreamLivestream::Main &dest);
+void copyViewerCount(const QJsonObject &src, PlaceStreamLivestream::ViewerCount &dest);
+void copyLivestreamView(const QJsonObject &src, PlaceStreamLivestream::LivestreamView &dest);
+void copyTeleportArrival(const QJsonObject &src, PlaceStreamLivestream::TeleportArrival &dest);
+void copyTeleportCanceled(const QJsonObject &src, PlaceStreamLivestream::TeleportCanceled &dest);
+void copyStreamplaceAnything(const QJsonObject &src,
+                             PlaceStreamLivestream::StreamplaceAnything &dest);
+}
 // site.standard.document
 namespace SiteStandardDocument {
 void copyContributor(const QJsonObject &src, SiteStandardDocument::Contributor &dest);
@@ -691,6 +837,26 @@ namespace SiteStandardPublication {
 void copyPreferences(const QJsonObject &src, SiteStandardPublication::Preferences &dest);
 void copyMain(const QJsonObject &src, SiteStandardPublication::Main &dest);
 }
+// social.grain.defs
+namespace SocialGrainDefs {
+void copyAspectRatio(const QJsonObject &src, SocialGrainDefs::AspectRatio &dest);
+}
+// social.grain.favorite
+namespace SocialGrainFavorite {
+void copyMain(const QJsonObject &src, SocialGrainFavorite::Main &dest);
+}
+// social.grain.gallery
+namespace SocialGrainGallery {
+void copyMain(const QJsonObject &src, SocialGrainGallery::Main &dest);
+}
+// social.grain.gallery.item
+namespace SocialGrainGalleryItem {
+void copyMain(const QJsonObject &src, SocialGrainGalleryItem::Main &dest);
+}
+// social.grain.photo
+namespace SocialGrainPhoto {
+void copyMain(const QJsonObject &src, SocialGrainPhoto::Main &dest);
+}
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {
 void copyTemplateView(const QJsonObject &src, ToolsOzoneCommunicationDefs::TemplateView &dest);
@@ -708,6 +874,42 @@ void copyPasswordUpdated(const QJsonObject &src,
 void copyHandleUpdated(const QJsonObject &src,
                        ToolsOzoneHostingGetAccountHistory::HandleUpdated &dest);
 void copyEvent(const QJsonObject &src, ToolsOzoneHostingGetAccountHistory::Event &dest);
+}
+// tools.ozone.inbox.appealActionedSubject
+namespace ToolsOzoneInboxAppealActionedSubject {
+void copyActionRef(const QJsonObject &src, ToolsOzoneInboxAppealActionedSubject::ActionRef &dest);
+void copyLabelRef(const QJsonObject &src, ToolsOzoneInboxAppealActionedSubject::LabelRef &dest);
+void copyTakedownRef(const QJsonObject &src,
+                     ToolsOzoneInboxAppealActionedSubject::TakedownRef &dest);
+}
+// tools.ozone.inbox.defs
+namespace ToolsOzoneInboxDefs {
+void copyEnforcementView(const QJsonObject &src, ToolsOzoneInboxDefs::EnforcementView &dest);
+void copyAppealView(const QJsonObject &src, ToolsOzoneInboxDefs::AppealView &dest);
+void copyPolicyView(const QJsonObject &src, ToolsOzoneInboxDefs::PolicyView &dest);
+void copyActionView(const QJsonObject &src, ToolsOzoneInboxDefs::ActionView &dest);
+void copySubjectView(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectView &dest);
+void copyReportsSummary(const QJsonObject &src, ToolsOzoneInboxDefs::ReportsSummary &dest);
+void copySubjectViewDetail(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectViewDetail &dest);
+void copyReportRef(const QJsonObject &src, ToolsOzoneInboxDefs::ReportRef &dest);
+void copySubjectRef(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectRef &dest);
+void copyStandingRef(const QJsonObject &src, ToolsOzoneInboxDefs::StandingRef &dest);
+void copyNotification(const QJsonObject &src, ToolsOzoneInboxDefs::Notification &dest);
+void copyNotificationPreferences(const QJsonObject &src,
+                                 ToolsOzoneInboxDefs::NotificationPreferences &dest);
+}
+// tools.ozone.inbox.getReport
+namespace ToolsOzoneInboxGetReport {
+void copyReportView(const QJsonObject &src, ToolsOzoneInboxGetReport::ReportView &dest);
+void copyResolutionView(const QJsonObject &src, ToolsOzoneInboxGetReport::ResolutionView &dest);
+}
+// tools.ozone.inbox.getUnreadCount
+namespace ToolsOzoneInboxGetUnreadCount {
+void copyUnreadCounts(const QJsonObject &src, ToolsOzoneInboxGetUnreadCount::UnreadCounts &dest);
+}
+// tools.ozone.inbox.listReports
+namespace ToolsOzoneInboxListReports {
+void copyReportView(const QJsonObject &src, ToolsOzoneInboxListReports::ReportView &dest);
 }
 // tools.ozone.moderation.cancelScheduledActions
 namespace ToolsOzoneModerationCancelScheduledActions {
@@ -824,6 +1026,8 @@ void copyReportAssignment(const QJsonObject &src, ToolsOzoneReportDefs::ReportAs
 void copyReportView(const QJsonObject &src, ToolsOzoneReportDefs::ReportView &dest);
 void copyQueueActivity(const QJsonObject &src, ToolsOzoneReportDefs::QueueActivity &dest);
 void copyAssignmentActivity(const QJsonObject &src, ToolsOzoneReportDefs::AssignmentActivity &dest);
+void copyUnassignmentActivity(const QJsonObject &src,
+                              ToolsOzoneReportDefs::UnassignmentActivity &dest);
 void copyEscalationActivity(const QJsonObject &src, ToolsOzoneReportDefs::EscalationActivity &dest);
 void copyCloseActivity(const QJsonObject &src, ToolsOzoneReportDefs::CloseActivity &dest);
 void copyReopenActivity(const QJsonObject &src, ToolsOzoneReportDefs::ReopenActivity &dest);
@@ -841,6 +1045,11 @@ void copyActionType(const QJsonValue &src, ToolsOzoneSafelinkDefs::ActionType &d
 void copyReasonType(const QJsonValue &src, ToolsOzoneSafelinkDefs::ReasonType &dest);
 void copyEvent(const QJsonObject &src, ToolsOzoneSafelinkDefs::Event &dest);
 void copyUrlRule(const QJsonObject &src, ToolsOzoneSafelinkDefs::UrlRule &dest);
+}
+// tools.ozone.server.getCapabilities
+namespace ToolsOzoneServerGetCapabilities {
+void copyNotificationConfig(const QJsonObject &src,
+                            ToolsOzoneServerGetCapabilities::NotificationConfig &dest);
 }
 // tools.ozone.server.getConfig
 namespace ToolsOzoneServerGetConfig {

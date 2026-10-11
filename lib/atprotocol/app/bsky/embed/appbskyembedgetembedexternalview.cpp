@@ -35,6 +35,30 @@ const AtProtocolType::AppBskyEmbedExternal::View &AppBskyEmbedGetEmbedExternalVi
     return m_view;
 }
 
+const AtProtocolType::AppBskyEmbedExternal::ViewArticle &
+AppBskyEmbedGetEmbedExternalView::viewArticle() const
+{
+    return m_viewArticle;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewArticlePublication &
+AppBskyEmbedGetEmbedExternalView::viewArticlePublication() const
+{
+    return m_viewArticlePublication;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewGallery &
+AppBskyEmbedGetEmbedExternalView::viewGallery() const
+{
+    return m_viewGallery;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewLivestream &
+AppBskyEmbedGetEmbedExternalView::viewLivestream() const
+{
+    return m_viewLivestream;
+}
+
 const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
 AppBskyEmbedGetEmbedExternalView::associatedRefsList() const
 {
@@ -54,6 +78,21 @@ bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString rep
     } else {
         AtProtocolType::AppBskyEmbedExternal::copyView(json_doc.object().value("view").toObject(),
                                                        m_view);
+        QString type;
+        type = json_doc.object().value("data").toObject().value("$type").toString();
+        if (type == QStringLiteral("app.bsky.embed.external#viewArticle")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewArticle(
+                    json_doc.object().value("data").toObject(), m_viewArticle);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewArticlePublication")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewArticlePublication(
+                    json_doc.object().value("data").toObject(), m_viewArticlePublication);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewGallery")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewGallery(
+                    json_doc.object().value("data").toObject(), m_viewGallery);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewLivestream")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewLivestream(
+                    json_doc.object().value("data").toObject(), m_viewLivestream);
+        }
         for (const auto &value : json_doc.object().value("associatedRefs").toArray()) {
             AtProtocolType::ComAtprotoRepoStrongRef::Main data;
             AtProtocolType::ComAtprotoRepoStrongRef::copyMain(value.toObject(), data);

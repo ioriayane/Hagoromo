@@ -16,11 +16,13 @@ public:
     void getOnboardingSuggestedStarterPacks(const int limit);
 
     const QList<AtProtocolType::AppBskyGraphDefs::StarterPackView> &starterPacksList() const;
+    const QString &recIdStr() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyGraphDefs::StarterPackView> m_starterPacksList;
+    QString m_recIdStr;
 };
 
 }
