@@ -4,9 +4,7 @@
 #ifndef APPBSKYNOTIFICATIONGETGROUPEDNOTIFICATIONS_H
 #define APPBSKYNOTIFICATIONGETGROUPEDNOTIFICATIONS_H
 
-
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
-
 
 namespace AtProtocolInterface {
 
@@ -15,32 +13,34 @@ class AppBskyNotificationGetGroupedNotifications : public AppBskyFeedGetPosts
 public:
     explicit AppBskyNotificationGetGroupedNotifications(QObject *parent = nullptr);
 
-    void getGroupedNotifications(const QString &feed,const int limit,const QString &cursor);
+    void getGroupedNotifications(const QString &feed, const int limit, const QString &cursor);
 
-const QList<AtProtocolType::AppBskyNotificationGetGroupedNotifications::Group> &groupsList() const;
+    const QList<AtProtocolType::AppBskyNotificationGetGroupedNotifications::Group> &
+    groupsList() const;
     const QString &seenAt() const;
-    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewBasic> &relatedViewsProfileViewBasicList() const;
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewBasic> &
+    relatedViewsProfileViewBasicList() const;
     const QList<AtProtocolType::AppBskyFeedDefs::BlockedPost> &relatedViewsBlockedPostList() const;
-    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &relatedViewsGeneratorViewList() const;
-    const QList<AtProtocolType::AppBskyFeedDefs::NotFoundPost> &relatedViewsNotFoundPostList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &
+    relatedViewsGeneratorViewList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::NotFoundPost> &
+    relatedViewsNotFoundPostList() const;
     const QList<AtProtocolType::AppBskyFeedDefs::PostView> &relatedViewsPostViewList() const;
-    const QList<AtProtocolType::AppBskyGraphDefs::StarterPackViewBasic> &relatedViewsStarterPackViewBasicList() const;
-    
-
-
+    const QList<AtProtocolType::AppBskyGraphDefs::StarterPackViewBasic> &
+    relatedViewsStarterPackViewBasicList() const;
 
 private:
-virtual bool parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
-QList<AtProtocolType::AppBskyNotificationGetGroupedNotifications::Group> m_groupsList;
+    QList<AtProtocolType::AppBskyNotificationGetGroupedNotifications::Group> m_groupsList;
     QString m_seenAt;
     QList<AtProtocolType::AppBskyActorDefs::ProfileViewBasic> m_relatedViewsProfileViewBasicList;
     QList<AtProtocolType::AppBskyFeedDefs::BlockedPost> m_relatedViewsBlockedPostList;
     QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> m_relatedViewsGeneratorViewList;
     QList<AtProtocolType::AppBskyFeedDefs::NotFoundPost> m_relatedViewsNotFoundPostList;
     QList<AtProtocolType::AppBskyFeedDefs::PostView> m_relatedViewsPostViewList;
-    QList<AtProtocolType::AppBskyGraphDefs::StarterPackViewBasic> m_relatedViewsStarterPackViewBasicList;
-    
+    QList<AtProtocolType::AppBskyGraphDefs::StarterPackViewBasic>
+            m_relatedViewsStarterPackViewBasicList;
 };
 
 }

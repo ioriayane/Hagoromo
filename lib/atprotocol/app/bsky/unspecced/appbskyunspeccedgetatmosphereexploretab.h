@@ -4,9 +4,7 @@
 #ifndef APPBSKYUNSPECCEDGETATMOSPHEREEXPLORETAB_H
 #define APPBSKYUNSPECCEDGETATMOSPHEREEXPLORETAB_H
 
-
 #include "atprotocol/accessatprotocol.h"
-
 
 namespace AtProtocolInterface {
 
@@ -15,28 +13,33 @@ class AppBskyUnspeccedGetAtmosphereExploreTab : public AccessAtProtocol
 public:
     explicit AppBskyUnspeccedGetAtmosphereExploreTab(QObject *parent = nullptr);
 
-    void getAtmosphereExploreTab(const QList<QString> &langs,const QString &countryCode,const QString &regionCode);
+    void getAtmosphereExploreTab(const QList<QString> &langs, const QString &countryCode,
+                                 const QString &regionCode);
 
-const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner &announcementBanner() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> &articlesList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem> &publicationsList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> &photosList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem> &livestreamsList() const;
+    const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner &
+    announcementBanner() const;
+    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> &
+    articlesList() const;
+    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem> &
+    publicationsList() const;
+    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> &
+    photosList() const;
+    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem> &
+    livestreamsList() const;
     const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard> &appsList() const;
-    
-
-
 
 private:
-virtual bool parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
-AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner m_announcementBanner;
+    AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner
+            m_announcementBanner;
     QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> m_articlesList;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem> m_publicationsList;
+    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem>
+            m_publicationsList;
     QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> m_photosList;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem> m_livestreamsList;
+    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem>
+            m_livestreamsList;
     QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard> m_appsList;
-    
 };
 
 }
