@@ -14,6 +14,9 @@ namespace AtProtocolInterface {
 AppBskyVideoGetUploadLimits::AppBskyVideoGetUploadLimits(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_canUpload = false;
+    m_remainingDailyVideos = 0;
+    m_remainingDailyBytes = 0;
 }
 
 void AppBskyVideoGetUploadLimits::getUploadLimits()

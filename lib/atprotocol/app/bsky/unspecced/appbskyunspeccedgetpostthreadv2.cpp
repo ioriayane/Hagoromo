@@ -14,6 +14,7 @@ namespace AtProtocolInterface {
 AppBskyUnspeccedGetPostThreadV2::AppBskyUnspeccedGetPostThreadV2(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_hasOtherReplies = false;
 }
 
 void AppBskyUnspeccedGetPostThreadV2::getPostThreadV2(const QString &anchor, const bool above,

@@ -14,6 +14,7 @@ namespace AtProtocolInterface {
 AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_priority = false;
 }
 
 void AppBskyNotificationListNotifications::listNotifications(const QList<QString> &reasons,

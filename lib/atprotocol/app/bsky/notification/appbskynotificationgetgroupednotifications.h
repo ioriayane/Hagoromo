@@ -4,11 +4,11 @@
 #ifndef APPBSKYNOTIFICATIONGETGROUPEDNOTIFICATIONS_H
 #define APPBSKYNOTIFICATIONGETGROUPEDNOTIFICATIONS_H
 
-#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
+#include "atprotocol/accessatprotocol.h"
 
 namespace AtProtocolInterface {
 
-class AppBskyNotificationGetGroupedNotifications : public AppBskyFeedGetPosts
+class AppBskyNotificationGetGroupedNotifications : public AccessAtProtocol
 {
 public:
     explicit AppBskyNotificationGetGroupedNotifications(QObject *parent = nullptr);

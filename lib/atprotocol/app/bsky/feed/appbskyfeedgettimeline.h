@@ -25,6 +25,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
+protected:
     QString m_startCursor;
     QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
 };

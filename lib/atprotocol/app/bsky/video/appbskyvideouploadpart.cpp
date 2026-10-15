@@ -10,7 +10,11 @@
 
 namespace AtProtocolInterface {
 
-AppBskyVideoUploadPart::AppBskyVideoUploadPart(QObject *parent) : AccessAtProtocol { parent } { }
+AppBskyVideoUploadPart::AppBskyVideoUploadPart(QObject *parent) : AccessAtProtocol { parent }
+{
+    m_partNumber = 0;
+    m_sizeBytes = 0;
+}
 
 void AppBskyVideoUploadPart::uploadPart()
 {

@@ -28,6 +28,11 @@ namespace AtProtocolInterface {
 {% endif -%}
 {% endfor -%}
 {% endif -%}
+{% if has_parent_class == False -%}
+{% for member in members if member.initial_value is defined -%}
+    {{ member.variable_name }} = {{ member.initial_value }};
+{% endfor -%}
+{% endif -%}
 }
 
 void {{ class_name }}::{{ method_name }}({{ method_args }})
@@ -54,7 +59,7 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 }
 
 {% if has_parent_class == False %}
-{% for member in members -%}
+{% for member in members if not member.inherited -%}
 {% if member.variable_is_array %}
 const QList<{{ member.variable_type }}> &{{ class_name }}::{{ member.method_getter }}() const
 {

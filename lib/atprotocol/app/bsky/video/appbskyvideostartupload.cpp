@@ -10,7 +10,11 @@
 
 namespace AtProtocolInterface {
 
-AppBskyVideoStartUpload::AppBskyVideoStartUpload(QObject *parent) : AccessAtProtocol { parent } { }
+AppBskyVideoStartUpload::AppBskyVideoStartUpload(QObject *parent) : AccessAtProtocol { parent }
+{
+    m_partSizeBytes = 0;
+    m_partCount = 0;
+}
 
 void AppBskyVideoStartUpload::startUpload(const int sizeBytes, const QString &mimeType,
                                           const QString &name, const int durationMs,

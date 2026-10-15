@@ -23,6 +23,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
+protected:
     QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> m_feedsList;
 };
 

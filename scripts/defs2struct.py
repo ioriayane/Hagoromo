@@ -1373,6 +1373,43 @@ class Defs2Struct:
 
 
 
+    def resolve_api_class_inheritance(self):
+        """ 親クラスのリスト以外のメンバーも持つクラスの継承関係を整理する """
+        for namespace, data in self.api_class.items():
+            # プリミティブ型のメンバーは不定値にならないようにコンストラクタで初期化する
+            for member in data.get('members', []):
+                if member.get('variable_type') == 'int':
+                    member['initial_value'] = '0'
+                elif member.get('variable_type') == 'bool':
+                    member['initial_value'] = 'false'
+
+            if data.get('has_parent_class', False) or data.get('is_parent', False):
+                continue
+            if data.get('parent_class_name', 'AccessAtProtocol') == 'AccessAtProtocol':
+                continue
+            # 親クラスのリストと同じ型のメンバーがあれば親クラスのメンバーを使う
+            # (同名のメンバーを再定義すると親クラスのメンバーを隠してしまうため)
+            inherited_members = []
+            for member in data.get('members', []):
+                parent_namespace = member.get('parent_info', {}).get('parent_namespace', '')
+                if len(parent_namespace) == 0:
+                    continue
+                if member['variable_is_array'] and not member['variable_is_union']:
+                    inherited_members.append((member, parent_namespace))
+            parent_members = []
+            if len(inherited_members) == 1:
+                parent_members = [m for m in self.api_class.get(inherited_members[0][1], {}).get('members', [])
+                                  if m['variable_is_array'] and m['variable_type'] == inherited_members[0][0]['variable_type']]
+            if len(parent_members) == 1:
+                member = inherited_members[0][0]
+                member['inherited'] = True
+                member['method_getter'] = parent_members[0]['method_getter']
+                member['variable_name'] = parent_members[0]['variable_name']
+            else:
+                # 親クラスのリストとして扱えるメンバーがないときは継承しない
+                data['parent_class_name'] = 'AccessAtProtocol'
+                data['include_paths'] = ['atprotocol/accessatprotocol.h']
+
     def output_file_lexicons_h(self, environment, output_path: str):
         """ lexicons.h """
         template = environment.get_template('template/lexicons.h.j2')
@@ -1495,6 +1532,7 @@ class Defs2Struct:
                 defs = self.json_obj[namespace].get('defs', {})
                 for type_name in defs.keys():
                     self.output_api_class(namespace, type_name)
+        self.resolve_api_class_inheritance()
 
 
         # コピー関数のための解析

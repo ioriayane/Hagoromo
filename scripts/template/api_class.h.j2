@@ -18,7 +18,7 @@ public:
     void {{ method_name }}({{ method_args }});
 
 {% if has_parent_class == False -%}
-{% for member in members -%}
+{% for member in members if not member.inherited -%}
     {% if member.variable_is_array -%}
     const QList<{{ member.variable_type }}> &{{ member.method_getter }}() const;
     {% else -%}
@@ -42,11 +42,13 @@ private:
 {% if recv_image -%}
     virtual bool recvImage(const QByteArray &data, const QString &content_type);
 {% endif %}
-{% if need_extension and members is defined -%}
+{% if is_parent -%}
+protected:
+{% elif need_extension and members is defined -%}
 private:
 {% endif -%}
 
-{% for member in members -%}
+{% for member in members if not member.inherited -%}
     {% if member.variable_is_array -%}
     QList<{{ member.variable_type }}> {{ member.variable_name }};
     {% else -%}

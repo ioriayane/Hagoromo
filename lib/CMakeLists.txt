@@ -87,6 +87,8 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/feed/appbskyfeedgettimeline.h
     atprotocol/app/bsky/feed/appbskyfeedsearchposts.cpp
     atprotocol/app/bsky/feed/appbskyfeedsearchposts.h
+    atprotocol/app/bsky/feed/appbskyfeedsearchpostsv2.cpp
+    atprotocol/app/bsky/feed/appbskyfeedsearchpostsv2.h
     atprotocol/app/bsky/graph/appbskygraphgetactorstarterpacks.cpp
     atprotocol/app/bsky/graph/appbskygraphgetactorstarterpacks.h
     atprotocol/app/bsky/graph/appbskygraphgetblocks.cpp

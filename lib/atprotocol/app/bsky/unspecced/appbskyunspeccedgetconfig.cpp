@@ -13,6 +13,7 @@ namespace AtProtocolInterface {
 
 AppBskyUnspeccedGetConfig::AppBskyUnspeccedGetConfig(QObject *parent) : AccessAtProtocol { parent }
 {
+    m_checkEmailConfirmed = false;
 }
 
 void AppBskyUnspeccedGetConfig::getConfig()
