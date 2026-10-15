@@ -16,5 +16,10 @@
         <file>response/v2error/xrpc/app.bsky.feed.searchPosts</file>
         <file>response/v2error/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/v2error/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/v2unimplemented/xrpc/app.bsky.feed.searchPostsV2</file>
+        <file>response/v2unimplemented/xrpc/app.bsky.feed.searchPostsV2.status</file>
+        <file>response/v2unimplemented/xrpc/app.bsky.feed.searchPosts</file>
+        <file>response/v2unimplemented/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/v2unimplemented/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

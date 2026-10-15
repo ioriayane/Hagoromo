@@ -19,6 +19,7 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void test_SearchPostListModel();
+    void test_SearchPostListModel_fallback_data();
     void test_SearchPostListModel_fallback();
     void test_SearchPostListModel_noFallback();
     void test_SearchProfileListModel();
@@ -74,12 +75,27 @@ void search_test::test_SearchPostListModel()
                      << "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jvobyrhgem24");
 }
 
+void search_test::test_SearchPostListModel_fallback_data()
+{
+    QTest::addColumn<QString>("path");
+    QTest::addColumn<QString>("did");
+
+    // searchPostsV2が無いサービス(404)
+    QTest::newRow("404") << "/v1only"
+                         << "did:plc:search_fallback";
+    // searchPostsV2を実装していないサービス(501 MethodNotImplemented)
+    QTest::newRow("501") << "/v2unimplemented"
+                         << "did:plc:search_fallback_501";
+}
+
 void search_test::test_SearchPostListModel_fallback()
 {
-    // searchPostsV2が無いサービス
-    QString uuid = AccountManager::getInstance()->updateAccount(
-            QString(), m_service + "/v1only", "id", "pass", "did:plc:search_fallback", "handle",
-            "email", "accessJwt", "refreshJwt", true);
+    QFETCH(QString, path);
+    QFETCH(QString, did);
+
+    QString uuid = AccountManager::getInstance()->updateAccount(QString(), m_service + path, "id",
+                                                                "pass", did, "handle", "email",
+                                                                "accessJwt", "refreshJwt", true);
 
     SearchPostListModel model;
     model.setAccount(uuid);
@@ -87,9 +103,12 @@ void search_test::test_SearchPostListModel_fallback()
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QSignalSpy spy_error(&model, SIGNAL(errorOccurred(const QString &, const QString &)));
         model.getLatest();
         spy.wait(10 * 1000);
         QCOMPARE(spy.count(), 2);
+        // searchPostsに切り替えるのでエラーは通知しない
+        QCOMPARE(spy_error.count(), 0);
     }
     QCOMPARE(model.rowCount(), 2);
     QStringList uris;
@@ -103,9 +122,8 @@ void search_test::test_SearchPostListModel_fallback()
                      << "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.feed.post/3kdvx4mkpb22f");
 
     // searchPostsV2が使えるサービスになっても一度切り替えたらsearchPostsを使い続ける
-    AccountManager::getInstance()->updateAccount(uuid, m_service, "id", "pass",
-                                                 "did:plc:search_fallback", "handle", "email",
-                                                 "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateAccount(uuid, m_service, "id", "pass", did, "handle",
+                                                 "email", "accessJwt", "refreshJwt", true);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
