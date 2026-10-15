@@ -3016,6 +3016,14 @@ void hagoromo_test::test_CalendarTableModel()
     model.setEnableUntil(true);
     QCOMPARE(model.sinceUtc(), "2024-05-30T15:00:00Z");
     QCOMPARE(model.untilUtc(), "2024-05-31T14:59:59Z");
+
+    // 開始日と終了日が異なる場合はそれぞれの日付で変換する
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 1);
+    QCOMPARE(model.since(), "2024/06/01");
+    QCOMPARE(model.until(), "2024/06/10");
+    QCOMPARE(model.sinceUtc(), "2024-05-31T15:00:00Z");
+    QCOMPARE(model.untilUtc(), "2024-06-10T14:59:59Z");
 }
 
 void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()
