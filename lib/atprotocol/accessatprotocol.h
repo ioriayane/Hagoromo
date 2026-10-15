@@ -106,6 +106,7 @@ public:
     QString replyJson() const;
     QString errorCode() const;
     QString errorMessage() const;
+    int httpStatusCode() const;
     QString cursor() const;
     void setCursor(const QString &newCursor);
 
@@ -160,6 +161,7 @@ private:
     QString m_replyJson;
     QString m_errorCode;
     QString m_errorMessage;
+    int m_httpStatusCode;
     QString m_cursor;
 
     QString m_contentType;

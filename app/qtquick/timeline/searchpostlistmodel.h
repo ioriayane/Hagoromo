@@ -38,6 +38,7 @@ private:
     void searchPostsV2Next();
     void searchPostsLatest();
     void searchPostsNext();
+    bool isSearchPostsV2Unsupported(const int http_status_code, const QString &error_code) const;
     void switchToSearchPosts();
     void appendPosts(const QList<AtProtocolType::AppBskyFeedDefs::PostView> &posts,
                      const bool next);
@@ -45,7 +46,7 @@ private:
     QStringList m_cueGetPost; // uri
 
     QString m_text;
-    // searchPostsV2が失敗したらsearchPostsに切り替えて以降は戻さない
+    // searchPostsV2が未実装のサービスならsearchPostsに切り替えて以降は戻さない
     bool m_useSearchPostsV2;
 };
 

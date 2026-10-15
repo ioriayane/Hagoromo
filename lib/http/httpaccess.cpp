@@ -148,6 +148,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
                                 QByteArray::fromStdString(header.second));
         }
         reply->setRecvData(QByteArray::fromStdString(res->body));
+        reply->setStatusCode(res->status);
         if (res->status >= 200 && res->status <= 299) {
             reply->setError(HttpReply::Success);
             result = true;

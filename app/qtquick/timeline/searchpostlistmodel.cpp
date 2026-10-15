@@ -53,10 +53,13 @@ void SearchPostListModel::searchPostsV2Latest()
             }
             appendPosts(posts->postsList(), false);
             QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
-        } else {
+        } else if (isSearchPostsV2Unsupported(posts->httpStatusCode(), posts->errorCode())) {
             // 同じ条件でsearchPostsで取得し直す
             switchToSearchPosts();
             searchPostsLatest();
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
+            QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
         }
         posts->deleteLater();
     });
@@ -77,9 +80,11 @@ void SearchPostListModel::searchPostsV2Next()
         if (success) {
             m_cursor = posts->cursor();
             appendPosts(posts->postsList(), true);
-        } else {
+        } else if (isSearchPostsV2Unsupported(posts->httpStatusCode(), posts->errorCode())) {
             // searchPostsV2のカーソルはsearchPostsで使えないので続きの読み込みはここで終える
             switchToSearchPosts();
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
         }
         QTimer::singleShot(10, this, &SearchPostListModel::displayQueuedPostsNext);
         posts->deleteLater();
@@ -132,6 +137,16 @@ void SearchPostListModel::searchPostsNext()
     posts->setLabelers(labelerDids());
     posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
                        QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
+}
+
+bool SearchPostListModel::isSearchPostsV2Unsupported(const int http_status_code,
+                                                     const QString &error_code) const
+{
+    // サービスがsearchPostsV2を実装していないときだけsearchPostsに切り替える
+    // (通信エラーや認証エラー、リクエスト内容のエラーでは切り替えない)
+    return (http_status_code == 404 || http_status_code == 501
+            || error_code == QStringLiteral("MethodNotImplemented")
+            || error_code == QStringLiteral("XRPCNotSupported"));
 }
 
 void SearchPostListModel::switchToSearchPosts()

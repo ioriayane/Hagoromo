@@ -20,6 +20,7 @@ private slots:
     void cleanupTestCase();
     void test_SearchPostListModel();
     void test_SearchPostListModel_fallback();
+    void test_SearchPostListModel_noFallback();
     void test_SearchProfileListModel();
 
 private:
@@ -120,6 +121,30 @@ void search_test::test_SearchPostListModel_fallback()
                      .toString()
                      .contains("did:plc:73l5atmh7p3fn3xigbp6ao5x"),
              true);
+}
+
+void search_test::test_SearchPostListModel_noFallback()
+{
+    // searchPostsV2は実装されているがエラーになるサービス
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/v2error", "id", "pass", "did:plc:search_no_fallback", "handle",
+            "email", "accessJwt", "refreshJwt", true);
+
+    SearchPostListModel model;
+    model.setAccount(uuid);
+    model.setText("epub");
+
+    for (int i = 0; i < 2; i++) {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QSignalSpy spy_error(&model, SIGNAL(errorOccurred(const QString &, const QString &)));
+        model.getLatest();
+        spy.wait(10 * 1000);
+        QCOMPARE(spy.count(), 2);
+        // searchPostsに切り替えずにエラーを通知する
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), "ContentParseError");
+        QCOMPARE(model.rowCount(), 0);
+    }
 }
 
 void search_test::test_SearchProfileListModel()
