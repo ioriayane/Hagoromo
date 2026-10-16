@@ -728,99 +728,99 @@ Please recreate AppPassword in the official application.</source>
         <translation>引用ポスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="814"/>
+        <location filename="qml/view/ColumnView.qml" line="815"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="815"/>
+        <location filename="qml/view/ColumnView.qml" line="816"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="816"/>
+        <location filename="qml/view/ColumnView.qml" line="817"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="817"/>
+        <location filename="qml/view/ColumnView.qml" line="818"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="818"/>
-        <location filename="qml/view/ColumnView.qml" line="882"/>
+        <location filename="qml/view/ColumnView.qml" line="819"/>
+        <location filename="qml/view/ColumnView.qml" line="883"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="819"/>
+        <location filename="qml/view/ColumnView.qml" line="820"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="820"/>
+        <location filename="qml/view/ColumnView.qml" line="821"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="821"/>
         <location filename="qml/view/ColumnView.qml" line="822"/>
+        <location filename="qml/view/ColumnView.qml" line="823"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="823"/>
+        <location filename="qml/view/ColumnView.qml" line="824"/>
         <source>Realtime</source>
         <translation>リアルタイム</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="824"/>
+        <location filename="qml/view/ColumnView.qml" line="825"/>
         <source>Saved posts</source>
         <translation>ブックマーク</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="825"/>
+        <location filename="qml/view/ColumnView.qml" line="826"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="866"/>
+        <location filename="qml/view/ColumnView.qml" line="867"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="871"/>
+        <location filename="qml/view/ColumnView.qml" line="872"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="876"/>
+        <location filename="qml/view/ColumnView.qml" line="877"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="886"/>
+        <location filename="qml/view/ColumnView.qml" line="887"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="895"/>
+        <location filename="qml/view/ColumnView.qml" line="896"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="906"/>
+        <location filename="qml/view/ColumnView.qml" line="907"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="906"/>
+        <location filename="qml/view/ColumnView.qml" line="907"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="qml/view/ColumnView.qml" line="924"/>
+        <location filename="qml/view/ColumnView.qml" line="925"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -2834,12 +2834,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="179"/>
+        <location filename="qml/view/PostThreadView.qml" line="190"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="230"/>
+        <location filename="qml/view/PostThreadView.qml" line="241"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
