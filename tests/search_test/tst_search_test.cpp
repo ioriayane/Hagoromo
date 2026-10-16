@@ -139,6 +139,27 @@ void search_test::test_SearchPostListModel_fallback()
                      .toString()
                      .contains("did:plc:73l5atmh7p3fn3xigbp6ao5x"),
              true);
+
+    // searchPostsのカーソルで続きを読み込む
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QSignalSpy spy_error(&model, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QVERIFY(model.getNext());
+        spy.wait(10 * 1000);
+        QCOMPARE(spy.count(), 2);
+        QCOMPARE(spy_error.count(), 0);
+    }
+    QCOMPARE(model.rowCount(), 4);
+    QCOMPARE(model.item(2, TimelineListModel::UriRole)
+                     .toString()
+                     .contains("did:plc:ipj5qejfoqu6eukvt72uhyit"),
+             true);
+    QCOMPARE(model.item(3, TimelineListModel::UriRole)
+                     .toString()
+                     .contains("did:plc:ipj5qejfoqu6eukvt72uhyit"),
+             true);
+    // 最後のページにはカーソルが無いのでこれ以上は読み込まない
+    QVERIFY(!model.getNext());
 }
 
 void search_test::test_SearchPostListModel_noFallback()

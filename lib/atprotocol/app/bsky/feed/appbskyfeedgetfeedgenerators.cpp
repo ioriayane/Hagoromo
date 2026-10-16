@@ -37,6 +37,7 @@ bool AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_j
     if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::GeneratorView data;
             AtProtocolType::AppBskyFeedDefs::copyGeneratorView(value.toObject(), data);
