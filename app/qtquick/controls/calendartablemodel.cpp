@@ -242,7 +242,7 @@ QString CalendarTableModel::sinceUtc() const
 QString CalendarTableModel::untilUtc() const
 {
     if (enableUntil() && m_until.isValid()) {
-        return QDateTime(m_since, QTime(23, 59, 59), Qt::LocalTime)
+        return QDateTime(m_until, QTime(23, 59, 59), Qt::LocalTime)
                 .toUTC()
                 .toString("yyyy-MM-ddTHH:mm:ssZ");
     } else {

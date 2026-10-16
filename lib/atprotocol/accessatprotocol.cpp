@@ -129,7 +129,10 @@ bool AtProtocolAccount::allowedScope(AccountScope scope) const
 }
 
 AccessAtProtocol::AccessAtProtocol(QObject *parent)
-    : AtProtocolAccount { parent }, m_contentType("application/json"), m_dPopNonceRequired(false)
+    : AtProtocolAccount { parent },
+      m_httpStatusCode(0),
+      m_contentType("application/json"),
+      m_dPopNonceRequired(false)
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
     if (m_manager == nullptr) {
@@ -391,6 +394,7 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
     m_replyJson = QString::fromUtf8(reply->readAll());
     m_errorCode.clear();
     m_errorMessage.clear();
+    m_httpStatusCode = reply->statusCode();
     m_dPopNonceRequired = false;
 
     QByteArray header_key;
@@ -626,6 +630,11 @@ void AccessAtProtocol::appendRawHeader(const QString &name, const QString &value
 QString AccessAtProtocol::errorMessage() const
 {
     return m_errorMessage;
+}
+
+int AccessAtProtocol::httpStatusCode() const
+{
+    return m_httpStatusCode;
 }
 
 QString AccessAtProtocol::replyJson() const

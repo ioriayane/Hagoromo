@@ -2660,6 +2660,31 @@ void hagoromo_test::test_SearchPostListModel_text()
 
     QCOMPARE(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000))),
              "fuga from:hogehoge.bsky.social hoge");
+
+    SearchPostsV2Condition condition = model.makeSearchPostsV2Condition("fuga hoge");
+    QCOMPARE(condition.query, "fuga hoge");
+    QCOMPARE(condition.since, QString());
+    QCOMPARE(condition.until, QString());
+    QCOMPARE(condition.languages, QStringList());
+
+    condition = model.makeSearchPostsV2Condition(
+            "#fuga from:me since:2024-01-01T00:00:00Z until:2024-01-31T23:59:59Z lang:ja hoge");
+    QCOMPARE(condition.query, "#fuga from:hogehoge.bsky.social hoge");
+    QCOMPARE(condition.since, "2024-01-01T00:00:00Z");
+    QCOMPARE(condition.until, "2024-01-31T23:59:59Z");
+    QCOMPARE(condition.languages, QStringList() << "ja");
+
+    condition = model.makeSearchPostsV2Condition(
+            QString("since:2024-01-01%1fuga%1lang:ja%1lang:en").arg(QChar(0x3000)));
+    QCOMPARE(condition.query, "fuga");
+    QCOMPARE(condition.since, "2024-01-01");
+    QCOMPARE(condition.languages,
+             QStringList() << "ja"
+                           << "en");
+
+    condition = model.makeSearchPostsV2Condition("since: fuga");
+    QCOMPARE(condition.query, "since: fuga");
+    QCOMPARE(condition.since, QString());
 }
 
 void hagoromo_test::test_AccountListModelOAuth()
@@ -2991,6 +3016,14 @@ void hagoromo_test::test_CalendarTableModel()
     model.setEnableUntil(true);
     QCOMPARE(model.sinceUtc(), "2024-05-30T15:00:00Z");
     QCOMPARE(model.untilUtc(), "2024-05-31T14:59:59Z");
+
+    // 開始日と終了日が異なる場合はそれぞれの日付で変換する
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 1);
+    QCOMPARE(model.since(), "2024/06/01");
+    QCOMPARE(model.until(), "2024/06/10");
+    QCOMPARE(model.sinceUtc(), "2024-05-31T15:00:00Z");
+    QCOMPARE(model.untilUtc(), "2024-06-10T14:59:59Z");
 }
 
 void hagoromo_test::test_TokimekiPollOperator_convertUrlToUri()

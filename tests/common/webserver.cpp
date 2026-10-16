@@ -51,7 +51,15 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
             path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
         }
         qDebug().noquote() << "SERVER PATH=" << path;
-        if (!QFile::exists(path)) {
+        QByteArray status_data;
+        if (WebServer::readFile(path + ".status", status_data)) {
+            // レスポンスファイルと同名の.statusファイルがあれば記載のステータスで応答する
+            QByteArray data;
+            WebServer::readFile(path, data);
+            responder.write(
+                    data, "application/json",
+                    static_cast<QHttpServerResponder::StatusCode>(status_data.trimmed().toInt()));
+        } else if (!QFile::exists(path)) {
             responder.write(QHttpServerResponder::StatusCode::NotFound);
         } else {
             QFileInfo file_info(request.url().path());

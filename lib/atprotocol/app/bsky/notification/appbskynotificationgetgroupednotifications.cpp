@@ -13,7 +13,7 @@ namespace AtProtocolInterface {
 
 AppBskyNotificationGetGroupedNotifications::AppBskyNotificationGetGroupedNotifications(
         QObject *parent)
-    : AppBskyFeedGetPosts { parent }
+    : AccessAtProtocol { parent }
 {
 }
 

@@ -14,6 +14,8 @@ namespace AtProtocolInterface {
 AppBskyFeedGetFeedGenerator::AppBskyFeedGetFeedGenerator(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_isOnline = false;
+    m_isValid = false;
 }
 
 void AppBskyFeedGetFeedGenerator::getFeedGenerator(const QString &feed)

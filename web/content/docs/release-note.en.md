@@ -8,6 +8,11 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Update
+  - Switch the Search API to V2
+- Fix
+  - Fix for a bug related to specifying search dates
+
 ### v0.64.0 - 2026/10/10
 
 - Add

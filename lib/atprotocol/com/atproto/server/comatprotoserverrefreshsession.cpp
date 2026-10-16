@@ -13,6 +13,9 @@ namespace AtProtocolInterface {
 ComAtprotoServerRefreshSession::ComAtprotoServerRefreshSession(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_emailConfirmed = false;
+    m_emailAuthFactor = false;
+    m_active = false;
 }
 
 void ComAtprotoServerRefreshSession::refreshSession()
