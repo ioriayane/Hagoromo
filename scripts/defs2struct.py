@@ -1584,15 +1584,20 @@ class Defs2Struct:
 
         self.json_obj[namespace] = obj
 
-def main(lexicons_path: str, output_path: str) -> None:
+def main(lexicons_paths: list, output_path: str) -> None:
 
     def2struct = Defs2Struct()
-    #atproto\lexicons
-    lexicons_path = lexicons_path.replace('\\', '/')
+
+    file_list = []
+    for lexicons_path in lexicons_paths:
+        lexicons_path = lexicons_path.replace('\\', '/')
+        for file in glob.glob(lexicons_path + '/**/*.json', recursive=True):
+            file = file.replace('\\', '/')
+            file_list.append((file.removeprefix(lexicons_path), file, lexicons_path))
     # glob.globの列挙順はOS/ファイルシステム依存で不定なため、出力順を環境間で安定させるためにソートする
-    file_list = sorted(glob.glob(lexicons_path + '/**/*.json', recursive=True))
-    for file in file_list:
-        def2struct.open(file.replace('\\', '/'), lexicons_path)
+    # 複数のディレクトリにまたがっても順序が変わらないようにlexiconsからの相対パスでソートする
+    for _, file, lexicons_path in sorted(file_list):
+        def2struct.open(file, lexicons_path)
 
     # 既存のlexiconに合体していないファイルを処理
     extend_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons')
@@ -1606,7 +1611,10 @@ def main(lexicons_path: str, output_path: str) -> None:
 if __name__ == "__main__":
 
     base_dir = os.path.dirname(__file__)
-    lexicons_path: str = os.path.join(base_dir, '..', '1stparty', 'atproto', 'lexicons')
+    lexicons_paths: list = [
+        os.path.join(base_dir, '..', '1stparty', 'atproto', 'lexicons'),
+        os.path.join(base_dir, '..', '1stparty', 'bsky', 'lexicons'),
+    ]
     output: str = os.path.join(base_dir, '..', 'lib', 'atprotocol')
 
-    main(lexicons_path, output)
+    main(lexicons_paths, output)

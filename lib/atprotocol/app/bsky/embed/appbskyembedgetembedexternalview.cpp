@@ -17,11 +17,15 @@ AppBskyEmbedGetEmbedExternalView::AppBskyEmbedGetEmbedExternalView(QObject *pare
 }
 
 void AppBskyEmbedGetEmbedExternalView::getEmbedExternalView(const QString &url,
+                                                            const QString &canonicalUri,
                                                             const QList<QString> &uris)
 {
     QUrlQuery url_query;
     if (!url.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("url"), url);
+    }
+    if (!canonicalUri.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("canonicalUri"), canonicalUri);
     }
     for (const auto &value : uris) {
         url_query.addQueryItem(QStringLiteral("uris"), value);
@@ -70,10 +74,22 @@ const QVariant &AppBskyEmbedGetEmbedExternalView::associatedRecordsList() const
     return m_associatedRecordsList;
 }
 
+const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
+AppBskyEmbedGetEmbedExternalView::unverifiedAssociatedRefsList() const
+{
+    return m_unverifiedAssociatedRefsList;
+}
+
+const QVariant &AppBskyEmbedGetEmbedExternalView::unverifiedAssociatedRecordsList() const
+{
+    return m_unverifiedAssociatedRecordsList;
+}
+
 bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty() || !json_doc.object().contains("associatedRefs")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("associatedRefs")
+        || !json_doc.object().contains("unverifiedAssociatedRefs")) {
         success = false;
     } else {
         AtProtocolType::AppBskyEmbedExternal::copyView(json_doc.object().value("view").toObject(),
@@ -100,6 +116,14 @@ bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString rep
         }
         AtProtocolType::LexiconsTypeUnknown::copyUnknown(
                 json_doc.object().value("associatedRecords").toArray(), m_associatedRecordsList);
+        for (const auto &value : json_doc.object().value("unverifiedAssociatedRefs").toArray()) {
+            AtProtocolType::ComAtprotoRepoStrongRef::Main data;
+            AtProtocolType::ComAtprotoRepoStrongRef::copyMain(value.toObject(), data);
+            m_unverifiedAssociatedRefsList.append(data);
+        }
+        AtProtocolType::LexiconsTypeUnknown::copyUnknown(
+                json_doc.object().value("unverifiedAssociatedRecords").toArray(),
+                m_unverifiedAssociatedRecordsList);
     }
 
     return success;

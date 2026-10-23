@@ -39,28 +39,28 @@ AppBskyUnspeccedGetAtmosphereExploreTab::announcementBanner() const
     return m_announcementBanner;
 }
 
-const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> &
-AppBskyUnspeccedGetAtmosphereExploreTab::articlesList() const
+const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleList &
+AppBskyUnspeccedGetAtmosphereExploreTab::articles() const
 {
-    return m_articlesList;
+    return m_articles;
 }
 
-const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem> &
-AppBskyUnspeccedGetAtmosphereExploreTab::publicationsList() const
+const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationList &
+AppBskyUnspeccedGetAtmosphereExploreTab::publications() const
 {
-    return m_publicationsList;
+    return m_publications;
 }
 
-const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> &
-AppBskyUnspeccedGetAtmosphereExploreTab::photosList() const
+const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryList &
+AppBskyUnspeccedGetAtmosphereExploreTab::photos() const
 {
-    return m_photosList;
+    return m_photos;
 }
 
-const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem> &
-AppBskyUnspeccedGetAtmosphereExploreTab::livestreamsList() const
+const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamList &
+AppBskyUnspeccedGetAtmosphereExploreTab::livestreams() const
 {
-    return m_livestreamsList;
+    return m_livestreams;
 }
 
 const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard> &
@@ -72,37 +72,19 @@ AppBskyUnspeccedGetAtmosphereExploreTab::appsList() const
 bool AppBskyUnspeccedGetAtmosphereExploreTab::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty() || !json_doc.object().contains("articles")
-        || !json_doc.object().contains("publications") || !json_doc.object().contains("photos")
-        || !json_doc.object().contains("livestreams") || !json_doc.object().contains("apps")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("apps")) {
         success = false;
     } else {
         AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyAnnouncementBanner(
                 json_doc.object().value("announcementBanner").toObject(), m_announcementBanner);
-        for (const auto &value : json_doc.object().value("articles").toArray()) {
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem data;
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyArticleItem(
-                    value.toObject(), data);
-            m_articlesList.append(data);
-        }
-        for (const auto &value : json_doc.object().value("publications").toArray()) {
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem data;
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyPublicationItem(
-                    value.toObject(), data);
-            m_publicationsList.append(data);
-        }
-        for (const auto &value : json_doc.object().value("photos").toArray()) {
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem data;
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyGalleryItem(
-                    value.toObject(), data);
-            m_photosList.append(data);
-        }
-        for (const auto &value : json_doc.object().value("livestreams").toArray()) {
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem data;
-            AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyLivestreamItem(
-                    value.toObject(), data);
-            m_livestreamsList.append(data);
-        }
+        AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyArticleList(
+                json_doc.object().value("articles").toObject(), m_articles);
+        AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyPublicationList(
+                json_doc.object().value("publications").toObject(), m_publications);
+        AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyGalleryList(
+                json_doc.object().value("photos").toObject(), m_photos);
+        AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyLivestreamList(
+                json_doc.object().value("livestreams").toObject(), m_livestreams);
         for (const auto &value : json_doc.object().value("apps").toArray()) {
             AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard data;
             AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::copyAppCard(value.toObject(),

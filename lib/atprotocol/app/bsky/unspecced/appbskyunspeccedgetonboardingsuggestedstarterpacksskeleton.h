@@ -16,13 +16,11 @@ public:
     void getOnboardingSuggestedStarterPacksSkeleton(const QString &viewer, const int limit);
 
     const QStringList &starterPacksList() const;
-    const QString &recIdStr() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QStringList m_starterPacksList;
-    QString m_recIdStr;
 };
 
 }

@@ -13,7 +13,8 @@ class AppBskyEmbedGetEmbedExternalView : public AccessAtProtocol
 public:
     explicit AppBskyEmbedGetEmbedExternalView(QObject *parent = nullptr);
 
-    void getEmbedExternalView(const QString &url, const QList<QString> &uris);
+    void getEmbedExternalView(const QString &url, const QString &canonicalUri,
+                              const QList<QString> &uris);
 
     const AtProtocolType::AppBskyEmbedExternal::View &view() const;
     const AtProtocolType::AppBskyEmbedExternal::ViewArticle &viewArticle() const;
@@ -23,6 +24,9 @@ public:
     const AtProtocolType::AppBskyEmbedExternal::ViewLivestream &viewLivestream() const;
     const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &associatedRefsList() const;
     const QVariant &associatedRecordsList() const;
+    const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
+    unverifiedAssociatedRefsList() const;
+    const QVariant &unverifiedAssociatedRecordsList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -34,6 +38,8 @@ private:
     AtProtocolType::AppBskyEmbedExternal::ViewLivestream m_viewLivestream;
     QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> m_associatedRefsList;
     QVariant m_associatedRecordsList;
+    QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> m_unverifiedAssociatedRefsList;
+    QVariant m_unverifiedAssociatedRecordsList;
 };
 
 }
