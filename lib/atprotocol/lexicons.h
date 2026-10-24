@@ -640,6 +640,7 @@ struct ProfileViewDetailed
     QString displayName;
     QString description;
     QString pronouns;
+    QString website; // uri , The website URL of the profile.
     QString avatar; // uri
     QString banner; // uri
     int followersCount = 0;
@@ -884,6 +885,7 @@ struct Main
     QString displayName;
     QString description; // Free-form profile description text.
     QString pronouns; // Free-form pronouns text.
+    QString website; // uri , The website URL of the profile.
     Blob avatar; // Small image to be displayed next to posts from account. AKA, 'profile picture'
     Blob banner; // Larger horizontal image to display behind profile view.
     // union start : labels

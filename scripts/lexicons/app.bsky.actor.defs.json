@@ -1,0 +1,13 @@
+{
+    "defs": {
+        "profileViewDetailed": {
+            "properties": {
+                "website": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The website URL of the profile."
+                }
+            }
+        }
+    }
+}

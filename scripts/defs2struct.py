@@ -1557,6 +1557,8 @@ class Defs2Struct:
                     self.json_deep_merge(dest[key], src[key])
                 elif isinstance(dest[key], list) and isinstance(src[key], list):
                     dest[key].extend(src[key])
+                else:
+                    dest[key] = src[key]
             else:
                 dest[key] = src[key]
         return dest

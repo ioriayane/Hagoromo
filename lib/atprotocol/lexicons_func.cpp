@@ -200,6 +200,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
         dest.pronouns = src.value("pronouns").toString();
+        dest.website = src.value("website").toString();
         dest.avatar = src.value("avatar").toString();
         dest.banner = src.value("banner").toString();
         dest.followersCount = src.value("followersCount").toInt();
@@ -1217,6 +1218,7 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
         dest.pronouns = src.value("pronouns").toString();
+        dest.website = src.value("website").toString();
         LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
         LexiconsTypeUnknown::copyBlob(src.value("banner").toObject(), dest.banner);
         QString labels_type = src.value("labels").toObject().value("$type").toString();
