@@ -18,14 +18,12 @@ public:
 
     const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner &
     announcementBanner() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> &
-    articlesList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem> &
-    publicationsList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> &
-    photosList() const;
-    const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem> &
-    livestreamsList() const;
+    const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleList &articles() const;
+    const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationList &
+    publications() const;
+    const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryList &photos() const;
+    const AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamList &
+    livestreams() const;
     const QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard> &appsList() const;
 
 private:
@@ -33,12 +31,10 @@ private:
 
     AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AnnouncementBanner
             m_announcementBanner;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleItem> m_articlesList;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationItem>
-            m_publicationsList;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryItem> m_photosList;
-    QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamItem>
-            m_livestreamsList;
+    AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::ArticleList m_articles;
+    AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::PublicationList m_publications;
+    AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::GalleryList m_photos;
+    AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::LivestreamList m_livestreams;
     QList<AtProtocolType::AppBskyUnspeccedGetAtmosphereExploreTab::AppCard> m_appsList;
 };
 

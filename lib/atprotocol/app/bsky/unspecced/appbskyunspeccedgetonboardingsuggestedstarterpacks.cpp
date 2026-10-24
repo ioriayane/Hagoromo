@@ -3,7 +3,6 @@
 
 #include "appbskyunspeccedgetonboardingsuggestedstarterpacks.h"
 #include "atprotocol/lexicons_func.h"
-#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -34,11 +33,6 @@ AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::starterPacksList() const
     return m_starterPacksList;
 }
 
-const QString &AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::recIdStr() const
-{
-    return m_recIdStr;
-}
-
 bool AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::parseJson(bool success,
                                                                    const QString reply_json)
 {
@@ -51,8 +45,6 @@ bool AppBskyUnspeccedGetOnboardingSuggestedStarterPacks::parseJson(bool success,
             AtProtocolType::AppBskyGraphDefs::copyStarterPackView(value.toObject(), data);
             m_starterPacksList.append(data);
         }
-        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("recIdStr"),
-                                                        m_recIdStr);
     }
 
     return success;

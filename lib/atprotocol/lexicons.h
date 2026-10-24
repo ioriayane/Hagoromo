@@ -62,9 +62,6 @@ namespace ChatBskyConvoDefs {
 struct ConvoView;
 struct MessageView;
 }
-namespace PlaceStreamChatDefs {
-struct MessageView;
-}
 
 // app.bsky.actor.contentVisibilityDeclaration
 namespace AppBskyActorContentVisibilityDeclaration {
@@ -634,6 +631,7 @@ struct ProfileLinkView
     QString url; // uri , The link destination.
     QString title;
     QString icon; // uri , Image URL for the destination site's icon.
+    QList<ComAtprotoLabelDefs::Label> labels;
 };
 struct ProfileViewDetailed
 {
@@ -642,7 +640,7 @@ struct ProfileViewDetailed
     QString displayName;
     QString description;
     QString pronouns;
-    QString website; // uri
+    QString website; // uri , The website URL of the profile.
     QString avatar; // uri
     QString banner; // uri
     int followersCount = 0;
@@ -857,6 +855,10 @@ struct Preferences
 
 // app.bsky.actor.link
 namespace AppBskyActorLink {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
 struct Main
 {
     QString url; // uri , The link destination, an https URL.
@@ -864,6 +866,11 @@ struct Main
                    // domain.
     Blob icon; // The destination site's icon, uploaded when the link is saved.
     QString createdAt; // datetime
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this link.
+    // union end : labels
 };
 }
 
@@ -878,7 +885,7 @@ struct Main
     QString displayName;
     QString description; // Free-form profile description text.
     QString pronouns; // Free-form pronouns text.
-    QString website; // uri
+    QString website; // uri , The website URL of the profile.
     Blob avatar; // Small image to be displayed next to posts from account. AKA, 'profile picture'
     Blob banner; // Larger horizontal image to display behind profile view.
     // union start : labels
@@ -2167,6 +2174,7 @@ struct SubscribedPostItem
 {
     QString actor; // did
     QString post; // at-uri
+    QString parent; // at-uri , The post this one replies to, if it is a reply.
 };
 struct SubscribedPostGroup
 {
@@ -2361,6 +2369,14 @@ struct AgeAssuranceEvent
 };
 }
 
+// app.bsky.unspecced.getAtmosphereExploreArticleRecommendations
+namespace AppBskyUnspeccedGetAtmosphereExploreArticleRecommendations {
+struct Article
+{
+    QString uri; // at-uri
+};
+}
+
 // app.bsky.unspecced.getAtmosphereExploreTab
 namespace AppBskyUnspeccedGetAtmosphereExploreTab {
 struct ArticleItem
@@ -2368,20 +2384,48 @@ struct ArticleItem
     bool featured = false;
     AppBskyEmbedExternal::ViewArticle view;
 };
+struct ArticleList
+{
+    QList<ArticleItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
 struct PublicationItem
 {
     bool featured = false;
     AppBskyEmbedExternal::ViewArticlePublication view;
+};
+struct PublicationList
+{
+    QList<PublicationItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
 };
 struct GalleryItem
 {
     bool featured = false;
     AppBskyEmbedExternal::ViewGallery view;
 };
+struct GalleryList
+{
+    QList<GalleryItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
 struct LivestreamItem
 {
     bool featured = false;
     AppBskyEmbedExternal::ViewLivestream view;
+};
+struct LivestreamList
+{
+    QList<LivestreamItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
 };
 struct AnnouncementBanner
 {
@@ -3670,465 +3714,99 @@ struct ResultUnavailable
 };
 }
 
-// com.germnetwork.declaration
-namespace ComGermnetworkDeclaration {
-struct MessageMe
+// network.bsky.jetstream.listSegments
+namespace NetworkBskyJetstreamListSegments {
+struct Segment
 {
-    QString messageMeUrl; // uri , A URL to present to an account that does not have its own
-                          // com.germnetwork.declaration record, must have an empty fragment
-                          // component, where the app should fill in the fragment component with the
-                          // DIDs of the two accounts who wish to message each other
-    QString showButtonTo; // The policy of who can message the account, this value is included in
-                          // the keyPackage, but is duplicated here to allow applications to decide
-                          // if they should show a 'Message on Germ' button to the viewer.
-};
-struct Main
-{
-    QString version; // Semver version number, without pre-release or build information, for the
-                     // format of opaque content
-    MessageMe messageMe; // Controls who can message this account
+    QString name; // Segment filename; pass to getSegment.
+    int index = 0; // Zero-based segment index.
+    int sizeBytes = 0; // File size in bytes.
+    QString checksum; // Segment-format xxh3 metadata checksum as 16-char hex; equals the getSegment
+                      // ETag.
+    int eventCount = 0; // Number of events in the segment.
+    int minSeq = 0;
+    int maxSeq = 0;
+    int minWitnessedAt = 0; // Earliest witnessed-at, unix microseconds.
+    int maxWitnessedAt = 0; // Latest witnessed-at, unix microseconds.
 };
 }
 
-// place.stream.badge.defs
-namespace PlaceStreamBadgeDefs {
-struct BadgeIssuanceView
+// network.bsky.jetstream.planSnapshot
+namespace NetworkBskyJetstreamPlanSnapshot {
+struct BlockRange
 {
-    QString name; // Display name from the badge definition.
-    QString issuer; // did , DID of the badge issuer.
-    QString imageUrl; // uri , Resolved image URL for the badge icon.
-    bool selected = false; // Whether this badge is currently in the user's chat profile selection.
-    QString badgeType;
-    QString description; // Description from the badge definition.
-    QString issuanceCid; // CID of the place.stream.badge.issuance record.
-    QString issuanceUri; // at-uri , AT URI of the place.stream.badge.issuance record.
+    int first = 0; // Index of the first block in the range.
+    int last = 0; // Index of the last block in the range.
 };
-struct BadgeSlot
+struct Segment
 {
-    BadgeIssuanceView selected; // The currently selected badge in this slot, if any.
-    QList<BadgeIssuanceView> available; // All badges available for this slot.
+    QString name; // Segment filename to pass to getSegment or getBlock.
+    int index = 0; // Zero-based segment index.
+    QString checksum; // The segment's xxh3 metadata checksum, encoded as 16 hexadecimal characters.
+    int minSeq = 0;
+    int maxSeq = 0;
+    QString mode; // How to download this segment. For segment, download the whole file with
+                  // getSegment. For blocks, download the ranges listed in blocks with getBlock.
+    QList<BlockRange> blocks; // Block ranges to download, including both endpoints. This field is
+                              // present only when mode is blocks.
 };
-struct BadgeView
+struct Stats
 {
-    QString name; // Display name from the badge definition.
-    QString issuer; // did , DID of the badge issuer.
-    QString imageUrl; // uri , Resolved image URL for the badge icon.
-    QString badgeType;
-    QString recipient; // did , DID of the badge recipient.
-    QString signature; // TODO: Cryptographic signature of the badge (of a place.stream.key).
-    QString description; // Description from the badge definition.
+    int segmentsExamined = 0;
+    int segmentsMatched = 0;
+    int blocksMatched = 0;
+    int entries = 0; // Number of items counted toward the server's per-page plan limit.
 };
 }
 
-// place.stream.chat.profile
-namespace PlaceStreamChatProfile {
-struct Color
+// network.bsky.jetstream.subscribeEvents
+namespace NetworkBskyJetstreamSubscribeEvents {
+struct Commit
 {
-    int red = 0;
-    int blue = 0;
-    int green = 0;
+    int seq = 0; // Jetstream's monotonic per-event sequence number; the stream cursor.
+    QString did; // did
+    QString time; // datetime , The event's display timestamp, microsecond precision: when Jetstream
+                  // witnessed the event, unless an operator timestamp import overrode it. Timestamp
+                  // cursors translate against the witnessed time, so after an import this value may
+                  // not be a faithful resume position.
+    QString rev; // tid , The repo rev of the commit that produced this op.
+    QString operation;
+    QString collection; // nsid , Collection NSID of the record.
+    QString rkey; // record-key , Record key.
+    QVariant record; // The record decoded to JSON. Absent for deletes.
+    QString cid; // cid , CID of the record. Absent for deletes.
 };
-struct StreamerBadgeSelection
+struct Identity
 {
-    ComAtprotoRepoStrongRef::Main badge;
-    QString streamer; // did , DID of the streamer whose channel this selection applies to.
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Identity identity;
 };
-struct BadgeSelections
+struct Account
 {
-    ComAtprotoRepoStrongRef::Main global;
-    QList<StreamerBadgeSelection>
-            streamer; // Selected streamer-issued badges, one per streamer channel.
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Account account;
 };
-typedef QString SelfLabel; // Label that a user can apply to their own profile.
-struct Main
+struct Sync
 {
-    Color color;
-    BadgeSelections badges; // Badge selections for display in chat.
-    QList<SelfLabel> selfLabels; // Self-applied labels for this profile, e.g. 'bot'.
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Sync sync;
 };
-}
-
-// place.stream.chat.pinnedRecord
-namespace PlaceStreamChatPinnedRecord {
-struct Main
-{
-    QString pinnedBy; // did , DID of the user who pinned the message.
-    QString createdAt; // datetime , When this pin was created.
-    QString expiresAt; // datetime , Optional expiration time. If set, the pin is considered
-                       // inactive after this time.
-    QString pinnedMessage; // at-uri , AT-URI of the pinned chat message.
-};
-}
-
-// place.stream.chat.defs
-namespace PlaceStreamChatDefs {
-enum class MessageViewReplyToType : int {
-    none,
-    replyTo_MessageView,
-};
-struct MessageView
-{
-    QString cid; // cid
-    QString uri; // at-uri
-    AppBskyActorDefs::ProfileViewBasic author;
-    QList<PlaceStreamBadgeDefs::BadgeView> badges;
-    QVariant record;
-    bool deleted = false; // If true, this message has been deleted or labeled and should be cleared
-                          // from the cache
-    // union start : replyTo
-    MessageViewReplyToType replyTo_type = MessageViewReplyToType::none;
-    QSharedPointer<MessageView> replyTo_MessageView;
-    // union end : replyTo
-    QString indexedAt; // datetime
-    PlaceStreamChatProfile::Main chatProfile;
-};
-struct PinnedRecordView
-{
-    QString cid; // cid
-    QString uri; // at-uri
-    PlaceStreamChatPinnedRecord::Main record;
-    MessageView message;
-    PlaceStreamChatProfile::Main pinnedBy;
-    QString indexedAt; // datetime
-};
-}
-
-// place.stream.defs
-namespace PlaceStreamDefs {
-struct BlockView
-{
-    QString cid; // cid
-    QString uri; // at-uri
-    AppBskyGraphBlock::Main record;
-    AppBskyActorDefs::ProfileViewBasic blocker;
-    QString indexedAt; // datetime
-};
-struct Rendition
+struct Info
 {
     QString name;
-};
-struct Renditions
-{
-    QList<Rendition> renditions;
-};
-struct ActivityGame
-{
-    QString uri; // at-uri
-    QString name; // Cached display name of the game.
-};
-struct ActivityLabel
-{
-    QString label;
-};
-}
-
-// place.stream.livestream
-namespace PlaceStreamLivestream {
-enum class StreamplaceAnythingLivestreamType : int {
-    none,
-    livestream_LivestreamView,
-    livestream_ViewerCount,
-    livestream_TeleportArrival,
-    livestream_TeleportCanceled,
-    livestream_PlaceStreamDefs_BlockView,
-    livestream_PlaceStreamDefs_Renditions,
-    livestream_PlaceStreamDefs_Rendition,
-    livestream_PlaceStreamChatDefs_MessageView,
-    livestream_PlaceStreamChatDefs_PinnedRecordView,
-};
-enum class MainActivityType : int {
-    none,
-    activity_PlaceStreamDefs_ActivityGame,
-    activity_PlaceStreamDefs_ActivityLabel,
-};
-struct NotificationSettings
-{
-    bool pushNotification =
-            false; // Whether this livestream should trigger a push notification to followers.
-};
-struct Main
-{
-    QString url; // uri , The URL where this stream can be found. This is primarily a hint for other
-                 // Streamplace nodes to locate and replicate the stream.
-    ComAtprotoRepoStrongRef::Main post;
-    QList<QString> tags; // Freeform tags for this stream. Each tag must be alphanumeric (a-z, A-Z,
-                         // 0-9) plus colon. Tags with colons indicate a specific tag group (e.g.
-                         // 'lang:en' indicates the stream's primary language).
-    QString agent; // The source of the livestream, if available, in a User Agent format: `<product>
-                   // / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS
-    Blob thumb;
-    QString title; // The title of the livestream, as it will be announced to followers.
-    QString endedAt; // datetime , Client-declared timestamp when this livestream ended. Ended
-                     // livestreams are not supposed to start up again.
-    // union start : activity
-    MainActivityType activity_type = MainActivityType::none;
-    PlaceStreamDefs::ActivityGame
-            activity_PlaceStreamDefs_ActivityGame; // The game or activity being streamed.
-    PlaceStreamDefs::ActivityLabel
-            activity_PlaceStreamDefs_ActivityLabel; // The game or activity being streamed.
-    // union end : activity
-    QString createdAt; // datetime , Client-declared timestamp when this livestream started.
-    QString lastSeenAt; // datetime , Client-declared timestamp when this livestream was last seen
-                        // by the Streamplace station.
-    QString canonicalUrl; // uri , The primary URL where this livestream can be viewed, if
-                          // available.
-    int idleTimeoutSeconds = 0; // Time in seconds after which this livestream should be
-                                // automatically ended if idle. Zero means no timeout.
-    PlaceStreamLivestream::NotificationSettings notificationSettings;
-};
-struct ViewerCount
-{
-    int count = 0;
-};
-struct LivestreamView
-{
-    QString cid; // cid
-    QString uri; // at-uri
-    AppBskyActorDefs::ProfileViewBasic author;
-    QVariant record;
-    QString indexedAt; // datetime
-    ViewerCount viewerCount; // The number of viewers watching this livestream. Use when you can't
-                             // reasonably use #viewerCount directly.
-};
-struct TeleportArrival
-{
-    AppBskyActorDefs::ProfileViewBasic source;
-    QString startsAt; // datetime , When this teleport started
-    PlaceStreamChatProfile::Main chatProfile;
-    QString teleportUri; // at-uri , The URI of the teleport record
-    int viewerCount = 0; // How many viewers are arriving from this teleport
-};
-struct TeleportCanceled
-{
-    QString reason; // Why this teleport was canceled
-    QString teleportUri; // at-uri , The URI of the teleport record that was canceled
-};
-struct StreamplaceAnything
-{
-    // union start : livestream
-    StreamplaceAnythingLivestreamType livestream_type = StreamplaceAnythingLivestreamType::none;
-    LivestreamView livestream_LivestreamView;
-    ViewerCount livestream_ViewerCount;
-    TeleportArrival livestream_TeleportArrival;
-    TeleportCanceled livestream_TeleportCanceled;
-    PlaceStreamDefs::BlockView livestream_PlaceStreamDefs_BlockView;
-    PlaceStreamDefs::Renditions livestream_PlaceStreamDefs_Renditions;
-    PlaceStreamDefs::Rendition livestream_PlaceStreamDefs_Rendition;
-    PlaceStreamChatDefs::MessageView livestream_PlaceStreamChatDefs_MessageView;
-    PlaceStreamChatDefs::PinnedRecordView livestream_PlaceStreamChatDefs_PinnedRecordView;
-    // union end : livestream
-};
-}
-
-// site.standard.document
-namespace SiteStandardDocument {
-enum class MainLabelsType : int {
-    none,
-    labels_ComAtprotoLabelDefs_SelfLabels,
-};
-struct Contributor
-{
-    QString did; // did
-    QString role;
-    QString displayName;
-};
-struct Main
-{
-    QString path; // Combine with site or publication url to construct a canonical URL to the
-                  // document. Prepend with a leading slash.
-    QString site; // uri , Points to a publication record (at://) or a publication url (https://)
-                  // for loose documents. Avoid trailing slashes.
-    QList<QString> tags; // Array of strings used to tag or categorize the document. Avoid
-                         // prepending tags with hashtags.
-    // union start : links
-    // union end : links
-    QString title; // Title of the document.
-    // union start : labels
-    MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels
-            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
-                                                   // content warnings.
-    // union end : labels
-    // union start : content
-    // union end : content
-    QString updatedAt; // datetime , Timestamp of the documents last edit.
-    Blob coverImage; // Image to used for thumbnail or cover image. Less than 1MB is size.
-    ComAtprotoRepoStrongRef::Main bskyPostRef;
-    QString description; // A brief description or excerpt from the document.
-    QString publishedAt; // datetime , Timestamp of the documents publish time.
-    QString textContent; // Plaintext representation of the documents contents. Should not contain
-                         // markdown or other formatting.
-    QList<Contributor> contributors;
-};
-}
-
-// site.standard.graph.recommend
-namespace SiteStandardGraphRecommend {
-struct Main
-{
-    QString document; // at-uri , AT-URI reference to the document record being recommended (ex:
-                      // at://did:plc:abc123/site.standard.document/xyz789).
-    QString createdAt; // datetime
-};
-}
-
-// site.standard.graph.subscription
-namespace SiteStandardGraphSubscription {
-struct Main
-{
-    QString createdAt; // datetime
-    QString publication; // at-uri , AT-URI reference to the publication record being subscribed to
-                         // (ex: at://did:plc:abc123/site.standard.publication/xyz789).
-};
-}
-
-// site.standard.theme.color
-namespace SiteStandardThemeColor {
-struct Rgb
-{
-    int b = 0;
-    int g = 0;
-    int r = 0;
-};
-struct Rgba
-{
-    int a = 0;
-    int b = 0;
-    int g = 0;
-    int r = 0;
-};
-}
-
-// site.standard.theme.basic
-namespace SiteStandardThemeBasic {
-enum class MainAccentType : int {
-    none,
-    accent_SiteStandardThemeColor_Rgb,
-};
-enum class MainBackgroundType : int {
-    none,
-    background_SiteStandardThemeColor_Rgb,
-};
-enum class MainForegroundType : int {
-    none,
-    foreground_SiteStandardThemeColor_Rgb,
-};
-enum class MainAccentForegroundType : int {
-    none,
-    accentForeground_SiteStandardThemeColor_Rgb,
-};
-struct Main
-{
-    // union start : accent
-    MainAccentType accent_type = MainAccentType::none;
-    SiteStandardThemeColor::Rgb
-            accent_SiteStandardThemeColor_Rgb; // Color used for links and button backgrounds.
-    // union end : accent
-    // union start : background
-    MainBackgroundType background_type = MainBackgroundType::none;
-    SiteStandardThemeColor::Rgb
-            background_SiteStandardThemeColor_Rgb; // Color used for content background.
-    // union end : background
-    // union start : foreground
-    MainForegroundType foreground_type = MainForegroundType::none;
-    SiteStandardThemeColor::Rgb
-            foreground_SiteStandardThemeColor_Rgb; // Color used for content text.
-    // union end : foreground
-    // union start : accentForeground
-    MainAccentForegroundType accentForeground_type = MainAccentForegroundType::none;
-    SiteStandardThemeColor::Rgb
-            accentForeground_SiteStandardThemeColor_Rgb; // Color used for button text.
-    // union end : accentForeground
-};
-}
-
-// site.standard.publication
-namespace SiteStandardPublication {
-enum class MainLabelsType : int {
-    none,
-    labels_ComAtprotoLabelDefs_SelfLabels,
-};
-struct Preferences
-{
-    bool showInDiscover =
-            true; // Boolean which decides whether the publication should appear in discovery feeds.
-};
-struct Main
-{
-    QString url; // uri , Base publication url (ex: https://standard.site). The canonical document
-                 // URL is formed by combining this value with the document path.
-    Blob icon; // Square image to identify the publication. Should be at least 256x256.
-    QString name; // Name of the publication.
-    // union start : labels
-    MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels
-            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this publication.
-                                                   // Effectively content warnings.
-    // union end : labels
-    SiteStandardThemeBasic::Main basicTheme;
-    QString description; // Brief description of the publication.
-    Preferences preferences; // Object containing platform specific preferences (with a few shared
-                             // properties).
-};
-}
-
-// social.grain.defs
-namespace SocialGrainDefs {
-struct AspectRatio
-{
-    int width = 0;
-    int height = 0;
-};
-}
-
-// social.grain.favorite
-namespace SocialGrainFavorite {
-struct Main
-{
-    QString subject; // at-uri
-    QString createdAt; // datetime
-};
-}
-
-// social.grain.gallery
-namespace SocialGrainGallery {
-enum class MainLabelsType : int {
-    none,
-    labels_ComAtprotoLabelDefs_SelfLabels,
-};
-struct Main
-{
-    QString title;
-    // union start : labels
-    MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels
-            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
-                                                   // content warnings.
-    // union end : labels
-    QString createdAt; // datetime
-    QString description;
-};
-}
-
-// social.grain.gallery.item
-namespace SocialGrainGalleryItem {
-struct Main
-{
-    QString item; // at-uri
-    QString gallery; // at-uri
-    int position = 0;
-    QString createdAt; // datetime
-};
-}
-
-// social.grain.photo
-namespace SocialGrainPhoto {
-struct Main
-{
-    QString alt; // Alt text description of the image, for accessibility.
-    Blob photo;
-    QString createdAt; // datetime
-    SocialGrainDefs::AspectRatio aspectRatio;
+    QString message;
 };
 }
 
@@ -4249,6 +3927,7 @@ struct AppealView
     QString state;
     QString appealedAt; // datetime
     QString resolvedAt; // datetime , When the appeal's report was closed.
+    QString outcome; // Decision on a resolved appeal.
     QString appealableUntil; // datetime
 };
 struct PolicyView
@@ -4329,6 +4008,8 @@ struct ReportRef
 };
 struct SubjectRef
 {
+    QString appealOutcome; // Decision captured when an appealResolved notification was created.
+                           // Omitted when the outcome is unknown.
     // union start : subject
     SubjectRefSubjectType subject_type = SubjectRefSubjectType::none;
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
@@ -4357,7 +4038,13 @@ struct Notification
 };
 struct NotificationPreferences
 {
-    bool push = false;
+    bool reports = false; // Notify about outcomes of reports filed by the account (reportResolved
+                          // and reportReopened).
+    bool account = false; // Notify about moderation actions against the account or its content,
+                          // action reversals, appeal outcomes, and standing changes. Label
+                          // application and removal are controlled by labels.
+    bool labels = false; // Notify when labels are applied to or removed from the account or its
+                         // content (labelApplied and labelRemoved actions).
 };
 }
 
@@ -4576,6 +4263,8 @@ struct ModEventReverseTakedown
                            // infraction's severity.
     int strikeCount = 0; // Number of strikes to subtract from the user's strike count. Usually set
                          // from the last policy infraction's severity.
+    QString strikeExpiresAt; // datetime , When the strike should expire. If not provided, the
+                             // strike never expires.
 };
 struct ModEventComment
 {
@@ -5153,22 +4842,39 @@ struct QueueStats
     int closureTargetMetCount = 0; // Reports whose closure meets their closure target.
     int closureTargetMissedCount = 0; // Reports whose closure exceeds their closure target.
     int closureTargetMetRate = 0; // Percent of reports meeting their closure target.
-    int actionedCount = 0; // Number of reports in 'closed' status
-    int escalatedCount = 0; // Number of reports in 'escalated' status
-    int inboundCount = 0; // Reports received in this queue in the last 24 hours.
-    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
-                        // rounded to nearest integer. Absent when inboundCount is 0.
-    int avgHandlingTimeSec = 0; // Average time in seconds from report creation to close, for
-                                // reports closed in this period.
-    QString lastUpdated; // datetime , When these statistics were last computed
+    int closedCount =
+            0; // Number of reports whose current closure falls within this UTC calendar day.
+    int actionedCount =
+            0; // Number of closures whose last report action is label, tag, or takedown.
+    int acknowledgedCount =
+            0; // Number of closures whose last report action is not label, tag, or takedown.
+    int escalatedCount = 0; // Number of report escalation events during this UTC calendar day.
+    int inboundCount = 0; // Reports received in this queue during this UTC calendar day.
+    int labelActionCount = 0; // Closures whose last report action is a label event.
+    int tagActionCount = 0; // Closures whose last report action is a tag event.
+    int takedownActionCount = 0; // Closures whose last report action is a takedown event.
+    int ahtDurationSec = 0; // Sum of report assignment-to-close seconds.
+    int ahtSampleCount = 0; // Number of assigned closed-report samples in ahtDurationSec.
+    int resolutionDurationSec = 0; // Sum of report creation-to-close seconds.
+    int resolutionSampleCount = 0; // Number of closed-report samples in resolutionDurationSec.
+    int actionRate = 0; // Percentage of closures actioned (actionedCount / closedCount * 100),
+                        // rounded to nearest integer.
+    int avgHandlingTimeSec = 0; // Average handling time in seconds from report assignment to close.
+    int avgResolutionTimeSec =
+            0; // Average resolution time in seconds from report creation to close.
+    QString lastUpdated; // datetime , When these statistics were last computed.
 };
 struct QueueView
 {
     int id = 0; // Queue ID
     QString name; // Display name of the queue
     QList<QString> subjectTypes; // Subject types this queue accepts.
-    QString collection; // nsid , Collection name for record subjects (e.g., 'app.bsky.feed.post')
+    QString collection; // nsid , Collection name for record subjects. Omit to accept every
+                        // collection.
     QList<QString> reportTypes; // Report reason types this queue accepts (fully qualified NSIDs)
+    QList<QString> reporterTags; // Match any listed tag on the account submitting the report.
+    QList<QString> accountTags; // Match tags on the account that is being reported against. For
+                                // record subjects, use the author account. Match any listed tag.
     QString description; // Optional description of the queue
     QList<QString>
             recommendedPolicies; // Policy keys recommended when actioning reports in this queue
@@ -5180,6 +4886,9 @@ struct QueueView
     bool enabled = false; // Whether this queue is currently active
     QString deletedAt; // datetime , When the queue was deleted, if applicable
     QueueStats stats; // Statistics about this queue
+    bool strictAccess = false; // Admins can always list this queue and browse its reports. Other
+                               // roles require an active queue assignment. Individual report and
+                               // moderation event access is unchanged.
 };
 struct AssignmentView
 {
@@ -5395,6 +5104,7 @@ struct Event
     PatternType pattern;
     ActionType action;
     ReasonType reason;
+    QString source = QStringLiteral("ozone/default"); // Source of the decision
     QString createdBy; // did , DID of the user who created this rule
     QString createdAt; // datetime
     QString comment; // Optional comment about the decision
@@ -5405,10 +5115,22 @@ struct UrlRule
     PatternType pattern;
     ActionType action;
     ReasonType reason;
+    QString source = QStringLiteral("ozone/default"); // Source of the rule
     QString comment; // Optional comment about the decision
     QString createdBy; // did , DID of the user added the rule.
     QString createdAt; // datetime , Timestamp when the rule was created
     QString updatedAt; // datetime , Timestamp when the rule was last updated
+};
+}
+
+// tools.ozone.safelink.syncSource
+namespace ToolsOzoneSafelinkSyncSource {
+struct SourceRule
+{
+    QString url;
+    ToolsOzoneSafelinkDefs::PatternType pattern;
+    ToolsOzoneSafelinkDefs::ActionType action;
+    ToolsOzoneSafelinkDefs::ReasonType reason;
 };
 }
 

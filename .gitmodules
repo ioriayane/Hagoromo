@@ -13,3 +13,6 @@
 [submodule "3rdparty/zlib"]
 	path = 3rdparty/zlib
 	url = https://github.com/madler/zlib.git
+[submodule "1stparty/bsky"]
+	path = 1stparty/bsky
+	url = https://github.com/bluesky-social/bsky.git
