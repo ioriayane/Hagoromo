@@ -58,7 +58,7 @@ ColumnLayout {
     signal requestReportMessage(string account_uuid, string did, string convo_id, string message_id)
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestAddMutedWord(string account_uuid, string text)
-    signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var callback)
+    signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var links, var callback)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
     signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestSubscribeToPosts(string account_uuid, string did, bool post, bool reply)
@@ -319,8 +319,8 @@ ColumnLayout {
             onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
-            onRequestEditProfile: (did, avatar, banner, display_name, description, pronouns, website, callback) => {
-                                      columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description, pronouns, website, callback)
+            onRequestEditProfile: (did, avatar, banner, display_name, description, pronouns, website, links, callback) => {
+                                      columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description, pronouns, website, links, callback)
                                   }
             onRequestSubscribeToPosts: (did, post, reply) => columnView.requestSubscribeToPosts(account.uuid, did, post, reply)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink

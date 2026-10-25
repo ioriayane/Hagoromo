@@ -3,6 +3,8 @@
 
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 
+#include <QJsonObject>
+
 namespace AtProtocolInterface {
 
 class ComAtprotoRepoPutRecordEx : public ComAtprotoRepoPutRecord
@@ -10,11 +12,14 @@ class ComAtprotoRepoPutRecordEx : public ComAtprotoRepoPutRecord
 public:
     explicit ComAtprotoRepoPutRecordEx(QObject *parent = nullptr);
 
-    void profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
-                 const QString &description, const QString &display_name, const QString &pronouns,
-                 const QString &website,
+    void profile(const QJsonObject &base_record, const AtProtocolType::Blob &avatar,
+                 const AtProtocolType::Blob &banner, const QString &description,
+                 const QString &display_name, const QString &pronouns, const QString &website,
                  const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post,
                  const QString &cid);
+    void profileLink(const QJsonObject &base_record, const QString &rkey, const QString &url,
+                     const QString &title, const AtProtocolType::Blob &icon, bool update_icon,
+                     const QString &cid);
     void list(const AtProtocolType::Blob &avatar, const QString &purpose,
               const QString &description, const QString &name, const QString &rkey);
     void postGate(const QString &uri,

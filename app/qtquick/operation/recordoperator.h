@@ -5,12 +5,26 @@
 #include "atprotocol/accessatprotocol.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include <QObject>
+#include <QJsonArray>
 
 struct EmbedImage
 {
     QString path;
     QString alt;
     int size_limit = 0;
+    bool keep_format = false;
+};
+
+struct ProfileLinkItem
+{
+    QString uri;
+    QString cid;
+    QString url;
+    QString title;
+    QString icon_path; // 新しいアイコンのローカルパス（URL形式）
+    QString status; // "new" / "modified" / ""(変更なし)
+    bool icon_changed = false;
+    AtProtocolType::Blob icon_blob;
 };
 
 class RecordOperator : public QObject
@@ -47,6 +61,8 @@ public:
     Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
     Q_INVOKABLE void setPostGate(const bool quote_enabled, const QStringList &uris);
     Q_INVOKABLE void setPoll(const QStringList &options, const int duration);
+    Q_INVOKABLE void setProfileLinks(const QVariantList &links, const QStringList &deleted_uris);
+    Q_INVOKABLE QVariantList profileLinks() const;
 
     Q_INVOKABLE void clear();
 
@@ -120,6 +136,9 @@ private:
                   std::function<void(bool, const QString &, const QString &)> callback);
     void tokimekiPoll(const QString &uri, const QString cid,
                       std::function<void(bool, const QString &, const QString &)> callback);
+    void updateProfileLinks(int index, std::function<void(bool)> callback);
+    void deleteProfileLinks(int index, std::function<void()> callback);
+    QJsonArray makeProfileLinksJson(const QJsonArray &old_links) const;
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
@@ -149,6 +168,9 @@ private:
     int m_pollDuration; // sec
     QString m_pollRkey;
     QString m_pollOgpImagepath;
+    bool m_updateProfileLinks;
+    QList<ProfileLinkItem> m_profileLinks;
+    QStringList m_deletedProfileLinkUris;
 
     bool m_running;
     QString m_progressMessage;

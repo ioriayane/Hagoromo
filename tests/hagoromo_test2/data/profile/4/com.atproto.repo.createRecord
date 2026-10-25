@@ -1,0 +1,10 @@
+{
+    "repo": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "collection": "app.bsky.actor.link",
+    "record": {
+        "$type": "app.bsky.actor.link",
+        "url": "https://example.com/new",
+        "title": "new link"
+    },
+    "validate": true
+}

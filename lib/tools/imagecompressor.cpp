@@ -12,7 +12,7 @@
 
 ImageCompressor::ImageCompressor(QObject *parent) : QObject { parent } { }
 
-void ImageCompressor::compress(const QString &path, int image_size_limit)
+void ImageCompressor::compress(const QString &path, int image_size_limit, bool keep_format)
 {
     if (image_size_limit <= 0) {
         image_size_limit = IMAGE_SIZE_LIMIT;
@@ -30,6 +30,9 @@ void ImageCompressor::compress(const QString &path, int image_size_limit)
     if (new_info.suffix().toLower() == "gif" && new_info.size() < image_size_limit) {
         // gifの場合はそのまま
         qDebug() << "Detect gif file. " << path;
+        new_path = path;
+    } else if (keep_format && new_info.size() < image_size_limit) {
+        // 形式を維持する指定（透過PNGなど）でサイズ内ならそのまま
         new_path = path;
     } else {
         for (int quality = 90; quality >= 70; quality -= 5) {

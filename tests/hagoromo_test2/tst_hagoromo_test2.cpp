@@ -32,6 +32,7 @@ private slots:
     void cleanupTestCase();
     void test_RecordOperator();
     void test_RecordOperator_profile();
+    void test_RecordOperator_profileLinks();
     void test_FeedGeneratorListModel();
     void test_FeedGeneratorLink();
     void test_AccountListModel();
@@ -56,10 +57,12 @@ private:
     WebServer m_mockServer;
     quint16 m_listenPort;
     QString m_service;
+    QStringList m_profileLinksRequests;
 
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
+    void test_profileLinks(const QString &path, const QByteArray &body);
     void test_putNotificationPreferences(const QString &path, const QByteArray &body);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
@@ -90,6 +93,23 @@ hagoromo_test::hagoromo_test()
                                       "app.bsky.actor.putPreferences") {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
+                    result = true;
+                } else if (request.url().path().startsWith("/response/profile/4/")) {
+                    test_profileLinks(request.url().path(), request.body());
+                    if (request.url().path().endsWith("/com.atproto.repo.createRecord")) {
+                        json = "{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                               "app.bsky.actor.link/3lnew\",\"cid\":\"cid_link_new\"}";
+                    } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")
+                               && QJsonDocument::fromJson(request.body())
+                                               .object()
+                                               .value("collection")
+                                               .toString()
+                                       == "app.bsky.actor.link") {
+                        json = "{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                               "app.bsky.actor.link/3l2\",\"cid\":\"cid_link2_after\"}";
+                    } else {
+                        json = "{}";
+                    }
                     result = true;
                 } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
                     test_putRecord(request.url().path(), request.body());
@@ -228,6 +248,59 @@ void hagoromo_test::test_RecordOperator_profile()
         QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
         QCOMPARE(arguments.at(0).toBool(), true);
     }
+}
+
+void hagoromo_test::test_RecordOperator_profileLinks()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/4", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    const QString link_base = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/";
+    QVariantList links;
+    {
+        QVariantMap item;
+        item.insert("url", "https://example.com/new");
+        item.insert("title", "new link");
+        item.insert("status", "new");
+        links.append(item);
+    }
+    {
+        QVariantMap item;
+        item.insert("uri", link_base + "3l2");
+        item.insert("cid", "cid_link2_before");
+        item.insert("url", "https://example.com/link2");
+        item.insert("title", "link2 after");
+        item.insert("status", "modified");
+        item.insert("iconChanged", false);
+        links.append(item);
+    }
+    {
+        QVariantMap item;
+        item.insert("uri", link_base + "3l1");
+        item.insert("cid", "cid_link1");
+        item.insert("url", "https://example.com/link1");
+        item.insert("title", "link1");
+        links.append(item);
+    }
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.setProfileLinks(links, QStringList() << link_base + "3l3");
+
+    m_profileLinksRequests.clear();
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.updateProfile("", "", "description", "display_name", "", "https://hagoromo.relog.tech/");
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    QCOMPARE(m_profileLinksRequests,
+             QStringList() << "com.atproto.repo.createRecord"
+                           << "com.atproto.repo.putRecord_link"
+                           << "com.atproto.repo.putRecord"
+                           << "com.atproto.repo.deleteRecord");
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()
@@ -1159,6 +1232,32 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());
     }
     QCOMPARE(json_doc_expect.object(), json_doc.object());
+}
+
+void hagoromo_test::test_profileLinks(const QString &path, const QByteArray &body)
+{
+    QString name = QFileInfo(path).fileName();
+    if (name == "com.atproto.repo.putRecord"
+        && QJsonDocument::fromJson(body).object().value("collection").toString()
+                == "app.bsky.actor.link") {
+        name += "_link";
+    }
+    m_profileLinksRequests.append(name);
+
+    QJsonDocument json_doc_expect = UnitTestCommon::loadJson(":/data/profile/4/" + name);
+    QJsonObject json_expect = json_doc_expect.object();
+    QJsonObject json_actual = QJsonDocument::fromJson(body).object();
+    if (name == "com.atproto.repo.createRecord") {
+        QVERIFY(json_actual.value("record").toObject().contains("createdAt"));
+        json_actual = copyObject(json_actual, QStringList() << "createdAt");
+    }
+
+    if (json_expect != json_actual) {
+        qDebug().noquote().nospace()
+                << QString("\nexpect:%1\nactual:%2\n")
+                           .arg(json_doc_expect.toJson(), QJsonDocument(json_actual).toJson());
+    }
+    QCOMPARE(json_actual, json_expect);
 }
 
 void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)

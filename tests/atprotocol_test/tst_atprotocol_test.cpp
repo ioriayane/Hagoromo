@@ -1,6 +1,8 @@
 #include <QtTest>
 #include <QCoreApplication>
 #include <QTemporaryFile>
+#include <QTemporaryDir>
+#include <QImageReader>
 
 #include "webserver.h"
 #include "atprotocol/app/bsky/actor/appbskyactorsearchactorstypeahead.h"
@@ -49,6 +51,7 @@ private slots:
     void test_ComAtprotoServerCreateSession();
     void test_ComAtprotoServerRefreshSession();
     void test_OpenGraphProtocol();
+    void test_ogpIcon();
     void test_ogpSiteRule();
     void test_ogpDecodeHtml();
     void test_getTimeline();
@@ -476,6 +479,74 @@ void atprotocol_test::test_OpenGraphProtocol()
         QCOMPARE(ogp.title(), QString());
         QCOMPARE(ogp.description(), QString());
         QCOMPARE(ogp.thumb(), QString());
+    }
+}
+
+void atprotocol_test::test_ogpIcon()
+{
+    OpenGraphProtocol ogp;
+    {
+        // apple-touch-icon(180相当)が最も大きい
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file9.html");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+        QCOMPARE(ogp.title(), "file9 title");
+        QCOMPARE(ogp.icon(), m_service + "/ogp/images/apple-touch-icon.png");
+    }
+    {
+        // shortcut icon（絶対URL）
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file10.html");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+        QCOMPARE(ogp.icon(), "https://cdn.example.com/favicon.ico");
+    }
+    {
+        // 指定がない場合は/favicon.ico
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file1.html");
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+        QCOMPARE(ogp.icon(), QString("http://127.0.0.1:%1/favicon.ico").arg(m_listenPort));
+    }
+    {
+        // ダウンロードしたアイコンは128px以内のPNGに変換する
+        QTemporaryDir temp_dir;
+        QString path = temp_dir.filePath("icon.png");
+        ogp.setIcon(m_service + "/ogp/images/file1.jpg");
+
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownloadIcon(bool)));
+        ogp.downloadIcon(path);
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QImageReader reader(path);
+        QCOMPARE(reader.format(), "png");
+        QImage img = reader.read();
+        QCOMPARE(img.width(), 128);
+        QCOMPARE(img.height(), 49);
+    }
+    {
+        QTemporaryDir temp_dir;
+        QString path = temp_dir.filePath("icon.png");
+        ogp.setIcon(m_service + "/ogp/images/not_found.png");
+
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownloadIcon(bool)));
+        ogp.downloadIcon(path);
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(!arguments.at(0).toBool());
+        QVERIFY(!QFile::exists(path));
     }
 }
 
@@ -1913,8 +1984,9 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     avatar.size = 52880;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "description", "display name", QString(), QString(),
-                       pinned_post, "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
+        record.profile(QJsonObject(), avatar, banner, "description", "display name", QString(),
+                       QString(), pinned_post,
+                       "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
@@ -1932,7 +2004,8 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     banner.size = 51567;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(), QString(), pinned_post,
+        record.profile(QJsonObject(), avatar, banner, "epub\nLeME", "IoriAYANE", QString(),
+                       QString(), pinned_post,
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
         QCOMPARE(spy.count(), 1);

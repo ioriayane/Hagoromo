@@ -969,6 +969,7 @@ void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::Prof
         item.insert("cid", link.cid);
         item.insert("url", link.url);
         item.insert("title", link.title.isEmpty() ? QUrl(link.url).host() : link.title);
+        item.insert("rawTitle", link.title);
         item.insert("icon", link.icon);
         item.insert("highlight", false);
         items.append(item);

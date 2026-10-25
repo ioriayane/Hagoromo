@@ -15,6 +15,7 @@ Flow {
     property string hoveredLink: ""
 
     signal linkActivated(string url)
+    signal linkClicked(int index, string url)
 
     Repeater {
         id: repeater
@@ -31,7 +32,10 @@ Flow {
                     linkLabelLayout.hoveredLink = ""
                 }
             }
-            onClicked: (url) => linkLabelLayout.linkActivated(url)
+            onClicked: (url) => {
+                           linkLabelLayout.linkClicked(model.index, url)
+                           linkLabelLayout.linkActivated(url)
+                       }
         }
     }
 }

@@ -1242,6 +1242,7 @@ void hagoromo_test::test_UserProfile()
                  "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2a");
         QCOMPARE(link.value("url").toString(), "https://github.com/ioriayane/Hagoromo");
         QCOMPARE(link.value("title").toString(), "Hagoromo");
+        QCOMPARE(link.value("rawTitle").toString(), "Hagoromo");
         QCOMPARE(link.value("icon").toString(),
                  "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/"
                  "bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb@jpeg");
@@ -1250,6 +1251,7 @@ void hagoromo_test::test_UserProfile()
         link = links.at(1).toMap();
         QCOMPARE(link.value("url").toString(), "https://hagoromo.relog.tech/docs/");
         QCOMPARE(link.value("title").toString(), "hagoromo.relog.tech");
+        QCOMPARE(link.value("rawTitle").toString(), "");
         QCOMPARE(link.value("icon").toString(), "");
 
         link = links.at(2).toMap();

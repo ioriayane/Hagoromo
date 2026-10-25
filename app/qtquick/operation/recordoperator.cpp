@@ -17,6 +17,7 @@
 
 #include <QFile>
 #include <QTimer>
+#include <QJsonObject>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyBookmarkCreateBookmark;
@@ -39,6 +40,7 @@ RecordOperator::RecordOperator(QObject *parent)
       m_sequentialPostsTotal(0),
       m_sequentialPostsCurrent(0),
       m_embedImagesTotal(0),
+      m_updateProfileLinks(false),
       m_running(false)
 {
 }
@@ -165,6 +167,46 @@ void RecordOperator::setPoll(const QStringList &options, const int duration)
     m_externalLinkDescription = QLatin1String("\nPowered by TOKIMEKI");
 }
 
+void RecordOperator::setProfileLinks(const QVariantList &links, const QStringList &deleted_uris)
+{
+    m_updateProfileLinks = true;
+    m_profileLinks.clear();
+    for (const auto &link : links) {
+        QVariantMap map = link.toMap();
+        ProfileLinkItem item;
+        item.uri = map.value("uri").toString();
+        item.cid = map.value("cid").toString();
+        item.url = map.value("url").toString();
+        item.title = map.value("title").toString();
+        item.icon_path = map.value("iconLocal").toString();
+        item.status = map.value("status").toString();
+        item.icon_changed = map.value("iconChanged").toBool();
+        if (item.status == "new") {
+            item.icon_changed = true;
+        }
+        if (item.url.isEmpty())
+            continue;
+        if (item.status != "new" && (item.uri.isEmpty() || item.cid.isEmpty()))
+            continue;
+        m_profileLinks.append(item);
+    }
+    m_deletedProfileLinkUris = deleted_uris;
+}
+
+QVariantList RecordOperator::profileLinks() const
+{
+    QVariantList links;
+    for (const auto &item : m_profileLinks) {
+        QVariantMap map;
+        map.insert("uri", item.uri);
+        map.insert("cid", item.cid);
+        map.insert("url", item.url);
+        map.insert("title", item.title);
+        links.append(map);
+    }
+    return links;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -193,6 +235,10 @@ void RecordOperator::clear()
     m_pollDuration = 60 * 60;
     m_pollRkey.clear();
     m_pollOgpImagepath.clear();
+
+    m_updateProfileLinks = false;
+    m_profileLinks.clear();
+    m_deletedProfileLinkUris.clear();
 }
 
 void RecordOperator::post()
@@ -903,6 +949,17 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
         alts.append(QStringLiteral("banner"));
     }
     setImages(images, alts);
+    for (int i = 0; i < m_profileLinks.length(); i++) {
+        const ProfileLinkItem &item = m_profileLinks.at(i);
+        if (item.icon_changed && !item.icon_path.isEmpty() && QUrl(item.icon_path).isLocalFile()) {
+            EmbedImage e;
+            e.path = item.icon_path;
+            e.alt = QString("link:%1").arg(i);
+            e.size_limit = 100000;
+            e.keep_format = true;
+            m_embedImages.append(e);
+        }
+    }
 
     ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
     connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
@@ -911,6 +968,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                     LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
                             old_profile->value());
             QString old_cid = old_profile->cid();
+            QJsonObject old_raw_record = old_profile->rawValue();
             uploadBlob([=](bool success2) {
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;
@@ -922,23 +980,55 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         } else if (blob.alt == "banner") {
                             banner = blob;
                             banner.alt.clear();
+                        } else if (blob.alt.startsWith("link:")) {
+                            int index = blob.alt.mid(5).toInt();
+                            if (index >= 0 && index < m_profileLinks.length()) {
+                                m_profileLinks[index].icon_blob = blob;
+                                m_profileLinks[index].icon_blob.alt.clear();
+                            }
                         }
                     }
-                    ComAtprotoRepoPutRecordEx *new_profile = new ComAtprotoRepoPutRecordEx(this);
-                    connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, this,
-                            [=](bool success3) {
-                                if (!success3) {
-                                    emit errorOccurred(new_profile->errorCode(),
-                                                       new_profile->errorMessage());
-                                }
-                                setProgressMessage(QString());
-                                emit finished(success3, QString(), QString());
-                                setRunning(false);
-                                new_profile->deleteLater();
-                            });
-                    new_profile->setAccount(account());
-                    new_profile->profile(avatar, banner, description, display_name, pronouns,
-                                         website, old_record.pinnedPost, old_cid);
+                    updateProfileLinks(0, [=](bool success3) {
+                        if (!success3) {
+                            setProgressMessage(QString());
+                            emit finished(false, QString(), QString());
+                            setRunning(false);
+                            return;
+                        }
+                        QJsonObject base_record = old_raw_record;
+                        if (m_updateProfileLinks) {
+                            QJsonArray links =
+                                    makeProfileLinksJson(old_raw_record.value("links").toArray());
+                            if (links.isEmpty()) {
+                                base_record.remove("links");
+                            } else {
+                                base_record.insert("links", links);
+                            }
+                        }
+                        ComAtprotoRepoPutRecordEx *new_profile =
+                                new ComAtprotoRepoPutRecordEx(this);
+                        connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, this,
+                                [=](bool success4) {
+                                    if (!success4) {
+                                        emit errorOccurred(new_profile->errorCode(),
+                                                           new_profile->errorMessage());
+                                        setProgressMessage(QString());
+                                        emit finished(false, QString(), QString());
+                                        setRunning(false);
+                                    } else {
+                                        // プロフィールから外したリンクのレコードを削除する
+                                        deleteProfileLinks(0, [=]() {
+                                            setProgressMessage(QString());
+                                            emit finished(true, QString(), QString());
+                                            setRunning(false);
+                                        });
+                                    }
+                                    new_profile->deleteLater();
+                                });
+                        new_profile->setAccount(account());
+                        new_profile->profile(base_record, avatar, banner, description, display_name,
+                                             pronouns, website, old_record.pinnedPost, old_cid);
+                    });
                 } else {
                     setProgressMessage(QString());
                     emit finished(false, QString(), QString());
@@ -986,9 +1076,9 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
             pinned_post.uri = post_uri;
             pinned_post.cid = post_cid;
             new_profile->setAccount(account());
-            new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
-                                 old_record.displayName, old_record.pronouns, old_record.website,
-                                 pinned_post, old_cid);
+            new_profile->profile(old_profile->rawValue(), old_record.avatar, old_record.banner,
+                                 old_record.description, old_record.displayName,
+                                 old_record.pronouns, old_record.website, pinned_post, old_cid);
         } else {
             setProgressMessage(QString());
             emit errorOccurred(old_profile->errorCode(), old_profile->errorMessage());
@@ -1338,6 +1428,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
     QString path = QUrl(m_embedImages.first().path).toLocalFile();
     QString alt = m_embedImages.first().alt;
     int size_limit = m_embedImages.first().size_limit;
+    bool keep_format = m_embedImages.first().keep_format;
     m_embedImages.removeFirst();
 
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
@@ -1366,7 +1457,111 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
         upload_blob->deleteLater();
     });
     upload_blob->setAccount(account());
-    upload_blob->uploadBlob(path, size_limit);
+    upload_blob->uploadBlob(path, size_limit, keep_format);
+}
+
+void RecordOperator::updateProfileLinks(int index, std::function<void(bool)> callback)
+{
+    if (index >= m_profileLinks.length()) {
+        callback(true);
+        return;
+    }
+    const ProfileLinkItem item = m_profileLinks.at(index);
+    if (item.status == "new") {
+        ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
+        connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
+            if (success) {
+                m_profileLinks[index].uri = create_record->uri();
+                m_profileLinks[index].cid = create_record->cid();
+                m_profileLinks[index].status.clear();
+                updateProfileLinks(index + 1, callback);
+            } else {
+                emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
+                callback(false);
+            }
+            create_record->deleteLater();
+        });
+        create_record->setAccount(account());
+        create_record->profileLink(item.url, item.title, item.icon_blob);
+    } else if (item.status == "modified") {
+        QString rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(item.uri);
+        ComAtprotoRepoGetRecordEx *old_record = new ComAtprotoRepoGetRecordEx(this);
+        connect(old_record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
+            if (success1) {
+                ComAtprotoRepoPutRecordEx *new_record = new ComAtprotoRepoPutRecordEx(this);
+                connect(new_record, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
+                    if (success2 && !new_record->cid().isEmpty()) {
+                        m_profileLinks[index].cid = new_record->cid();
+                        m_profileLinks[index].status.clear();
+                        updateProfileLinks(index + 1, callback);
+                    } else {
+                        emit errorOccurred(new_record->errorCode(), new_record->errorMessage());
+                        callback(false);
+                    }
+                    new_record->deleteLater();
+                });
+                new_record->setAccount(account());
+                new_record->profileLink(old_record->rawValue(), rkey, item.url, item.title,
+                                        item.icon_blob, item.icon_changed, old_record->cid());
+            } else {
+                emit errorOccurred(old_record->errorCode(), old_record->errorMessage());
+                callback(false);
+            }
+            old_record->deleteLater();
+        });
+        old_record->setAccount(account());
+        old_record->profileLink(account().did, rkey);
+    } else {
+        updateProfileLinks(index + 1, callback);
+    }
+}
+
+void RecordOperator::deleteProfileLinks(int index, std::function<void()> callback)
+{
+    if (index >= m_deletedProfileLinkUris.length()) {
+        callback();
+        return;
+    }
+    const QString uri = m_deletedProfileLinkUris.at(index);
+    if (!uri.startsWith(QString("at://%1/app.bsky.actor.link/").arg(account().did))) {
+        deleteProfileLinks(index + 1, callback);
+        return;
+    }
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, this, [=](bool success) {
+        if (!success) {
+            // プロフィールからは外れているので失敗しても処理は継続する
+            emit errorOccurred(delete_record->errorCode(), delete_record->errorMessage());
+        }
+        deleteProfileLinks(index + 1, callback);
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(account());
+    delete_record->deleteProfileLink(AtProtocolType::LexiconsTypeUnknown::extractRkey(uri));
+}
+
+QJsonArray RecordOperator::makeProfileLinksJson(const QJsonArray &old_links) const
+{
+    QJsonArray links;
+    QStringList uris;
+    for (const auto &item : m_profileLinks) {
+        if (item.uri.isEmpty() || item.cid.isEmpty())
+            continue;
+        QJsonObject ref;
+        ref.insert("uri", item.uri);
+        ref.insert("cid", item.cid);
+        links.append(ref);
+        uris.append(item.uri);
+    }
+    // 編集画面に表示されていない（ラベル等で非表示の）リンクは維持する
+    for (const auto &value : old_links) {
+        QString uri = value.toObject().value("uri").toString();
+        if (uri.isEmpty() || uris.contains(uri) || m_deletedProfileLinkUris.contains(uri))
+            continue;
+        links.append(value);
+        uris.append(uri);
+    }
+    return links;
 }
 
 bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)

@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QTextCodec>
 #include <QRegularExpression>
+#include <QImage>
 
 // https://ogp.me/
 
@@ -25,6 +26,8 @@ public:
     void setDescription(const QString &newDescription);
     QString thumb() const;
     void setThumb(const QString &newThumb);
+    QString icon() const;
+    void setIcon(const QString &newIcon);
 
     bool parse(const QByteArray &data, const QString &src_uri);
     bool applySiteRule(const QString &url);
@@ -50,14 +53,16 @@ private:
     QString m_title;
     QString m_description;
     QString m_thumb;
+    QString m_icon;
 };
 
 OpenGraphProtocol::Private::Private(OpenGraphProtocol *parent) : q(parent)
 {
     m_rxMeta = QRegularExpression(
-            QString("(?:%1)|(?:%2)")
+            QString("(?:%1)|(?:%2)|(?:%3)")
                     .arg("<meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"?[^\"]*?\"?)+[ \\t]*?/?>",
-                         "<title.+?</title[ \\t]*>"),
+                         "<title.+?</title[ \\t]*>",
+                         "<link (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"?[^\"]*?\"?)+[ \\t]*?/?>"),
             QRegularExpression::CaseInsensitiveOption);
 
     m_listOfRedirectAllowed["youtu.be"] = "www.youtube.com";
@@ -93,6 +98,7 @@ void OpenGraphProtocol::getData(const QString &url)
     d->setTitle(QString());
     d->setDescription(QString());
     d->setThumb(QString());
+    d->setIcon(QString());
 
     QNetworkRequest request((QUrl(url)));
     request.setRawHeader(QByteArray("accept"), QByteArray("*/*"));
@@ -191,6 +197,37 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
     manager->get(request);
 }
 
+void OpenGraphProtocol::downloadIcon(const QString &path)
+{
+    if (icon().isEmpty()) {
+        emit finishedDownloadIcon(false);
+        return;
+    }
+
+    QNetworkRequest request((QUrl(icon())));
+    request.setTransferTimeout(30 * 1000);
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
+        qDebug() << "downloadIcon reply" << reply->error() << reply->url();
+        bool ret = false;
+        if (reply->error() == QNetworkReply::NoError) {
+            // icoやsvgの場合もあるのでPNGに変換する（大きすぎるものは縮小）
+            QImage image = QImage::fromData(reply->readAll());
+            if (!image.isNull()) {
+                if (image.width() > 128 || image.height() > 128) {
+                    image = image.scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                }
+                ret = image.save(path, "PNG");
+            }
+        }
+        emit finishedDownloadIcon(ret);
+        reply->deleteLater();
+        manager->deleteLater();
+    });
+    manager->get(request);
+}
+
 QString OpenGraphProtocol::decodeHtml(const QString &encoded)
 {
     QRegularExpression re("&(#?\\w+);");
@@ -270,6 +307,26 @@ QString OpenGraphProtocol::Private::uri() const
     return m_uri;
 }
 
+QString OpenGraphProtocol::icon() const
+{
+    return d->icon();
+}
+
+void OpenGraphProtocol::setIcon(const QString &newIcon)
+{
+    d->setIcon(newIcon);
+}
+
+QString OpenGraphProtocol::Private::icon() const
+{
+    return m_icon;
+}
+
+void OpenGraphProtocol::Private::setIcon(const QString &newIcon)
+{
+    m_icon = newIcon;
+}
+
 void OpenGraphProtocol::Private::setUri(const QString &newUri)
 {
     m_uri = newUri;
@@ -324,6 +381,7 @@ bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &sr
 
     QString temp_title;
     QString temp_description;
+    int icon_score = 0;
     QDomElement element = head.firstChildElement();
     while (!element.isNull()) {
         if (element.tagName().toLower() == "meta") {
@@ -364,6 +422,28 @@ bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &sr
             if (temp_title.isEmpty()) {
                 temp_title = element.text();
             }
+        } else if (element.tagName().toLower() == "link") {
+            const QStringList rels = element.attribute("rel").toLower().split(
+                    QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+            const QString href = OpenGraphProtocol::decodeHtml(element.attribute("href")).trimmed();
+            if (!href.isEmpty() && (rels.contains("icon") || rels.contains("apple-touch-icon"))) {
+                // 大きいサイズを優先する（サイズ指定なしのiconは16px相当、apple-touch-iconは180px相当）
+                int score = rels.contains("apple-touch-icon") ? 180 : 16;
+                const QString sizes = element.attribute("sizes").toLower();
+                if (sizes == "any") {
+                    score = 256;
+                } else {
+                    QRegularExpressionMatch match =
+                            QRegularExpression("(\\d+)x(\\d+)").match(sizes);
+                    if (match.hasMatch()) {
+                        score = match.captured(1).toInt();
+                    }
+                }
+                if (score > icon_score) {
+                    icon_score = score;
+                    setIcon(QUrl(src_uri).resolved(QUrl(href)).toString(QUrl::FullyEncoded));
+                }
+            }
         }
         element = element.nextSiblingElement();
     }
@@ -372,6 +452,9 @@ bool OpenGraphProtocol::Private::parse(const QByteArray &data, const QString &sr
     }
     if (description().isEmpty() && !temp_description.isEmpty()) {
         setDescription(temp_description);
+    }
+    if (icon().isEmpty()) {
+        setIcon(QUrl(src_uri).resolved(QUrl("/favicon.ico")).toString(QUrl::FullyEncoded));
     }
     if (!uri().isEmpty() && !title().isEmpty()) {
         ret = true;
@@ -488,6 +571,9 @@ bool OpenGraphProtocol::Private::rebuildTag(QString text, QDomElement &element) 
     text = text.trimmed();
 
     int close_tag_pos = -1;
+    if (text.toLower().startsWith("<link")) {
+        element.setTagName("link");
+    }
     if (text.toLower().startsWith("<title")) {
         element.setTagName("title");
         close_tag_pos = text.indexOf(

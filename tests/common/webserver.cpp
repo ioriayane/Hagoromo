@@ -46,6 +46,10 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                                   .split("/")
                                   .last();
             }
+        } else if (path.endsWith("xrpc/com.atproto.repo.getRecord")) {
+            if (request.query().queryItemValue("collection") == "app.bsky.actor.link") {
+                path += "_" + request.query().queryItemValue("rkey");
+            }
         }
         if (request.query().hasQueryItem("cursor")) {
             path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
