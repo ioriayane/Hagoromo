@@ -12,6 +12,7 @@
 #include "column/columnlistmodel.h"
 #include "notification/notificationlistmodel.h"
 #include "profile/userprofile.h"
+#include "atprotocol/lexicons_func.h"
 #include "tools/qstringex.h"
 #include "profile/anyprofilelistmodel.h"
 #include "common.h"
@@ -1223,6 +1224,41 @@ void hagoromo_test::test_UserProfile()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a><br/>hoge");
+
+    {
+        QFile file(":/data/profile/links.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail;
+        AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(
+                QJsonDocument::fromJson(file.readAll()).object(), detail);
+        QCOMPARE(detail.links.length(), 4);
+
+        profile.updateLinks(detail.links);
+        QVariantList links = profile.links();
+        QCOMPARE(links.length(), 3);
+
+        QVariantMap link = links.at(0).toMap();
+        QCOMPARE(link.value("uri").toString(),
+                 "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2a");
+        QCOMPARE(link.value("url").toString(), "https://github.com/ioriayane/Hagoromo");
+        QCOMPARE(link.value("title").toString(), "Hagoromo");
+        QCOMPARE(link.value("icon").toString(),
+                 "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                 "bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb@jpeg");
+        QCOMPARE(link.value("highlight").toBool(), false);
+
+        link = links.at(1).toMap();
+        QCOMPARE(link.value("url").toString(), "https://hagoromo.relog.tech/docs/");
+        QCOMPARE(link.value("title").toString(), "hagoromo.relog.tech");
+        QCOMPARE(link.value("icon").toString(), "");
+
+        link = links.at(2).toMap();
+        QCOMPARE(link.value("url").toString(), "https://example.com/negated");
+        QCOMPARE(link.value("title").toString(), "negated");
+
+        profile.updateLinks(QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView>());
+        QCOMPARE(profile.links().length(), 0);
+    }
 }
 
 void hagoromo_test::test_charCount()

@@ -106,6 +106,8 @@ qt_add_qml_module(Hagoromo
         qml/parts/ReactionAuthor.qml
         qml/parts/ReportingOptions.qml
         qml/parts/TagLabelLayout.qml
+        qml/parts/LinkLabel.qml
+        qml/parts/LinkLabelLayout.qml
         qml/parts/MentionSuggestionView.qml
         qml/parts/AccountLayout.qml
         qml/parts/VerificationInfoPopup.qml

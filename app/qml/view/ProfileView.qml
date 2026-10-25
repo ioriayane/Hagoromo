@@ -480,6 +480,18 @@ ColumnLayout {
             onLinkActivated: (url) => Qt.openUrlExternally(url)
             onContentHeightChanged: Layout.preferredHeight = websiteLabel.contentHeight
         }
+        LinkLabelLayout {
+            Layout.preferredWidth: profileView.width - 10
+            Layout.maximumWidth: profileView.width
+            Layout.topMargin: 5
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: count > 0
+            fontPointSize: AdjustedValues.f8
+            model: userProfile.links
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
+        }
         Label {
             id: descriptionLabel
             Layout.topMargin: 5

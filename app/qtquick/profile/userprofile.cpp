@@ -10,6 +10,7 @@
 #include "tools/accountmanager.h"
 
 #include <QPointer>
+#include <QUrl>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -78,6 +79,7 @@ void UserProfile::getProfile(const QString &did)
                 setBanner(detail.banner);
                 setPronouns(detail.pronouns);
                 setWebsite(detail.website);
+                updateLinks(detail.links);
                 setFollowersCount(detail.followersCount);
                 setFollowsCount(detail.followsCount);
                 setPostsCount(detail.postsCount);
@@ -934,4 +936,42 @@ void UserProfile::setPronouns(const QString &newPronouns)
         return;
     m_pronouns = newPronouns;
     emit pronounsChanged();
+}
+
+QVariantList UserProfile::links() const
+{
+    return m_links;
+}
+
+void UserProfile::setLinks(const QVariantList &newLinks)
+{
+    if (m_links == newLinks)
+        return;
+    m_links = newLinks;
+    emit linksChanged();
+}
+
+void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView> &links)
+{
+    QVariantList items;
+    for (const auto &link : links) {
+        bool labeled = false;
+        for (const auto &label : link.labels) {
+            if (!label.neg) {
+                labeled = true;
+                break;
+            }
+        }
+        if (labeled || link.url.isEmpty())
+            continue;
+        QVariantMap item;
+        item.insert("uri", link.uri);
+        item.insert("cid", link.cid);
+        item.insert("url", link.url);
+        item.insert("title", link.title.isEmpty() ? QUrl(link.url).host() : link.title);
+        item.insert("icon", link.icon);
+        item.insert("highlight", false);
+        items.append(item);
+    }
+    setLinks(items);
 }
