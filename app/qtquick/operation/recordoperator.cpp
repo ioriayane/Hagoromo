@@ -19,6 +19,8 @@
 #include <QTimer>
 #include <QJsonObject>
 
+#define PROFILE_LINKS_MAX 10
+
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyBookmarkCreateBookmark;
 using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
@@ -969,6 +971,24 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                             old_profile->value());
             QString old_cid = old_profile->cid();
             QJsonObject old_raw_record = old_profile->rawValue();
+            if (m_updateProfileLinks) {
+                // 非表示のリンクも含めて上限を超える場合は何も書き込まずに終了する
+                int count = makeProfileLinksJson(old_raw_record.value("links").toArray()).count();
+                for (const auto &item : std::as_const(m_profileLinks)) {
+                    if (item.uri.isEmpty())
+                        count++;
+                }
+                if (count > PROFILE_LINKS_MAX) {
+                    setProgressMessage(QString());
+                    emit errorOccurred(QStringLiteral("TooManyProfileLinks"),
+                                       tr("The number of links exceeds the limit (%1).")
+                                               .arg(PROFILE_LINKS_MAX));
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                    old_profile->deleteLater();
+                    return;
+                }
+            }
             uploadBlob([=](bool success2) {
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;

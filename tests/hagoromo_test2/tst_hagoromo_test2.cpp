@@ -301,6 +301,31 @@ void hagoromo_test::test_RecordOperator_profileLinks()
                            << "com.atproto.repo.putRecord_link"
                            << "com.atproto.repo.putRecord"
                            << "com.atproto.repo.deleteRecord");
+
+    {
+        // 非表示のリンク（既存の4件）を含めて上限(10)を超える場合は何も書き込まない
+        QVariantList over_links;
+        for (int i = 0; i < 7; i++) {
+            QVariantMap item;
+            item.insert("url", QString("https://example.com/new%1").arg(i));
+            item.insert("status", "new");
+            over_links.append(item);
+        }
+        ope.clear();
+        ope.setProfileLinks(over_links, QStringList());
+
+        m_profileLinksRequests.clear();
+        QSignalSpy spy_error(&ope, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy_over(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.updateProfile("", "", "description", "display_name", "",
+                          "https://hagoromo.relog.tech/");
+        spy_over.wait();
+        QCOMPARE(spy_over.count(), 1);
+        QCOMPARE(spy_over.takeFirst().at(0).toBool(), false);
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), "TooManyProfileLinks");
+        QCOMPARE(m_profileLinksRequests, QStringList());
+    }
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()

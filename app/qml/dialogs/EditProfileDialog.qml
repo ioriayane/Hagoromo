@@ -33,6 +33,8 @@ Dialog {
     property var editLinks: []
     property var deletedLinkUris: []
     property int editingLinkIndex: -1
+    property bool linkOrderChanged: false
+    readonly property int linksMax: 10
 
     property alias account: account
     Account {
@@ -54,6 +56,25 @@ Dialog {
             items[i].highlight = (items[i].status.length > 0)
         }
         editLinks = items
+    }
+    function moveLink(from, to) {
+        if(from < 0 || from >= editLinks.length || to < 0 || to >= editLinks.length){
+            return
+        }
+        var items = editLinks.slice()
+        var item = items.splice(from, 1)[0]
+        items.splice(to, 0, item)
+        linkOrderChanged = true
+        setEditLinks(items)
+    }
+    function openLinkEditor(index) {
+        var item = editLinks[index]
+        editingLinkIndex = index
+        profileLinkDialog.editMode = true
+        profileLinkDialog.url = item.url
+        profileLinkDialog.linkTitle = item.rawTitle
+        profileLinkDialog.icon = item.icon
+        profileLinkDialog.open()
     }
 
     onOpened: {
@@ -81,11 +102,13 @@ Dialog {
                        })
         }
         deletedLinkUris = []
+        linkOrderChanged = false
         setEditLinks(items)
     }
     onClosed: {
         editLinks = []
         deletedLinkUris = []
+        linkOrderChanged = false
         pronounsText.clear()
         displayNameText.clear()
         descriptionText.clear()
@@ -277,8 +300,15 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Links")
             }
+            Label {
+                font.pointSize: AdjustedValues.f8
+                color: editProfileDialog.editLinks.length >= editProfileDialog.linksMax ?
+                           Material.color(Material.Orange) : Material.foreground
+                text: editProfileDialog.editLinks.length + "/" + editProfileDialog.linksMax
+            }
             IconButton {
-                enabled: !recordOperator.running
+                enabled: !recordOperator.running &&
+                         editProfileDialog.editLinks.length < editProfileDialog.linksMax
                 iconSource: "../images/add.png"
                 iconSize: AdjustedValues.i16
                 iconText: qsTr("Add link")
@@ -292,22 +322,60 @@ Dialog {
                 }
             }
         }
-        LinkLabelLayout {
+        ColumnLayout {
             Layout.preferredWidth: 500 * AdjustedValues.ratio
             Layout.topMargin: 3
+            spacing: 3
             enabled: !recordOperator.running
-            visible: count > 0
-            fontPointSize: AdjustedValues.f8
-            model: editProfileDialog.editLinks
-            onLinkClicked: (index, url) => {
-                               var item = editProfileDialog.editLinks[index]
-                               editProfileDialog.editingLinkIndex = index
-                               profileLinkDialog.editMode = true
-                               profileLinkDialog.url = item.url
-                               profileLinkDialog.linkTitle = item.rawTitle
-                               profileLinkDialog.icon = item.icon
-                               profileLinkDialog.open()
-                           }
+            visible: editProfileDialog.editLinks.length > 0
+            Repeater {
+                model: editProfileDialog.editLinks
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 5
+                    LinkLabel {
+                        Layout.maximumWidth: 250 * AdjustedValues.ratio
+                        url: modelData.url
+                        text: modelData.title
+                        iconSource: modelData.icon
+                        highlight: modelData.highlight
+                        fontPointSize: AdjustedValues.f8
+                        clip: true
+                        onClicked: (url) => editProfileDialog.openLinkEditor(model.index)
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                        elide: Text.ElideRight
+                        text: modelData.url
+                    }
+                    IconButton {
+                        Layout.preferredWidth: AdjustedValues.b24
+                        Layout.preferredHeight: AdjustedValues.b24
+                        enabled: model.index > 0
+                        iconSource: "../images/expand_less.png"
+                        iconSize: AdjustedValues.i16
+                        onClicked: editProfileDialog.moveLink(model.index, model.index - 1)
+                    }
+                    IconButton {
+                        Layout.preferredWidth: AdjustedValues.b24
+                        Layout.preferredHeight: AdjustedValues.b24
+                        enabled: model.index < editProfileDialog.editLinks.length - 1
+                        iconSource: "../images/expand_more.png"
+                        iconSize: AdjustedValues.i16
+                        onClicked: editProfileDialog.moveLink(model.index, model.index + 1)
+                    }
+                }
+            }
+        }
+        Label {
+            Layout.fillWidth: true
+            Layout.topMargin: 3
+            visible: editProfileDialog.linkOrderChanged
+            font.pointSize: AdjustedValues.f8
+            color: Material.color(Material.Teal)
+            text: qsTr("The order of links is not saved yet.")
         }
 
         RowLayout {

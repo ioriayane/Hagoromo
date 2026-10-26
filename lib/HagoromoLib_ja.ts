@@ -262,7 +262,7 @@
 <context>
     <name>OpenGraphProtocol</name>
     <message>
-        <location filename="tools/opengraphprotocol.cpp" line="74"/>
+        <location filename="tools/opengraphprotocol.cpp" line="79"/>
         <source>Premium Bandai</source>
         <translation>プレミアムバンダイ</translation>
     </message>
