@@ -23,6 +23,7 @@ struct ProfileLinkItem
     QString title;
     QString icon_path; // 新しいアイコンのローカルパス（URL形式）
     QString status; // "new" / "modified" / ""(変更なし)
+    bool visible = true; // プロフィールに表示するか（falseはレコードのみ管理）
     bool icon_changed = false;
     AtProtocolType::Blob icon_blob;
 };
@@ -63,6 +64,7 @@ public:
     Q_INVOKABLE void setPoll(const QStringList &options, const int duration);
     Q_INVOKABLE void setProfileLinks(const QVariantList &links, const QStringList &deleted_uris);
     Q_INVOKABLE QVariantList profileLinks() const;
+    Q_INVOKABLE void requestProfileLinks();
 
     Q_INVOKABLE void clear();
 
@@ -122,6 +124,8 @@ signals:
     void finished(bool success, const QString &uri, const QString &cid);
     void finishedRequestPostGate(bool success, const bool quote_enabled, const QStringList &uris);
     void finishedRequestNotificationDeclaration(bool success, const QString &declaration);
+    void finishedRequestProfileLinks(bool success, const QVariantList &visible_links,
+                                     const QVariantList &hidden_links);
     void runningChanged();
 
     void progressMessageChanged();
@@ -138,7 +142,16 @@ private:
                       std::function<void(bool, const QString &, const QString &)> callback);
     void updateProfileLinks(int index, std::function<void(bool)> callback);
     void deleteProfileLinks(int index, std::function<void()> callback);
-    QJsonArray makeProfileLinksJson(const QJsonArray &old_links) const;
+    QJsonArray makeProfileLinksJson() const;
+    void listProfileLinkRecords(
+            const QString &cursor,
+            std::function<void(bool,
+                               const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &)>
+                    callback,
+            QList<AtProtocolType::ComAtprotoRepoListRecords::Record> records =
+                    QList<AtProtocolType::ComAtprotoRepoListRecords::Record>());
+    QVariantMap
+    makeProfileLinkItem(const AtProtocolType::ComAtprotoRepoListRecords::Record &record) const;
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;

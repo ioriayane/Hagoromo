@@ -33,6 +33,7 @@ private slots:
     void test_RecordOperator();
     void test_RecordOperator_profile();
     void test_RecordOperator_profileLinks();
+    void test_RecordOperator_requestProfileLinks();
     void test_FeedGeneratorListModel();
     void test_FeedGeneratorLink();
     void test_AccountListModel();
@@ -105,8 +106,13 @@ hagoromo_test::hagoromo_test()
                                                .value("collection")
                                                .toString()
                                        == "app.bsky.actor.link") {
-                        json = "{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
-                               "app.bsky.actor.link/3l2\",\"cid\":\"cid_link2_after\"}";
+                        QString rkey = QJsonDocument::fromJson(request.body())
+                                               .object()
+                                               .value("rkey")
+                                               .toString();
+                        json = QString("{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                                       "app.bsky.actor.link/%1\",\"cid\":\"cid_%1_after\"}")
+                                       .arg(rkey);
                     } else {
                         json = "{}";
                     }
@@ -283,6 +289,17 @@ void hagoromo_test::test_RecordOperator_profileLinks()
         item.insert("title", "link1");
         links.append(item);
     }
+    {
+        // プロフィールには表示しないがレコードは更新する
+        QVariantMap item;
+        item.insert("uri", link_base + "3l4");
+        item.insert("cid", "cid_link4");
+        item.insert("url", "https://example.com/link4");
+        item.insert("title", "link4 after");
+        item.insert("status", "modified");
+        item.insert("visible", false);
+        links.append(item);
+    }
 
     RecordOperator ope;
     ope.setAccount(uuid);
@@ -298,14 +315,15 @@ void hagoromo_test::test_RecordOperator_profileLinks()
     QCOMPARE(arguments.at(0).toBool(), true);
     QCOMPARE(m_profileLinksRequests,
              QStringList() << "com.atproto.repo.createRecord"
-                           << "com.atproto.repo.putRecord_link"
+                           << "com.atproto.repo.putRecord_link_3l2"
+                           << "com.atproto.repo.putRecord_link_3l4"
                            << "com.atproto.repo.putRecord"
                            << "com.atproto.repo.deleteRecord");
 
     {
-        // 非表示のリンク（既存の4件）を含めて上限(10)を超える場合は何も書き込まない
+        // 表示するリンクが上限(10)を超える場合は何も書き込まない
         QVariantList over_links;
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 11; i++) {
             QVariantMap item;
             item.insert("url", QString("https://example.com/new%1").arg(i));
             item.insert("status", "new");
@@ -326,6 +344,55 @@ void hagoromo_test::test_RecordOperator_profileLinks()
         QCOMPARE(spy_error.takeFirst().at(0).toString(), "TooManyProfileLinks");
         QCOMPARE(m_profileLinksRequests, QStringList());
     }
+}
+
+void hagoromo_test::test_RecordOperator_requestProfileLinks()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/5", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+
+    QSignalSpy spy(
+            &ope,
+            SIGNAL(finishedRequestProfileLinks(bool, const QVariantList &, const QVariantList &)));
+    ope.requestProfileLinks();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    const QString link_base = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/";
+
+    // プロフィールの並び順（実体のない3lxは除外）
+    QVariantList visible_links = arguments.at(1).toList();
+    QCOMPARE(visible_links.length(), 2);
+    QVariantMap item = visible_links.at(0).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l2");
+    QCOMPARE(item.value("cid").toString(), "cid_link2");
+    QCOMPARE(item.value("url").toString(), "https://example.com/link2");
+    QCOMPARE(item.value("rawTitle").toString(), "");
+    QCOMPARE(item.value("iconUrl").toString(), "");
+    item = visible_links.at(1).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l1");
+    QCOMPARE(item.value("rawTitle").toString(), "link1");
+    QCOMPARE(item.value("iconUrl").toString(),
+             m_service
+                     + "/profile/5/xrpc/"
+                       "com.atproto.sync.getBlob?did=did:plc:ipj5qejfoqu6eukvt72uhyit"
+                       "&cid=bafkreiicon1");
+
+    // 未表示は作成日時の新しい順
+    QVariantList hidden_links = arguments.at(2).toList();
+    QCOMPARE(hidden_links.length(), 2);
+    item = hidden_links.at(0).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l4");
+    QCOMPARE(item.value("labels").toStringList(), QStringList() << "graphic-media");
+    item = hidden_links.at(1).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l3");
+    QCOMPARE(item.value("labels").toStringList(), QStringList());
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()
@@ -1265,7 +1332,7 @@ void hagoromo_test::test_profileLinks(const QString &path, const QByteArray &bod
     if (name == "com.atproto.repo.putRecord"
         && QJsonDocument::fromJson(body).object().value("collection").toString()
                 == "app.bsky.actor.link") {
-        name += "_link";
+        name += "_link_" + QJsonDocument::fromJson(body).object().value("rkey").toString();
     }
     m_profileLinksRequests.append(name);
 

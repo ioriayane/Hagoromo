@@ -85,7 +85,7 @@ ColumnLayout {
                                                    userProfile.description,
                                                    userProfile.pronouns,
                                                    userProfile.website,
-                                                   userProfile.links, function(did, avatar, banner, display_name, description, pronouns, website, links){
+                                                   userProfile.linkViews, function(did, avatar, banner, display_name, description, pronouns, website, links){
                                                        // 編集完了後のコールバック
                                                        if(userProfile.did !== did){
                                                            console.log("Unmatch a did. " + userProfile.did + "!=" + did)
@@ -97,7 +97,10 @@ ColumnLayout {
                                                        userProfile.description = description
                                                        userProfile.pronouns = pronouns
                                                        userProfile.website = website
-                                                       userProfile.links = links
+                                                       userProfile.linkViews = links
+                                                       userProfile.links = links.filter(function(link){
+                                                           return !link.labels || link.labels.length === 0
+                                                       })
                                                    }
                                                    )
                 } }

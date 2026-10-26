@@ -37,8 +37,13 @@
         <file>response/profile/4/xrpc/com.atproto.repo.getRecord_3l2</file>
         <file>data/profile/4/com.atproto.repo.createRecord</file>
         <file>data/profile/4/com.atproto.repo.putRecord</file>
-        <file>data/profile/4/com.atproto.repo.putRecord_link</file>
+        <file>data/profile/4/com.atproto.repo.putRecord_link_3l2</file>
+        <file>data/profile/4/com.atproto.repo.putRecord_link_3l4</file>
+        <file>response/profile/4/xrpc/com.atproto.repo.getRecord_3l4</file>
         <file>data/profile/4/com.atproto.repo.deleteRecord</file>
+        <file>response/profile/5/xrpc/com.atproto.repo.getRecord</file>
+        <file>response/profile/5/xrpc/com.atproto.repo.listRecords</file>
+        <file>response/profile/5/xrpc/com.atproto.repo.listRecords_3l3</file>
         <file>response/account/account1/xrpc/com.atproto.repo.describeRepo</file>
         <file>response/account/account2/xrpc/com.atproto.repo.describeRepo</file>
         <file>response/account/account1/xrpc/app.bsky.actor.getPreferences</file>

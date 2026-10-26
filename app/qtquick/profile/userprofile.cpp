@@ -954,16 +954,16 @@ void UserProfile::setLinks(const QVariantList &newLinks)
 void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView> &links)
 {
     QVariantList items;
+    QVariantList views;
     for (const auto &link : links) {
-        bool labeled = false;
+        if (link.url.isEmpty())
+            continue;
+        QStringList labels;
         for (const auto &label : link.labels) {
             if (!label.neg) {
-                labeled = true;
-                break;
+                labels.append(label.val);
             }
         }
-        if (labeled || link.url.isEmpty())
-            continue;
         QVariantMap item;
         item.insert("uri", link.uri);
         item.insert("cid", link.cid);
@@ -972,7 +972,25 @@ void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::Prof
         item.insert("rawTitle", link.title);
         item.insert("icon", link.icon);
         item.insert("highlight", false);
-        items.append(item);
+        if (labels.isEmpty()) {
+            items.append(item);
+        }
+        item.insert("labels", labels);
+        views.append(item);
     }
     setLinks(items);
+    setLinkViews(views);
+}
+
+QVariantList UserProfile::linkViews() const
+{
+    return m_linkViews;
+}
+
+void UserProfile::setLinkViews(const QVariantList &newLinkViews)
+{
+    if (m_linkViews == newLinkViews)
+        return;
+    m_linkViews = newLinkViews;
+    emit linkViewsChanged();
 }

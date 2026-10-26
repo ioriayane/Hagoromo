@@ -1,0 +1,30 @@
+{
+    "cursor": "3l3",
+    "records": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1",
+            "cid": "cid_link1",
+            "value": {
+                "$type": "app.bsky.actor.link",
+                "url": "https://example.com/link1",
+                "title": "link1",
+                "icon": {
+                    "$type": "blob",
+                    "ref": { "$link": "bafkreiicon1" },
+                    "mimeType": "image/png",
+                    "size": 1234
+                },
+                "createdAt": "2026-10-01T00:00:00.000Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l3",
+            "cid": "cid_link3",
+            "value": {
+                "$type": "app.bsky.actor.link",
+                "url": "https://example.com/link3",
+                "createdAt": "2026-10-03T00:00:00.000Z"
+            }
+        }
+    ]
+}

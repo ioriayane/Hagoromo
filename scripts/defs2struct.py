@@ -119,6 +119,7 @@ class Defs2Struct:
                          'AppBskyFeedRepost::Main',
                          'AppBskyGraphListitem::Main',
                          'AppBskyActorProfile::Main',
+                         'AppBskyActorLink::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
                          'AppBskyFeedPostgate::Main',

@@ -21,9 +21,8 @@
         },
         "links": [
             { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lnew", "cid": "cid_link_new" },
-            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2", "cid": "cid_link2_after" },
-            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1", "cid": "cid_link1" },
-            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l4", "cid": "cid_link4" }
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2", "cid": "cid_3l2_after" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1", "cid": "cid_link1" }
         ]
     },
     "swapRecord": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",

@@ -18,6 +18,8 @@
 #include <QFile>
 #include <QTimer>
 #include <QJsonObject>
+#include <QHash>
+#include <algorithm>
 
 #define PROFILE_LINKS_MAX 10
 
@@ -183,6 +185,7 @@ void RecordOperator::setProfileLinks(const QVariantList &links, const QStringLis
         item.icon_path = map.value("iconLocal").toString();
         item.status = map.value("status").toString();
         item.icon_changed = map.value("iconChanged").toBool();
+        item.visible = map.value("visible", true).toBool();
         if (item.status == "new") {
             item.icon_changed = true;
         }
@@ -207,6 +210,68 @@ QVariantList RecordOperator::profileLinks() const
         links.append(map);
     }
     return links;
+}
+
+void RecordOperator::requestProfileLinks()
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoRepoGetRecordEx *profile = new ComAtprotoRepoGetRecordEx(this);
+    connect(profile, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success1) {
+        if (!success1) {
+            emit errorOccurred(profile->errorCode(), profile->errorMessage());
+            emit finishedRequestProfileLinks(false, QVariantList(), QVariantList());
+            setRunning(false);
+            profile->deleteLater();
+            return;
+        }
+        QStringList refs;
+        for (const auto &value : profile->rawValue().value("links").toArray()) {
+            refs.append(value.toObject().value("uri").toString());
+        }
+        profile->deleteLater();
+
+        listProfileLinkRecords(
+                QString(),
+                [=](bool success2, const QList<ComAtprotoRepoListRecords::Record> &records) {
+                    if (!success2) {
+                        emit finishedRequestProfileLinks(false, QVariantList(), QVariantList());
+                        setRunning(false);
+                        return;
+                    }
+                    QHash<QString, QVariantMap> items;
+                    for (const auto &record : records) {
+                        items[record.uri] = makeProfileLinkItem(record);
+                    }
+                    // プロフィールの並び順で表示中のリンクを作る（実体のない参照は捨てる）
+                    QVariantList visible_links;
+                    for (const auto &uri : refs) {
+                        if (items.contains(uri)) {
+                            visible_links.append(items.take(uri));
+                        }
+                    }
+                    // 残りは未表示のリンク（作成日時の新しい順）
+                    QList<QVariantMap> hidden = items.values();
+                    std::sort(hidden.begin(), hidden.end(),
+                              [](const QVariantMap &a, const QVariantMap &b) {
+                                  if (a.value("createdAt") == b.value("createdAt")) {
+                                      return a.value("uri").toString() > b.value("uri").toString();
+                                  }
+                                  return a.value("createdAt").toString()
+                                          > b.value("createdAt").toString();
+                              });
+                    QVariantList hidden_links;
+                    for (const auto &item : hidden) {
+                        hidden_links.append(item);
+                    }
+                    emit finishedRequestProfileLinks(true, visible_links, hidden_links);
+                    setRunning(false);
+                });
+    });
+    profile->setAccount(account());
+    profile->profile(account().did);
 }
 
 void RecordOperator::clear()
@@ -972,10 +1037,10 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
             QString old_cid = old_profile->cid();
             QJsonObject old_raw_record = old_profile->rawValue();
             if (m_updateProfileLinks) {
-                // 非表示のリンクも含めて上限を超える場合は何も書き込まずに終了する
-                int count = makeProfileLinksJson(old_raw_record.value("links").toArray()).count();
+                // 表示するリンクが上限を超える場合は何も書き込まずに終了する
+                int count = 0;
                 for (const auto &item : std::as_const(m_profileLinks)) {
-                    if (item.uri.isEmpty())
+                    if (item.visible)
                         count++;
                 }
                 if (count > PROFILE_LINKS_MAX) {
@@ -1017,8 +1082,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         }
                         QJsonObject base_record = old_raw_record;
                         if (m_updateProfileLinks) {
-                            QJsonArray links =
-                                    makeProfileLinksJson(old_raw_record.value("links").toArray());
+                            QJsonArray links = makeProfileLinksJson();
                             if (links.isEmpty()) {
                                 base_record.remove("links");
                             } else {
@@ -1560,28 +1624,72 @@ void RecordOperator::deleteProfileLinks(int index, std::function<void()> callbac
     delete_record->deleteProfileLink(AtProtocolType::LexiconsTypeUnknown::extractRkey(uri));
 }
 
-QJsonArray RecordOperator::makeProfileLinksJson(const QJsonArray &old_links) const
+QJsonArray RecordOperator::makeProfileLinksJson() const
 {
     QJsonArray links;
-    QStringList uris;
     for (const auto &item : m_profileLinks) {
-        if (item.uri.isEmpty() || item.cid.isEmpty())
+        if (!item.visible || item.uri.isEmpty() || item.cid.isEmpty())
             continue;
         QJsonObject ref;
         ref.insert("uri", item.uri);
         ref.insert("cid", item.cid);
         links.append(ref);
-        uris.append(item.uri);
-    }
-    // 編集画面に表示されていない（ラベル等で非表示の）リンクは維持する
-    for (const auto &value : old_links) {
-        QString uri = value.toObject().value("uri").toString();
-        if (uri.isEmpty() || uris.contains(uri) || m_deletedProfileLinkUris.contains(uri))
-            continue;
-        links.append(value);
-        uris.append(uri);
     }
     return links;
+}
+
+void RecordOperator::listProfileLinkRecords(
+        const QString &cursor,
+        std::function<void(bool, const QList<ComAtprotoRepoListRecords::Record> &)> callback,
+        QList<ComAtprotoRepoListRecords::Record> records)
+{
+    ComAtprotoRepoListRecordsEx *list = new ComAtprotoRepoListRecordsEx(this);
+    connect(list, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
+        if (success) {
+            QList<ComAtprotoRepoListRecords::Record> next = records;
+            next.append(list->recordsList());
+            if (list->cursor().isEmpty() || list->recordsList().isEmpty()) {
+                callback(true, next);
+            } else {
+                listProfileLinkRecords(list->cursor(), callback, next);
+            }
+        } else {
+            emit errorOccurred(list->errorCode(), list->errorMessage());
+            callback(false, QList<ComAtprotoRepoListRecords::Record>());
+        }
+        list->deleteLater();
+    });
+    list->setAccount(account());
+    list->listProfileLinks(account().did, cursor);
+}
+
+QVariantMap
+RecordOperator::makeProfileLinkItem(const ComAtprotoRepoListRecords::Record &record) const
+{
+    AppBskyActorLink::Main link =
+            LexiconsTypeUnknown::fromQVariant<AppBskyActorLink::Main>(record.value);
+    QVariantMap item;
+    item.insert("uri", record.uri);
+    item.insert("cid", record.cid);
+    item.insert("url", link.url);
+    item.insert("rawTitle", link.title);
+    item.insert("createdAt", link.createdAt);
+    if (!link.icon.cid.isEmpty()) {
+        // AppViewに含まれないレコードもあるのでPDSから直接取得する
+        QString service = account().service_endpoint.isEmpty() ? account().service
+                                                               : account().service_endpoint;
+        item.insert("iconUrl",
+                    QString("%1/xrpc/com.atproto.sync.getBlob?did=%2&cid=%3")
+                            .arg(service, account().did, link.icon.cid));
+    } else {
+        item.insert("iconUrl", QString());
+    }
+    QStringList labels;
+    for (const auto &label : link.labels_ComAtprotoLabelDefs_SelfLabels.values) {
+        labels.append(label.val);
+    }
+    item.insert("labels", labels);
+    return item;
 }
 
 bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)

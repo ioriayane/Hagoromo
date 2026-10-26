@@ -34,6 +34,9 @@ class UserProfile : public QObject
     Q_PROPERTY(QString website READ website WRITE setWebsite NOTIFY websiteChanged FINAL)
     Q_PROPERTY(QString pronouns READ pronouns WRITE setPronouns NOTIFY pronounsChanged FINAL)
     Q_PROPERTY(QVariantList links READ links WRITE setLinks NOTIFY linksChanged FINAL)
+    // ラベル付きも含むすべてのリンク（編集用）
+    Q_PROPERTY(
+            QVariantList linkViews READ linkViews WRITE setLinkViews NOTIFY linkViewsChanged FINAL)
 
     Q_PROPERTY(int followersCount READ followersCount WRITE setFollowersCount NOTIFY
                        followersCountChanged)
@@ -199,6 +202,8 @@ public:
 
     QVariantList links() const;
     void setLinks(const QVariantList &newLinks);
+    QVariantList linkViews() const;
+    void setLinkViews(const QVariantList &newLinkViews);
     void updateLinks(const QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView> &links);
 
 signals:
@@ -255,6 +260,7 @@ signals:
     void pronounsChanged();
 
     void linksChanged();
+    void linkViewsChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
@@ -327,6 +333,7 @@ private:
     QString m_website;
     QString m_pronouns;
     QVariantList m_links;
+    QVariantList m_linkViews;
 };
 
 #endif // USERPROFILE_H

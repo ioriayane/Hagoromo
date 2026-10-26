@@ -1258,8 +1258,16 @@ void hagoromo_test::test_UserProfile()
         QCOMPARE(link.value("url").toString(), "https://example.com/negated");
         QCOMPARE(link.value("title").toString(), "negated");
 
+        // 編集用にはラベル付きも含める
+        QVariantList views = profile.linkViews();
+        QCOMPARE(views.length(), 4);
+        QCOMPARE(views.at(2).toMap().value("url").toString(), "https://example.com/hidden");
+        QCOMPARE(views.at(2).toMap().value("labels").toStringList(), QStringList() << "!hide");
+        QCOMPARE(views.at(3).toMap().value("labels").toStringList(), QStringList());
+
         profile.updateLinks(QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView>());
         QCOMPARE(profile.links().length(), 0);
+        QCOMPARE(profile.linkViews().length(), 0);
     }
 }
 
