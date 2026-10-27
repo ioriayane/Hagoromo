@@ -143,8 +143,12 @@ Dialog {
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
                 fillMode: Image.PreserveAspectFit
-                source: profileLinkDialog.icon.length > 0 ? profileLinkDialog.icon : "../images/link.png"
-                layer.enabled: profileLinkDialog.icon.length === 0
+                property string providerLogo: systemTool.supportProviderLogo(urlText.text)
+                source: providerLogo.length > 0 ? "../images/community/" + providerLogo + ".svg"
+                                                : profileLinkDialog.icon.length > 0 ? profileLinkDialog.icon
+                                                                                    : "../images/link.png"
+                sourceSize.height: height
+                layer.enabled: providerLogo.length > 0 || profileLinkDialog.icon.length === 0
                 layer.effect: ColorOverlayC {
                     color: Material.foreground
                 }

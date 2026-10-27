@@ -20,6 +20,8 @@ Rectangle {
 
     property string url: ""
     property string iconSource: ""
+    // 支援サイトの場合は公式クライアントと同じくリンクのアイコンではなくサービスのアイコンを使う
+    property string providerLogo: ""
     property alias text: label.text
     property alias fontPointSize: label.font.pointSize
     property int spacing: 3
@@ -36,8 +38,11 @@ Rectangle {
         width: height
         height: label.contentHeight
         fillMode: Image.PreserveAspectFit
-        source: linkLabel.iconSource.length > 0 ? linkLabel.iconSource : "../images/link.png"
-        layer.enabled: linkLabel.iconSource.length === 0
+        source: linkLabel.providerLogo.length > 0 ? "../images/community/" + linkLabel.providerLogo + ".svg"
+                                                  : linkLabel.iconSource.length > 0 ? linkLabel.iconSource
+                                                                                    : "../images/link.png"
+        sourceSize.height: height
+        layer.enabled: linkLabel.providerLogo.length > 0 || linkLabel.iconSource.length === 0
         layer.effect: ColorOverlayC {
             color: Material.foreground
         }

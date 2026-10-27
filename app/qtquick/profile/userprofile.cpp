@@ -973,6 +973,7 @@ void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::Prof
         item.insert("rawTitle", link.title);
         item.insert("icon", link.icon);
         item.insert("supportProvider", SupportProvider::isSupportProvider(link.url));
+        item.insert("supportProviderLogo", SupportProvider::logo(link.url));
         // プロフィール画面では支援サイトのリンクを強調する
         item.insert("highlight", item.value("supportProvider"));
         if (labels.isEmpty()) {

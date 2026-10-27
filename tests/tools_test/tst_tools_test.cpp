@@ -264,6 +264,10 @@ void tools_test::test_SupportProvider()
     QCOMPARE(SupportProvider::name("https://www.paypal.com/paypalme/name"), "PayPal");
     QCOMPARE(SupportProvider::name("https://chuffed.org/project/name"), "Chuffed");
     QVERIFY(SupportProvider::isSupportProvider("https://fanbox.cc/@name"));
+    QCOMPARE(SupportProvider::logo("https://ko-fi.com/name"), "KoFi");
+    QCOMPARE(SupportProvider::logo("https://www.paypal.com/paypalme/name"), "PayPal");
+    QCOMPARE(SupportProvider::logo("https://fanbox.cc/@name"), "PixivFanbox");
+    QCOMPARE(SupportProvider::logo("https://ko-fi.com"), QString());
 
     // トップページは対象外
     QCOMPARE(SupportProvider::name("https://ko-fi.com"), QString());

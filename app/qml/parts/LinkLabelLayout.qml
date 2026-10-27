@@ -22,6 +22,7 @@ Flow {
             url: modelData.url
             text: modelData.title
             iconSource: modelData.icon
+            providerLogo: modelData.supportProviderLogo
             highlight: modelData.highlight
             fontPointSize: linkLabelLayout.fontPointSize
             onHoveredChanged: {

@@ -60,6 +60,7 @@ Dialog {
             items[i].title = displayTitle(items[i].rawTitle, items[i].url)
             // 背景色のハイライトはプロフィール画面と同じく支援サイトのリンク、未保存の変更は枠線で示す
             items[i].supportProvider = systemTool.isSupportProviderLink(items[i].url)
+            items[i].supportProviderLogo = systemTool.supportProviderLogo(items[i].url)
             items[i].highlight = items[i].supportProvider
             items[i].edited = (items[i].status.length > 0)
         }
@@ -245,6 +246,7 @@ Dialog {
                                                    "icon": item.icon,
                                                    "labels": item.labels,
                                                    "supportProvider": item.supportProvider,
+                                                   "supportProviderLogo": item.supportProviderLogo,
                                                    "highlight": item.supportProvider
                                                })
                                 }
@@ -270,6 +272,7 @@ Dialog {
             url: linkRow.item.url
             text: linkRow.item.title
             iconSource: linkRow.item.icon
+            providerLogo: linkRow.item.supportProviderLogo
             highlight: linkRow.item.highlight
             edited: linkRow.item.edited
             fontPointSize: AdjustedValues.f8

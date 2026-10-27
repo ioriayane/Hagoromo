@@ -376,6 +376,7 @@ void hagoromo_test::test_RecordOperator_requestProfileLinks()
     QCOMPARE(item.value("rawTitle").toString(), "");
     QCOMPARE(item.value("iconUrl").toString(), "");
     QCOMPARE(item.value("supportProvider").toBool(), false);
+    QCOMPARE(item.value("supportProviderLogo").toString(), QString());
     item = visible_links.at(1).toMap();
     QCOMPARE(item.value("uri").toString(), link_base + "3l1");
     QCOMPARE(item.value("rawTitle").toString(), "link1");
@@ -394,6 +395,7 @@ void hagoromo_test::test_RecordOperator_requestProfileLinks()
     item = hidden_links.at(1).toMap();
     QCOMPARE(item.value("uri").toString(), link_base + "3l3");
     QCOMPARE(item.value("supportProvider").toBool(), true);
+    QCOMPARE(item.value("supportProviderLogo").toString(), "ItchIo");
     QCOMPARE(item.value("labels").toStringList(), QStringList());
 }
 

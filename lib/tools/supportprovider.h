@@ -10,6 +10,8 @@ class SupportProvider
 public:
     // 該当する支援サイトの名前（該当しない場合は空）
     static QString name(const QString &url);
+    // 該当する支援サイトのアイコン名（app/qml/images/community/<logo>.svg、該当しない場合は空）
+    static QString logo(const QString &url);
     static bool isSupportProvider(const QString &url);
 };
 

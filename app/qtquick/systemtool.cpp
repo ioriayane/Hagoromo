@@ -40,6 +40,11 @@ bool SystemTool::isSupportProviderLink(const QString &url) const
     return SupportProvider::isSupportProvider(url);
 }
 
+QString SystemTool::supportProviderLogo(const QString &url) const
+{
+    return SupportProvider::logo(url);
+}
+
 QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int width,
                            const int height) const
 {
