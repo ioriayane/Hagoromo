@@ -58,7 +58,10 @@ Dialog {
     function decorateLinks(items) {
         for(var i=0; i<items.length; i++){
             items[i].title = displayTitle(items[i].rawTitle, items[i].url)
-            items[i].highlight = (items[i].status.length > 0)
+            // 背景色のハイライトはプロフィール画面と同じく支援サイトのリンク、未保存の変更は枠線で示す
+            items[i].supportProvider = systemTool.isSupportProviderLink(items[i].url)
+            items[i].highlight = items[i].supportProvider
+            items[i].edited = (items[i].status.length > 0)
         }
         return items
     }
@@ -241,7 +244,8 @@ Dialog {
                                                    "rawTitle": item.rawTitle,
                                                    "icon": item.icon,
                                                    "labels": item.labels,
-                                                   "highlight": false
+                                                   "supportProvider": item.supportProvider,
+                                                   "highlight": item.supportProvider
                                                })
                                 }
                             }
@@ -267,6 +271,7 @@ Dialog {
             text: linkRow.item.title
             iconSource: linkRow.item.icon
             highlight: linkRow.item.highlight
+            edited: linkRow.item.edited
             fontPointSize: AdjustedValues.f8
             clip: true
             onClicked: (url) => editProfileDialog.openLinkEditor(linkRow.linkIndex, linkRow.linkVisible)

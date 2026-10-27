@@ -375,6 +375,7 @@ void hagoromo_test::test_RecordOperator_requestProfileLinks()
     QCOMPARE(item.value("url").toString(), "https://example.com/link2");
     QCOMPARE(item.value("rawTitle").toString(), "");
     QCOMPARE(item.value("iconUrl").toString(), "");
+    QCOMPARE(item.value("supportProvider").toBool(), false);
     item = visible_links.at(1).toMap();
     QCOMPARE(item.value("uri").toString(), link_base + "3l1");
     QCOMPARE(item.value("rawTitle").toString(), "link1");
@@ -392,6 +393,7 @@ void hagoromo_test::test_RecordOperator_requestProfileLinks()
     QCOMPARE(item.value("labels").toStringList(), QStringList() << "graphic-media");
     item = hidden_links.at(1).toMap();
     QCOMPARE(item.value("uri").toString(), link_base + "3l3");
+    QCOMPARE(item.value("supportProvider").toBool(), true);
     QCOMPARE(item.value("labels").toStringList(), QStringList());
 }
 

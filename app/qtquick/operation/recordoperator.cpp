@@ -12,6 +12,7 @@
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "tools/accountmanager.h"
+#include "tools/supportprovider.h"
 #include "tools/tid.h"
 #include "tokimekipolloperator.h"
 
@@ -1674,6 +1675,7 @@ RecordOperator::makeProfileLinkItem(const ComAtprotoRepoListRecords::Record &rec
     item.insert("url", link.url);
     item.insert("rawTitle", link.title);
     item.insert("createdAt", link.createdAt);
+    item.insert("supportProvider", SupportProvider::isSupportProvider(link.url));
     if (!link.icon.cid.isEmpty()) {
         // AppViewに含まれないレコードもあるのでPDSから直接取得する
         QString service = account().service_endpoint.isEmpty() ? account().service

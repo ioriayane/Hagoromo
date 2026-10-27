@@ -22,7 +22,7 @@
             "cid": "cid_link3",
             "value": {
                 "$type": "app.bsky.actor.link",
-                "url": "https://example.com/link3",
+                "url": "https://name.itch.io",
                 "createdAt": "2026-10-03T00:00:00.000Z"
             }
         }

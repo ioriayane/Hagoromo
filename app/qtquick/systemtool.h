@@ -20,6 +20,7 @@ public:
 
     Q_INVOKABLE void copyToClipboard(const QString &text) const;
     Q_INVOKABLE int countText(const QString &text) const;
+    Q_INVOKABLE bool isSupportProviderLink(const QString &url) const;
     Q_INVOKABLE QUrl clipImage(const QUrl &url, const int x, const int y, const int width,
                                const int height) const;
     Q_INVOKABLE void updateFont(const QString &family);

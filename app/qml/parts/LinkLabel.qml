@@ -14,6 +14,9 @@ Rectangle {
                                       Material.theme === Material.Light ? Material.Shade100 : Material.Shade700)
                      : Material.color(Material.BlueGrey,
                                       Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+    // 編集中で未保存の変更がある場合は枠線で示す（背景色のハイライトとは独立）
+    border.width: edited ? 2 : 0
+    border.color: Material.accentColor
 
     property string url: ""
     property string iconSource: ""
@@ -21,6 +24,7 @@ Rectangle {
     property alias fontPointSize: label.font.pointSize
     property int spacing: 3
     property bool highlight: false
+    property bool edited: false
     property alias hovered: mouseArea.containsMouse
 
     signal clicked(string url)

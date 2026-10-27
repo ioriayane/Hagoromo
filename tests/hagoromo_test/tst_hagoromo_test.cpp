@@ -1246,6 +1246,7 @@ void hagoromo_test::test_UserProfile()
         QCOMPARE(link.value("icon").toString(),
                  "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/"
                  "bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb@jpeg");
+        QCOMPARE(link.value("supportProvider").toBool(), false);
         QCOMPARE(link.value("highlight").toBool(), false);
 
         link = links.at(1).toMap();
@@ -1255,7 +1256,9 @@ void hagoromo_test::test_UserProfile()
         QCOMPARE(link.value("icon").toString(), "");
 
         link = links.at(2).toMap();
-        QCOMPARE(link.value("url").toString(), "https://example.com/negated");
+        QCOMPARE(link.value("url").toString(), "https://ko-fi.com/negated");
+        QCOMPARE(link.value("supportProvider").toBool(), true);
+        QCOMPARE(link.value("highlight").toBool(), true);
         QCOMPARE(link.value("title").toString(), "negated");
 
         // 編集用にはラベル付きも含める

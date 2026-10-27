@@ -8,6 +8,7 @@
 #include "extension/directory/plc/directoryplclogaudit.h"
 #include "tools/labelerprovider.h"
 #include "tools/accountmanager.h"
+#include "tools/supportprovider.h"
 
 #include <QPointer>
 #include <QUrl>
@@ -971,7 +972,9 @@ void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::Prof
         item.insert("title", link.title.isEmpty() ? QUrl(link.url).host() : link.title);
         item.insert("rawTitle", link.title);
         item.insert("icon", link.icon);
-        item.insert("highlight", false);
+        item.insert("supportProvider", SupportProvider::isSupportProvider(link.url));
+        // プロフィール画面では支援サイトのリンクを強調する
+        item.insert("highlight", item.value("supportProvider"));
         if (labels.isEmpty()) {
             items.append(item);
         }

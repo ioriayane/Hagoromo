@@ -1,6 +1,7 @@
 #include "systemtool.h"
 #include "qregularexpression.h"
 #include "tools/qstringex.h"
+#include "tools/supportprovider.h"
 #include "common.h"
 
 #include <QClipboard>
@@ -32,6 +33,11 @@ void SystemTool::copyToClipboard(const QString &text) const
 int SystemTool::countText(const QString &text) const
 {
     return QStringEx(text).length();
+}
+
+bool SystemTool::isSupportProviderLink(const QString &url) const
+{
+    return SupportProvider::isSupportProvider(url);
 }
 
 QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int width,
