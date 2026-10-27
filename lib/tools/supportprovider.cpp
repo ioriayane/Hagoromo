@@ -11,7 +11,8 @@ struct ProviderRule
     const char *path_prefix; // ドメインを支援以外のページと共有している場合のパス
 };
 
-// providers.ts の SUPPORT_PROVIDERS と同じ内容にすること
+// providers.ts の SUPPORT_PROVIDERS から scripts/update_support_providers.py で生成
+// BEGIN SUPPORT_PROVIDERS (generated, please do not edit)
 const ProviderRule SUPPORT_PROVIDERS[] = {
     { "BackerKit", "backerkit.com", nullptr },
     { "Big Cartel", "bigcartel.com", nullptr },
@@ -51,6 +52,7 @@ const ProviderRule SUPPORT_PROVIDERS[] = {
     { "VGen", "vgen.co", nullptr },
     { "Zeffy", "zeffy.com", nullptr },
 };
+// END SUPPORT_PROVIDERS
 
 // ドメイン自体とそのサブドメインのみ一致（ko-fi.com.example.net などは不一致）
 bool hostMatchesDomain(const QString &host, const QString &domain)
