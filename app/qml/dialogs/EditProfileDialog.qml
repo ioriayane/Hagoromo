@@ -22,6 +22,13 @@ Dialog {
     title: qsTr("Edit my profile")
     closePolicy: Popup.NoAutoClose
 
+    // ダイアログ全体が表示領域の高さの9割に収まるようにスクロール部分の高さを決める
+    property real maxContentHeight: Math.max(100,
+                                             (parent ? parent.height : 600) * 0.9
+                                             - implicitHeaderHeight - implicitFooterHeight
+                                             - topPadding - bottomPadding
+                                             - buttonLayout.implicitHeight)
+
     property string avatar: ""
     property string banner: ""
     property string displayName: ""
@@ -337,235 +344,255 @@ Dialog {
 
     ColumnLayout {
         spacing: 0
-        Label {
-            Layout.fillWidth: true
-            font.pointSize: AdjustedValues.f10
-            text: account.handle
-            elide: Text.ElideRight
-        }
+        ScrollView {
+            id: contentScrollView
+            // 内容が増えたらダイアログの高さが表示領域の9割を超えないようにスクロールする
+            property bool scrollable: contentLayout.implicitHeight > editProfileDialog.maxContentHeight
+            Layout.preferredWidth: contentLayout.implicitWidth +
+                                   (scrollable ? ScrollBar.vertical.width : 0)
+            Layout.preferredHeight: Math.min(contentLayout.implicitHeight, editProfileDialog.maxContentHeight)
+            contentWidth: contentLayout.implicitWidth
+            contentHeight: contentLayout.implicitHeight
+            clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: scrollable ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
 
-        Rectangle {
-            Layout.preferredWidth: 500 * AdjustedValues.ratio
-            Layout.preferredHeight: 80
-            color: Material.frameColor
-            ImageWithIndicator {
-                id: bannerImage
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectCrop
+            ColumnLayout {
+                id: contentLayout
+                width: implicitWidth
+                spacing: 0
+                Label {
+                    Layout.fillWidth: true
+                    font.pointSize: AdjustedValues.f10
+                    text: account.handle
+                    elide: Text.ElideRight
+                }
+
                 Rectangle {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 2
-                    width: AdjustedValues.i24
-                    height: AdjustedValues.i24
-                    radius: width / 2
-                    border.color: "black"
-                    border.width: 1
-                    Image {
+                    Layout.preferredWidth: 500 * AdjustedValues.ratio
+                    Layout.preferredHeight: 80
+                    color: Material.frameColor
+                    ImageWithIndicator {
+                        id: bannerImage
                         anchors.fill: parent
-                        anchors.margins: 5
-                        source: "../images/edit.png"
-                    }
-                }
+                        fillMode: Image.PreserveAspectCrop
+                        Rectangle {
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            anchors.margins: 2
+                            width: AdjustedValues.i24
+                            height: AdjustedValues.i24
+                            radius: width / 2
+                            border.color: "black"
+                            border.width: 1
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 5
+                                source: "../images/edit.png"
+                            }
+                        }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: (mouse) => {
-                                   imageClipDialog.target = "banner"
-                                   imageClipDialog.squareMode = false
-                                   fileDialog.open()
-                               }
-                }
-            }
-        }
-        RowLayout {
-            spacing: 10 * AdjustedValues.ratio
-            Rectangle {
-                Layout.preferredWidth: AdjustedValues.i48
-                Layout.preferredHeight: AdjustedValues.i48
-                color: Material.frameColor
-                radius: width / 2
-                AvatarImage {
-                    id: avatarImage
-                    anchors.fill: parent
-                    onClicked: (mouse) => {
-                                   imageClipDialog.target = "avatar"
-                                   imageClipDialog.squareMode = true
-                                   fileDialog.open()
-                               }
-                    Rectangle {
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.margins: 2
-                        width: AdjustedValues.i18
-                        height: AdjustedValues.i18
-                        radius: width / 2
-                        border.color: "black"
-                        border.width: 1
-                        Image {
+                        MouseArea {
                             anchors.fill: parent
-                            anchors.margins: 3
-                            source: "../images/edit.png"
+                            onClicked: (mouse) => {
+                                           imageClipDialog.target = "banner"
+                                           imageClipDialog.squareMode = false
+                                           fileDialog.open()
+                                       }
                         }
                     }
                 }
-            }
-            ColumnLayout {
-                spacing: 0
+                RowLayout {
+                    spacing: 10 * AdjustedValues.ratio
+                    Rectangle {
+                        Layout.preferredWidth: AdjustedValues.i48
+                        Layout.preferredHeight: AdjustedValues.i48
+                        color: Material.frameColor
+                        radius: width / 2
+                        AvatarImage {
+                            id: avatarImage
+                            anchors.fill: parent
+                            onClicked: (mouse) => {
+                                           imageClipDialog.target = "avatar"
+                                           imageClipDialog.squareMode = true
+                                           fileDialog.open()
+                                       }
+                            Rectangle {
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 2
+                                width: AdjustedValues.i18
+                                height: AdjustedValues.i18
+                                radius: width / 2
+                                border.color: "black"
+                                border.width: 1
+                                Image {
+                                    anchors.fill: parent
+                                    anchors.margins: 3
+                                    source: "../images/edit.png"
+                                }
+                            }
+                        }
+                    }
+                    ColumnLayout {
+                        spacing: 0
+                        Label {
+                            Layout.fillWidth: true
+                            Layout.topMargin: 5
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Display Name")
+                        }
+                        TextField  {
+                            id: displayNameText
+                            Layout.fillWidth: true
+                            enabled: !recordOperator.running
+                            selectByMouse: true
+                            font.pointSize: AdjustedValues.f10
+                            property int realTextLength: systemTool.countText(text)
+                        }
+                    }
+                }
                 Label {
                     Layout.fillWidth: true
                     Layout.topMargin: 5
                     font.pointSize: AdjustedValues.f10
-                    text: qsTr("Display Name")
+                    text: qsTr("Description")
+                }
+                ScrollView {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 120 * AdjustedValues.ratio
+                    Layout.topMargin: 0
+                    TextArea {
+                        id: descriptionText
+                        verticalAlignment: TextInput.AlignTop
+                        topInset: 0
+                        enabled: !recordOperator.running
+                        wrapMode: TextInput.WordWrap
+                        selectByMouse: true
+                        font.pointSize: AdjustedValues.f10
+                        property int realTextLength: systemTool.countText(text)
+                    }
+                }
+                RowLayout {
+                    Label {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 5
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Pronouns")
+                    }
+                    Label {
+                        Layout.alignment: Qt.AlignTop
+                        font.pointSize: AdjustedValues.f8
+                        text: 256 - descriptionText.realTextLength
+                    }
                 }
                 TextField  {
-                    id: displayNameText
+                    id: pronounsText
                     Layout.fillWidth: true
                     enabled: !recordOperator.running
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     property int realTextLength: systemTool.countText(text)
                 }
+
+                RowLayout {
+                    Layout.topMargin: 5
+                    Label {
+                        Layout.fillWidth: true
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Links")
+                    }
+                    BusyIndicator {
+                        Layout.preferredWidth: AdjustedValues.i16
+                        Layout.preferredHeight: AdjustedValues.i16
+                        visible: linkLoader.running
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f8
+                        color: editProfileDialog.visibleLinks.length >= editProfileDialog.linksMax ?
+                                   Material.color(Material.Orange) : Material.foreground
+                        text: editProfileDialog.visibleLinks.length + "/" + editProfileDialog.linksMax
+                    }
+                    IconButton {
+                        enabled: !recordOperator.running && editProfileDialog.linksLoaded
+                        iconSource: "../images/add.png"
+                        iconSize: AdjustedValues.i16
+                        iconText: qsTr("Add link")
+                        onClicked: {
+                            editProfileDialog.editingLinkIndex = -1
+                            profileLinkDialog.editMode = false
+                            profileLinkDialog.url = ""
+                            profileLinkDialog.linkTitle = ""
+                            profileLinkDialog.icon = ""
+                            profileLinkDialog.open()
+                        }
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    visible: editProfileDialog.linksLoadFailed
+                    wrapMode: Text.Wrap
+                    font.pointSize: AdjustedValues.f8
+                    color: Material.color(Material.Red)
+                    text: qsTr("Failed to load links. Links will not be changed.")
+                }
+                ColumnLayout {
+                    Layout.preferredWidth: 500 * AdjustedValues.ratio
+                    Layout.topMargin: 3
+                    spacing: 3
+                    enabled: !recordOperator.running && editProfileDialog.linksLoaded
+                    visible: editProfileDialog.visibleLinks.length > 0
+                    Repeater {
+                        model: editProfileDialog.visibleLinks
+                        LinkRow {
+                            Layout.fillWidth: true
+                            item: modelData
+                            linkIndex: model.index
+                            linkVisible: true
+                        }
+                    }
+                }
+                RowLayout {
+                    Layout.topMargin: 3
+                    visible: editProfileDialog.hiddenLinks.length > 0
+                    IconButton {
+                        Layout.fillWidth: true
+                        flat: true
+                        iconSource: editProfileDialog.hiddenLinksExpanded ? "../images/expand_less.png" : "../images/expand_more.png"
+                        iconSize: AdjustedValues.i16
+                        iconText: qsTr("Links not shown on profile") + " (" + editProfileDialog.hiddenLinks.length + ")"
+                        onClicked: editProfileDialog.hiddenLinksExpanded = !editProfileDialog.hiddenLinksExpanded
+                    }
+                }
+                ColumnLayout {
+                    Layout.preferredWidth: 500 * AdjustedValues.ratio
+                    spacing: 3
+                    enabled: !recordOperator.running && editProfileDialog.linksLoaded
+                    visible: editProfileDialog.hiddenLinksExpanded && editProfileDialog.hiddenLinks.length > 0
+                    Repeater {
+                        model: editProfileDialog.hiddenLinks
+                        LinkRow {
+                            Layout.fillWidth: true
+                            item: modelData
+                            linkIndex: model.index
+                            linkVisible: false
+                        }
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 3
+                    visible: editProfileDialog.linkOrderChanged
+                    font.pointSize: AdjustedValues.f8
+                    color: Material.color(Material.Teal)
+                    text: qsTr("Changes to the links are not saved yet.")
+                }
             }
-        }
-        Label {
-            Layout.fillWidth: true
-            Layout.topMargin: 5
-            font.pointSize: AdjustedValues.f10
-            text: qsTr("Description")
-        }
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 120 * AdjustedValues.ratio
-            Layout.topMargin: 0
-            TextArea {
-                id: descriptionText
-                verticalAlignment: TextInput.AlignTop
-                topInset: 0
-                enabled: !recordOperator.running
-                wrapMode: TextInput.WordWrap
-                selectByMouse: true
-                font.pointSize: AdjustedValues.f10
-                property int realTextLength: systemTool.countText(text)
-            }
-        }
-        RowLayout {
-            Label {
-                Layout.fillWidth: true
-                Layout.topMargin: 5
-                font.pointSize: AdjustedValues.f10
-                text: qsTr("Pronouns")
-            }
-            Label {
-                Layout.alignment: Qt.AlignTop
-                font.pointSize: AdjustedValues.f8
-                text: 256 - descriptionText.realTextLength
-            }
-        }
-        TextField  {
-            id: pronounsText
-            Layout.fillWidth: true
-            enabled: !recordOperator.running
-            selectByMouse: true
-            font.pointSize: AdjustedValues.f10
-            property int realTextLength: systemTool.countText(text)
         }
 
         RowLayout {
-            Layout.topMargin: 5
-            Label {
-                Layout.fillWidth: true
-                font.pointSize: AdjustedValues.f10
-                text: qsTr("Links")
-            }
-            BusyIndicator {
-                Layout.preferredWidth: AdjustedValues.i16
-                Layout.preferredHeight: AdjustedValues.i16
-                visible: linkLoader.running
-            }
-            Label {
-                font.pointSize: AdjustedValues.f8
-                color: editProfileDialog.visibleLinks.length >= editProfileDialog.linksMax ?
-                           Material.color(Material.Orange) : Material.foreground
-                text: editProfileDialog.visibleLinks.length + "/" + editProfileDialog.linksMax
-            }
-            IconButton {
-                enabled: !recordOperator.running && editProfileDialog.linksLoaded
-                iconSource: "../images/add.png"
-                iconSize: AdjustedValues.i16
-                iconText: qsTr("Add link")
-                onClicked: {
-                    editProfileDialog.editingLinkIndex = -1
-                    profileLinkDialog.editMode = false
-                    profileLinkDialog.url = ""
-                    profileLinkDialog.linkTitle = ""
-                    profileLinkDialog.icon = ""
-                    profileLinkDialog.open()
-                }
-            }
-        }
-        Label {
-            Layout.fillWidth: true
-            Layout.preferredWidth: 1
-            visible: editProfileDialog.linksLoadFailed
-            wrapMode: Text.Wrap
-            font.pointSize: AdjustedValues.f8
-            color: Material.color(Material.Red)
-            text: qsTr("Failed to load links. Links will not be changed.")
-        }
-        ColumnLayout {
-            Layout.preferredWidth: 500 * AdjustedValues.ratio
-            Layout.topMargin: 3
-            spacing: 3
-            enabled: !recordOperator.running && editProfileDialog.linksLoaded
-            visible: editProfileDialog.visibleLinks.length > 0
-            Repeater {
-                model: editProfileDialog.visibleLinks
-                LinkRow {
-                    Layout.fillWidth: true
-                    item: modelData
-                    linkIndex: model.index
-                    linkVisible: true
-                }
-            }
-        }
-        RowLayout {
-            Layout.topMargin: 3
-            visible: editProfileDialog.hiddenLinks.length > 0
-            IconButton {
-                Layout.fillWidth: true
-                flat: true
-                iconSource: editProfileDialog.hiddenLinksExpanded ? "../images/expand_less.png" : "../images/expand_more.png"
-                iconSize: AdjustedValues.i16
-                iconText: qsTr("Links not shown on profile") + " (" + editProfileDialog.hiddenLinks.length + ")"
-                onClicked: editProfileDialog.hiddenLinksExpanded = !editProfileDialog.hiddenLinksExpanded
-            }
-        }
-        ColumnLayout {
-            Layout.preferredWidth: 500 * AdjustedValues.ratio
-            spacing: 3
-            enabled: !recordOperator.running && editProfileDialog.linksLoaded
-            visible: editProfileDialog.hiddenLinksExpanded && editProfileDialog.hiddenLinks.length > 0
-            Repeater {
-                model: editProfileDialog.hiddenLinks
-                LinkRow {
-                    Layout.fillWidth: true
-                    item: modelData
-                    linkIndex: model.index
-                    linkVisible: false
-                }
-            }
-        }
-        Label {
-            Layout.fillWidth: true
-            Layout.topMargin: 3
-            visible: editProfileDialog.linkOrderChanged
-            font.pointSize: AdjustedValues.f8
-            color: Material.color(Material.Teal)
-            text: qsTr("Changes to the links are not saved yet.")
-        }
-
-        RowLayout {
+            id: buttonLayout
             Button {
                 Layout.alignment: Qt.AlignLeft
                 flat: true
