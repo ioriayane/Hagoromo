@@ -978,57 +978,57 @@ Please recreate AppPassword in the official application.</source>
         <translation>プロフィールの編集</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="295"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="302"/>
         <source>Labels</source>
         <translation>ラベル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="334"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="341"/>
         <source>Hide from profile</source>
         <translation>非表示</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="334"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="341"/>
         <source>Show on profile</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="419"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="443"/>
         <source>Display Name</source>
         <translation>表示名</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="435"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="459"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="457"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="481"/>
         <source>Pronouns</source>
         <translation>呼び方</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="479"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="503"/>
         <source>Links</source>
         <translation>リンク</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="496"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="520"/>
         <source>Add link</source>
         <translation>リンクを追加</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="514"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="538"/>
         <source>Failed to load links. Links will not be changed.</source>
         <translation>リンクの読み込みに失敗しました。リンクは変更されません。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="540"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="564"/>
         <source>Links not shown on profile</source>
         <translation>プロフィールに表示されないリンク</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="565"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="589"/>
         <source>Changes to the links are not saved yet.</source>
         <translation>リンクの変更はまだ保存されていません。</translation>
     </message>
@@ -1049,17 +1049,17 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished"> : &apos;https://&apos;で始めてください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="573"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="600"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="587"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="614"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/EditProfileDialog.qml" line="616"/>
+        <location filename="qml/dialogs/EditProfileDialog.qml" line="643"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
