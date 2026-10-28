@@ -14,6 +14,7 @@
 #include "tools/pinnedpostcache.h"
 #include "tools/authorization.h"
 #include "tools/dpopsessionstore.h"
+#include "tools/sessionstatestore.h"
 #include "common.h"
 
 #include <QDebug>
@@ -77,9 +78,11 @@ private:
     void refreshOAuthSession(bool initial);
     void finishOAuthRefresh(bool success);
     void failSession(const QString &code, const QString &message);
+    void failOAuthSession(const QString &code, const QString &message);
     void scheduleOAuthRefresh(int expires_in);
     Authorization *oauth();
     static bool allowedChatScope(const QString &scope);
+    static bool isOAuthReauthRequiredError(const QString &code);
 
     AccountManager *q;
 
@@ -109,6 +112,7 @@ AccountManager::Private::Private(AccountManager *parent) : q(parent), m_oauth(nu
 AccountManager::Private::~Private()
 {
     qDebug().noquote() << this << "AccountManager::~Private()";
+    SessionStateStore::getInstance()->remove(m_account.uuid);
 }
 
 QJsonObject AccountManager::Private::save() const
@@ -660,6 +664,8 @@ void AccountManager::Private::setOAuthSession(const QString &uuid, const QString
     m_account.accessJwt = session.token.access_token;
     m_account.refreshJwt = session.token.refresh_token;
     m_account.status = AccountStatus::Authorized;
+    // ログインし直したのでリクエストを再開する
+    SessionStateStore::getInstance()->remove(uuid);
     if (m_account.thread_gate_type.isEmpty()) {
         m_account.thread_gate_type = "everybody";
     }
@@ -682,6 +688,7 @@ void AccountManager::Private::clearOAuthSession()
 {
     m_oauthRefreshTimer.stop();
     DPopSessionStore::getInstance()->removeSession(m_account.uuid);
+    SessionStateStore::getInstance()->remove(m_account.uuid);
     m_account.auth_type = AuthType::Password;
     m_dPopPrivateKey.clear();
     m_oauthIssuer.clear();
@@ -729,10 +736,15 @@ void AccountManager::Private::refreshOAuthSession(bool initial)
     Q_UNUSED(initial)
     m_oauthRefreshTimer.stop();
 
+    if (SessionStateStore::getInstance()->isReauthRequired(m_account.uuid)) {
+        // refresh tokenはもう使えないので、再ログインするまでtokenのリクエストも送らない
+        qDebug().noquote() << "Skip refresh until re-login :" << m_account.handle;
+        return;
+    }
     if (m_account.refreshJwt.isEmpty() || m_oauthTokenEndpoint.isEmpty()
         || !DPopSessionStore::getInstance()->hasSession(m_account.uuid)) {
-        failSession(QStringLiteral("OAuthLoginRequired"),
-                    QStringLiteral("Please sign in again with OAuth."));
+        failOAuthSession(QStringLiteral("OAuthLoginRequired"),
+                         QStringLiteral("Please sign in again with OAuth."));
         return;
     }
 
@@ -755,11 +767,17 @@ void AccountManager::Private::refreshOAuthSession(bool initial)
 void AccountManager::Private::finishOAuthRefresh(bool success)
 {
     if (!success) {
-        failSession(m_oauthErrorCode.isEmpty() ? QStringLiteral("OAuthLoginRequired")
-                                               : m_oauthErrorCode,
-                    m_oauthErrorMessage.isEmpty()
-                            ? QStringLiteral("Please sign in again with OAuth.")
-                            : m_oauthErrorMessage);
+        const QString code = m_oauthErrorCode.isEmpty() ? QStringLiteral("OAuthLoginRequired")
+                                                        : m_oauthErrorCode;
+        const QString message = m_oauthErrorMessage.isEmpty()
+                ? QStringLiteral("Please sign in again with OAuth.")
+                : m_oauthErrorMessage;
+        if (isOAuthReauthRequiredError(m_oauthErrorCode)) {
+            failOAuthSession(code, message);
+        } else {
+            // 通信エラーなどの一時的な失敗はrefresh tokenが使える可能性があるので送信は止めない
+            failSession(code, message);
+        }
         return;
     }
     const AtProtocolType::OauthDefs::TokenResponse token = m_oauth->token();
@@ -790,6 +808,17 @@ void AccountManager::Private::failSession(const QString &code, const QString &me
     }
 }
 
+void AccountManager::Private::failOAuthSession(const QString &code, const QString &message)
+{
+    // 再ログインするまでリクエストは必ず失敗するので送信しないようにする
+    m_oauthRefreshTimer.stop();
+    SessionStateStore::getInstance()->setReauthRequired(m_account.uuid);
+    // 再ログインが必要なことが分かるように、ユーザーへの通知はOAuthLoginRequiredに揃える
+    qDebug().noquote() << "Reauth required :" << m_account.handle << code << message;
+    failSession(QStringLiteral("OAuthLoginRequired"),
+                QStringLiteral("Please sign in again with OAuth."));
+}
+
 void AccountManager::Private::scheduleOAuthRefresh(int expires_in)
 {
     // アクセストークンの期限の少し前にrefreshする
@@ -814,6 +843,19 @@ Authorization *AccountManager::Private::oauth()
                 [=](bool success) { finishOAuthRefresh(success); });
     }
     return m_oauth;
+}
+
+bool AccountManager::Private::isOAuthReauthRequiredError(const QString &code)
+{
+    // tokenエンドポイントのエラー(RFC 6749 5.2)のうち、再試行しても成功しないもの
+    return code == QStringLiteral("invalid_grant") || code == QStringLiteral("invalid_client")
+            || code == QStringLiteral("unauthorized_client")
+            || code == QStringLiteral("unsupported_grant_type")
+            || code == QStringLiteral("invalid_request")
+            || code == QStringLiteral("invalid_scope")
+            // DPoPの鍵がない、tokenのレスポンスを受け入れなかった(refresh tokenは使用済み)
+            || code == QStringLiteral("Invalid DPoP key")
+            || code == QStringLiteral("Invalid token response");
 }
 
 bool AccountManager::Private::allowedChatScope(const QString &scope)
