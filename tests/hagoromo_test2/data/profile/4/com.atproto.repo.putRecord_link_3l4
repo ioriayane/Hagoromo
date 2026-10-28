@@ -1,0 +1,13 @@
+{
+    "repo": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "collection": "app.bsky.actor.link",
+    "rkey": "3l4",
+    "record": {
+        "$type": "app.bsky.actor.link",
+        "url": "https://example.com/link4",
+        "title": "link4 after",
+        "createdAt": "2026-10-04T00:00:00.000Z"
+    },
+    "swapRecord": "cid_link4",
+    "validate": true
+}

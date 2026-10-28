@@ -8,8 +8,10 @@
 #include "extension/directory/plc/directoryplclogaudit.h"
 #include "tools/labelerprovider.h"
 #include "tools/accountmanager.h"
+#include "tools/supportprovider.h"
 
 #include <QPointer>
+#include <QUrl>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -78,6 +80,7 @@ void UserProfile::getProfile(const QString &did)
                 setBanner(detail.banner);
                 setPronouns(detail.pronouns);
                 setWebsite(detail.website);
+                updateLinks(detail.links);
                 setFollowersCount(detail.followersCount);
                 setFollowsCount(detail.followsCount);
                 setPostsCount(detail.postsCount);
@@ -934,4 +937,64 @@ void UserProfile::setPronouns(const QString &newPronouns)
         return;
     m_pronouns = newPronouns;
     emit pronounsChanged();
+}
+
+QVariantList UserProfile::links() const
+{
+    return m_links;
+}
+
+void UserProfile::setLinks(const QVariantList &newLinks)
+{
+    if (m_links == newLinks)
+        return;
+    m_links = newLinks;
+    emit linksChanged();
+}
+
+void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView> &links)
+{
+    QVariantList items;
+    QVariantList views;
+    for (const auto &link : links) {
+        if (link.url.isEmpty())
+            continue;
+        QStringList labels;
+        for (const auto &label : link.labels) {
+            if (!label.neg) {
+                labels.append(label.val);
+            }
+        }
+        QVariantMap item;
+        item.insert("uri", link.uri);
+        item.insert("cid", link.cid);
+        item.insert("url", link.url);
+        item.insert("title", link.title.isEmpty() ? QUrl(link.url).host() : link.title);
+        item.insert("rawTitle", link.title);
+        item.insert("icon", link.icon);
+        item.insert("supportProvider", SupportProvider::isSupportProvider(link.url));
+        item.insert("supportProviderLogo", SupportProvider::logo(link.url));
+        // プロフィール画面では支援サイトのリンクを強調する
+        item.insert("highlight", item.value("supportProvider"));
+        if (labels.isEmpty()) {
+            items.append(item);
+        }
+        item.insert("labels", labels);
+        views.append(item);
+    }
+    setLinks(items);
+    setLinkViews(views);
+}
+
+QVariantList UserProfile::linkViews() const
+{
+    return m_linkViews;
+}
+
+void UserProfile::setLinkViews(const QVariantList &newLinkViews)
+{
+    if (m_linkViews == newLinkViews)
+        return;
+    m_linkViews = newLinkViews;
+    emit linkViewsChanged();
 }

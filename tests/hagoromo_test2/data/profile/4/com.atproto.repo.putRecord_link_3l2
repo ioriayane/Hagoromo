@@ -1,0 +1,21 @@
+{
+    "repo": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "collection": "app.bsky.actor.link",
+    "rkey": "3l2",
+    "record": {
+        "$type": "app.bsky.actor.link",
+        "url": "https://example.com/link2",
+        "title": "link2 after",
+        "icon": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreiicon2"
+            },
+            "mimeType": "image/png",
+            "size": 1234
+        },
+        "createdAt": "2026-10-01T00:00:00.000Z"
+    },
+    "swapRecord": "cid_link2_before",
+    "validate": true
+}

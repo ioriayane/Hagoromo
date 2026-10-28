@@ -16,3 +16,6 @@
 [submodule "1stparty/bsky"]
 	path = 1stparty/bsky
 	url = https://github.com/bluesky-social/bsky.git
+[submodule "1stparty/social-app"]
+	path = 1stparty/social-app
+	url = https://github.com/bluesky-social/social-app.git

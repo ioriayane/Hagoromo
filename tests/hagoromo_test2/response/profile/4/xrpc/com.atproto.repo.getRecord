@@ -1,0 +1,28 @@
+{
+    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self",
+    "cid": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
+    "value": {
+        "$type": "app.bsky.actor.profile",
+        "avatar": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy"
+            },
+            "mimeType": "image/jpeg",
+            "size": 68308
+        },
+        "description": "epub\nLeME",
+        "displayName": "IoriAYANE",
+        "website": "https://hagoromo.relog.tech/",
+        "joinedViaStarterPack": {
+            "uri": "at://did:plc:hoge/app.bsky.graph.starterpack/3abc",
+            "cid": "cid_starterpack"
+        },
+        "links": [
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1", "cid": "cid_link1" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2", "cid": "cid_link2_before" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l3", "cid": "cid_link3" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l4", "cid": "cid_link4" }
+        ]
+    }
+}

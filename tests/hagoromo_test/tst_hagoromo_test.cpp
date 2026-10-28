@@ -12,6 +12,7 @@
 #include "column/columnlistmodel.h"
 #include "notification/notificationlistmodel.h"
 #include "profile/userprofile.h"
+#include "atprotocol/lexicons_func.h"
 #include "tools/qstringex.h"
 #include "profile/anyprofilelistmodel.h"
 #include "common.h"
@@ -1223,6 +1224,56 @@ void hagoromo_test::test_UserProfile()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a><br/>hoge");
+
+    {
+        QFile file(":/data/profile/links.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail;
+        AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(
+                QJsonDocument::fromJson(file.readAll()).object(), detail);
+        QCOMPARE(detail.links.length(), 4);
+
+        profile.updateLinks(detail.links);
+        QVariantList links = profile.links();
+        QCOMPARE(links.length(), 3);
+
+        QVariantMap link = links.at(0).toMap();
+        QCOMPARE(link.value("uri").toString(),
+                 "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2a");
+        QCOMPARE(link.value("url").toString(), "https://github.com/ioriayane/Hagoromo");
+        QCOMPARE(link.value("title").toString(), "Hagoromo");
+        QCOMPARE(link.value("rawTitle").toString(), "Hagoromo");
+        QCOMPARE(link.value("icon").toString(),
+                 "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                 "bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb@jpeg");
+        QCOMPARE(link.value("supportProvider").toBool(), false);
+        QCOMPARE(link.value("supportProviderLogo").toString(), QString());
+        QCOMPARE(link.value("highlight").toBool(), false);
+
+        link = links.at(1).toMap();
+        QCOMPARE(link.value("url").toString(), "https://hagoromo.relog.tech/docs/");
+        QCOMPARE(link.value("title").toString(), "hagoromo.relog.tech");
+        QCOMPARE(link.value("rawTitle").toString(), "");
+        QCOMPARE(link.value("icon").toString(), "");
+
+        link = links.at(2).toMap();
+        QCOMPARE(link.value("url").toString(), "https://ko-fi.com/negated");
+        QCOMPARE(link.value("supportProvider").toBool(), true);
+        QCOMPARE(link.value("supportProviderLogo").toString(), "KoFi");
+        QCOMPARE(link.value("highlight").toBool(), true);
+        QCOMPARE(link.value("title").toString(), "negated");
+
+        // 編集用にはラベル付きも含める
+        QVariantList views = profile.linkViews();
+        QCOMPARE(views.length(), 4);
+        QCOMPARE(views.at(2).toMap().value("url").toString(), "https://example.com/hidden");
+        QCOMPARE(views.at(2).toMap().value("labels").toStringList(), QStringList() << "!hide");
+        QCOMPARE(views.at(3).toMap().value("labels").toStringList(), QStringList());
+
+        profile.updateLinks(QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView>());
+        QCOMPARE(profile.links().length(), 0);
+        QCOMPARE(profile.linkViews().length(), 0);
+    }
 }
 
 void hagoromo_test::test_charCount()

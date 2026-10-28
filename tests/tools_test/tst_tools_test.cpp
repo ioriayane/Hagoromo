@@ -8,6 +8,7 @@
 #include "tools/leb128.h"
 #include "tools/cardecoder.h"
 #include "tools/tid.h"
+#include "tools/supportprovider.h"
 #include "tools/encryption.h"
 
 class tools_test : public QObject
@@ -25,6 +26,7 @@ private slots:
     void test_base32();
     void test_base32_s();
     void test_tid();
+    void test_SupportProvider();
     void test_Leb128();
     void test_CarDecoder();
     void test_Encryption();
@@ -247,6 +249,44 @@ void tools_test::test_CarDecoder()
     // qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();
 
     repo.close();
+}
+
+void tools_test::test_SupportProvider()
+{
+    // アカウントのページ（パス or サブドメイン）
+    QCOMPARE(SupportProvider::name("https://ko-fi.com/name"), "Ko-fi");
+    QCOMPARE(SupportProvider::name("https://www.patreon.com/name/"), "Patreon");
+    QCOMPARE(SupportProvider::name("https://name.itch.io"), "itch.io");
+    QCOMPARE(SupportProvider::name("https://name.booth.pm/items/123"), "BOOTH");
+    QCOMPARE(SupportProvider::name("http://KO-FI.COM/Name"), "Ko-fi");
+    QCOMPARE(SupportProvider::name("https://buy.stripe.com/abc"), "Stripe");
+    QCOMPARE(SupportProvider::name("https://paypal.me/name"), "PayPal");
+    QCOMPARE(SupportProvider::name("https://www.paypal.com/paypalme/name"), "PayPal");
+    QCOMPARE(SupportProvider::name("https://chuffed.org/project/name"), "Chuffed");
+    QVERIFY(SupportProvider::isSupportProvider("https://fanbox.cc/@name"));
+    QCOMPARE(SupportProvider::logo("https://ko-fi.com/name"), "KoFi");
+    QCOMPARE(SupportProvider::logo("https://www.paypal.com/paypalme/name"), "PayPal");
+    QCOMPARE(SupportProvider::logo("https://fanbox.cc/@name"), "PixivFanbox");
+    QCOMPARE(SupportProvider::logo("https://ko-fi.com"), QString());
+
+    // トップページは対象外
+    QCOMPARE(SupportProvider::name("https://ko-fi.com"), QString());
+    QCOMPARE(SupportProvider::name("https://ko-fi.com/"), QString());
+    QCOMPARE(SupportProvider::name("https://www.patreon.com/"), QString());
+    QCOMPARE(SupportProvider::name("https://buy.stripe.com/"), QString());
+    // パスの指定があるものはそのパス配下のみ
+    QCOMPARE(SupportProvider::name("https://www.paypal.com/signin"), QString());
+    QCOMPARE(SupportProvider::name("https://www.paypal.com/paypalme/"), QString());
+    QCOMPARE(SupportProvider::name("https://chuffed.org/about"), QString());
+    // 似たドメインは対象外
+    QCOMPARE(SupportProvider::name("https://ko-fi.com.example.net/name"), QString());
+    QCOMPARE(SupportProvider::name("https://notko-fi.com/name"), QString());
+    QCOMPARE(SupportProvider::name("https://stripe.com/name"), QString());
+    // Webのリンク以外
+    QCOMPARE(SupportProvider::name("ftp://ko-fi.com/name"), QString());
+    QCOMPARE(SupportProvider::name("ko-fi.com/name"), QString());
+    QCOMPARE(SupportProvider::name(""), QString());
+    QVERIFY(!SupportProvider::isSupportProvider("https://github.com/ioriayane/Hagoromo"));
 }
 
 QTEST_MAIN(tools_test)

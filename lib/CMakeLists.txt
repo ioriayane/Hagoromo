@@ -338,6 +338,8 @@ add_library(HagoromoLib STATIC
     tools/pinnedpostcache.cpp
     tools/pinnedpostcache.h
     tools/qstringex.h
+    tools/supportprovider.cpp
+    tools/supportprovider.h
     tools/tid.cpp
     tools/tid.h
     # resources

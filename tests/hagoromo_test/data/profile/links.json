@@ -1,0 +1,48 @@
+{
+    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "handle": "ioriayane.relog.tech",
+    "displayName": "IoriAYANE",
+    "links": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2a",
+            "cid": "bafyreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "url": "https://github.com/ioriayane/Hagoromo",
+            "title": "Hagoromo",
+            "icon": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb@jpeg"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2b",
+            "cid": "bafyreicccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "url": "https://hagoromo.relog.tech/docs/"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2c",
+            "cid": "bafyreidddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "url": "https://example.com/hidden",
+            "title": "hidden",
+            "labels": [
+                {
+                    "src": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2c",
+                    "val": "!hide",
+                    "cts": "2026-10-24T00:00:00.000Z"
+                }
+            ]
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2d",
+            "cid": "bafyreieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "url": "https://ko-fi.com/negated",
+            "title": "negated",
+            "labels": [
+                {
+                    "src": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lzq5qfzgxs2d",
+                    "val": "!hide",
+                    "neg": true,
+                    "cts": "2026-10-24T00:00:00.000Z"
+                }
+            ]
+        }
+    ]
+}

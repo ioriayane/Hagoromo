@@ -37,6 +37,7 @@
         <file>qml/images/language.png</file>
         <file>qml/images/leave.png</file>
         <file>qml/images/like.png</file>
+        <file>qml/images/link.png</file>
         <file>qml/images/list.png</file>
         <file>qml/images/logo.png</file>
         <file>qml/images/media.png</file>
@@ -75,5 +76,39 @@
         <file>qml/images/warning.png</file>
         <file>qml/images/add_circle.png</file>
         <file>qml/images/minimize.png</file>
+        <file>qml/images/community/BackerKit.svg</file>
+        <file>qml/images/community/BigCartel.svg</file>
+        <file>qml/images/community/Boosty.svg</file>
+        <file>qml/images/community/Booth.svg</file>
+        <file>qml/images/community/BuyMeACoffee.svg</file>
+        <file>qml/images/community/CashApp.svg</file>
+        <file>qml/images/community/Chuffed.svg</file>
+        <file>qml/images/community/Crowdfundr.svg</file>
+        <file>qml/images/community/Donorbox.svg</file>
+        <file>qml/images/community/Etsy.svg</file>
+        <file>qml/images/community/Fourthwall.svg</file>
+        <file>qml/images/community/GiveSendGo.svg</file>
+        <file>qml/images/community/Givebutter.svg</file>
+        <file>qml/images/community/GoFundMe.svg</file>
+        <file>qml/images/community/Gumroad.svg</file>
+        <file>qml/images/community/Indiegogo.svg</file>
+        <file>qml/images/community/Inprint.svg</file>
+        <file>qml/images/community/ItchIo.svg</file>
+        <file>qml/images/community/JustGiving.svg</file>
+        <file>qml/images/community/Kickstarter.svg</file>
+        <file>qml/images/community/KoFi.svg</file>
+        <file>qml/images/community/Liberapay.svg</file>
+        <file>qml/images/community/OpenCollective.svg</file>
+        <file>qml/images/community/Patreon.svg</file>
+        <file>qml/images/community/PayPal.svg</file>
+        <file>qml/images/community/PixivFanbox.svg</file>
+        <file>qml/images/community/Redbubble.svg</file>
+        <file>qml/images/community/Skeb.svg</file>
+        <file>qml/images/community/Stripe.svg</file>
+        <file>qml/images/community/Substack.svg</file>
+        <file>qml/images/community/Throne.svg</file>
+        <file>qml/images/community/Venmo.svg</file>
+        <file>qml/images/community/Vgen.svg</file>
+        <file>qml/images/community/Zeffy.svg</file>
     </qresource>
 </RCC>

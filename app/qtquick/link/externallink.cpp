@@ -3,9 +3,17 @@
 
 #include <QDebug>
 #include <QUrl>
+#include <QCoreApplication>
+#include <QDir>
+#include <QStandardPaths>
+#include <QUuid>
 
 ExternalLink::ExternalLink(QObject *parent)
-    : QObject { parent }, m_thumbLocal(nullptr), m_running(false), m_valid(false)
+    : QObject { parent },
+      m_thumbLocal(nullptr),
+      m_running(false),
+      m_valid(false),
+      m_fetchIcon(false)
 {
 }
 
@@ -27,6 +35,7 @@ void ExternalLink::getExternalLink(const QString &uri)
     setTitle(QString());
     setDescription(QString());
     setThumb(QString());
+    setIconLocal(QString());
     // 表示のキャッシュ対策
     if (m_thumbLocal != nullptr) {
         delete m_thumbLocal;
@@ -36,6 +45,33 @@ void ExternalLink::getExternalLink(const QString &uri)
 
     OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
     connect(open_graph, &OpenGraphProtocol::finished, this, [=](bool success) {
+        if (fetchIcon()) {
+            if (open_graph->icon().isEmpty()) {
+                open_graph->setIcon(
+                        QUrl(uri).resolved(QUrl("/favicon.ico")).toString(QUrl::FullyEncoded));
+            }
+            // 複数のリンクで同時に保持できるようにリクエストごとに別ファイルにする
+            QString folder = QString("%1/%2").arg(
+                    QStandardPaths::writableLocation(QStandardPaths::TempLocation),
+                    QCoreApplication::applicationName());
+            QDir().mkpath(folder);
+            QString path =
+                    QString("%1/%2.png").arg(folder, QUuid::createUuid().toString(QUuid::Id128));
+            connect(open_graph, &OpenGraphProtocol::finishedDownloadIcon, this,
+                    [=](bool success_icon) {
+                        qDebug().noquote() << "finishedDownloadIcon" << success_icon;
+                        setUri(open_graph->uri().isEmpty() ? uri : open_graph->uri());
+                        setTitle(open_graph->title());
+                        setDescription(open_graph->description());
+                        setIconLocal(success_icon ? QUrl::fromLocalFile(path).toString()
+                                                  : QString());
+                        setValid(success);
+                        setRunning(false);
+                        open_graph->deleteLater();
+                    });
+            open_graph->downloadIcon(path);
+            return;
+        }
         bool do_download = false;
         qDebug().noquote() << "uri:" << open_graph->uri();
         qDebug().noquote() << "title:" << open_graph->title();
@@ -78,6 +114,7 @@ void ExternalLink::clear()
     setTitle(QString());
     setDescription(QString());
     setThumb(QString());
+    setIconLocal(QString());
 }
 
 QString ExternalLink::uri() const
@@ -179,4 +216,30 @@ void ExternalLink::setValid(bool newValid)
 
     emit thumbLocalChanged();
     emit validChanged();
+}
+
+bool ExternalLink::fetchIcon() const
+{
+    return m_fetchIcon;
+}
+
+void ExternalLink::setFetchIcon(bool newFetchIcon)
+{
+    if (m_fetchIcon == newFetchIcon)
+        return;
+    m_fetchIcon = newFetchIcon;
+    emit fetchIconChanged();
+}
+
+QString ExternalLink::iconLocal() const
+{
+    return m_iconLocal;
+}
+
+void ExternalLink::setIconLocal(const QString &newIconLocal)
+{
+    if (m_iconLocal == newIconLocal)
+        return;
+    m_iconLocal = newIconLocal;
+    emit iconLocalChanged();
 }

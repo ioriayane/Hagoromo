@@ -59,7 +59,7 @@ ColumnLayout {
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
     signal requestAddMutedWord(string text)
-    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var callback)
+    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description, string pronouns, string website, var links, var callback)
     signal requestSubscribeToPosts(string did, bool post, bool reply)
 
     signal errorOccurred(string code, string message)
@@ -84,7 +84,8 @@ ColumnLayout {
                                                    userProfile.displayName,
                                                    userProfile.description,
                                                    userProfile.pronouns,
-                                                   userProfile.website, function(did, avatar, banner, display_name, description, pronouns, website){
+                                                   userProfile.website,
+                                                   userProfile.linkViews, function(did, avatar, banner, display_name, description, pronouns, website, links){
                                                        // 編集完了後のコールバック
                                                        if(userProfile.did !== did){
                                                            console.log("Unmatch a did. " + userProfile.did + "!=" + did)
@@ -96,6 +97,10 @@ ColumnLayout {
                                                        userProfile.description = description
                                                        userProfile.pronouns = pronouns
                                                        userProfile.website = website
+                                                       userProfile.linkViews = links
+                                                       userProfile.links = links.filter(function(link){
+                                                           return !link.labels || link.labels.length === 0
+                                                       })
                                                    }
                                                    )
                 } }
@@ -479,6 +484,18 @@ ColumnLayout {
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
             onContentHeightChanged: Layout.preferredHeight = websiteLabel.contentHeight
+        }
+        LinkLabelLayout {
+            Layout.preferredWidth: profileView.width - 10
+            Layout.maximumWidth: profileView.width
+            Layout.topMargin: 5
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: count > 0
+            fontPointSize: AdjustedValues.f8
+            model: userProfile.links
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
         }
         Label {
             id: descriptionLabel

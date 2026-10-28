@@ -1,5 +1,7 @@
 #include "comatprotorepogetrecordex.h"
 
+#include <QJsonDocument>
+
 namespace AtProtocolInterface {
 
 ComAtprotoRepoGetRecordEx::ComAtprotoRepoGetRecordEx(QObject *parent)
@@ -33,9 +35,23 @@ void ComAtprotoRepoGetRecordEx::notificationDeclaration(const QString &did)
               QString());
 }
 
+void ComAtprotoRepoGetRecordEx::profileLink(const QString &did, const QString &rkey)
+{
+    getRecord(did, QStringLiteral("app.bsky.actor.link"), rkey, QString());
+}
+
+const QJsonObject &ComAtprotoRepoGetRecordEx::rawValue() const
+{
+    return m_rawValue;
+}
+
 bool ComAtprotoRepoGetRecordEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoRepoGetRecord::parseJson(success, reply_json);
+    if (success) {
+        m_rawValue =
+                QJsonDocument::fromJson(reply_json.toUtf8()).object().value("value").toObject();
+    }
 
     return success;
 }

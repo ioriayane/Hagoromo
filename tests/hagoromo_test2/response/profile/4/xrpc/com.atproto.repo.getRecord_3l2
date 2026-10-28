@@ -1,0 +1,18 @@
+{
+    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2",
+    "cid": "cid_link2_before",
+    "value": {
+        "$type": "app.bsky.actor.link",
+        "url": "https://example.com/link2",
+        "title": "link2 before",
+        "icon": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreiicon2"
+            },
+            "mimeType": "image/png",
+            "size": 1234
+        },
+        "createdAt": "2026-10-01T00:00:00.000Z"
+    }
+}
