@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Add
+  - Support for profile links
 - Update
   - Switch the Search API to V2
 - Fix
