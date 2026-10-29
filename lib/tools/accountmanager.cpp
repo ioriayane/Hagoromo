@@ -388,13 +388,7 @@ void AccountManager::Private::createSession()
             getProfile();
         } else {
             qDebug() << "Fail createSession.";
-            m_account.status = AccountStatus::Unauthorized;
-            emit q->errorOccurred(session->errorCode(), session->errorMessage());
-
-            q->checkAllAccountsReady();
-            if (q->allAccountTried()) {
-                emit q->finished();
-            }
+            failSession(session->errorCode(), session->errorMessage());
         }
         session->deleteLater();
     });
@@ -430,13 +424,7 @@ void AccountManager::Private::refreshSession(bool initial)
                 m_account.status = AccountStatus::Unknown;
                 createSession();
             } else {
-                m_account.status = AccountStatus::Unauthorized;
-                emit q->errorOccurred(session->errorCode(), session->errorMessage());
-
-                q->checkAllAccountsReady();
-                if (q->allAccountTried()) {
-                    emit q->finished();
-                }
+                failSession(session->errorCode(), session->errorMessage());
             }
         }
         session->deleteLater();
@@ -800,6 +788,8 @@ void AccountManager::Private::failSession(const QString &code, const QString &me
 {
     qDebug().noquote() << "Fail session :" << m_account.handle << code;
     m_account.status = AccountStatus::Unauthorized;
+    // アカウント一覧の表示(再ログインが必要か)を更新する
+    emit q->updatedAccount(m_account.uuid);
     emit q->errorOccurred(code, message);
 
     q->checkAllAccountsReady();

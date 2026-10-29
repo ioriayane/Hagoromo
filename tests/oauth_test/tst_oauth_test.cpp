@@ -1203,9 +1203,13 @@ void oauth_test::test_account_manager_oauth()
                 QString("http://127.0.0.1:%1/response/2/oauth/token_notfound").arg(m_listenPort);
         manager->updateOAuthAccount(uuid, "https://bsky.social", session);
         QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
         manager->refreshSession(manager->indexAt(uuid));
         spy_error.wait(10 * 1000);
         QCOMPARE(spy_error.count(), 1);
+        // アカウント一覧の表示を更新するために通知する
+        QCOMPARE(spy_updated.count(), 1);
+        QCOMPARE(spy_updated.takeFirst().at(0).toString(), uuid);
         QCOMPARE(manager->getAccount(uuid).status,
                  AtProtocolInterface::AccountStatus::Unauthorized);
         // 失敗してもセッションの情報は残す
@@ -1237,10 +1241,12 @@ void oauth_test::test_account_manager_oauth()
         m_server.m_invalidGrantCount = 0;
         {
             QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+            QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
             manager->refreshSession(manager->indexAt(uuid));
             spy_error.wait(10 * 1000);
             QCOMPARE(spy_error.count(), 1);
             QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("OAuthLoginRequired"));
+            QCOMPARE(spy_updated.count(), 1);
         }
         QCOMPARE(m_server.m_invalidGrantCount, 1);
         QVERIFY(SessionStateStore::getInstance()->isReauthRequired(uuid));
