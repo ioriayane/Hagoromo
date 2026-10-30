@@ -83,6 +83,7 @@ private:
     Authorization *oauth();
     static bool allowedChatScope(const QString &scope);
     static bool isOAuthReauthRequiredError(const QString &code);
+    static QDateTime accessTokenExpiresAt(int expires_in);
 
     AccountManager *q;
 
@@ -654,6 +655,8 @@ void AccountManager::Private::setOAuthSession(const QString &uuid, const QString
     m_account.status = AccountStatus::Authorized;
     // ログインし直したのでリクエストを再開する
     SessionStateStore::getInstance()->remove(uuid);
+    SessionStateStore::getInstance()->setAccessTokenExpiresAt(
+            uuid, accessTokenExpiresAt(session.token.expires_in));
     if (m_account.thread_gate_type.isEmpty()) {
         m_account.thread_gate_type = "everybody";
     }
@@ -775,6 +778,8 @@ void AccountManager::Private::finishOAuthRefresh(bool success)
     if (!token.scope.isEmpty()) {
         m_oauthScope = token.scope;
     }
+    SessionStateStore::getInstance()->setAccessTokenExpiresAt(
+            m_account.uuid, accessTokenExpiresAt(token.expires_in));
     getAccountScope();
     scheduleOAuthRefresh(token.expires_in);
     // refresh tokenは更新されて古いものは使えなくなるので、すぐに保存する
@@ -848,6 +853,15 @@ bool AccountManager::Private::isOAuthReauthRequiredError(const QString &code)
             || code == QStringLiteral("Invalid token response");
 }
 
+QDateTime AccountManager::Private::accessTokenExpiresAt(int expires_in)
+{
+    if (expires_in <= 0) {
+        // 期限が分からないときは送信を止めない
+        return QDateTime();
+    }
+    return QDateTime::currentDateTimeUtc().addSecs(expires_in);
+}
+
 bool AccountManager::Private::allowedChatScope(const QString &scope)
 {
     for (const auto &item : scope.split(' ', Qt::SkipEmptyParts)) {
@@ -875,11 +889,19 @@ void AccountManager::Private::removeScope(AtProtocolInterface::AccountScope scop
 AccountManager::AccountManager(QObject *parent) : QObject { parent }, m_allAccountsReady(false)
 {
     qDebug().noquote() << this << "AccountManager()";
+
+    // アクセストークンの期限切れでリクエストを止めたときにリフレッシュする
+    SessionStateStore::getInstance()->setRefreshRequestHandler([this](const QString &uuid) {
+        // リクエストの送信処理の途中や別のスレッドから呼ばれるので、後から実行する
+        QMetaObject::invokeMethod(
+                this, [this, uuid]() { refreshSession(indexAt(uuid)); }, Qt::QueuedConnection);
+    });
 }
 
 AccountManager::~AccountManager()
 {
     qDebug().noquote() << this << "~AccountManager()";
+    SessionStateStore::getInstance()->setRefreshRequestHandler(nullptr);
     clear();
 }
 

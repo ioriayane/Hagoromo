@@ -166,6 +166,7 @@ private slots:
     void test_access_oauth();
     void test_account_manager_oauth();
     void test_account_manager_legacy_encryption();
+    void test_session_state_store();
     void test_oauth_revoke();
     void test_no_secret_in_logs();
     void test_jwt();
@@ -1197,6 +1198,72 @@ void oauth_test::test_account_manager_oauth()
                  AtProtocolInterface::AccountStatus::Unauthorized);
     }
 
+    // アクセストークンの期限が切れたら送信せずに、リフレッシュしてから再開する
+    {
+        QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+        QVERIFY(image.open());
+        image.write(QByteArray("dummy image"));
+        image.close();
+
+        // 受け取った時点で期限切れとみなされる長さ
+        session.token.access_token = "expired access token";
+        session.token.expires_in = 5;
+        manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+        QVERIFY(SessionStateStore::getInstance()->isAccessTokenExpired(uuid));
+
+        QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
+        QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        m_dPopPayloads.clear();
+        m_resourceAuthorizations.clear();
+        for (int i = 0; i < 3; i++) {
+            TestAccess access;
+            access.setAccount(manager->getAccount(uuid));
+            QSignalSpy spy(&access, SIGNAL(finished(bool)));
+            if (i == 0) {
+                access.testGet();
+            } else if (i == 1) {
+                access.testPost();
+            } else {
+                access.testPostWithImage(image.fileName());
+            }
+            QCOMPARE(spy.count(), 1);
+            QVERIFY(!spy.takeFirst().at(0).toBool());
+            QCOMPARE(access.errorCode(), QString("SessionRefreshing"));
+            QVERIFY(access.errorMessage().isEmpty());
+        }
+        QCOMPARE(m_resourceAuthorizations.length(), 0);
+
+        // リフレッシュは1回だけ依頼される
+        spy_updated.wait(30 * 1000);
+        QCOMPARE(spy_updated.count(), 1);
+        QCOMPARE(spy_error.count(), 0);
+        // 置き換え前のセッションの失効(revoke)は数えない
+        int token_request_count = 0;
+        for (const auto &payload : std::as_const(m_dPopPayloads)) {
+            if (payload.value("htu").toString() == token_endpoint) {
+                token_request_count++;
+            }
+        }
+        QCOMPARE(token_request_count, 1);
+        QVERIFY(!SessionStateStore::getInstance()->isAccessTokenExpired(uuid));
+        QCOMPARE(manager->getAccount(uuid).accessJwt, QString("access token"));
+
+        // 新しいトークンで送信を再開する
+        m_resourceAuthorizations.clear();
+        TestAccess access;
+        access.setAccount(manager->getAccount(uuid));
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+        QCOMPARE(m_resourceAuthorizations.first(), QByteArray("DPoP access token"));
+
+        session.token.access_token = "first access token";
+        session.token.expires_in = 2677;
+    }
+
     // refreshに失敗したら再ログインが必要な状態になる
     {
         session.token_endpoint =
@@ -1335,6 +1402,48 @@ void oauth_test::test_account_manager_oauth()
     m_server.m_resourceNonce.clear();
     manager->clear();
     QFile::remove(Common::appDataFolder() + "/account.json");
+}
+
+void oauth_test::test_session_state_store()
+{
+    // リフレッシュの依頼先を登録する
+    AccountManager::getInstance();
+    SessionStateStore *store = SessionStateStore::getInstance();
+    const QString uuid = "uuid-session-state";
+    const QDateTime now = QDateTime::currentDateTimeUtc();
+
+    // 期限が分からないときは期限切れとして扱わない
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    store->setAccessTokenExpiresAt(uuid, QDateTime());
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    QVERIFY(!store->isAccessTokenExpired(QString()));
+
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(60 * 60));
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(-1));
+    QVERIFY(store->isAccessTokenExpired(uuid));
+    // 期限の直前も期限切れとして扱う
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(5));
+    QVERIFY(store->isAccessTokenExpired(uuid));
+
+    // リフレッシュの依頼は一定時間に1回だけ
+    QVERIFY(store->requestRefresh(uuid));
+    QVERIFY(!store->requestRefresh(uuid));
+    QVERIFY(!store->requestRefresh(QString()));
+    // 別のアカウントは別に依頼できる
+    QVERIFY(store->requestRefresh(uuid + "-other"));
+    // 新しいトークンになったら、また依頼できる
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(-1));
+    QVERIFY(store->requestRefresh(uuid));
+
+    store->setReauthRequired(uuid);
+    QVERIFY(store->isReauthRequired(uuid));
+    store->remove(uuid);
+    QVERIFY(!store->isReauthRequired(uuid));
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    QVERIFY(store->requestRefresh(uuid));
+    store->remove(uuid);
+    store->remove(uuid + "-other");
 }
 
 void oauth_test::test_account_manager_legacy_encryption()
