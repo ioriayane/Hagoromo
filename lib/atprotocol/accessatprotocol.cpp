@@ -1,5 +1,6 @@
 #include "accessatprotocol.h"
 #include "tools/dpopsessionstore.h"
+#include "tools/sessionstatestore.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -159,6 +160,10 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
         emit finished(false);
         return;
     }
+    if (with_auth_header && !isSessionAvailable()) {
+        emit finished(false);
+        return;
+    }
 
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
     qDebug().noquote() << LOG_DATETIME << "   " << handle();
@@ -267,6 +272,10 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
             emit finished(false);
             return;
         }
+        if (!isSessionAvailable()) {
+            emit finished(false);
+            return;
+        }
         if (!setAuthorizationHeader(request, QByteArrayLiteral("POST"))) {
             emit finished(false);
             return;
@@ -283,6 +292,10 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     if (accessJwt().isEmpty()) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Empty accessJwt!";
+        emit finished(false);
+        return;
+    }
+    if (!isSessionAvailable()) {
         emit finished(false);
         return;
     }
@@ -367,6 +380,31 @@ bool AccessAtProtocol::setAuthorizationHeader(QNetworkRequest &request, const QB
     }
     request.setRawHeader(QByteArray("Authorization"), QByteArray("DPoP ") + accessJwt().toUtf8());
     request.setRawHeader(QByteArray("DPoP"), proof);
+    return true;
+}
+
+bool AccessAtProtocol::isSessionAvailable()
+{
+    SessionStateStore *store = SessionStateStore::getInstance();
+    if (store->isReauthRequired(account().uuid)) {
+        // 再ログインするまで失敗が確定しているので送信しない
+        // 通知は状態が変わったときにAccountManagerから1回だけ行うので、メッセージは空にする
+        qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                           << "Session is unavailable until re-login :" << handle();
+        m_errorCode = QStringLiteral("SessionUnavailable");
+        m_errorMessage.clear();
+        return false;
+    }
+    if (store->isAccessTokenExpired(account().uuid)) {
+        // アクセストークンの期限が切れているので送信しても失敗する
+        // リフレッシュの結果(失敗時)はAccountManagerから通知するので、メッセージは空にする
+        qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                           << "Access token is expired :" << handle();
+        store->requestRefresh(account().uuid);
+        m_errorCode = QStringLiteral("SessionRefreshing");
+        m_errorMessage.clear();
+        return false;
+    }
     return true;
 }
 

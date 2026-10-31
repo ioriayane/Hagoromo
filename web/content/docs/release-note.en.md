@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Support for profile links
 - Update
   - Switch the Search API to V2
+  - Improved behavior when an access token expires
 - Fix
   - Fix for a bug related to specifying search dates
 

@@ -17,6 +17,7 @@
 #include "tools/es256.h"
 #include "tools/identityresolver.h"
 #include "tools/dpopsessionstore.h"
+#include "tools/sessionstatestore.h"
 #include "tools/accountmanager.h"
 #include "tools/encryption.h"
 #include "common.h"
@@ -40,6 +41,16 @@ public:
     bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder) override
     {
         const QString path = request.url().path();
+        if (path.endsWith("/oauth/token_invalid_grant")) {
+            // refresh tokenが失効・使用済みのときのtokenエンドポイントの応答
+            m_invalidGrantCount++;
+            QHttpHeaders headers;
+            headers.append(QHttpHeaders::WellKnownHeader::ContentType, "application/json");
+            responder.write(QByteArray("{\"error\":\"invalid_grant\","
+                                       "\"error_description\":\"Invalid refresh token\"}"),
+                            headers, QHttpServerResponder::StatusCode::BadRequest);
+            return true;
+        }
         if (!m_resourceNonce.isEmpty() && path.contains("/response/4/xrpc/")
             && request.headers().value("Authorization").toByteArray().startsWith("DPoP ")
             && nonceInDPop(request.headers().value("DPoP").toByteArray()) != m_resourceNonce) {
@@ -87,6 +98,7 @@ public:
     int m_challengeCount;
     QString m_resourceNonce;
     int m_resourceChallengeCount = 0;
+    int m_invalidGrantCount = 0;
 
 private:
     static QString nonceInDPop(const QByteArray &jwt)
@@ -154,6 +166,7 @@ private slots:
     void test_access_oauth();
     void test_account_manager_oauth();
     void test_account_manager_legacy_encryption();
+    void test_session_state_store();
     void test_oauth_revoke();
     void test_no_secret_in_logs();
     void test_jwt();
@@ -1185,20 +1198,168 @@ void oauth_test::test_account_manager_oauth()
                  AtProtocolInterface::AccountStatus::Unauthorized);
     }
 
+    // アクセストークンの期限が切れたら送信せずに、リフレッシュしてから再開する
+    {
+        QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+        QVERIFY(image.open());
+        image.write(QByteArray("dummy image"));
+        image.close();
+
+        // 受け取った時点で期限切れとみなされる長さ
+        session.token.access_token = "expired access token";
+        session.token.expires_in = 5;
+        manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+        QVERIFY(SessionStateStore::getInstance()->isAccessTokenExpired(uuid));
+
+        QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
+        QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        m_dPopPayloads.clear();
+        m_resourceAuthorizations.clear();
+        for (int i = 0; i < 3; i++) {
+            TestAccess access;
+            access.setAccount(manager->getAccount(uuid));
+            QSignalSpy spy(&access, SIGNAL(finished(bool)));
+            if (i == 0) {
+                access.testGet();
+            } else if (i == 1) {
+                access.testPost();
+            } else {
+                access.testPostWithImage(image.fileName());
+            }
+            QCOMPARE(spy.count(), 1);
+            QVERIFY(!spy.takeFirst().at(0).toBool());
+            QCOMPARE(access.errorCode(), QString("SessionRefreshing"));
+            QVERIFY(access.errorMessage().isEmpty());
+        }
+        QCOMPARE(m_resourceAuthorizations.length(), 0);
+
+        // リフレッシュは1回だけ依頼される
+        spy_updated.wait(30 * 1000);
+        QCOMPARE(spy_updated.count(), 1);
+        QCOMPARE(spy_error.count(), 0);
+        // 置き換え前のセッションの失効(revoke)は数えない
+        int token_request_count = 0;
+        for (const auto &payload : std::as_const(m_dPopPayloads)) {
+            if (payload.value("htu").toString() == token_endpoint) {
+                token_request_count++;
+            }
+        }
+        QCOMPARE(token_request_count, 1);
+        QVERIFY(!SessionStateStore::getInstance()->isAccessTokenExpired(uuid));
+        QCOMPARE(manager->getAccount(uuid).accessJwt, QString("access token"));
+
+        // 新しいトークンで送信を再開する
+        m_resourceAuthorizations.clear();
+        TestAccess access;
+        access.setAccount(manager->getAccount(uuid));
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+        QCOMPARE(m_resourceAuthorizations.first(), QByteArray("DPoP access token"));
+
+        session.token.access_token = "first access token";
+        session.token.expires_in = 2677;
+    }
+
     // refreshに失敗したら再ログインが必要な状態になる
     {
         session.token_endpoint =
                 QString("http://127.0.0.1:%1/response/2/oauth/token_notfound").arg(m_listenPort);
         manager->updateOAuthAccount(uuid, "https://bsky.social", session);
         QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
         manager->refreshSession(manager->indexAt(uuid));
         spy_error.wait(10 * 1000);
         QCOMPARE(spy_error.count(), 1);
+        // アカウント一覧の表示を更新するために通知する
+        QCOMPARE(spy_updated.count(), 1);
+        QCOMPARE(spy_updated.takeFirst().at(0).toString(), uuid);
         QCOMPARE(manager->getAccount(uuid).status,
                  AtProtocolInterface::AccountStatus::Unauthorized);
         // 失敗してもセッションの情報は残す
         QCOMPARE(manager->getAccount(uuid).auth_type, AtProtocolInterface::AuthType::OAuth);
         QVERIFY(store->hasSession(uuid));
+        // 通信エラーなどの一時的な失敗ではリクエストを止めない
+        QVERIFY(!SessionStateStore::getInstance()->isReauthRequired(uuid));
+        m_resourceAuthorizations.clear();
+        TestAccess access;
+        access.setAccount(manager->getAccount(uuid));
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+    }
+
+    // refresh tokenが使えなくなったら、再ログインするまでリクエストを送らない
+    {
+        QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+        QVERIFY(image.open());
+        image.write(QByteArray("dummy image"));
+        image.close();
+
+        session.token_endpoint = QString("http://127.0.0.1:%1/response/2/oauth/token_invalid_grant")
+                                         .arg(m_listenPort);
+        manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+        m_server.m_invalidGrantCount = 0;
+        {
+            QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+            QSignalSpy spy_updated(manager, SIGNAL(updatedAccount(const QString &)));
+            manager->refreshSession(manager->indexAt(uuid));
+            spy_error.wait(10 * 1000);
+            QCOMPARE(spy_error.count(), 1);
+            QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("OAuthLoginRequired"));
+            QCOMPARE(spy_updated.count(), 1);
+        }
+        QCOMPARE(m_server.m_invalidGrantCount, 1);
+        QVERIFY(SessionStateStore::getInstance()->isReauthRequired(uuid));
+        QCOMPARE(manager->getAccount(uuid).status,
+                 AtProtocolInterface::AccountStatus::Unauthorized);
+
+        m_resourceAuthorizations.clear();
+        for (int i = 0; i < 3; i++) {
+            TestAccess access;
+            access.setAccount(manager->getAccount(uuid));
+            QSignalSpy spy(&access, SIGNAL(finished(bool)));
+            if (i == 0) {
+                access.testGet();
+            } else if (i == 1) {
+                access.testPost();
+            } else {
+                access.testPostWithImage(image.fileName());
+            }
+            QCOMPARE(spy.count(), 1);
+            QVERIFY(!spy.takeFirst().at(0).toBool());
+            QCOMPARE(access.errorCode(), QString("SessionUnavailable"));
+            // 通知はAccountManagerから1回だけ行うので、メッセージは空
+            QVERIFY(access.errorMessage().isEmpty());
+        }
+        QCOMPARE(m_resourceAuthorizations.length(), 0);
+
+        // refreshし直してもtokenのリクエストは送らず、通知もしない
+        {
+            QSignalSpy spy_error(manager, SIGNAL(errorOccurred(const QString &, const QString &)));
+            manager->refreshSession(manager->indexAt(uuid));
+            QTest::qWait(500);
+            QCOMPARE(spy_error.count(), 0);
+        }
+        QCOMPARE(m_server.m_invalidGrantCount, 1);
+
+        // ログインし直すとリクエストを再開する
+        manager->updateOAuthAccount(uuid, "https://bsky.social", session);
+        QVERIFY(!SessionStateStore::getInstance()->isReauthRequired(uuid));
+        TestAccess access;
+        access.setAccount(manager->getAccount(uuid));
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
     }
 
     // パスワード方式に切り替えるとOAuthのセッションは失効させる
@@ -1241,6 +1402,48 @@ void oauth_test::test_account_manager_oauth()
     m_server.m_resourceNonce.clear();
     manager->clear();
     QFile::remove(Common::appDataFolder() + "/account.json");
+}
+
+void oauth_test::test_session_state_store()
+{
+    // リフレッシュの依頼先を登録する
+    AccountManager::getInstance();
+    SessionStateStore *store = SessionStateStore::getInstance();
+    const QString uuid = "uuid-session-state";
+    const QDateTime now = QDateTime::currentDateTimeUtc();
+
+    // 期限が分からないときは期限切れとして扱わない
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    store->setAccessTokenExpiresAt(uuid, QDateTime());
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    QVERIFY(!store->isAccessTokenExpired(QString()));
+
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(60 * 60));
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(-1));
+    QVERIFY(store->isAccessTokenExpired(uuid));
+    // 期限の直前も期限切れとして扱う
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(5));
+    QVERIFY(store->isAccessTokenExpired(uuid));
+
+    // リフレッシュの依頼は一定時間に1回だけ
+    QVERIFY(store->requestRefresh(uuid));
+    QVERIFY(!store->requestRefresh(uuid));
+    QVERIFY(!store->requestRefresh(QString()));
+    // 別のアカウントは別に依頼できる
+    QVERIFY(store->requestRefresh(uuid + "-other"));
+    // 新しいトークンになったら、また依頼できる
+    store->setAccessTokenExpiresAt(uuid, now.addSecs(-1));
+    QVERIFY(store->requestRefresh(uuid));
+
+    store->setReauthRequired(uuid);
+    QVERIFY(store->isReauthRequired(uuid));
+    store->remove(uuid);
+    QVERIFY(!store->isReauthRequired(uuid));
+    QVERIFY(!store->isAccessTokenExpired(uuid));
+    QVERIFY(store->requestRefresh(uuid));
+    store->remove(uuid);
+    store->remove(uuid + "-other");
 }
 
 void oauth_test::test_account_manager_legacy_encryption()

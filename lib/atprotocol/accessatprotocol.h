@@ -152,6 +152,8 @@ private:
     void sendPost(QNetworkRequest request, const QByteArray &data, const bool with_auth_header,
                   const bool retried);
     bool setAuthorizationHeader(QNetworkRequest &request, const QByteArray &method);
+    // 再ログインが必要なアカウント、アクセストークンの期限が切れたアカウントのリクエストは送らない
+    bool isSessionAvailable();
     bool canRetryWithDPopNonce(const bool with_auth_header, const bool retried) const;
     void setAdditionalRawHeader(QNetworkRequest &request);
     void setAtprotoProxyHeader(QNetworkRequest &request);
