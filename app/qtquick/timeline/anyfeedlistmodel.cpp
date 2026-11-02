@@ -10,6 +10,8 @@ using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent }
 {
     setDisplayInterval(0);
+    connect(&m_serviceEndpointResolver, &ServiceEndpointResolver::errorOccurred, this,
+            &AnyFeedListModel::errorOccurred);
 }
 
 bool AnyFeedListModel::getLatest()
@@ -24,6 +26,20 @@ bool AnyFeedListModel::getLatest()
 
     m_repostRefHash.clear();
 
+    // 対象のアカウントのレコードは対象のPDSから取得する
+    m_serviceEndpointResolver.resolve(account(), targetDid(), targetServiceEndpoint(),
+                                      [=](bool success, const QString &service_endpoint) {
+                                          if (success) {
+                                              getLatestRecords(service_endpoint);
+                                          } else {
+                                              setRunning(false);
+                                          }
+                                      });
+    return true;
+}
+
+void AnyFeedListModel::getLatestRecords(const QString &service_endpoint)
+{
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
         connect(records, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
@@ -73,12 +89,10 @@ bool AnyFeedListModel::getLatest()
             QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
             records->deleteLater();
         });
-        auto a = account();
-        if (!targetServiceEndpoint().isEmpty()) {
-            a.service = targetServiceEndpoint();
-            a.service_endpoint = targetServiceEndpoint();
+        records->setAccount(account());
+        if (!service_endpoint.isEmpty()) {
+            records->setService(service_endpoint);
         }
-        records->setAccount(a);
         switch (feedType()) {
         case AnyFeedListModelFeedType::LikeFeedType:
             records->listLikes(targetDid(), QString());
@@ -92,7 +106,6 @@ bool AnyFeedListModel::getLatest()
             break;
         }
     });
-    return true;
 }
 
 bool AnyFeedListModel::getNext()
@@ -103,6 +116,20 @@ bool AnyFeedListModel::getNext()
 
     m_repostRefHash.clear();
 
+    // 対象のアカウントのレコードは対象のPDSから取得する
+    m_serviceEndpointResolver.resolve(account(), targetDid(), targetServiceEndpoint(),
+                                      [=](bool success, const QString &service_endpoint) {
+                                          if (success) {
+                                              getNextRecords(service_endpoint);
+                                          } else {
+                                              setRunning(false);
+                                          }
+                                      });
+    return true;
+}
+
+void AnyFeedListModel::getNextRecords(const QString &service_endpoint)
+{
     updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
         connect(records, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
@@ -146,8 +173,8 @@ bool AnyFeedListModel::getNext()
             records->deleteLater();
         });
         records->setAccount(account());
-        if (!targetServiceEndpoint().isEmpty()) {
-            records->setService(targetServiceEndpoint());
+        if (!service_endpoint.isEmpty()) {
+            records->setService(service_endpoint);
         }
         switch (feedType()) {
         case AnyFeedListModelFeedType::LikeFeedType:
@@ -162,7 +189,11 @@ bool AnyFeedListModel::getNext()
             break;
         }
     });
-    return true;
+}
+
+void AnyFeedListModel::setPlcDirectory(const QString &newPlcDirectory)
+{
+    m_serviceEndpointResolver.setPlcDirectory(newPlcDirectory);
 }
 
 QString AnyFeedListModel::targetDid() const

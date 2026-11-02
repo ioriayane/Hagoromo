@@ -55,7 +55,6 @@ UserProfile::~UserProfile()
 void UserProfile::setAccount(const QString &uuid)
 {
     m_account.uuid = uuid;
-    m_account = AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
 void UserProfile::getProfile(const QString &did)
@@ -88,7 +87,10 @@ void UserProfile::getProfile(const QString &did)
                                      .toLocalTime()
                                      .toString("yyyy/MM/dd"));
 
-                setFollowing(detail.viewer.following.contains(m_account.did));
+                // トークンなどが更新されている可能性があるので、使うときに取得する
+                const AtProtocolInterface::AccountData account =
+                        AccountManager::getInstance()->getAccount(m_account.uuid);
+                setFollowing(detail.viewer.following.contains(account.did));
                 setFollowedBy(detail.viewer.followedBy.contains(did));
                 setFollowingUri(detail.viewer.following);
                 QStringList knownFollowerAvators;
@@ -106,7 +108,7 @@ void UserProfile::getProfile(const QString &did)
                 setKnownFollowersCount(detail.viewer.knownFollowers.count);
                 setMuted(detail.viewer.muted);
                 setBlockedBy(detail.viewer.blockedBy);
-                setBlocking(detail.viewer.blocking.contains(m_account.did));
+                setBlocking(detail.viewer.blocking.contains(account.did));
                 setBlockingUri(detail.viewer.blocking);
                 if (detail.labels.isEmpty()) {
                     setLabels(QStringList());
@@ -125,12 +127,11 @@ void UserProfile::getProfile(const QString &did)
                     }
                     setLabels(labels);
                     if (!labelers.isEmpty()) {
-                        LabelProvider::getInstance()->update(labelers, m_account,
-                                                             &m_labelConnector);
+                        LabelProvider::getInstance()->update(labelers, account, &m_labelConnector);
                     }
                 }
                 setBelongingLists(
-                        ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+                        ListItemsCache::getInstance()->getListNames(account.did, detail.did));
                 setPinnedPost(detail.pinnedPost.uri);
 
                 if (detail.verification.trustedVerifierStatus == "valid") {
@@ -162,7 +163,7 @@ void UserProfile::getProfile(const QString &did)
                 setLiveExpiresAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
                         detail.status.expiresAt, true));
 
-                if (detail.did == m_account.did) {
+                if (detail.did == account.did) {
                     setAllowSubscriptions(false);
                 } else if (detail.associated.activitySubscription.allowSubscriptions == "mutuals") {
                     // 相互

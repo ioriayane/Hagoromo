@@ -2,6 +2,7 @@
 #define BLOGENTRYLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
+#include "tools/serviceendpointresolver.h"
 
 #include <QAbstractListModel>
 
@@ -53,6 +54,8 @@ public:
     QString targetHandle() const;
     void setTargetHandle(const QString &newTargetHandle);
 
+    void setPlcDirectory(const QString &newPlcDirectory);
+
 signals:
     void errorOccurred(const QString &code, const QString &message);
     void runningChanged();
@@ -67,9 +70,12 @@ protected:
 
 private:
     QVariant itemFromWhiteWind(int row, BlogEntryListModel::BlogEntryListModelRoles role) const;
+    static bool isOwnRecord(const QString &uri, const QString &did);
     QVariant itemFromLinkat(int row, BlogEntryListModel::BlogEntryListModelRoles role) const;
-    void getLatestFromWhiteWind(std::function<void(const bool &)> callback);
-    void getLatestFromLinkat(std::function<void(const bool &)> callback);
+    void getLatestFromWhiteWind(const QString &service_endpoint,
+                                std::function<void(const bool &)> callback);
+    void getLatestFromLinkat(const QString &service_endpoint,
+                             std::function<void(const bool &)> callback);
 
     QList<AtProtocolType::ComAtprotoRepoListRecords::Record> m_blogEntryRecordList;
     AtProtocolInterface::AccountData m_account;
@@ -77,6 +83,7 @@ private:
     QString m_targetDid;
     QString m_targetServiceEndpoint;
     QString m_targetHandle;
+    ServiceEndpointResolver m_serviceEndpointResolver;
 };
 
 #endif // BLOGENTRYLISTMODEL_H

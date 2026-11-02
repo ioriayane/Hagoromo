@@ -3000,112 +3000,112 @@ Please recreate AppPassword in the official application.</source>
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="206"/>
+        <location filename="qml/view/ProfileView.qml" line="208"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="270"/>
+        <location filename="qml/view/ProfileView.qml" line="272"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="379"/>
+        <location filename="qml/view/ProfileView.qml" line="381"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="390"/>
+        <location filename="qml/view/ProfileView.qml" line="392"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="401"/>
+        <location filename="qml/view/ProfileView.qml" line="403"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="439"/>
+        <location filename="qml/view/ProfileView.qml" line="441"/>
         <source>Regisitration date:</source>
         <translation>登録日 :</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="533"/>
+        <location filename="qml/view/ProfileView.qml" line="535"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="539"/>
+        <location filename="qml/view/ProfileView.qml" line="541"/>
         <source>Send message</source>
         <translation>メッセージを送る</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="545"/>
+        <location filename="qml/view/ProfileView.qml" line="547"/>
         <source>Subscribe to posts</source>
         <translation>投稿を購読</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="552"/>
+        <location filename="qml/view/ProfileView.qml" line="554"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="558"/>
+        <location filename="qml/view/ProfileView.qml" line="560"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="564"/>
+        <location filename="qml/view/ProfileView.qml" line="566"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="571"/>
+        <location filename="qml/view/ProfileView.qml" line="573"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="577"/>
+        <location filename="qml/view/ProfileView.qml" line="579"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="584"/>
+        <location filename="qml/view/ProfileView.qml" line="586"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="591"/>
+        <location filename="qml/view/ProfileView.qml" line="593"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="591"/>
+        <location filename="qml/view/ProfileView.qml" line="593"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="603"/>
+        <location filename="qml/view/ProfileView.qml" line="605"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="603"/>
+        <location filename="qml/view/ProfileView.qml" line="605"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="615"/>
+        <location filename="qml/view/ProfileView.qml" line="617"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="648"/>
+        <location filename="qml/view/ProfileView.qml" line="650"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="659"/>
+        <location filename="qml/view/ProfileView.qml" line="661"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
@@ -3114,7 +3114,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="qml/view/ProfileView.qml" line="672"/>
+        <location filename="qml/view/ProfileView.qml" line="674"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>

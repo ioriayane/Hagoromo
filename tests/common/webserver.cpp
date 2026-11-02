@@ -50,9 +50,21 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
             if (request.query().queryItemValue("collection") == "app.bsky.actor.link") {
                 path += "_" + request.query().queryItemValue("rkey");
             }
+        } else if (path.endsWith("xrpc/com.atproto.repo.listRecords")) {
+            // コレクションごとのレスポンスがあれば使う
+            const QString collection_path =
+                    path + "_" + request.query().queryItemValue("collection");
+            if (QFile::exists(collection_path)) {
+                path = collection_path;
+            }
         }
         if (request.query().hasQueryItem("cursor")) {
             path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
+        }
+        if (path.contains("/response/plc/")) {
+            // DIDドキュメント。Windowsのファイル名に':'は使えないので置き換える
+            const int pos = path.lastIndexOf('/') + 1;
+            path = path.left(pos) + path.mid(pos).replace(':', '_');
         }
         qDebug().noquote() << "SERVER PATH=" << path;
         QByteArray status_data;

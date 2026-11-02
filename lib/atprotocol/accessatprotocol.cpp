@@ -91,7 +91,9 @@ QString AtProtocolAccount::service() const
 
 void AtProtocolAccount::setService(const QString &newService)
 {
+    // 接続先はservice_endpointが優先されるので、指定した接続先が使われるように両方置き換える
     m_account.service = newService;
+    m_account.service_endpoint = newService;
 }
 
 QString AtProtocolAccount::did() const
