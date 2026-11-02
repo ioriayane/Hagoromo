@@ -176,6 +176,8 @@ ColumnLayout {
         onRunningChanged: {
             if(running === false){
                 swipView.getLatest()
+                // serviceEndpointが空(did:webなど)でもモデルが対象のPDSを解決する
+                authorBlogEntryListModel.getLatest()
             }
         }
     }
@@ -726,11 +728,6 @@ ColumnLayout {
                 targetHandle: userProfile.handle
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
-                onTargetServiceEndpointChanged: {
-                    if(targetServiceEndpoint.length > 0){
-                        getLatest()
-                    }
-                }
             }
 
             accountDid: profileView.accountDid
