@@ -18,6 +18,8 @@
 #include "list/listfeedlistmodel.h"
 #include "notification/notificationpreferencelistmodel.h"
 #include "tools/accountmanager.h"
+#include "blog/blogentrylistmodel.h"
+#include "timeline/anyfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -53,6 +55,8 @@ private slots:
     void test_DraftOperator_updateDraft();
     void test_DraftOperator_deleteDraft();
     void test_DraftOperator_getDrafts();
+    void test_BlogEntryListModel();
+    void test_AnyFeedListModel();
 
 private:
     WebServer m_mockServer;
@@ -1393,6 +1397,141 @@ QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList 
         }
     }
     return dest;
+}
+
+void hagoromo_test::test_BlogEntryListModel()
+{
+    const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    const QString mine = m_service + "/target_repo/mine";
+    const QString other = m_service + "/target_repo/other";
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/target_repo", "id", "pass", did, "ioriayane.bsky.social",
+            "email", "accessJwt", "refreshJwt", true);
+    // 接続先はservice_endpointが優先される
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, mine);
+
+    struct TestCase
+    {
+        QString account_uuid;
+        QString target_did;
+        QString target_service;
+        QStringList titles;
+        QStringList visibilities;
+        int error_count;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 自分の記事は作者のみの記事も表示する
+            << TestCase { uuid,
+                          did,
+                          mine,
+                          QStringList() << "Public entry"
+                                        << "Url entry"
+                                        << "Author only entry",
+                          QStringList() << ""
+                                        << "Anyone with the link"
+                                        << "Author only",
+                          0 } // 指定した接続先から取得し、他の人の作者のみの記事は表示しない
+            << TestCase { uuid,
+                          "did:plc:other_user",
+                          other,
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // アカウントの情報が取れないときは自分の記事として扱わない
+            << TestCase { "unknown-uuid",
+                          did,
+                          mine,
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // 接続先の指定がなければ、自分の記事は自分のPDSから取得する
+            << TestCase { uuid,
+                          did,
+                          QString(),
+                          QStringList() << "Public entry"
+                                        << "Url entry"
+                                        << "Author only entry",
+                          QStringList() << ""
+                                        << "Anyone with the link"
+                                        << "Author only",
+                          0 }
+            // 接続先の指定がなければ、他の人の記事はDIDドキュメントのPDSから取得する
+            << TestCase { uuid,
+                          "did:plc:other_user",
+                          QString(),
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // PDSが分からないときは自分のPDSに問い合わせない
+            << TestCase { uuid, "did:plc:not_found", QString(), QStringList(), QStringList(), 1 };
+
+    for (const auto &item : cases) {
+        BlogEntryListModel model;
+        model.setAccount(item.account_uuid);
+        model.setPlcDirectory(m_service + "/plc");
+        model.setTargetDid(item.target_did);
+        model.setTargetServiceEndpoint(item.target_service);
+
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QSignalSpy spy_error(&model, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QVERIFY(model.getLatest());
+        spy.wait();
+        QCOMPARE(spy.count(), 2);
+        QVERIFY(!model.running());
+        QCOMPARE(spy_error.count(), item.error_count);
+
+        QCOMPARE(model.rowCount(), item.titles.length());
+        for (int row = 0; row < model.rowCount(); row++) {
+            QCOMPARE(model.item(row, BlogEntryListModel::TitleRole).toString(),
+                     item.titles.at(row));
+            QCOMPARE(model.item(row, BlogEntryListModel::VisibilityRole).toString(),
+                     item.visibilities.at(row));
+        }
+    }
+
+    AccountManager::getInstance()->removeAccount(uuid);
+}
+
+void hagoromo_test::test_AnyFeedListModel()
+{
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/target_repo", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/target_repo/mine");
+
+    struct TestCase
+    {
+        QString target_service;
+        int row_count;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 指定した接続先から取得する
+            << TestCase { m_service + "/target_repo/other", 2 }
+            // 指定がなければDIDドキュメントのPDSから取得する
+            << TestCase { QString(), 2 };
+
+    for (const auto &item : cases) {
+        AnyFeedListModel model;
+        model.setAccount(uuid);
+        model.setPlcDirectory(m_service + "/plc");
+        model.setTargetDid("did:plc:other_user");
+        model.setTargetServiceEndpoint(item.target_service);
+        model.setFeedType(AnyFeedListModel::LikeFeedType);
+
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QVERIFY(model.getLatest());
+        for (int i = 0; i < 50 && model.running(); i++) {
+            spy.wait(200);
+        }
+        QVERIFY(!model.running());
+        // 投稿の詳細(getPosts)を取得できなくても、いいねのレコードの分だけ行がある
+        QCOMPARE(model.rowCount(), item.row_count);
+    }
+
+    AccountManager::getInstance()->removeAccount(uuid);
 }
 
 QTEST_MAIN(hagoromo_test)

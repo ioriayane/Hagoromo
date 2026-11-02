@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
+        <file>response/target_repo/mine/xrpc/com.atproto.repo.listRecords_blue.linkat.board</file>
+        <file>response/target_repo/mine/xrpc/com.atproto.repo.listRecords_com.whtwnd.blog.entry</file>
+        <file>response/target_repo/other/xrpc/com.atproto.repo.listRecords_blue.linkat.board</file>
+        <file>response/target_repo/other/xrpc/com.atproto.repo.listRecords_com.whtwnd.blog.entry</file>
+        <file>response/target_repo/other/xrpc/com.atproto.repo.listRecords_app.bsky.feed.like</file>
+        <file>response/plc/did_plc_other_user</file>
         <file>data/com.atproto.repo.createRecord_post.expect</file>
         <file>response/facet/xrpc/app.bsky.actor.getProfiles</file>
         <file>response/generator/xrpc/app.bsky.unspecced.getPopularFeedGenerators</file>

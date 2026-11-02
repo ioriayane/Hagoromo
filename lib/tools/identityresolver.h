@@ -19,6 +19,8 @@ public:
     explicit IdentityResolver(QObject *parent = nullptr);
 
     void resolve(const QString &identifier);
+    // DIDドキュメントからPDSだけを解決する(ハンドルは検証しない)
+    void resolvePdsEndpoint(const QString &did);
 
     QString did() const;
     // 検証済みのハンドル(検証できない場合は空)

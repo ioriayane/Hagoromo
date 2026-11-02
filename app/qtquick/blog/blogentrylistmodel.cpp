@@ -1,12 +1,15 @@
 #include "blogentrylistmodel.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 
 BlogEntryListModel::BlogEntryListModel(QObject *parent)
     : QAbstractListModel { parent }, m_running(false)
 {
+    connect(&m_serviceEndpointResolver, &ServiceEndpointResolver::errorOccurred, this,
+            &BlogEntryListModel::errorOccurred);
 }
 
 int BlogEntryListModel::rowCount(const QModelIndex &parent) const
@@ -36,7 +39,7 @@ QVariant BlogEntryListModel::item(int row, BlogEntryListModelRoles role) const
 
 AtProtocolInterface::AccountData BlogEntryListModel::account() const
 {
-    return m_account;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
 void BlogEntryListModel::setAccount(const QString &uuid)
@@ -56,16 +59,25 @@ bool BlogEntryListModel::getLatest()
         endRemoveRows();
     }
 
-    getLatestFromLinkat([=](bool success) {
-        if (success) {
-            getLatestFromWhiteWind([=](bool success) {
-                Q_UNUSED(success)
-                setRunning(false);
-            });
-        } else {
-            setRunning(false);
-        }
-    });
+    // 対象のアカウントのレコードは対象のPDSから取得する
+    m_serviceEndpointResolver.resolve(account(), targetDid(), targetServiceEndpoint(),
+                                      [=](bool success, const QString &service_endpoint) {
+                                          if (!success) {
+                                              setRunning(false);
+                                              return;
+                                          }
+                                          getLatestFromLinkat(service_endpoint, [=](bool success) {
+                                              if (success) {
+                                                  getLatestFromWhiteWind(service_endpoint,
+                                                                         [=](bool success) {
+                                                                             Q_UNUSED(success)
+                                                                             setRunning(false);
+                                                                         });
+                                              } else {
+                                                  setRunning(false);
+                                              }
+                                          });
+                                      });
 
     return true;
 }
@@ -111,7 +123,7 @@ QVariant BlogEntryListModel::itemFromWhiteWind(int row, BlogEntryListModelRoles 
         if (current.visibility == "public") {
             return QString();
         } else if (current.visibility == "url") {
-            if (m_blogEntryRecordList.at(row).uri.split("/").contains(account().did)) {
+            if (isOwnRecord(m_blogEntryRecordList.at(row).uri, account().did)) {
                 return QStringLiteral("Anyone with the link");
             } else {
                 return QString();
@@ -134,6 +146,14 @@ QVariant BlogEntryListModel::itemFromWhiteWind(int row, BlogEntryListModelRoles 
     }
 
     return QVariant();
+}
+
+bool BlogEntryListModel::isOwnRecord(const QString &uri, const QString &did)
+{
+    // at://did/collection/rkey
+    // アカウントの情報が取れない(didが空)ときは自分のレコードとして扱わない
+    const QStringList items = uri.split("/");
+    return !did.isEmpty() && items.length() == 5 && items.at(2) == did;
 }
 
 QVariant BlogEntryListModel::itemFromLinkat(int row, BlogEntryListModelRoles role) const
@@ -176,15 +196,17 @@ QVariant BlogEntryListModel::itemFromLinkat(int row, BlogEntryListModelRoles rol
     return QVariant();
 }
 
-void BlogEntryListModel::getLatestFromWhiteWind(std::function<void(const bool &)> callback)
+void BlogEntryListModel::getLatestFromWhiteWind(const QString &service_endpoint,
+                                                std::function<void(const bool &)> callback)
 {
     ComAtprotoRepoListRecordsEx *record = new ComAtprotoRepoListRecordsEx(this);
     connect(record, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
         if (success) {
+            const QString did = account().did;
             for (const auto &r : record->recordsList()) {
                 const auto &current = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                         AtProtocolType::ComWhtwndBlogEntry::Main>(r.value);
-                if (current.visibility != "author" || r.uri.split("/").contains(account().did)) {
+                if (current.visibility != "author" || isOwnRecord(r.uri, did)) {
                     beginInsertRows(QModelIndex(), rowCount(), rowCount());
                     m_blogEntryRecordList.append(r);
                     endInsertRows();
@@ -200,13 +222,14 @@ void BlogEntryListModel::getLatestFromWhiteWind(std::function<void(const bool &)
         record->deleteLater();
     });
     record->setAccount(account());
-    if (!targetServiceEndpoint().isEmpty()) {
-        record->setService(targetServiceEndpoint());
+    if (!service_endpoint.isEmpty()) {
+        record->setService(service_endpoint);
     }
     record->listWhiteWindItems(targetDid(), QString());
 }
 
-void BlogEntryListModel::getLatestFromLinkat(std::function<void(const bool &)> callback)
+void BlogEntryListModel::getLatestFromLinkat(const QString &service_endpoint,
+                                             std::function<void(const bool &)> callback)
 {
     ComAtprotoRepoListRecordsEx *record = new ComAtprotoRepoListRecordsEx(this);
     connect(record, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
@@ -228,8 +251,8 @@ void BlogEntryListModel::getLatestFromLinkat(std::function<void(const bool &)> c
         record->deleteLater();
     });
     record->setAccount(account());
-    if (!targetServiceEndpoint().isEmpty()) {
-        record->setService(targetServiceEndpoint());
+    if (!service_endpoint.isEmpty()) {
+        record->setService(service_endpoint);
     }
     record->listLinkatItems(targetDid(), QString());
 }
@@ -276,6 +299,11 @@ void BlogEntryListModel::setTargetServiceEndpoint(const QString &newTargetServic
 QString BlogEntryListModel::targetHandle() const
 {
     return m_targetHandle;
+}
+
+void BlogEntryListModel::setPlcDirectory(const QString &newPlcDirectory)
+{
+    m_serviceEndpointResolver.setPlcDirectory(newPlcDirectory);
 }
 
 void BlogEntryListModel::setTargetHandle(const QString &newTargetHandle)

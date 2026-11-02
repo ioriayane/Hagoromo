@@ -338,6 +338,8 @@ add_library(HagoromoLib STATIC
     tools/pinnedpostcache.cpp
     tools/pinnedpostcache.h
     tools/qstringex.h
+    tools/serviceendpointresolver.cpp
+    tools/serviceendpointresolver.h
     tools/sessionstatestore.cpp
     tools/sessionstatestore.h
     tools/supportprovider.cpp

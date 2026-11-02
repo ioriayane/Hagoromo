@@ -1,0 +1,28 @@
+{
+    "records": [
+        {
+            "uri": "at://did:plc:other_user/app.bsky.feed.like/like1",
+            "cid": "like_cid_1",
+            "value": {
+                "$type": "app.bsky.feed.like",
+                "subject": {
+                    "uri": "at://did:plc:author/app.bsky.feed.post/post1",
+                    "cid": "post_cid_1"
+                },
+                "createdAt": "2024-01-01T00:00:00.000Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:other_user/app.bsky.feed.like/like2",
+            "cid": "like_cid_2",
+            "value": {
+                "$type": "app.bsky.feed.like",
+                "subject": {
+                    "uri": "at://did:plc:author/app.bsky.feed.post/post2",
+                    "cid": "post_cid_2"
+                },
+                "createdAt": "2024-02-01T00:00:00.000Z"
+            }
+        }
+    ]
+}
