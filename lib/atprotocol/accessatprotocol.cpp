@@ -126,6 +126,12 @@ QString AtProtocolAccount::refreshJwt() const
     return m_account.refreshJwt;
 }
 
+void AtProtocolAccount::setAccessToken(AuthType auth_type, const QString &access_jwt)
+{
+    m_account.auth_type = auth_type;
+    m_account.accessJwt = access_jwt;
+}
+
 bool AtProtocolAccount::allowedScope(AccountScope scope) const
 {
     return m_account.scope.contains(scope);
@@ -154,6 +160,9 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent)
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
+    if (with_auth_header) {
+        applyLatestAccessToken(endpoint);
+    }
     if (accessJwt().isEmpty() && with_auth_header) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()"
                               << "Empty accessJwt!";
@@ -266,6 +275,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, m_contentType);
     if (with_auth_header) {
+        applyLatestAccessToken(endpoint);
         if (accessJwt().isEmpty()) {
             qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
                         << "Empty accessJwt!";
@@ -291,6 +301,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
 
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
+    applyLatestAccessToken(endpoint);
     if (accessJwt().isEmpty()) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Empty accessJwt!";
@@ -383,6 +394,27 @@ bool AccessAtProtocol::setAuthorizationHeader(QNetworkRequest &request, const QB
     request.setRawHeader(QByteArray("Authorization"), QByteArray("DPoP ") + accessJwt().toUtf8());
     request.setRawHeader(QByteArray("DPoP"), proof);
     return true;
+}
+
+void AccessAtProtocol::applyLatestAccessToken(const QString &endpoint)
+{
+    // refresh tokenで認証するAPIはaccessJwtにrefresh tokenを入れて呼ばれるので置き換えない
+    if (endpoint == QStringLiteral("xrpc/com.atproto.server.refreshSession")
+        || endpoint == QStringLiteral("xrpc/com.atproto.server.deleteSession")) {
+        return;
+    }
+    AuthType auth_type = AuthType::Password;
+    QString access_token;
+    if (!SessionStateStore::getInstance()->accessToken(account().uuid, auth_type, access_token)) {
+        return;
+    }
+    if (auth_type == account().auth_type && access_token == accessJwt()) {
+        return;
+    }
+    // トークンは出力しない
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                       << "Use the latest access token :" << handle();
+    setAccessToken(auth_type, access_token);
 }
 
 bool AccessAtProtocol::isSessionAvailable()

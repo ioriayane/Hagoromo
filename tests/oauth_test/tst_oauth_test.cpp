@@ -18,6 +18,7 @@
 #include "tools/identityresolver.h"
 #include "tools/dpopsessionstore.h"
 #include "tools/sessionstatestore.h"
+#include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "tools/accountmanager.h"
 #include "tools/encryption.h"
 #include "common.h"
@@ -164,6 +165,7 @@ private slots:
     void test_well_known_atproto_did();
     void test_access_password();
     void test_access_oauth();
+    void test_access_latest_token();
     void test_account_manager_oauth();
     void test_account_manager_legacy_encryption();
     void test_session_state_store();
@@ -1048,6 +1050,87 @@ void oauth_test::test_access_oauth()
     m_server.m_resourceNonce.clear();
 }
 
+void oauth_test::test_access_latest_token()
+{
+    SessionStateStore *store = SessionStateStore::getInstance();
+    const QString uuid = "uuid-latest-token";
+    m_server.m_resourceNonce.clear();
+
+    AtProtocolInterface::AccountData account;
+    account.uuid = uuid;
+    account.service = QString("http://127.0.0.1:%1/response/4").arg(m_listenPort);
+    account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    account.accessJwt = "old access token";
+    account.refreshJwt = "refresh token";
+
+    QTemporaryFile image(QDir::tempPath() + "/hagoromo_XXXXXX.png");
+    QVERIFY(image.open());
+    image.write(QByteArray("dummy image"));
+    image.close();
+
+    struct TestCase
+    {
+        QString registered; // storeに登録した最新のトークン
+        QString copied; // AccountDataのコピーのトークン
+        QByteArray expect;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 登録がなければコピーのトークンを使う
+            << TestCase { QString(), "old access token", "Bearer old access token" }
+            // 登録があれば最新のトークンを使う
+            << TestCase { "new access token", "old access token", "Bearer new access token" }
+            // コピーにトークンがなくても送れる
+            << TestCase { "new access token", QString(), "Bearer new access token" };
+
+    for (const auto &item : cases) {
+        store->setAccessToken(uuid, AtProtocolInterface::AuthType::Password, item.registered);
+        AtProtocolInterface::AccountData copied = account;
+        copied.accessJwt = item.copied;
+        m_resourceAuthorizations.clear();
+        for (int i = 0; i < 3; i++) {
+            TestAccess access;
+            access.setAccount(copied);
+            QSignalSpy spy(&access, SIGNAL(finished(bool)));
+            if (i == 0) {
+                access.testGet();
+            } else if (i == 1) {
+                access.testPost();
+            } else {
+                access.testPostWithImage(image.fileName());
+            }
+            spy.wait();
+            QCOMPARE(spy.count(), 1);
+            QVERIFY(spy.takeFirst().at(0).toBool());
+        }
+        QCOMPARE(m_resourceAuthorizations.length(), 3);
+        for (const auto &authorization : std::as_const(m_resourceAuthorizations)) {
+            QCOMPARE(authorization, item.expect);
+        }
+    }
+
+    // refreshSessionはrefresh tokenで認証するので置き換えない
+    {
+        store->setAccessToken(uuid, AtProtocolInterface::AuthType::Password, "new access token");
+        m_resourceAuthorizations.clear();
+        AtProtocolInterface::ComAtprotoServerRefreshSessionEx session;
+        session.setAccount(account);
+        QSignalSpy spy(&session, SIGNAL(finished(bool)));
+        session.refreshSession();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+        QCOMPARE(m_resourceAuthorizations.first(), QByteArray("Bearer refresh token"));
+    }
+
+    // 削除したら使わない
+    store->remove(uuid);
+    {
+        AtProtocolInterface::AuthType auth_type = AtProtocolInterface::AuthType::OAuth;
+        QString access_token;
+        QVERIFY(!store->accessToken(uuid, auth_type, access_token));
+    }
+}
+
 void oauth_test::test_account_manager_oauth()
 {
     AccountManager *manager = AccountManager::getInstance();
@@ -1120,6 +1203,10 @@ void oauth_test::test_account_manager_oauth()
     QVERIFY(manager->getAccount(uuid).scope.contains(
             AtProtocolInterface::AccountScope::DirectMessage));
 
+    // refresh前に作ったAccountDataのコピー
+    const AtProtocolInterface::AccountData stale_account = manager->getAccount(uuid);
+    QCOMPARE(stale_account.accessJwt, QString("first access token"));
+
     // refresh(tokenの取得、プロフィールの取得はDPoPで行う)
     {
         QSignalSpy spy(manager, SIGNAL(updatedAccount(const QString &)));
@@ -1153,6 +1240,27 @@ void oauth_test::test_account_manager_oauth()
         QCOMPARE(account.status, AtProtocolInterface::AccountStatus::Authorized);
         // tokenのレスポンスのscope(transition:chat.bsky)でDMを判断する
         QVERIFY(account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage));
+    }
+    // 古いコピーで送っても、refresh後のトークンを使う
+    {
+        m_resourceAuthorizations.clear();
+        m_resourceDPops.clear();
+        TestAccess access;
+        access.setAccount(stale_account);
+        QSignalSpy spy(&access, SIGNAL(finished(bool)));
+        access.testGet();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+        QCOMPARE(m_resourceAuthorizations.length(), 1);
+        QCOMPARE(m_resourceAuthorizations.first(), QByteArray("DPoP access token"));
+        // DPoPのathも送ったトークンのもの
+        const QJsonObject payload = decode_jwt_part(m_resourceDPops.first().split('.').at(1));
+        QCOMPARE(payload.value("ath").toString(),
+                 QString::fromUtf8(QCryptographicHash::hash(QByteArray("access token"),
+                                                            QCryptographicHash::Sha256)
+                                           .toBase64(QByteArray::Base64UrlEncoding
+                                                     | QByteArray::OmitTrailingEquals)));
     }
 
     // 再起動した想定で読み込み直す

@@ -110,7 +110,7 @@ flowchart TB
 | `Authorization` | `lib/tools/authorization.*` | OAuth のシーケンス本体(サーバーの探索、PAR、リダイレクトの受信、token の取得・リフレッシュ、失効) |
 | `IdentityResolver` | `lib/tools/identityresolver.*` | ハンドル / DID から DID・ハンドル・PDS を双方向に検証しながら解決する |
 | `DPopSessionStore` | `lib/tools/dpopsessionstore.*` | OAuth アカウントごとの DPoP の秘密鍵と、送信先 origin ごとの nonce を保持し、DPoP proof を作る |
-| `SessionStateStore` | `lib/tools/sessionstatestore.*` | アカウントごとのセッションの状態(再ログインが必要か、アクセストークンの期限)を保持し、リフレッシュの依頼を中継する |
+| `SessionStateStore` | `lib/tools/sessionstatestore.*` | アカウントごとの最新のアクセストークンと、セッションの状態(再ログインが必要か、アクセストークンの期限)を保持し、リフレッシュの依頼を中継する |
 | `AccessAtProtocol` | `lib/atprotocol/accessatprotocol.*` | すべての API クラスの基底。Authorization ヘッダーの付与、送信前の確認、DPoP の nonce による再送 |
 | `JsonWebToken` / `Es256` | `lib/tools/jsonwebtoken.*`, `es256.*` | DPoP proof(ES256 の JWT)の生成、鍵の生成・PEM の読み書き |
 | `Encryption` | `lib/tools/encryption.*` | 保存するパスワード・refresh token・秘密鍵の暗号化 |
@@ -144,6 +144,7 @@ classDiagram
         generateProof()
     }
     class SessionStateStore {
+        最新の認証方式・アクセストークン(uuid ごと)
         再ログインが必要か(uuid ごと)
         アクセストークンの期限(uuid ごと)
         requestRefresh()
@@ -160,6 +161,9 @@ classDiagram
 ```
 
 - `AccountData` は API クラスに **コピー** して渡す(`setAccount()`)。モデルなどが保持しているコピーは古くなることがある。
+  - そのため、`AccountManager` はアクセストークンが変わるたびに(ログイン、リフレッシュ、`createSession`、パスワード方式への切り替えなど)、認証方式とアクセストークンを `SessionStateStore` に uuid で登録する(`Private::updateAccessToken()`)。
+  - `AccessAtProtocol` は送信の直前に、登録があればコピーの `auth_type` / `accessJwt` を置き換えてから送る(`applyLatestAccessToken()`)。`service` などそれ以外の項目は置き換えない。
+  - 例外として、refresh token で認証する `com.atproto.server.refreshSession` / `deleteSession` は置き換えない(`accessJwt` に refresh token を入れて呼ばれるため)。
 - DPoP の秘密鍵は `AccountData` に入れない(リクエストごとにコピーされないようにする)。`DPopSessionStore` に uuid で登録する。
 - 送信の可否は `AccountData::status` ではなく、送信直前に `SessionStateStore` を uuid で引いて判断する([6章](#6-失敗が確定しているときに送信しない仕組み))。
 
@@ -234,7 +238,8 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    start(["get() / post() / postWithImage()"]) --> emptyJwt{"accessJwt が空?"}
+    start(["get() / post() / postWithImage()"]) --> latest["applyLatestAccessToken()<br/>登録済みの最新のトークンに置き換え"]
+    latest --> emptyJwt{"accessJwt が空?"}
     emptyJwt -- はい --> failIncomplete["finished(false)<br/>IncompleteAuthenticationInformation"]
     emptyJwt -- いいえ --> gate{"isSessionAvailable()"}
 

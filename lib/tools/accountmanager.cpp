@@ -78,6 +78,7 @@ private:
     void refreshOAuthSession(bool initial);
     void finishOAuthRefresh(bool success);
     void failSession(const QString &code, const QString &message);
+    void updateAccessToken();
     void failOAuthSession(const QString &code, const QString &message);
     void scheduleOAuthRefresh(int expires_in);
     Authorization *oauth();
@@ -267,6 +268,7 @@ bool AccountManager::Private::update(AccountManagerRoles role, const QVariant &v
         m_account.email = value.toString();
     else if (role == AccessJwtRole) {
         m_account.accessJwt = value.toString();
+        updateAccessToken();
         getAccountScope();
     } else if (role == RefreshJwtRole)
         m_account.refreshJwt = value.toString();
@@ -325,6 +327,7 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
         // パスワード方式に切り替え
         clearOAuthSession();
     }
+    updateAccessToken();
 
     getAccountScope();
 }
@@ -383,6 +386,7 @@ void AccountManager::Private::createSession()
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
+            updateAccessToken();
             getAccountScope();
 
             // 詳細を取得
@@ -414,6 +418,7 @@ void AccountManager::Private::refreshSession(bool initial)
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
+            updateAccessToken();
             getAccountScope();
 
             // 詳細を取得
@@ -655,6 +660,7 @@ void AccountManager::Private::setOAuthSession(const QString &uuid, const QString
     m_account.status = AccountStatus::Authorized;
     // ログインし直したのでリクエストを再開する
     SessionStateStore::getInstance()->remove(uuid);
+    updateAccessToken();
     SessionStateStore::getInstance()->setAccessTokenExpiresAt(
             uuid, accessTokenExpiresAt(session.token.expires_in));
     if (m_account.thread_gate_type.isEmpty()) {
@@ -775,6 +781,7 @@ void AccountManager::Private::finishOAuthRefresh(bool success)
     qDebug() << "Refresh OAuth session" << m_account.did << m_account.handle;
     m_account.accessJwt = token.access_token;
     m_account.refreshJwt = token.refresh_token;
+    updateAccessToken();
     if (!token.scope.isEmpty()) {
         m_oauthScope = token.scope;
     }
@@ -801,6 +808,13 @@ void AccountManager::Private::failSession(const QString &code, const QString &me
     if (q->allAccountTried()) {
         emit q->finished();
     }
+}
+
+void AccountManager::Private::updateAccessToken()
+{
+    // 送信時はAccountDataのコピーより、ここで登録したものが優先される
+    SessionStateStore::getInstance()->setAccessToken(m_account.uuid, m_account.auth_type,
+                                                     m_account.accessJwt);
 }
 
 void AccountManager::Private::failOAuthSession(const QString &code, const QString &message)
