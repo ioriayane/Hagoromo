@@ -1,6 +1,8 @@
 #ifndef SESSIONSTATESTORE_H
 #define SESSIONSTATESTORE_H
 
+#include "atprotocol/accessatprotocol.h"
+
 #include <QDateTime>
 #include <QHash>
 #include <QMutex>
@@ -19,6 +21,12 @@ class SessionStateStore
 public:
     static SessionStateStore *getInstance();
 
+    // 送信に使う最新の認証情報(空のアクセストークンは削除)
+    void setAccessToken(const QString &uuid, AtProtocolInterface::AuthType auth_type,
+                        const QString &access_token);
+    bool accessToken(const QString &uuid, AtProtocolInterface::AuthType &auth_type,
+                     QString &access_token) const;
+
     // 再ログインするまでリクエストは必ず失敗する
     void setReauthRequired(const QString &uuid);
     bool isReauthRequired(const QString &uuid) const;
@@ -36,7 +44,14 @@ public:
 private:
     Q_DISABLE_COPY(SessionStateStore)
 
+    struct Credential
+    {
+        AtProtocolInterface::AuthType auth_type;
+        QString access_token;
+    };
+
     mutable QMutex m_mutex;
+    QHash<QString, Credential> m_credentials;
     QSet<QString> m_reauthRequired;
     QHash<QString, QDateTime> m_accessTokenExpiresAt;
     QHash<QString, QDateTime> m_refreshRequestedAt;

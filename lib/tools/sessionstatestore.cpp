@@ -17,6 +17,39 @@ SessionStateStore *SessionStateStore::getInstance()
     return &instance;
 }
 
+void SessionStateStore::setAccessToken(const QString &uuid, AtProtocolInterface::AuthType auth_type,
+                                       const QString &access_token)
+{
+    if (uuid.isEmpty()) {
+        return;
+    }
+    QMutexLocker locker(&m_mutex);
+    if (access_token.isEmpty()) {
+        m_credentials.remove(uuid);
+    } else {
+        Credential credential;
+        credential.auth_type = auth_type;
+        credential.access_token = access_token;
+        m_credentials.insert(uuid, credential);
+    }
+}
+
+bool SessionStateStore::accessToken(const QString &uuid, AtProtocolInterface::AuthType &auth_type,
+                                    QString &access_token) const
+{
+    if (uuid.isEmpty()) {
+        return false;
+    }
+    QMutexLocker locker(&m_mutex);
+    if (!m_credentials.contains(uuid)) {
+        return false;
+    }
+    const Credential credential = m_credentials.value(uuid);
+    auth_type = credential.auth_type;
+    access_token = credential.access_token;
+    return true;
+}
+
 void SessionStateStore::setReauthRequired(const QString &uuid)
 {
     if (uuid.isEmpty()) {
@@ -96,6 +129,7 @@ void SessionStateStore::setRefreshRequestHandler(std::function<void(const QStrin
 void SessionStateStore::remove(const QString &uuid)
 {
     QMutexLocker locker(&m_mutex);
+    m_credentials.remove(uuid);
     m_reauthRequired.remove(uuid);
     m_accessTokenExpiresAt.remove(uuid);
     m_refreshRequestedAt.remove(uuid);
@@ -104,6 +138,7 @@ void SessionStateStore::remove(const QString &uuid)
 void SessionStateStore::clear()
 {
     QMutexLocker locker(&m_mutex);
+    m_credentials.clear();
     m_reauthRequired.clear();
     m_accessTokenExpiresAt.clear();
     m_refreshRequestedAt.clear();
