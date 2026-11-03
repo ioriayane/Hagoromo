@@ -19,6 +19,7 @@ description: This is a multi-column Bluesky client.
   - Fix an issue where blogs, likes, and reposts were not shown on the profiles of did:web accounts
   - Fix an issue where more items could not be loaded in the likes and reposts lists of other users
   - Fix an issue where labeler settings were not applied to posts shared in DMs
+  - Fix the time displayed in the real-time feed status to show local time instead of UTC
 
 ### v0.64.0 - 2026/10/10
 
