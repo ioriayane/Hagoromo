@@ -47,6 +47,26 @@ void IdentityResolver::resolve(const QString &identifier)
     }
 }
 
+void IdentityResolver::resolvePdsEndpoint(const QString &did)
+{
+    m_did.clear();
+    m_handle.clear();
+    m_pdsEndpoint.clear();
+
+    if (!isValidDid(did)) {
+        finish(false, "Invalid identifier", QString("'%1' is an invalid DID.").arg(did));
+        return;
+    }
+    resolveDidDocument(did, [=](bool success, const AtProtocolType::DirectoryPlcDefs::DidDoc &doc) {
+        if (!success) {
+            finish(false, "Failed to resolve DID",
+                   QString("Could not get DID document of '%1'.").arg(did));
+        } else if (applyDidDocument(did, doc)) {
+            finish(true);
+        }
+    });
+}
+
 void IdentityResolver::resolveFromHandle(const QString &handle)
 {
     resolveHandle(handle, [=](const QString &did) {

@@ -14,12 +14,11 @@ namespace AtProtocolInterface {
 AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_priority = false;
 }
 
 void AppBskyNotificationListNotifications::listNotifications(const QList<QString> &reasons,
-                                                             const int limit, const bool priority,
-                                                             const QString &cursor,
-                                                             const QString &seenAt)
+                                                             const int limit, const QString &cursor)
 {
     QUrlQuery url_query;
     for (const auto &value : reasons) {
@@ -28,14 +27,8 @@ void AppBskyNotificationListNotifications::listNotifications(const QList<QString
     if (limit > 0) {
         url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
-    if (priority) {
-        url_query.addQueryItem(QStringLiteral("priority"), "true");
-    }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
-    }
-    if (!seenAt.isEmpty()) {
-        url_query.addQueryItem(QStringLiteral("seenAt"), seenAt);
     }
 
     get(QStringLiteral("xrpc/app.bsky.notification.listNotifications"), url_query);

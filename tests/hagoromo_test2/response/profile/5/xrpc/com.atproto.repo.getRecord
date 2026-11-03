@@ -1,0 +1,13 @@
+{
+    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self",
+    "cid": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
+    "value": {
+        "$type": "app.bsky.actor.profile",
+        "displayName": "IoriAYANE",
+        "links": [
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2", "cid": "cid_link2" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lx", "cid": "cid_linkx" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1", "cid": "cid_link1" }
+        ]
+    }
+}

@@ -93,6 +93,9 @@ public:
 
     bool allowedScope(AccountScope scope) const;
 
+protected:
+    void setAccessToken(AuthType auth_type, const QString &access_jwt);
+
 private:
     AccountData m_account;
 };
@@ -106,6 +109,7 @@ public:
     QString replyJson() const;
     QString errorCode() const;
     QString errorMessage() const;
+    int httpStatusCode() const;
     QString cursor() const;
     void setCursor(const QString &newCursor);
 
@@ -151,6 +155,10 @@ private:
     void sendPost(QNetworkRequest request, const QByteArray &data, const bool with_auth_header,
                   const bool retried);
     bool setAuthorizationHeader(QNetworkRequest &request, const QByteArray &method);
+    // AccountDataのコピーが古くなっていても、アカウントの最新のアクセストークンで送る
+    void applyLatestAccessToken(const QString &endpoint);
+    // 再ログインが必要なアカウント、アクセストークンの期限が切れたアカウントのリクエストは送らない
+    bool isSessionAvailable();
     bool canRetryWithDPopNonce(const bool with_auth_header, const bool retried) const;
     void setAdditionalRawHeader(QNetworkRequest &request);
     void setAtprotoProxyHeader(QNetworkRequest &request);
@@ -160,6 +168,7 @@ private:
     QString m_replyJson;
     QString m_errorCode;
     QString m_errorMessage;
+    int m_httpStatusCode;
     QString m_cursor;
 
     QString m_contentType;

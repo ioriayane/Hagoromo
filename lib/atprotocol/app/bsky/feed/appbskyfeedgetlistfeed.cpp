@@ -12,7 +12,7 @@ AppBskyFeedGetListFeed::AppBskyFeedGetListFeed(QObject *parent) : AppBskyFeedGet
 }
 
 void AppBskyFeedGetListFeed::getListFeed(const QString &list, const int limit,
-                                         const QString &cursor)
+                                         const QString &cursor, const QString &since)
 {
     QUrlQuery url_query;
     if (!list.isEmpty()) {
@@ -23,6 +23,9 @@ void AppBskyFeedGetListFeed::getListFeed(const QString &list, const int limit,
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (!since.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("since"), since);
     }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getListFeed"), url_query);

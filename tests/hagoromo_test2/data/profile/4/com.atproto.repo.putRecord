@@ -1,0 +1,30 @@
+{
+    "repo": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "collection": "app.bsky.actor.profile",
+    "rkey": "self",
+    "record": {
+        "$type": "app.bsky.actor.profile",
+        "avatar": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy"
+            },
+            "mimeType": "image/jpeg",
+            "size": 68308
+        },
+        "description": "description",
+        "displayName": "display_name",
+        "website": "https://hagoromo.relog.tech/",
+        "joinedViaStarterPack": {
+            "uri": "at://did:plc:hoge/app.bsky.graph.starterpack/3abc",
+            "cid": "cid_starterpack"
+        },
+        "links": [
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3lnew", "cid": "cid_link_new" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l2", "cid": "cid_3l2_after" },
+            { "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/3l1", "cid": "cid_link1" }
+        ]
+    },
+    "swapRecord": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
+    "validate": true
+}

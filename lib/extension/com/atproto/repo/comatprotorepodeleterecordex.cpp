@@ -62,4 +62,9 @@ bool ComAtprotoRepoDeleteRecordEx::parseJson(bool success, const QString reply_j
     return success;
 }
 
+void ComAtprotoRepoDeleteRecordEx::deleteProfileLink(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.actor.link"), rkey, QString(), QString());
+}
+
 }

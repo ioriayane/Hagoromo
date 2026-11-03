@@ -2,6 +2,7 @@
 #define ANYFEEDLISTMODEL_H
 
 #include "timelinelistmodel.h"
+#include "tools/serviceendpointresolver.h"
 
 class AnyFeedListModel : public TimelineListModel
 {
@@ -37,6 +38,8 @@ public:
     QString targetServiceEndpoint() const;
     void setTargetServiceEndpoint(const QString &newTargetServiceEndpoint);
 
+    void setPlcDirectory(const QString &newPlcDirectory);
+
 signals:
     void targetDidChanged();
     void targetHandleChanged();
@@ -58,7 +61,10 @@ private:
     QString m_targetDisplayName;
     AnyFeedListModelFeedType m_feedType;
     QString m_targetServiceEndpoint;
+    ServiceEndpointResolver m_serviceEndpointResolver;
 
+    void getLatestRecords(const QString &service_endpoint);
+    void getNextRecords(const QString &service_endpoint);
     void getPosts();
 
     template<typename T>

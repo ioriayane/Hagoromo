@@ -12,7 +12,7 @@ AppBskyFeedGetQuotes::AppBskyFeedGetQuotes(QObject *parent) : AppBskyFeedGetPost
 }
 
 void AppBskyFeedGetQuotes::getQuotes(const QString &uri, const QString &cid, const int limit,
-                                     const QString &cursor)
+                                     const QString &cursor, const QString &sort)
 {
     QUrlQuery url_query;
     if (!uri.isEmpty()) {
@@ -26,6 +26,9 @@ void AppBskyFeedGetQuotes::getQuotes(const QString &uri, const QString &cid, con
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (!sort.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("sort"), sort);
     }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getQuotes"), url_query);

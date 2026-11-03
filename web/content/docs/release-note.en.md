@@ -8,6 +8,21 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.65.0 - 2026/11/3
+
+- Add
+  - Support for profile links
+- Update
+  - Switch the Search API to V2
+  - Improved behavior when an access token expires
+- Fix
+  - Fix for a bug related to specifying search dates
+  - Fix an issue where other users' WhiteWind entries limited to the author were shown on their profiles
+  - Fix an issue where blogs, likes, and reposts were not shown on the profiles of did:web accounts
+  - Fix an issue where more items could not be loaded in the likes and reposts lists of other users
+  - Fix an issue where labeler settings were not applied to posts shared in DMs
+  - Fix the time displayed in the real-time feed status to show local time instead of UTC
+
 ### v0.64.0 - 2026/10/10
 
 - Add

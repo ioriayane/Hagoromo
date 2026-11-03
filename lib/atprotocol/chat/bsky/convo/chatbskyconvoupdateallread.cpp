@@ -13,6 +13,7 @@ namespace AtProtocolInterface {
 ChatBskyConvoUpdateAllRead::ChatBskyConvoUpdateAllRead(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_updatedCount = 0;
 }
 
 void ChatBskyConvoUpdateAllRead::updateAllRead(const QString &status)

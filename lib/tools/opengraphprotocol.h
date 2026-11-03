@@ -12,6 +12,7 @@ public:
 
     void getData(const QString &url);
     void downloadThumb(const QString &path);
+    void downloadIcon(const QString &path);
     bool applySiteRule(const QString &url);
     static QString decodeHtml(const QString &encoded);
 
@@ -23,10 +24,13 @@ public:
     void setDescription(const QString &newDescription);
     QString thumb() const;
     void setThumb(const QString &newThumb);
+    QString icon() const;
+    void setIcon(const QString &newIcon);
 
 signals:
     void finished(bool success);
     void finishedDownload(bool success);
+    void finishedDownloadIcon(bool success);
 
 private:
     class Private;

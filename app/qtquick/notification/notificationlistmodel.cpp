@@ -808,7 +808,7 @@ bool NotificationListModel::getLatest()
                 });
         notification->setAccount(account());
         notification->setLabelers(labelerDids());
-        notification->listNotifications(QList<QString>(), 0, false, QString(), QString());
+        notification->listNotifications(QList<QString>(), 0, QString());
     });
     return true;
 }
@@ -890,7 +890,7 @@ bool NotificationListModel::getNext()
                 });
         notification->setAccount(account());
         notification->setLabelers(labelerDids());
-        notification->listNotifications(QList<QString>(), 0, false, m_cursor, QString());
+        notification->listNotifications(QList<QString>(), 0, m_cursor);
     });
     return true;
 }

@@ -28,7 +28,7 @@ bool ListFeedListModel::getLatest()
         });
         list->setAccount(account());
         list->setLabelers(labelerDids());
-        list->getListFeed(uri(), 0, QString());
+        list->getListFeed(uri(), 0, QString(), QString());
     });
     return true;
 }
@@ -54,7 +54,7 @@ bool ListFeedListModel::getNext()
         });
         list->setAccount(account());
         list->setLabelers(labelerDids());
-        list->getListFeed(uri(), 0, m_cursor);
+        list->getListFeed(uri(), 0, m_cursor, QString());
     });
     return true;
 }

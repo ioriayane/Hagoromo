@@ -13,7 +13,8 @@ class AppBskyFeedGetQuotes : public AppBskyFeedGetPosts
 public:
     explicit AppBskyFeedGetQuotes(QObject *parent = nullptr);
 
-    void getQuotes(const QString &uri, const QString &cid, const int limit, const QString &cursor);
+    void getQuotes(const QString &uri, const QString &cid, const int limit, const QString &cursor,
+                   const QString &sort);
 };
 
 }

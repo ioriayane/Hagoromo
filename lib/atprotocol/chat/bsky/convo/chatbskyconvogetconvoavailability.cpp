@@ -14,6 +14,7 @@ namespace AtProtocolInterface {
 ChatBskyConvoGetConvoAvailability::ChatBskyConvoGetConvoAvailability(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_canChat = false;
 }
 
 void ChatBskyConvoGetConvoAvailability::getConvoAvailability(const QList<QString> &members)

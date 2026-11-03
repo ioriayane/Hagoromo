@@ -15,6 +15,9 @@ class ExternalLink : public QObject
     Q_PROPERTY(QString thumbLocal READ thumbLocal NOTIFY thumbLocalChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool valid READ valid WRITE setValid NOTIFY validChanged)
+    // trueのときはサムネイルの代わりにfaviconを取得する
+    Q_PROPERTY(bool fetchIcon READ fetchIcon WRITE setFetchIcon NOTIFY fetchIconChanged FINAL)
+    Q_PROPERTY(QString iconLocal READ iconLocal NOTIFY iconLocalChanged FINAL)
 
 public:
     explicit ExternalLink(QObject *parent = nullptr);
@@ -37,6 +40,10 @@ public:
     void setRunning(bool newRunning);
     bool valid() const;
     void setValid(bool newValid);
+    bool fetchIcon() const;
+    void setFetchIcon(bool newFetchIcon);
+    QString iconLocal() const;
+    void setIconLocal(const QString &newIconLocal);
 
 signals:
     void uriChanged();
@@ -46,6 +53,8 @@ signals:
     void thumbLocalChanged();
     void runningChanged();
     void validChanged();
+    void fetchIconChanged();
+    void iconLocalChanged();
 
 private:
     QTemporaryFile *m_thumbLocal;
@@ -56,6 +65,8 @@ private:
     QString m_thumb;
     bool m_running;
     bool m_valid;
+    bool m_fetchIcon;
+    QString m_iconLocal;
 };
 
 #endif // EXTERNALLINK_H

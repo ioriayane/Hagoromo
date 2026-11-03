@@ -11,7 +11,12 @@
 
 namespace AtProtocolInterface {
 
-ChatBskyActorGetStatus::ChatBskyActorGetStatus(QObject *parent) : AccessAtProtocol { parent } { }
+ChatBskyActorGetStatus::ChatBskyActorGetStatus(QObject *parent) : AccessAtProtocol { parent }
+{
+    m_chatDisabled = false;
+    m_canCreateGroups = false;
+    m_groupMemberLimit = 0;
+}
 
 void ChatBskyActorGetStatus::getStatus()
 {

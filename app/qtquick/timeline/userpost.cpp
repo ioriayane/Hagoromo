@@ -304,5 +304,6 @@ void UserPost::convertToAtUri(const QString &base_at_uri, const QString &uri,
 
 QStringList UserPost::labelerDids() const
 {
-    return LabelerProvider::getInstance()->labelerDids(m_account);
+    return LabelerProvider::getInstance()->labelerDids(
+            AccountManager::getInstance()->getAccount(m_account.uuid));
 }

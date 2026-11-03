@@ -1,5 +1,6 @@
 #include "accessatprotocol.h"
 #include "tools/dpopsessionstore.h"
+#include "tools/sessionstatestore.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -90,7 +91,9 @@ QString AtProtocolAccount::service() const
 
 void AtProtocolAccount::setService(const QString &newService)
 {
+    // 接続先はservice_endpointが優先されるので、指定した接続先が使われるように両方置き換える
     m_account.service = newService;
+    m_account.service_endpoint = newService;
 }
 
 QString AtProtocolAccount::did() const
@@ -123,13 +126,22 @@ QString AtProtocolAccount::refreshJwt() const
     return m_account.refreshJwt;
 }
 
+void AtProtocolAccount::setAccessToken(AuthType auth_type, const QString &access_jwt)
+{
+    m_account.auth_type = auth_type;
+    m_account.accessJwt = access_jwt;
+}
+
 bool AtProtocolAccount::allowedScope(AccountScope scope) const
 {
     return m_account.scope.contains(scope);
 }
 
 AccessAtProtocol::AccessAtProtocol(QObject *parent)
-    : AtProtocolAccount { parent }, m_contentType("application/json"), m_dPopNonceRequired(false)
+    : AtProtocolAccount { parent },
+      m_httpStatusCode(0),
+      m_contentType("application/json"),
+      m_dPopNonceRequired(false)
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
     if (m_manager == nullptr) {
@@ -148,11 +160,18 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent)
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
+    if (with_auth_header) {
+        applyLatestAccessToken(endpoint);
+    }
     if (accessJwt().isEmpty() && with_auth_header) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()"
                               << "Empty accessJwt!";
         m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
         m_errorMessage = "AccessJwt is empty.";
+        emit finished(false);
+        return;
+    }
+    if (with_auth_header && !isSessionAvailable()) {
         emit finished(false);
         return;
     }
@@ -256,11 +275,16 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, m_contentType);
     if (with_auth_header) {
+        applyLatestAccessToken(endpoint);
         if (accessJwt().isEmpty()) {
             qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
                         << "Empty accessJwt!";
             m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
             m_errorMessage = "AccessJwt is empty.";
+            emit finished(false);
+            return;
+        }
+        if (!isSessionAvailable()) {
             emit finished(false);
             return;
         }
@@ -277,9 +301,14 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
 
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
+    applyLatestAccessToken(endpoint);
     if (accessJwt().isEmpty()) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Empty accessJwt!";
+        emit finished(false);
+        return;
+    }
+    if (!isSessionAvailable()) {
         emit finished(false);
         return;
     }
@@ -367,6 +396,52 @@ bool AccessAtProtocol::setAuthorizationHeader(QNetworkRequest &request, const QB
     return true;
 }
 
+void AccessAtProtocol::applyLatestAccessToken(const QString &endpoint)
+{
+    // refresh tokenで認証するAPIはaccessJwtにrefresh tokenを入れて呼ばれるので置き換えない
+    if (endpoint == QStringLiteral("xrpc/com.atproto.server.refreshSession")
+        || endpoint == QStringLiteral("xrpc/com.atproto.server.deleteSession")) {
+        return;
+    }
+    AuthType auth_type = AuthType::Password;
+    QString access_token;
+    if (!SessionStateStore::getInstance()->accessToken(account().uuid, auth_type, access_token)) {
+        return;
+    }
+    if (auth_type == account().auth_type && access_token == accessJwt()) {
+        return;
+    }
+    // トークンは出力しない
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                       << "Use the latest access token :" << handle();
+    setAccessToken(auth_type, access_token);
+}
+
+bool AccessAtProtocol::isSessionAvailable()
+{
+    SessionStateStore *store = SessionStateStore::getInstance();
+    if (store->isReauthRequired(account().uuid)) {
+        // 再ログインするまで失敗が確定しているので送信しない
+        // 通知は状態が変わったときにAccountManagerから1回だけ行うので、メッセージは空にする
+        qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                           << "Session is unavailable until re-login :" << handle();
+        m_errorCode = QStringLiteral("SessionUnavailable");
+        m_errorMessage.clear();
+        return false;
+    }
+    if (store->isAccessTokenExpired(account().uuid)) {
+        // アクセストークンの期限が切れているので送信しても失敗する
+        // リフレッシュの結果(失敗時)はAccountManagerから通知するので、メッセージは空にする
+        qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol"
+                           << "Access token is expired :" << handle();
+        store->requestRefresh(account().uuid);
+        m_errorCode = QStringLiteral("SessionRefreshing");
+        m_errorMessage.clear();
+        return false;
+    }
+    return true;
+}
+
 bool AccessAtProtocol::canRetryWithDPopNonce(const bool with_auth_header, const bool retried) const
 {
     return with_auth_header && !retried && account().auth_type == AuthType::OAuth
@@ -391,6 +466,7 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
     m_replyJson = QString::fromUtf8(reply->readAll());
     m_errorCode.clear();
     m_errorMessage.clear();
+    m_httpStatusCode = reply->statusCode();
     m_dPopNonceRequired = false;
 
     QByteArray header_key;
@@ -626,6 +702,11 @@ void AccessAtProtocol::appendRawHeader(const QString &name, const QString &value
 QString AccessAtProtocol::errorMessage() const
 {
     return m_errorMessage;
+}
+
+int AccessAtProtocol::httpStatusCode() const
+{
+    return m_httpStatusCode;
 }
 
 QString AccessAtProtocol::replyJson() const

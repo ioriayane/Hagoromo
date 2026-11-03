@@ -18,6 +18,8 @@
 #include "list/listfeedlistmodel.h"
 #include "notification/notificationpreferencelistmodel.h"
 #include "tools/accountmanager.h"
+#include "blog/blogentrylistmodel.h"
+#include "timeline/anyfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -32,6 +34,8 @@ private slots:
     void cleanupTestCase();
     void test_RecordOperator();
     void test_RecordOperator_profile();
+    void test_RecordOperator_profileLinks();
+    void test_RecordOperator_requestProfileLinks();
     void test_FeedGeneratorListModel();
     void test_FeedGeneratorLink();
     void test_AccountListModel();
@@ -51,15 +55,19 @@ private slots:
     void test_DraftOperator_updateDraft();
     void test_DraftOperator_deleteDraft();
     void test_DraftOperator_getDrafts();
+    void test_BlogEntryListModel();
+    void test_AnyFeedListModel();
 
 private:
     WebServer m_mockServer;
     quint16 m_listenPort;
     QString m_service;
+    QStringList m_profileLinksRequests;
 
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
+    void test_profileLinks(const QString &path, const QByteArray &body);
     void test_putNotificationPreferences(const QString &path, const QByteArray &body);
     QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
@@ -90,6 +98,28 @@ hagoromo_test::hagoromo_test()
                                       "app.bsky.actor.putPreferences") {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
+                    result = true;
+                } else if (request.url().path().startsWith("/response/profile/4/")) {
+                    test_profileLinks(request.url().path(), request.body());
+                    if (request.url().path().endsWith("/com.atproto.repo.createRecord")) {
+                        json = "{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                               "app.bsky.actor.link/3lnew\",\"cid\":\"cid_link_new\"}";
+                    } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")
+                               && QJsonDocument::fromJson(request.body())
+                                               .object()
+                                               .value("collection")
+                                               .toString()
+                                       == "app.bsky.actor.link") {
+                        QString rkey = QJsonDocument::fromJson(request.body())
+                                               .object()
+                                               .value("rkey")
+                                               .toString();
+                        json = QString("{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                                       "app.bsky.actor.link/%1\",\"cid\":\"cid_%1_after\"}")
+                                       .arg(rkey);
+                    } else {
+                        json = "{}";
+                    }
                     result = true;
                 } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
                     test_putRecord(request.url().path(), request.body());
@@ -228,6 +258,149 @@ void hagoromo_test::test_RecordOperator_profile()
         QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
         QCOMPARE(arguments.at(0).toBool(), true);
     }
+}
+
+void hagoromo_test::test_RecordOperator_profileLinks()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/4", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    const QString link_base = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/";
+    QVariantList links;
+    {
+        QVariantMap item;
+        item.insert("url", "https://example.com/new");
+        item.insert("title", "new link");
+        item.insert("status", "new");
+        links.append(item);
+    }
+    {
+        QVariantMap item;
+        item.insert("uri", link_base + "3l2");
+        item.insert("cid", "cid_link2_before");
+        item.insert("url", "https://example.com/link2");
+        item.insert("title", "link2 after");
+        item.insert("status", "modified");
+        item.insert("iconChanged", false);
+        links.append(item);
+    }
+    {
+        QVariantMap item;
+        item.insert("uri", link_base + "3l1");
+        item.insert("cid", "cid_link1");
+        item.insert("url", "https://example.com/link1");
+        item.insert("title", "link1");
+        links.append(item);
+    }
+    {
+        // プロフィールには表示しないがレコードは更新する
+        QVariantMap item;
+        item.insert("uri", link_base + "3l4");
+        item.insert("cid", "cid_link4");
+        item.insert("url", "https://example.com/link4");
+        item.insert("title", "link4 after");
+        item.insert("status", "modified");
+        item.insert("visible", false);
+        links.append(item);
+    }
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.setProfileLinks(links, QStringList() << link_base + "3l3");
+
+    m_profileLinksRequests.clear();
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.updateProfile("", "", "description", "display_name", "", "https://hagoromo.relog.tech/");
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    QCOMPARE(m_profileLinksRequests,
+             QStringList() << "com.atproto.repo.createRecord"
+                           << "com.atproto.repo.putRecord_link_3l2"
+                           << "com.atproto.repo.putRecord_link_3l4"
+                           << "com.atproto.repo.putRecord"
+                           << "com.atproto.repo.deleteRecord");
+
+    {
+        // 表示するリンクが上限(10)を超える場合は何も書き込まない
+        QVariantList over_links;
+        for (int i = 0; i < 11; i++) {
+            QVariantMap item;
+            item.insert("url", QString("https://example.com/new%1").arg(i));
+            item.insert("status", "new");
+            over_links.append(item);
+        }
+        ope.clear();
+        ope.setProfileLinks(over_links, QStringList());
+
+        m_profileLinksRequests.clear();
+        QSignalSpy spy_error(&ope, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy_over(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.updateProfile("", "", "description", "display_name", "",
+                          "https://hagoromo.relog.tech/");
+        spy_over.wait();
+        QCOMPARE(spy_over.count(), 1);
+        QCOMPARE(spy_over.takeFirst().at(0).toBool(), false);
+        QCOMPARE(spy_error.count(), 1);
+        QCOMPARE(spy_error.takeFirst().at(0).toString(), "TooManyProfileLinks");
+        QCOMPARE(m_profileLinksRequests, QStringList());
+    }
+}
+
+void hagoromo_test::test_RecordOperator_requestProfileLinks()
+{
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/5", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+
+    QSignalSpy spy(
+            &ope,
+            SIGNAL(finishedRequestProfileLinks(bool, const QVariantList &, const QVariantList &)));
+    ope.requestProfileLinks();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    const QString link_base = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.link/";
+
+    // プロフィールの並び順（実体のない3lxは除外）
+    QVariantList visible_links = arguments.at(1).toList();
+    QCOMPARE(visible_links.length(), 2);
+    QVariantMap item = visible_links.at(0).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l2");
+    QCOMPARE(item.value("cid").toString(), "cid_link2");
+    QCOMPARE(item.value("url").toString(), "https://example.com/link2");
+    QCOMPARE(item.value("rawTitle").toString(), "");
+    QCOMPARE(item.value("iconUrl").toString(), "");
+    QCOMPARE(item.value("supportProvider").toBool(), false);
+    QCOMPARE(item.value("supportProviderLogo").toString(), QString());
+    item = visible_links.at(1).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l1");
+    QCOMPARE(item.value("rawTitle").toString(), "link1");
+    QCOMPARE(item.value("iconUrl").toString(),
+             m_service
+                     + "/profile/5/xrpc/"
+                       "com.atproto.sync.getBlob?did=did:plc:ipj5qejfoqu6eukvt72uhyit"
+                       "&cid=bafkreiicon1");
+
+    // 未表示は作成日時の新しい順
+    QVariantList hidden_links = arguments.at(2).toList();
+    QCOMPARE(hidden_links.length(), 2);
+    item = hidden_links.at(0).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l4");
+    QCOMPARE(item.value("labels").toStringList(), QStringList() << "graphic-media");
+    item = hidden_links.at(1).toMap();
+    QCOMPARE(item.value("uri").toString(), link_base + "3l3");
+    QCOMPARE(item.value("supportProvider").toBool(), true);
+    QCOMPARE(item.value("supportProviderLogo").toString(), "ItchIo");
+    QCOMPARE(item.value("labels").toStringList(), QStringList());
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()
@@ -1161,6 +1334,32 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
     QCOMPARE(json_doc_expect.object(), json_doc.object());
 }
 
+void hagoromo_test::test_profileLinks(const QString &path, const QByteArray &body)
+{
+    QString name = QFileInfo(path).fileName();
+    if (name == "com.atproto.repo.putRecord"
+        && QJsonDocument::fromJson(body).object().value("collection").toString()
+                == "app.bsky.actor.link") {
+        name += "_link_" + QJsonDocument::fromJson(body).object().value("rkey").toString();
+    }
+    m_profileLinksRequests.append(name);
+
+    QJsonDocument json_doc_expect = UnitTestCommon::loadJson(":/data/profile/4/" + name);
+    QJsonObject json_expect = json_doc_expect.object();
+    QJsonObject json_actual = QJsonDocument::fromJson(body).object();
+    if (name == "com.atproto.repo.createRecord") {
+        QVERIFY(json_actual.value("record").toObject().contains("createdAt"));
+        json_actual = copyObject(json_actual, QStringList() << "createdAt");
+    }
+
+    if (json_expect != json_actual) {
+        qDebug().noquote().nospace()
+                << QString("\nexpect:%1\nactual:%2\n")
+                           .arg(json_doc_expect.toJson(), QJsonDocument(json_actual).toJson());
+    }
+    QCOMPARE(json_actual, json_expect);
+}
+
 void hagoromo_test::test_putNotificationPreferences(const QString &path, const QByteArray &body)
 {
     QJsonDocument json_doc_expect = UnitTestCommon::loadJson(
@@ -1198,6 +1397,141 @@ QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList 
         }
     }
     return dest;
+}
+
+void hagoromo_test::test_BlogEntryListModel()
+{
+    const QString did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    const QString mine = m_service + "/target_repo/mine";
+    const QString other = m_service + "/target_repo/other";
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/target_repo", "id", "pass", did, "ioriayane.bsky.social",
+            "email", "accessJwt", "refreshJwt", true);
+    // 接続先はservice_endpointが優先される
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, mine);
+
+    struct TestCase
+    {
+        QString account_uuid;
+        QString target_did;
+        QString target_service;
+        QStringList titles;
+        QStringList visibilities;
+        int error_count;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 自分の記事は作者のみの記事も表示する
+            << TestCase { uuid,
+                          did,
+                          mine,
+                          QStringList() << "Public entry"
+                                        << "Url entry"
+                                        << "Author only entry",
+                          QStringList() << ""
+                                        << "Anyone with the link"
+                                        << "Author only",
+                          0 } // 指定した接続先から取得し、他の人の作者のみの記事は表示しない
+            << TestCase { uuid,
+                          "did:plc:other_user",
+                          other,
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // アカウントの情報が取れないときは自分の記事として扱わない
+            << TestCase { "unknown-uuid",
+                          did,
+                          mine,
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // 接続先の指定がなければ、自分の記事は自分のPDSから取得する
+            << TestCase { uuid,
+                          did,
+                          QString(),
+                          QStringList() << "Public entry"
+                                        << "Url entry"
+                                        << "Author only entry",
+                          QStringList() << ""
+                                        << "Anyone with the link"
+                                        << "Author only",
+                          0 }
+            // 接続先の指定がなければ、他の人の記事はDIDドキュメントのPDSから取得する
+            << TestCase { uuid,
+                          "did:plc:other_user",
+                          QString(),
+                          QStringList() << "Public entry"
+                                        << "Url entry",
+                          QStringList() << ""
+                                        << "",
+                          0 } // PDSが分からないときは自分のPDSに問い合わせない
+            << TestCase { uuid, "did:plc:not_found", QString(), QStringList(), QStringList(), 1 };
+
+    for (const auto &item : cases) {
+        BlogEntryListModel model;
+        model.setAccount(item.account_uuid);
+        model.setPlcDirectory(m_service + "/plc");
+        model.setTargetDid(item.target_did);
+        model.setTargetServiceEndpoint(item.target_service);
+
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QSignalSpy spy_error(&model, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QVERIFY(model.getLatest());
+        spy.wait();
+        QCOMPARE(spy.count(), 2);
+        QVERIFY(!model.running());
+        QCOMPARE(spy_error.count(), item.error_count);
+
+        QCOMPARE(model.rowCount(), item.titles.length());
+        for (int row = 0; row < model.rowCount(); row++) {
+            QCOMPARE(model.item(row, BlogEntryListModel::TitleRole).toString(),
+                     item.titles.at(row));
+            QCOMPARE(model.item(row, BlogEntryListModel::VisibilityRole).toString(),
+                     item.visibilities.at(row));
+        }
+    }
+
+    AccountManager::getInstance()->removeAccount(uuid);
+}
+
+void hagoromo_test::test_AnyFeedListModel()
+{
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/target_repo", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/target_repo/mine");
+
+    struct TestCase
+    {
+        QString target_service;
+        int row_count;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 指定した接続先から取得する
+            << TestCase { m_service + "/target_repo/other", 2 }
+            // 指定がなければDIDドキュメントのPDSから取得する
+            << TestCase { QString(), 2 };
+
+    for (const auto &item : cases) {
+        AnyFeedListModel model;
+        model.setAccount(uuid);
+        model.setPlcDirectory(m_service + "/plc");
+        model.setTargetDid("did:plc:other_user");
+        model.setTargetServiceEndpoint(item.target_service);
+        model.setFeedType(AnyFeedListModel::LikeFeedType);
+
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QVERIFY(model.getLatest());
+        for (int i = 0; i < 50 && model.running(); i++) {
+            spy.wait(200);
+        }
+        QVERIFY(!model.running());
+        // 投稿の詳細(getPosts)を取得できなくても、いいねのレコードの分だけ行がある
+        QCOMPARE(model.rowCount(), item.row_count);
+    }
+
+    AccountManager::getInstance()->removeAccount(uuid);
 }
 
 QTEST_MAIN(hagoromo_test)

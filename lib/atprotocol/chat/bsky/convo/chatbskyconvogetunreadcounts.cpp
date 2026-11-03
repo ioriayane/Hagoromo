@@ -14,6 +14,8 @@ namespace AtProtocolInterface {
 ChatBskyConvoGetUnreadCounts::ChatBskyConvoGetUnreadCounts(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_unreadAcceptedConvos = 0;
+    m_unreadRequestConvos = 0;
 }
 
 void ChatBskyConvoGetUnreadCounts::getUnreadCounts(const bool includeGroupChats)

@@ -320,6 +320,26 @@ void ComAtprotoRepoCreateRecordEx::tokimekiPoll(const QString &post_uri, const Q
                  makeTokimekiPollJsonObject(post_uri, post_cid, options, duration), QString());
 }
 
+void ComAtprotoRepoCreateRecordEx::profileLink(const QString &url, const QString &title,
+                                               const AtProtocolType::Blob &icon)
+{
+    QJsonObject json_record;
+    json_record.insert("$type", "app.bsky.actor.link");
+    json_record.insert("url", url);
+    if (!title.isEmpty()) {
+        json_record.insert("title", title);
+    }
+    if (!icon.cid.isEmpty()) {
+        QJsonObject json_icon;
+        setJsonBlob(icon, json_icon);
+        json_record.insert("icon", json_icon);
+    }
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+
+    createRecord(this->did(), QStringLiteral("app.bsky.actor.link"), QString(), true, json_record,
+                 QString());
+}
+
 void ComAtprotoRepoCreateRecordEx::setReply(const QString &parent_cid, const QString &parent_uri,
                                             const QString &root_cid, const QString &root_uri)
 {

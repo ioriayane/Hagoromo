@@ -33,6 +33,11 @@ void ComAtprotoRepoListRecordsEx::listLinkatItems(const QString &repo, const QSt
     listRecords(repo, "blue.linkat.board", 1, QString(), false);
 }
 
+void ComAtprotoRepoListRecordsEx::listProfileLinks(const QString &repo, const QString &cursor)
+{
+    listRecords(repo, "app.bsky.actor.link", 100, cursor, false);
+}
+
 bool ComAtprotoRepoListRecordsEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoRepoListRecords::parseJson(success, reply_json);

@@ -14,6 +14,7 @@ namespace AtProtocolInterface {
 ComAtprotoRepoDescribeRepo::ComAtprotoRepoDescribeRepo(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_handleIsCorrect = false;
 }
 
 void ComAtprotoRepoDescribeRepo::describeRepo(const QString &repo)

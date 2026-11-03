@@ -13,6 +13,9 @@ namespace AtProtocolInterface {
 ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_emailConfirmed = false;
+    m_emailAuthFactor = false;
+    m_active = false;
 }
 
 void ComAtprotoServerCreateSession::createSession(const QString &identifier,

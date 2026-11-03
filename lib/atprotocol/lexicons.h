@@ -40,6 +40,9 @@ namespace AppBskyActorDefs {
 struct ProfileView;
 struct ProfileViewBasic;
 }
+namespace AppBskyEmbedDefs {
+struct AspectRatio;
+}
 namespace AppBskyEmbedRecord {
 struct Main;
 struct View;
@@ -272,6 +275,10 @@ struct Main
 
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
+enum class ViewGalleryItemsType : int {
+    none,
+    items_ViewGalleryImage,
+};
 struct ColorRGB
 {
     int r = 0;
@@ -325,6 +332,90 @@ struct External
 struct Main
 {
     External external;
+};
+struct ViewArticlePublicationTheme
+{
+    QString background; // Hex color string, if available. Example: '#ffffff'.
+    QString foreground; // Hex color string, if available. Example: '#ffffff'.
+    QString accent; // Hex color string, if available. Example: '#ffffff'.
+    QString accentForeground; // Hex color string, if available. Example: '#ffffff'.
+};
+struct ViewArticlePublication
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
+    QString logo; // uri
+    QString image; // uri
+    ViewArticlePublicationTheme theme;
+    int subscriptionCount = 0;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> subscribers;
+};
+struct ViewArticle
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
+    QString image; // uri
+    ViewArticlePublication publisher;
+    int readingTime = 0;
+    int likeCount = 0;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> likers;
+};
+struct ViewGalleryImage
+{
+    QString thumbnail; // uri , Fully-qualified URL where a thumbnail of the image can be fetched.
+                       // For example, CDN location provided by the App View.
+    QString fullsize; // uri , Fully-qualified URL where a large version of the image can be
+                      // fetched. May or may not be the exact original blob. For example, CDN
+                      // location provided by the App View.
+    QString alt; // Alt text description of the image, for accessibility.
+    QSharedPointer<AppBskyEmbedDefs::AspectRatio> aspectRatio;
+};
+struct ViewGallery
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
+    // union start : items
+    ViewGalleryItemsType items_type = ViewGalleryItemsType::none;
+    QList<ViewGalleryImage> items_ViewGalleryImage; // The media items in the gallery. Each item may
+                                                    // be of a different type, but all types must be
+                                                    // supported by the client.
+    // union end : items
+    int likeCount = 0;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> likers;
+};
+struct ViewLivestream
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+    QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
+    QString image; // uri
+    bool active = false; // True if the livestream is currently active at the time this view is
+                         // served, false if it has ended.
+    QString startedAt; // datetime
+    QString endedAt; // datetime
 };
 }
 
@@ -533,6 +624,15 @@ struct ProfileView
     StatusView status;
     QVariant debug; // Debug information for internal development
 };
+struct ProfileLinkView
+{
+    QString uri; // at-uri , The app.bsky.actor.link record, e.g. for reporting the link.
+    QString cid; // cid
+    QString url; // uri , The link destination.
+    QString title;
+    QString icon; // uri , Image URL for the destination site's icon.
+    QList<ComAtprotoLabelDefs::Label> labels;
+};
 struct ProfileViewDetailed
 {
     QString did; // did
@@ -540,7 +640,7 @@ struct ProfileViewDetailed
     QString displayName;
     QString description;
     QString pronouns;
-    QString website; // uri
+    QString website; // uri , The website URL of the profile.
     QString avatar; // uri
     QString banner; // uri
     int followersCount = 0;
@@ -553,6 +653,8 @@ struct ProfileViewDetailed
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
     ComAtprotoRepoStrongRef::Main pinnedPost;
+    QList<ProfileLinkView> links; // The profile's links, in display order. Links that were taken
+                                  // down or don't resolve are left out.
     VerificationState verification;
     StatusView status;
     QVariant debug; // Debug information for internal development
@@ -751,6 +853,27 @@ struct Preferences
 };
 }
 
+// app.bsky.actor.link
+namespace AppBskyActorLink {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
+struct Main
+{
+    QString url; // uri , The link destination, an https URL.
+    QString title; // Optional label for the link. Clients can fall back to the destination's
+                   // domain.
+    Blob icon; // The destination site's icon, uploaded when the link is saved.
+    QString createdAt; // datetime
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this link.
+    // union end : labels
+};
+}
+
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
 enum class MainLabelsType : int {
@@ -762,7 +885,7 @@ struct Main
     QString displayName;
     QString description; // Free-form profile description text.
     QString pronouns; // Free-form pronouns text.
-    QString website; // uri
+    QString website; // uri , The website URL of the profile.
     Blob avatar; // Small image to be displayed next to posts from account. AKA, 'profile picture'
     Blob banner; // Larger horizontal image to display behind profile view.
     // union start : labels
@@ -773,6 +896,7 @@ struct Main
     // union end : labels
     ComAtprotoRepoStrongRef::Main joinedViaStarterPack;
     ComAtprotoRepoStrongRef::Main pinnedPost;
+    QList<ComAtprotoRepoStrongRef::Main> links;
     QString createdAt; // datetime
 };
 }
@@ -1173,6 +1297,11 @@ struct ViewRecord
     int repostCount = 0;
     int likeCount = 0;
     int quoteCount = 0;
+    int opThreadPostIndex = 0; // The 1-indexed position of this post within the contiguous OP
+                               // thread. Only present when this post is part of the OP thread.
+    int opThreadPostCount =
+            0; // The total number of posts in the contiguous OP thread that this post belongs to.
+               // Only present when this post is part of the OP thread.
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
@@ -1424,6 +1553,11 @@ struct FeedViewPost
 {
     PostView post;
     ReplyRef reply;
+    int opThreadPostIndex = 0; // The 1-indexed position of this post within the contiguous OP
+                               // thread. Only present when this post is part of the OP thread.
+    int opThreadPostCount =
+            0; // The total number of posts in the contiguous OP thread that this post belongs to.
+               // Only present when this post is part of the OP thread.
     // union start : reason
     FeedViewPostReasonType reason_type = FeedViewPostReasonType::none;
     ReasonRepost reason_ReasonRepost;
@@ -1432,12 +1566,6 @@ struct FeedViewPost
     QString feedContext; // Context provided by feed generator that may be passed back alongside
                          // interactions.
     QString reqId; // Unique identifier per request that may be passed back alongside interactions.
-    int opThreadPostIndex =
-            0; // The 1-indexed position of this post within the contiguous OP thread. Only present
-               // when this post is part of the OP thread (see `opThread`).
-    int opThreadPostCount =
-            0; // The total number of posts in the contiguous OP thread that this post belongs to.
-               // Only present when this post is part of the OP thread (see `opThread`).
 };
 struct ThreadViewPost
 {
@@ -1933,6 +2061,202 @@ struct Main
 };
 }
 
+// app.bsky.notification.getGroupedNotifications
+namespace AppBskyNotificationGetGroupedNotifications {
+enum class GroupKindType : int {
+    none,
+    kind_LikeGroup,
+    kind_MultiPostLikeGroup,
+    kind_MultiPostRepostGroup,
+    kind_MultiPostLikeViaRepostGroup,
+    kind_MultiPostRepostViaRepostGroup,
+    kind_RepostGroup,
+    kind_LikeViaRepostGroup,
+    kind_RepostViaRepostGroup,
+    kind_FollowGroup,
+    kind_SubscribedPostGroup,
+    kind_GeneratorLikeGroup,
+    kind_ReplyNotification,
+    kind_QuoteNotification,
+    kind_MentionNotification,
+    kind_FollowBackNotification,
+    kind_VerifiedNotification,
+    kind_UnverifiedNotification,
+    kind_StarterPackJoinedNotification,
+    kind_ContactMatchNotification,
+};
+struct LikeItem
+{
+    QString actor; // did
+};
+struct LikeGroup
+{
+    QString post; // at-uri
+    QList<LikeItem> items;
+};
+struct MultiPostLikeItem
+{
+    QString post; // at-uri
+};
+struct MultiPostLikeGroup
+{
+    QString actor; // did
+    QList<MultiPostLikeItem> items;
+};
+struct MultiPostRepostItem
+{
+    QString post; // at-uri
+};
+struct MultiPostRepostGroup
+{
+    QString actor; // did
+    QList<MultiPostRepostItem> items;
+};
+struct MultiPostLikeViaRepostItem
+{
+    QString post; // at-uri
+    QString viaRepost; // at-uri
+};
+struct MultiPostLikeViaRepostGroup
+{
+    QString actor; // did
+    QList<MultiPostLikeViaRepostItem> items;
+};
+struct MultiPostRepostViaRepostItem
+{
+    QString post; // at-uri
+    QString viaRepost; // at-uri
+};
+struct MultiPostRepostViaRepostGroup
+{
+    QString actor; // did
+    QList<MultiPostRepostViaRepostItem> items;
+};
+struct RepostItem
+{
+    QString actor; // did
+};
+struct RepostGroup
+{
+    QString post; // at-uri
+    QList<RepostItem> items;
+};
+struct LikeViaRepostItem
+{
+    QString actor; // did
+};
+struct LikeViaRepostGroup
+{
+    QString post; // at-uri
+    QString viaRepost; // at-uri
+    QList<LikeViaRepostItem> items;
+};
+struct RepostViaRepostItem
+{
+    QString actor; // did
+};
+struct RepostViaRepostGroup
+{
+    QString post; // at-uri
+    QString viaRepost; // at-uri
+    QList<RepostViaRepostItem> items;
+};
+struct FollowItem
+{
+    QString actor; // did
+    QString starterPack; // at-uri
+};
+struct FollowGroup
+{
+    QList<FollowItem> items;
+};
+struct SubscribedPostItem
+{
+    QString actor; // did
+    QString post; // at-uri
+    QString parent; // at-uri , The post this one replies to, if it is a reply.
+};
+struct SubscribedPostGroup
+{
+    QList<SubscribedPostItem> items;
+};
+struct GeneratorLikeItem
+{
+    QString actor; // did
+};
+struct GeneratorLikeGroup
+{
+    QString generator; // at-uri
+    QList<GeneratorLikeItem> items;
+};
+struct ReplyNotification
+{
+    QString post; // at-uri
+    QString parent; // at-uri
+};
+struct QuoteNotification
+{
+    QString post; // at-uri
+    QString parent; // at-uri
+};
+struct MentionNotification
+{
+    QString post; // at-uri
+    QString parent; // at-uri
+};
+struct FollowBackNotification
+{
+    QString actor; // did
+    QString starterPack; // at-uri
+};
+struct VerifiedNotification
+{
+    QString actor; // did
+};
+struct UnverifiedNotification
+{
+    QString actor; // did
+};
+struct StarterPackJoinedNotification
+{
+    QString actor; // did
+    QString starterPack; // at-uri
+};
+struct ContactMatchNotification
+{
+    QString actor; // did
+};
+struct Group
+{
+    QString id;
+    bool isRead = false;
+    QString indexedAt; // datetime
+    int count = 0;
+    // union start : kind
+    GroupKindType kind_type = GroupKindType::none;
+    LikeGroup kind_LikeGroup;
+    MultiPostLikeGroup kind_MultiPostLikeGroup;
+    MultiPostRepostGroup kind_MultiPostRepostGroup;
+    MultiPostLikeViaRepostGroup kind_MultiPostLikeViaRepostGroup;
+    MultiPostRepostViaRepostGroup kind_MultiPostRepostViaRepostGroup;
+    RepostGroup kind_RepostGroup;
+    LikeViaRepostGroup kind_LikeViaRepostGroup;
+    RepostViaRepostGroup kind_RepostViaRepostGroup;
+    FollowGroup kind_FollowGroup;
+    SubscribedPostGroup kind_SubscribedPostGroup;
+    GeneratorLikeGroup kind_GeneratorLikeGroup;
+    ReplyNotification kind_ReplyNotification;
+    QuoteNotification kind_QuoteNotification;
+    MentionNotification kind_MentionNotification;
+    FollowBackNotification kind_FollowBackNotification;
+    VerifiedNotification kind_VerifiedNotification;
+    UnverifiedNotification kind_UnverifiedNotification;
+    StarterPackJoinedNotification kind_StarterPackJoinedNotification;
+    ContactMatchNotification kind_ContactMatchNotification;
+    // union end : kind
+};
+}
+
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 struct Notification
@@ -2042,6 +2366,88 @@ struct AgeAssuranceEvent
     QString initUa; // The user agent used when initiating the AA flow.
     QString completeIp; // The IP address used when completing the AA flow.
     QString completeUa; // The user agent used when completing the AA flow.
+};
+}
+
+// app.bsky.unspecced.getAtmosphereExploreArticleRecommendations
+namespace AppBskyUnspeccedGetAtmosphereExploreArticleRecommendations {
+struct Article
+{
+    QString uri; // at-uri
+};
+}
+
+// app.bsky.unspecced.getAtmosphereExploreTab
+namespace AppBskyUnspeccedGetAtmosphereExploreTab {
+struct ArticleItem
+{
+    bool featured = false;
+    AppBskyEmbedExternal::ViewArticle view;
+};
+struct ArticleList
+{
+    QList<ArticleItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
+struct PublicationItem
+{
+    bool featured = false;
+    AppBskyEmbedExternal::ViewArticlePublication view;
+};
+struct PublicationList
+{
+    QList<PublicationItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
+struct GalleryItem
+{
+    bool featured = false;
+    AppBskyEmbedExternal::ViewGallery view;
+};
+struct GalleryList
+{
+    QList<GalleryItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
+struct LivestreamItem
+{
+    bool featured = false;
+    AppBskyEmbedExternal::ViewLivestream view;
+};
+struct LivestreamList
+{
+    QList<LivestreamItem> items;
+    QString recIdStr; // Snowflake for this list's recommendation, use when submitting
+                      // recommendation events. Omitted when the list is not algorithmically
+                      // recommended.
+};
+struct AnnouncementBanner
+{
+    QString id;
+    QString title;
+    QString description;
+    QString url; // uri
+    QString image; // uri
+    QString overlayColor;
+    QString textColor;
+};
+struct AppCard
+{
+    QString id;
+    QString title;
+    QString description;
+    QString logo; // uri
+    QString backgroundImage; // uri
+    QString overlayColor;
+    QString textColor;
+    QString url; // uri
+    QString category;
 };
 }
 
@@ -3308,175 +3714,99 @@ struct ResultUnavailable
 };
 }
 
-// com.germnetwork.declaration
-namespace ComGermnetworkDeclaration {
-struct MessageMe
+// network.bsky.jetstream.listSegments
+namespace NetworkBskyJetstreamListSegments {
+struct Segment
 {
-    QString messageMeUrl; // uri , A URL to present to an account that does not have its own
-                          // com.germnetwork.declaration record, must have an empty fragment
-                          // component, where the app should fill in the fragment component with the
-                          // DIDs of the two accounts who wish to message each other
-    QString showButtonTo; // The policy of who can message the account, this value is included in
-                          // the keyPackage, but is duplicated here to allow applications to decide
-                          // if they should show a 'Message on Germ' button to the viewer.
-};
-struct Main
-{
-    QString version; // Semver version number, without pre-release or build information, for the
-                     // format of opaque content
-    MessageMe messageMe; // Controls who can message this account
+    QString name; // Segment filename; pass to getSegment.
+    int index = 0; // Zero-based segment index.
+    int sizeBytes = 0; // File size in bytes.
+    QString checksum; // Segment-format xxh3 metadata checksum as 16-char hex; equals the getSegment
+                      // ETag.
+    int eventCount = 0; // Number of events in the segment.
+    int minSeq = 0;
+    int maxSeq = 0;
+    int minWitnessedAt = 0; // Earliest witnessed-at, unix microseconds.
+    int maxWitnessedAt = 0; // Latest witnessed-at, unix microseconds.
 };
 }
 
-// site.standard.document
-namespace SiteStandardDocument {
-enum class MainLabelsType : int {
-    none,
-    labels_ComAtprotoLabelDefs_SelfLabels,
-};
-struct Contributor
+// network.bsky.jetstream.planSnapshot
+namespace NetworkBskyJetstreamPlanSnapshot {
+struct BlockRange
 {
+    int first = 0; // Index of the first block in the range.
+    int last = 0; // Index of the last block in the range.
+};
+struct Segment
+{
+    QString name; // Segment filename to pass to getSegment or getBlock.
+    int index = 0; // Zero-based segment index.
+    QString checksum; // The segment's xxh3 metadata checksum, encoded as 16 hexadecimal characters.
+    int minSeq = 0;
+    int maxSeq = 0;
+    QString mode; // How to download this segment. For segment, download the whole file with
+                  // getSegment. For blocks, download the ranges listed in blocks with getBlock.
+    QList<BlockRange> blocks; // Block ranges to download, including both endpoints. This field is
+                              // present only when mode is blocks.
+};
+struct Stats
+{
+    int segmentsExamined = 0;
+    int segmentsMatched = 0;
+    int blocksMatched = 0;
+    int entries = 0; // Number of items counted toward the server's per-page plan limit.
+};
+}
+
+// network.bsky.jetstream.subscribeEvents
+namespace NetworkBskyJetstreamSubscribeEvents {
+struct Commit
+{
+    int seq = 0; // Jetstream's monotonic per-event sequence number; the stream cursor.
     QString did; // did
-    QString displayName;
-    QString role;
+    QString time; // datetime , The event's display timestamp, microsecond precision: when Jetstream
+                  // witnessed the event, unless an operator timestamp import overrode it. Timestamp
+                  // cursors translate against the witnessed time, so after an import this value may
+                  // not be a faithful resume position.
+    QString rev; // tid , The repo rev of the commit that produced this op.
+    QString operation;
+    QString collection; // nsid , Collection NSID of the record.
+    QString rkey; // record-key , Record key.
+    QVariant record; // The record decoded to JSON. Absent for deletes.
+    QString cid; // cid , CID of the record. Absent for deletes.
 };
-struct Main
+struct Identity
 {
-    ComAtprotoRepoStrongRef::Main bskyPostRef;
-    // union start : content
-    // union end : content
-    QList<Contributor> contributors;
-    Blob coverImage; // Image to used for thumbnail or cover image. Less than 1MB is size.
-    QString description; // A brief description or excerpt from the document.
-    // union start : labels
-    MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels
-            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
-                                                   // content warnings.
-    // union end : labels
-    // union start : links
-    // union end : links
-    QString path; // Combine with site or publication url to construct a canonical URL to the
-                  // document. Prepend with a leading slash.
-    QString publishedAt; // datetime , Timestamp of the documents publish time.
-    QString site; // uri , Points to a publication record (at://) or a publication url (https://)
-                  // for loose documents. Avoid trailing slashes.
-    QList<QString> tags; // Array of strings used to tag or categorize the document. Avoid
-                         // prepending tags with hashtags.
-    QString textContent; // Plaintext representation of the documents contents. Should not contain
-                         // markdown or other formatting.
-    QString title; // Title of the document.
-    QString updatedAt; // datetime , Timestamp of the documents last edit.
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Identity identity;
 };
-}
-
-// site.standard.graph.recommend
-namespace SiteStandardGraphRecommend {
-struct Main
+struct Account
 {
-    QString createdAt; // datetime
-    QString document; // at-uri , AT-URI reference to the document record being recommended (ex:
-                      // at://did:plc:abc123/site.standard.document/xyz789).
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Account account;
 };
-}
-
-// site.standard.graph.subscription
-namespace SiteStandardGraphSubscription {
-struct Main
+struct Sync
 {
-    QString createdAt; // datetime
-    QString publication; // at-uri , AT-URI reference to the publication record being subscribed to
-                         // (ex: at://did:plc:abc123/site.standard.publication/xyz789).
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime , The time Jetstream witnessed this event, microsecond precision.
+                  // Timestamp imports apply only to record (commit) events, so this is always the
+                  // witnessed time.
+    ComAtprotoSyncSubscribeRepos::Sync sync;
 };
-}
-
-// site.standard.theme.color
-namespace SiteStandardThemeColor {
-struct Rgb
+struct Info
 {
-    int b = 0;
-    int g = 0;
-    int r = 0;
-};
-struct Rgba
-{
-    int a = 0;
-    int b = 0;
-    int g = 0;
-    int r = 0;
-};
-}
-
-// site.standard.theme.basic
-namespace SiteStandardThemeBasic {
-enum class MainAccentType : int {
-    none,
-    accent_SiteStandardThemeColor_Rgb,
-};
-enum class MainAccentForegroundType : int {
-    none,
-    accentForeground_SiteStandardThemeColor_Rgb,
-};
-enum class MainBackgroundType : int {
-    none,
-    background_SiteStandardThemeColor_Rgb,
-};
-enum class MainForegroundType : int {
-    none,
-    foreground_SiteStandardThemeColor_Rgb,
-};
-struct Main
-{
-    // union start : accent
-    MainAccentType accent_type = MainAccentType::none;
-    SiteStandardThemeColor::Rgb
-            accent_SiteStandardThemeColor_Rgb; // Color used for links and button backgrounds.
-    // union end : accent
-    // union start : accentForeground
-    MainAccentForegroundType accentForeground_type = MainAccentForegroundType::none;
-    SiteStandardThemeColor::Rgb
-            accentForeground_SiteStandardThemeColor_Rgb; // Color used for button text.
-    // union end : accentForeground
-    // union start : background
-    MainBackgroundType background_type = MainBackgroundType::none;
-    SiteStandardThemeColor::Rgb
-            background_SiteStandardThemeColor_Rgb; // Color used for content background.
-    // union end : background
-    // union start : foreground
-    MainForegroundType foreground_type = MainForegroundType::none;
-    SiteStandardThemeColor::Rgb
-            foreground_SiteStandardThemeColor_Rgb; // Color used for content text.
-    // union end : foreground
-};
-}
-
-// site.standard.publication
-namespace SiteStandardPublication {
-enum class MainLabelsType : int {
-    none,
-    labels_ComAtprotoLabelDefs_SelfLabels,
-};
-struct Preferences
-{
-    bool showInDiscover =
-            true; // Boolean which decides whether the publication should appear in discovery feeds.
-};
-struct Main
-{
-    SiteStandardThemeBasic::Main basicTheme;
-    QString description; // Brief description of the publication.
-    Blob icon; // Square image to identify the publication. Should be at least 256x256.
-    // union start : labels
-    MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels
-            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this publication.
-                                                   // Effectively content warnings.
-    // union end : labels
-    QString name; // Name of the publication.
-    Preferences preferences; // Object containing platform specific preferences (with a few shared
-                             // properties).
-    QString url; // uri , Base publication url (ex: https://standard.site). The canonical document
-                 // URL is formed by combining this value with the document path.
+    QString name;
+    QString message;
 };
 }
 
@@ -3538,6 +3868,266 @@ struct Event
     // union end : details
     QString createdBy;
     QString createdAt; // datetime
+};
+}
+
+// tools.ozone.inbox.appealActionedSubject
+namespace ToolsOzoneInboxAppealActionedSubject {
+struct ActionRef
+{
+    int id = 0; // ID of the moderation action being appealed, available via actions in mod inbox.
+};
+struct LabelRef
+{
+    QString val; // Label being appealed.
+};
+struct TakedownRef
+{
+};
+}
+
+// tools.ozone.inbox.defs
+namespace ToolsOzoneInboxDefs {
+enum class NotificationTargetType : int {
+    none,
+    target_ReportRef,
+    target_SubjectRef,
+    target_StandingRef,
+};
+enum class SubjectRefSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+enum class ReportRefSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+enum class SubjectViewDetailSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+enum class SubjectViewSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+struct EnforcementView
+{
+    QString state;
+    QString scope;
+    QString expiresAt; // datetime
+    QList<QString>
+            labels; // Active label values on the subject, excluding negated and expired labels.
+};
+struct AppealView
+{
+    QString state;
+    QString appealedAt; // datetime
+    QString resolvedAt; // datetime , When the appeal's report was closed.
+    QString outcome; // Decision on a resolved appeal.
+    QString appealableUntil; // datetime
+};
+struct PolicyView
+{
+    QString key;
+    QString displayName;
+    QString link; // uri
+};
+struct ActionView
+{
+    int id = 0; // Action ID (moderation event ID).
+    QString type; // Public action type.
+    QString scope;
+    QString createdAt; // datetime
+    QString reversedAt; // datetime
+    QString expiresAt; // datetime
+    QList<QString> labels; // Label values, for labelApplied/labelRemoved.
+    QList<PolicyView> policies; // Policies applied by a takedown action.
+};
+struct SubjectView
+{
+    QString src; // did , DID of the moderation service that took the actions.
+    // union start : subject
+    SubjectViewSubjectType subject_type = SubjectViewSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    EnforcementView enforcement;
+    AppealView appeal;
+    QList<QString> availableActions;
+    ActionView latestAction;
+    int actionCount = 0;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    bool isRead = false;
+};
+struct ReportsSummary
+{
+    QList<QString> reasonTypes; // Distinct reason types reported, deduplicated and unordered.
+                                // Excludes reasonAppeal.
+    QString firstReportedOn; // datetime , Day of the earliest report, truncated to midnight UTC.
+                             // Render as a date; the time component is not meaningful.
+    QString lastReportedOn; // datetime , Day of the most recent report, truncated to midnight UTC.
+                            // Render as a date; the time component is not meaningful.
+};
+struct SubjectViewDetail
+{
+    QString src; // did
+    bool isRead = false;
+    // union start : subject
+    SubjectViewDetailSubjectType subject_type = SubjectViewDetailSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QVariant record; // Raw record JSON for the subject, when the subject is a record and the record
+                     // is available.
+    EnforcementView enforcement;
+    AppealView appeal;
+    QList<QString> availableActions;
+    QList<ActionView> actions; // A page of action history, most recent first. Reversal timestamps
+                               // include changes outside this page.
+    QString cursor; // Cursor for the next page of action history. Omitted when no older actions
+                    // remain.
+    ReportsSummary reports; // Omitted when the subject has never been reported, e.g. proactive
+                            // enforcement.
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+};
+struct ReportRef
+{
+    int reportId = 0;
+    // union start : subject
+    ReportRefSubjectType subject_type = ReportRefSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QString status;
+};
+struct SubjectRef
+{
+    QString appealOutcome; // Decision captured when an appealResolved notification was created.
+                           // Omitted when the outcome is unknown.
+    // union start : subject
+    SubjectRefSubjectType subject_type = SubjectRefSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QString actionType;
+    int actionId = 0;
+};
+struct StandingRef
+{
+    QString standing;
+    QString previousStanding;
+};
+struct Notification
+{
+    int id = 0;
+    QString reason;
+    // union start : target
+    NotificationTargetType target_type = NotificationTargetType::none;
+    ReportRef target_ReportRef;
+    SubjectRef target_SubjectRef;
+    StandingRef target_StandingRef;
+    // union end : target
+    bool isRead = false;
+    QString createdAt; // datetime
+};
+struct NotificationPreferences
+{
+    bool reports = false; // Notify about outcomes of reports filed by the account (reportResolved
+                          // and reportReopened).
+    bool account = false; // Notify about moderation actions against the account or its content,
+                          // action reversals, appeal outcomes, and standing changes. Label
+                          // application and removal are controlled by labels.
+    bool labels = false; // Notify when labels are applied to or removed from the account or its
+                         // content (labelApplied and labelRemoved actions).
+};
+}
+
+// tools.ozone.inbox.getReport
+namespace ToolsOzoneInboxGetReport {
+enum class ReportViewSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+    subject_ChatBskyConvoDefs_MessageRef,
+    subject_ChatBskyConvoDefs_ConvoRef,
+};
+struct ReportView
+{
+    QString src; // did , DID of the moderation service that received the report.
+    int id = 0; // Report ID (report table ID), used by Ozone's report detail page.
+    QString reasonType; // The exact fully-qualified reason NSID submitted with and stored on the
+                        // report.
+    QString reason;
+    // union start : subject
+    ReportViewSubjectType subject_type = ReportViewSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
+    ChatBskyConvoDefs::ConvoRef subject_ChatBskyConvoDefs_ConvoRef;
+    // union end : subject
+    QVariant record; // Raw record JSON for the subject, when the subject is a record and the record
+                     // is available.
+    QString status;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+};
+struct ResolutionView
+{
+    QString outcome;
+    QString actionTaken; // Public action associated with this report's resolution. See the public
+                         // action vocabulary table.
+    QString scope;
+    QString resolvedAt; // datetime
+};
+}
+
+// tools.ozone.inbox.getUnreadCount
+namespace ToolsOzoneInboxGetUnreadCount {
+struct UnreadCounts
+{
+    int total = 0;
+    int reports = 0;
+    int subjects = 0;
+    int accountStatus = 0;
+};
+}
+
+// tools.ozone.inbox.listReports
+namespace ToolsOzoneInboxListReports {
+enum class ReportViewSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+    subject_ChatBskyConvoDefs_MessageRef,
+    subject_ChatBskyConvoDefs_ConvoRef,
+};
+struct ReportView
+{
+    QString src; // did , DID of the moderation service that received the report.
+    int id = 0; // Report ID (report table ID), used by getReport and Ozone's report detail page.
+    bool isRead = false;
+    QString reasonType; // The exact fully-qualified reason NSID submitted with and stored on the
+                        // report.
+    QString reason;
+    QString lastActionTaken; // Public action associated with this report's transition to resolved.
+                             // See the public action vocabulary table.
+    QString scope;
+    // union start : subject
+    ReportViewSubjectType subject_type = ReportViewSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
+    ChatBskyConvoDefs::ConvoRef subject_ChatBskyConvoDefs_ConvoRef;
+    // union end : subject
+    QString status;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
 };
 }
 
@@ -3673,6 +4263,8 @@ struct ModEventReverseTakedown
                            // infraction's severity.
     int strikeCount = 0; // Number of strikes to subtract from the user's strike count. Usually set
                          // from the last policy infraction's severity.
+    QString strikeExpiresAt; // datetime , When the strike should expire. If not provided, the
+                             // strike never expires.
 };
 struct ModEventComment
 {
@@ -3681,6 +4273,11 @@ struct ModEventComment
 };
 struct ModEventReport
 {
+    QString appealSubmittedBy; // did , Moderator who submitted this appeal on behalf of the
+                               // affected account. Returned by moderator event APIs.
+    QString appealActionType; // Action reference type recorded when this appeal was submitted.
+    int appealActionId = 0;
+    QString appealLabel;
     QString comment;
     bool isReporterMuted =
             false; // Set to true if the reporter was muted from reporting at the time of the event.
@@ -4240,32 +4837,58 @@ struct Member
 namespace ToolsOzoneQueueDefs {
 struct QueueStats
 {
-    int pendingCount = 0; // Number of reports in 'open' status
-    int actionedCount = 0; // Number of reports in 'closed' status
-    int escalatedCount = 0; // Number of reports in 'escalated' status
-    int inboundCount = 0; // Reports received in this queue in the last 24 hours.
-    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
-                        // rounded to nearest integer. Absent when inboundCount is 0.
-    int avgHandlingTimeSec = 0; // Average time in seconds from report creation to close, for
-                                // reports closed in this period.
-    QString lastUpdated; // datetime , When these statistics were last computed
+    int pendingCount = 0; // Number of unmuted reports currently not closed.
+    int closureTargetOverdueCount = 0; // Unmuted pending reports past their closure target.
+    int closureTargetMetCount = 0; // Reports whose closure meets their closure target.
+    int closureTargetMissedCount = 0; // Reports whose closure exceeds their closure target.
+    int closureTargetMetRate = 0; // Percent of reports meeting their closure target.
+    int closedCount =
+            0; // Number of reports whose current closure falls within this UTC calendar day.
+    int actionedCount =
+            0; // Number of closures whose last report action is label, tag, or takedown.
+    int acknowledgedCount =
+            0; // Number of closures whose last report action is not label, tag, or takedown.
+    int escalatedCount = 0; // Number of report escalation events during this UTC calendar day.
+    int inboundCount = 0; // Reports received in this queue during this UTC calendar day.
+    int labelActionCount = 0; // Closures whose last report action is a label event.
+    int tagActionCount = 0; // Closures whose last report action is a tag event.
+    int takedownActionCount = 0; // Closures whose last report action is a takedown event.
+    int ahtDurationSec = 0; // Sum of report assignment-to-close seconds.
+    int ahtSampleCount = 0; // Number of assigned closed-report samples in ahtDurationSec.
+    int resolutionDurationSec = 0; // Sum of report creation-to-close seconds.
+    int resolutionSampleCount = 0; // Number of closed-report samples in resolutionDurationSec.
+    int actionRate = 0; // Percentage of closures actioned (actionedCount / closedCount * 100),
+                        // rounded to nearest integer.
+    int avgHandlingTimeSec = 0; // Average handling time in seconds from report assignment to close.
+    int avgResolutionTimeSec =
+            0; // Average resolution time in seconds from report creation to close.
+    QString lastUpdated; // datetime , When these statistics were last computed.
 };
 struct QueueView
 {
     int id = 0; // Queue ID
     QString name; // Display name of the queue
     QList<QString> subjectTypes; // Subject types this queue accepts.
-    QString collection; // nsid , Collection name for record subjects (e.g., 'app.bsky.feed.post')
+    QString collection; // nsid , Collection name for record subjects. Omit to accept every
+                        // collection.
     QList<QString> reportTypes; // Report reason types this queue accepts (fully qualified NSIDs)
+    QList<QString> reporterTags; // Match any listed tag on the account submitting the report.
+    QList<QString> accountTags; // Match tags on the account that is being reported against. For
+                                // record subjects, use the author account. Match any listed tag.
     QString description; // Optional description of the queue
     QList<QString>
             recommendedPolicies; // Policy keys recommended when actioning reports in this queue
+    QList<QString> recommendedLabels; // Labels recommended for this queue and used as a fallback
+                                      // when routing label appeals
     QString createdBy; // did , DID of moderator who created this queue
     QString createdAt; // datetime
     QString updatedAt; // datetime
     bool enabled = false; // Whether this queue is currently active
     QString deletedAt; // datetime , When the queue was deleted, if applicable
     QueueStats stats; // Statistics about this queue
+    bool strictAccess = false; // Admins can always list this queue and browse its reports. Other
+                               // roles require an active queue assignment. Individual report and
+                               // moderation event access is unchanged.
 };
 struct AssignmentView
 {
@@ -4284,6 +4907,7 @@ enum class ReportActivityViewActivityType : int {
     none,
     activity_QueueActivity,
     activity_AssignmentActivity,
+    activity_UnassignmentActivity,
     activity_EscalationActivity,
     activity_CloseActivity,
     activity_ReopenActivity,
@@ -4303,6 +4927,12 @@ struct ReportView
     QString status; // Current status of the report
     ToolsOzoneModerationDefs::SubjectView subject;
     ComAtprotoModerationDefs::ReasonType reportType;
+    QString priorityLevel; // Priority level assigned to the report.
+    int priorityScore = 0; // Report priority score. Higher scores have higher priority.
+    int priorityTargetMinutes = 0; // Target resolution duration in minutes.
+    int resolutionTimeSec = 0; // Time from report creation to its last closure.
+    bool priorityTargetMet =
+            false; // Whether the current closure occurred within the report's snapshotted target.
     QString reportedBy; // did , DID of the user who made the report
     ToolsOzoneModerationDefs::SubjectView reporter;
     QString comment; // Comment provided by the reporter
@@ -4310,7 +4940,7 @@ struct ReportView
     QString updatedAt; // datetime , When the report was last updated
     QString queuedAt; // datetime , When the report was assigned to its current queue
     QList<int> actionEventIds; // Array of moderation event IDs representing actions taken on this
-                               // report (sorted DESC, most recent first)
+                               // report, in append order (most recently linked event last)
     QList<ToolsOzoneModerationDefs::ModEventView> actions;
     QString actionNote; // Note sent to reporter when report was actioned
     ToolsOzoneModerationDefs::SubjectStatusView subjectStatus;
@@ -4331,6 +4961,14 @@ struct AssignmentActivity
 {
     QString previousStatus; // The report's status before this activity. Populated automatically
                             // from the report row; not required in input.
+};
+struct UnassignmentActivity
+{
+    QString previousStatus; // The report's status immediately before the moderator was unassigned.
+                            // May be absent on older activities.
+    QString nextStatus; // The report's status immediately after the moderator was unassigned. May
+                        // equal previousStatus if unassignment did not change the report's status,
+                        // or be absent on older activities.
 };
 struct EscalationActivity
 {
@@ -4359,6 +4997,8 @@ struct ReportActivityView
     QueueActivity activity_QueueActivity; // The typed activity object describing what occurred.
     AssignmentActivity
             activity_AssignmentActivity; // The typed activity object describing what occurred.
+    UnassignmentActivity
+            activity_UnassignmentActivity; // The typed activity object describing what occurred.
     EscalationActivity
             activity_EscalationActivity; // The typed activity object describing what occurred.
     CloseActivity activity_CloseActivity; // The typed activity object describing what occurred.
@@ -4379,28 +5019,64 @@ struct ReportActivityView
 };
 struct LiveStats
 {
-    int pendingCount = 0; // Number of reports currently not closed.
-    int actionedCount = 0; // Number of reports closed today.
-    int escalatedCount = 0; // Number of reports escalated today.
-    int inboundCount = 0; // Reports received today.
-    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
+    int pendingCount = 0; // Number of unmuted reports currently not closed.
+    int closureTargetOverdueCount = 0; // Unmuted pending reports past their closure target.
+    int closureTargetMetCount = 0; // Reports whose closure meets their closure target.
+    int closureTargetMissedCount = 0; // Reports whose closure exceeds their closure target.
+    int closureTargetMetRate = 0; // Percent of reports meeting their closure target.
+    int closedCount = 0; // Number of close transitions.
+    int actionedCount =
+            0; // Number of closures whose last report action is label, tag, or takedown.
+    int acknowledgedCount =
+            0; // Number of closures whose last report action is not label, tag, or takedown.
+    int escalatedCount = 0; // Number of reports escalated.
+    int inboundCount = 0; // Reports received.
+    int labelActionCount = 0; // Closures whose last report action is a label event.
+    int tagActionCount = 0; // Closures whose last report action is a tag event.
+    int takedownActionCount = 0; // Closures whose last report action is a takedown event.
+    int ahtDurationSec = 0; // Sum of report assignment-to-close seconds.
+    int ahtSampleCount = 0; // Number of assigned closed-report samples in ahtDurationSec.
+    int resolutionDurationSec = 0; // Sum of report creation-to-close seconds.
+    int resolutionSampleCount = 0; // Number of closed-report samples in resolutionDurationSec.
+    int actionRate = 0; // Percentage of closures actioned (actionedCount / closedCount * 100),
                         // rounded to nearest integer.
-    int avgHandlingTimeSec =
-            0; // Average time in seconds from report creation (or moderator assignment) to close.
+    int avgHandlingTimeSec = 0; // Average handling time in seconds from report assignment to close.
+    int avgResolutionTimeSec =
+            0; // Average resolution time in seconds from report creation to close.
     QString lastUpdated; // datetime , When these statistics were last computed.
 };
 struct HistoricalStats
 {
     QString date; // The calendar date this snapshot covers (YYYY-MM-DD).
     QString computedAt; // datetime , When this snapshot was last computed.
-    int pendingCount = 0; // Number of reports not closed at time of computation.
-    int actionedCount = 0; // Number of reports closed during this day.
+    int pendingCount = 0; // Number of unmuted reports not closed at the end of this UTC day, or at
+                          // computation time for the current day.
+    int closureTargetOverdueCount =
+            0; // Unmuted pending reports past their closure target at the snapshot time.
+    int closureTargetMetCount = 0; // Reports whose closure meets their closure target.
+    int closureTargetMissedCount = 0; // Reports whose closure exceeds their closure target.
+    int closureTargetMetRate = 0; // Percent of reports meeting their closure target.
+    int closedCount = 0; // Number of close transitions during this day.
+    int actionedCount = 0; // Number of closures whose last report action is label, tag, or takedown
+                           // during this day.
+    int acknowledgedCount = 0; // Number of closures whose last report action is not label, tag, or
+                               // takedown during this day.
     int escalatedCount = 0; // Number of reports escalated during this day.
     int inboundCount = 0; // Reports received during this day.
-    int actionRate = 0; // Percentage of reports actioned (actionedCount / inboundCount * 100),
+    int labelActionCount = 0; // Closures whose last report action is a label event during this day.
+    int tagActionCount = 0; // Closures whose last report action is a tag event during this day.
+    int takedownActionCount =
+            0; // Closures whose last report action is a takedown event during this day.
+    int ahtDurationSec = 0; // Sum of report assignment-to-close seconds for this day's samples.
+    int ahtSampleCount = 0; // Number of assigned closed-report samples in ahtDurationSec.
+    int resolutionDurationSec =
+            0; // Sum of report creation-to-close seconds for this day's samples.
+    int resolutionSampleCount = 0; // Number of closed-report samples in resolutionDurationSec.
+    int actionRate = 0; // Percentage of closures actioned (actionedCount / closedCount * 100),
                         // rounded to nearest integer.
-    int avgHandlingTimeSec =
-            0; // Average time in seconds from report creation (or moderator assignment) to close.
+    int avgHandlingTimeSec = 0; // Average handling time in seconds from report assignment to close.
+    int avgResolutionTimeSec =
+            0; // Average resolution time in seconds from report creation to close.
 };
 struct AssignmentView
 {
@@ -4428,6 +5104,7 @@ struct Event
     PatternType pattern;
     ActionType action;
     ReasonType reason;
+    QString source = QStringLiteral("ozone/default"); // Source of the decision
     QString createdBy; // did , DID of the user who created this rule
     QString createdAt; // datetime
     QString comment; // Optional comment about the decision
@@ -4438,10 +5115,30 @@ struct UrlRule
     PatternType pattern;
     ActionType action;
     ReasonType reason;
+    QString source = QStringLiteral("ozone/default"); // Source of the rule
     QString comment; // Optional comment about the decision
     QString createdBy; // did , DID of the user added the rule.
     QString createdAt; // datetime , Timestamp when the rule was created
     QString updatedAt; // datetime , Timestamp when the rule was last updated
+};
+}
+
+// tools.ozone.safelink.syncSource
+namespace ToolsOzoneSafelinkSyncSource {
+struct SourceRule
+{
+    QString url;
+    ToolsOzoneSafelinkDefs::PatternType pattern;
+    ToolsOzoneSafelinkDefs::ActionType action;
+    ToolsOzoneSafelinkDefs::ReasonType reason;
+};
+}
+
+// tools.ozone.server.getCapabilities
+namespace ToolsOzoneServerGetCapabilities {
+struct NotificationConfig
+{
+    QList<QString> channels;
 };
 }
 
@@ -4826,6 +5523,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedRepost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphListitem::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyActorProfile::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyActorLink::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)

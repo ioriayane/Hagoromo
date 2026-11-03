@@ -48,6 +48,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         AppBskyActorProfile::Main record;
         AppBskyActorProfile::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("app.bsky.actor.link")) {
+        AppBskyActorLink::Main record;
+        AppBskyActorLink::copyMain(src, record);
+        dest.setValue(record);
     } else if (type == QStringLiteral("app.bsky.graph.list")) {
         AppBskyGraphList::Main record;
         AppBskyGraphList::copyMain(src, record);

@@ -13,6 +13,7 @@ namespace AtProtocolInterface {
 ComAtprotoModerationCreateReport::ComAtprotoModerationCreateReport(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    m_id = 0;
 }
 
 void ComAtprotoModerationCreateReport::createReport(const QString &reasonType,

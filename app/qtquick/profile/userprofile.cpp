@@ -8,8 +8,10 @@
 #include "extension/directory/plc/directoryplclogaudit.h"
 #include "tools/labelerprovider.h"
 #include "tools/accountmanager.h"
+#include "tools/supportprovider.h"
 
 #include <QPointer>
+#include <QUrl>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -53,7 +55,6 @@ UserProfile::~UserProfile()
 void UserProfile::setAccount(const QString &uuid)
 {
     m_account.uuid = uuid;
-    m_account = AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
 void UserProfile::getProfile(const QString &did)
@@ -78,6 +79,7 @@ void UserProfile::getProfile(const QString &did)
                 setBanner(detail.banner);
                 setPronouns(detail.pronouns);
                 setWebsite(detail.website);
+                updateLinks(detail.links);
                 setFollowersCount(detail.followersCount);
                 setFollowsCount(detail.followsCount);
                 setPostsCount(detail.postsCount);
@@ -85,7 +87,10 @@ void UserProfile::getProfile(const QString &did)
                                      .toLocalTime()
                                      .toString("yyyy/MM/dd"));
 
-                setFollowing(detail.viewer.following.contains(m_account.did));
+                // トークンなどが更新されている可能性があるので、使うときに取得する
+                const AtProtocolInterface::AccountData account =
+                        AccountManager::getInstance()->getAccount(m_account.uuid);
+                setFollowing(detail.viewer.following.contains(account.did));
                 setFollowedBy(detail.viewer.followedBy.contains(did));
                 setFollowingUri(detail.viewer.following);
                 QStringList knownFollowerAvators;
@@ -103,7 +108,7 @@ void UserProfile::getProfile(const QString &did)
                 setKnownFollowersCount(detail.viewer.knownFollowers.count);
                 setMuted(detail.viewer.muted);
                 setBlockedBy(detail.viewer.blockedBy);
-                setBlocking(detail.viewer.blocking.contains(m_account.did));
+                setBlocking(detail.viewer.blocking.contains(account.did));
                 setBlockingUri(detail.viewer.blocking);
                 if (detail.labels.isEmpty()) {
                     setLabels(QStringList());
@@ -122,12 +127,11 @@ void UserProfile::getProfile(const QString &did)
                     }
                     setLabels(labels);
                     if (!labelers.isEmpty()) {
-                        LabelProvider::getInstance()->update(labelers, m_account,
-                                                             &m_labelConnector);
+                        LabelProvider::getInstance()->update(labelers, account, &m_labelConnector);
                     }
                 }
                 setBelongingLists(
-                        ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+                        ListItemsCache::getInstance()->getListNames(account.did, detail.did));
                 setPinnedPost(detail.pinnedPost.uri);
 
                 if (detail.verification.trustedVerifierStatus == "valid") {
@@ -159,7 +163,7 @@ void UserProfile::getProfile(const QString &did)
                 setLiveExpiresAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
                         detail.status.expiresAt, true));
 
-                if (detail.did == m_account.did) {
+                if (detail.did == account.did) {
                     setAllowSubscriptions(false);
                 } else if (detail.associated.activitySubscription.allowSubscriptions == "mutuals") {
                     // 相互
@@ -934,4 +938,64 @@ void UserProfile::setPronouns(const QString &newPronouns)
         return;
     m_pronouns = newPronouns;
     emit pronounsChanged();
+}
+
+QVariantList UserProfile::links() const
+{
+    return m_links;
+}
+
+void UserProfile::setLinks(const QVariantList &newLinks)
+{
+    if (m_links == newLinks)
+        return;
+    m_links = newLinks;
+    emit linksChanged();
+}
+
+void UserProfile::updateLinks(const QList<AtProtocolType::AppBskyActorDefs::ProfileLinkView> &links)
+{
+    QVariantList items;
+    QVariantList views;
+    for (const auto &link : links) {
+        if (link.url.isEmpty())
+            continue;
+        QStringList labels;
+        for (const auto &label : link.labels) {
+            if (!label.neg) {
+                labels.append(label.val);
+            }
+        }
+        QVariantMap item;
+        item.insert("uri", link.uri);
+        item.insert("cid", link.cid);
+        item.insert("url", link.url);
+        item.insert("title", link.title.isEmpty() ? QUrl(link.url).host() : link.title);
+        item.insert("rawTitle", link.title);
+        item.insert("icon", link.icon);
+        item.insert("supportProvider", SupportProvider::isSupportProvider(link.url));
+        item.insert("supportProviderLogo", SupportProvider::logo(link.url));
+        // プロフィール画面では支援サイトのリンクを強調する
+        item.insert("highlight", item.value("supportProvider"));
+        if (labels.isEmpty()) {
+            items.append(item);
+        }
+        item.insert("labels", labels);
+        views.append(item);
+    }
+    setLinks(items);
+    setLinkViews(views);
+}
+
+QVariantList UserProfile::linkViews() const
+{
+    return m_linkViews;
+}
+
+void UserProfile::setLinkViews(const QVariantList &newLinkViews)
+{
+    if (m_linkViews == newLinkViews)
+        return;
+    m_linkViews = newLinkViews;
+    emit linkViewsChanged();
 }

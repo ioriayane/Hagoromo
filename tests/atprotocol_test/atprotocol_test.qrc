@@ -76,6 +76,8 @@
         <file>data/postgate/2/xrpc/com.atproto.repo.createRecord</file>
         <file>response/ogp/file7.html</file>
         <file>response/ogp/file8.html</file>
+        <file>response/ogp/file9.html</file>
+        <file>response/ogp/file10.html</file>
         <file>response/labels/provider/10/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/provider/11/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/provider/12/xrpc/app.bsky.labeler.getServices</file>

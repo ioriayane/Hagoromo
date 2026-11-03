@@ -13,6 +13,7 @@ namespace AtProtocolInterface {
 
 AppBskyFeedSearchPostsV2::AppBskyFeedSearchPostsV2(QObject *parent) : AppBskyFeedGetPosts { parent }
 {
+    m_hitsTotal = 0;
 }
 
 void AppBskyFeedSearchPostsV2::searchPostsV2(
@@ -124,11 +125,6 @@ void AppBskyFeedSearchPostsV2::searchPostsV2(
 const int &AppBskyFeedSearchPostsV2::hitsTotal() const
 {
     return m_hitsTotal;
-}
-
-const QList<AtProtocolType::AppBskyFeedDefs::PostView> &AppBskyFeedSearchPostsV2::postsList() const
-{
-    return m_postsList;
 }
 
 const QStringList &AppBskyFeedSearchPostsV2::detectedQueryLanguagesList() const

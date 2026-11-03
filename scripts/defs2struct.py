@@ -119,6 +119,7 @@ class Defs2Struct:
                          'AppBskyFeedRepost::Main',
                          'AppBskyGraphListitem::Main',
                          'AppBskyActorProfile::Main',
+                         'AppBskyActorLink::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
                          'AppBskyFeedPostgate::Main',
@@ -1373,6 +1374,43 @@ class Defs2Struct:
 
 
 
+    def resolve_api_class_inheritance(self):
+        """ 親クラスのリスト以外のメンバーも持つクラスの継承関係を整理する """
+        for namespace, data in self.api_class.items():
+            # プリミティブ型のメンバーは不定値にならないようにコンストラクタで初期化する
+            for member in data.get('members', []):
+                if member.get('variable_type') == 'int':
+                    member['initial_value'] = '0'
+                elif member.get('variable_type') == 'bool':
+                    member['initial_value'] = 'false'
+
+            if data.get('has_parent_class', False) or data.get('is_parent', False):
+                continue
+            if data.get('parent_class_name', 'AccessAtProtocol') == 'AccessAtProtocol':
+                continue
+            # 親クラスのリストと同じ型のメンバーがあれば親クラスのメンバーを使う
+            # (同名のメンバーを再定義すると親クラスのメンバーを隠してしまうため)
+            inherited_members = []
+            for member in data.get('members', []):
+                parent_namespace = member.get('parent_info', {}).get('parent_namespace', '')
+                if len(parent_namespace) == 0:
+                    continue
+                if member['variable_is_array'] and not member['variable_is_union']:
+                    inherited_members.append((member, parent_namespace))
+            parent_members = []
+            if len(inherited_members) == 1:
+                parent_members = [m for m in self.api_class.get(inherited_members[0][1], {}).get('members', [])
+                                  if m['variable_is_array'] and m['variable_type'] == inherited_members[0][0]['variable_type']]
+            if len(parent_members) == 1:
+                member = inherited_members[0][0]
+                member['inherited'] = True
+                member['method_getter'] = parent_members[0]['method_getter']
+                member['variable_name'] = parent_members[0]['variable_name']
+            else:
+                # 親クラスのリストとして扱えるメンバーがないときは継承しない
+                data['parent_class_name'] = 'AccessAtProtocol'
+                data['include_paths'] = ['atprotocol/accessatprotocol.h']
+
     def output_file_lexicons_h(self, environment, output_path: str):
         """ lexicons.h """
         template = environment.get_template('template/lexicons.h.j2')
@@ -1495,6 +1533,7 @@ class Defs2Struct:
                 defs = self.json_obj[namespace].get('defs', {})
                 for type_name in defs.keys():
                     self.output_api_class(namespace, type_name)
+        self.resolve_api_class_inheritance()
 
 
         # コピー関数のための解析
@@ -1519,6 +1558,8 @@ class Defs2Struct:
                     self.json_deep_merge(dest[key], src[key])
                 elif isinstance(dest[key], list) and isinstance(src[key], list):
                     dest[key].extend(src[key])
+                else:
+                    dest[key] = src[key]
             else:
                 dest[key] = src[key]
         return dest
@@ -1546,15 +1587,20 @@ class Defs2Struct:
 
         self.json_obj[namespace] = obj
 
-def main(lexicons_path: str, output_path: str) -> None:
+def main(lexicons_paths: list, output_path: str) -> None:
 
     def2struct = Defs2Struct()
-    #atproto\lexicons
-    lexicons_path = lexicons_path.replace('\\', '/')
+
+    file_list = []
+    for lexicons_path in lexicons_paths:
+        lexicons_path = lexicons_path.replace('\\', '/')
+        for file in glob.glob(lexicons_path + '/**/*.json', recursive=True):
+            file = file.replace('\\', '/')
+            file_list.append((file.removeprefix(lexicons_path), file, lexicons_path))
     # glob.globの列挙順はOS/ファイルシステム依存で不定なため、出力順を環境間で安定させるためにソートする
-    file_list = sorted(glob.glob(lexicons_path + '/**/*.json', recursive=True))
-    for file in file_list:
-        def2struct.open(file.replace('\\', '/'), lexicons_path)
+    # 複数のディレクトリにまたがっても順序が変わらないようにlexiconsからの相対パスでソートする
+    for _, file, lexicons_path in sorted(file_list):
+        def2struct.open(file, lexicons_path)
 
     # 既存のlexiconに合体していないファイルを処理
     extend_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons')
@@ -1568,7 +1614,10 @@ def main(lexicons_path: str, output_path: str) -> None:
 if __name__ == "__main__":
 
     base_dir = os.path.dirname(__file__)
-    lexicons_path: str = os.path.join(base_dir, '..', '1stparty', 'atproto', 'lexicons')
+    lexicons_paths: list = [
+        os.path.join(base_dir, '..', '1stparty', 'atproto', 'lexicons'),
+        os.path.join(base_dir, '..', '1stparty', 'bsky', 'lexicons'),
+    ]
     output: str = os.path.join(base_dir, '..', 'lib', 'atprotocol')
 
-    main(lexicons_path, output)
+    main(lexicons_paths, output)

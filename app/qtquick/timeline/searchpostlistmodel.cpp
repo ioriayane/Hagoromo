@@ -1,10 +1,15 @@
 #include "searchpostlistmodel.h"
 
 #include "atprotocol/app/bsky/feed/appbskyfeedsearchposts.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedsearchpostsv2.h"
 
 using AtProtocolInterface::AppBskyFeedSearchPosts;
+using AtProtocolInterface::AppBskyFeedSearchPostsV2;
 
-SearchPostListModel::SearchPostListModel(QObject *parent) : TimelineListModel { parent } { }
+SearchPostListModel::SearchPostListModel(QObject *parent)
+    : TimelineListModel { parent }, m_useSearchPostsV2(true)
+{
+}
 
 bool SearchPostListModel::getLatest()
 {
@@ -13,30 +18,11 @@ bool SearchPostListModel::getLatest()
     setRunning(true);
 
     updateContentFilterLabels([=]() {
-        AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
-        connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
-            if (success) {
-                if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
-                    m_cursor = posts->cursor();
-                }
-                QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
-                for (const auto &post : std::as_const(posts->postsList())) {
-                    AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
-                    feed_view_post.post = post;
-                    feed_view_post_list.append(feed_view_post);
-                }
-                copyFrom(feed_view_post_list);
-            } else {
-                emit errorOccurred(posts->errorCode(), posts->errorMessage());
-            }
-            QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
-            posts->deleteLater();
-        });
-        posts->setAccount(account());
-        posts->setLabelers(labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
-                           QString(), QString(), QString(), QString(), QStringList(), 10,
-                           QString());
+        if (m_useSearchPostsV2) {
+            searchPostsV2Latest();
+        } else {
+            searchPostsLatest();
+        }
     });
     return true;
 }
@@ -48,30 +34,142 @@ bool SearchPostListModel::getNext()
     setRunning(true);
 
     updateContentFilterLabels([=]() {
-        AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
-        connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
-            if (success) {
-                m_cursor = posts->cursor();
-                QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
-                for (const auto &post : std::as_const(posts->postsList())) {
-                    AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
-                    feed_view_post.post = post;
-                    feed_view_post_list.append(feed_view_post);
-                }
-                copyFromNext(feed_view_post_list);
-            } else {
-                emit errorOccurred(posts->errorCode(), posts->errorMessage());
-            }
-            QTimer::singleShot(10, this, &SearchPostListModel::displayQueuedPostsNext);
-            posts->deleteLater();
-        });
-
-        posts->setAccount(account());
-        posts->setLabelers(labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
-                           QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
+        if (m_useSearchPostsV2) {
+            searchPostsV2Next();
+        } else {
+            searchPostsNext();
+        }
     });
     return true;
+}
+
+void SearchPostListModel::searchPostsV2Latest()
+{
+    AppBskyFeedSearchPostsV2 *posts = new AppBskyFeedSearchPostsV2(this);
+    connect(posts, &AppBskyFeedSearchPostsV2::finished, this, [=](bool success) {
+        if (success) {
+            if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                m_cursor = posts->cursor();
+            }
+            appendPosts(posts->postsList(), false);
+            QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
+        } else if (isSearchPostsV2Unsupported(posts->httpStatusCode(), posts->errorCode())) {
+            // 同じ条件でsearchPostsで取得し直す
+            switchToSearchPosts();
+            searchPostsLatest();
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
+            QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
+        }
+        posts->deleteLater();
+    });
+    const SearchPostsV2Condition condition = makeSearchPostsV2Condition(text());
+    posts->setAccount(account());
+    posts->setLabelers(labelerDids());
+    posts->searchPostsV2(QString(), 10, condition.query, "recent", QStringList(), QStringList(),
+                         QStringList(), QStringList(), QStringList(), QStringList(), QStringList(),
+                         QStringList(), QStringList(), QStringList(), QStringList(), QStringList(),
+                         condition.since, condition.until, true, condition.languages, QStringList(),
+                         false, false, QString(), QString(), false, false, false, QString());
+}
+
+void SearchPostListModel::searchPostsV2Next()
+{
+    AppBskyFeedSearchPostsV2 *posts = new AppBskyFeedSearchPostsV2(this);
+    connect(posts, &AppBskyFeedSearchPostsV2::finished, this, [=](bool success) {
+        if (success) {
+            m_cursor = posts->cursor();
+            appendPosts(posts->postsList(), true);
+        } else if (isSearchPostsV2Unsupported(posts->httpStatusCode(), posts->errorCode())) {
+            // searchPostsV2のカーソルはsearchPostsで使えないので続きの読み込みはここで終える
+            switchToSearchPosts();
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
+        }
+        QTimer::singleShot(10, this, &SearchPostListModel::displayQueuedPostsNext);
+        posts->deleteLater();
+    });
+    const SearchPostsV2Condition condition = makeSearchPostsV2Condition(text());
+    posts->setAccount(account());
+    posts->setLabelers(labelerDids());
+    posts->searchPostsV2(m_cursor, 10, condition.query, "recent", QStringList(), QStringList(),
+                         QStringList(), QStringList(), QStringList(), QStringList(), QStringList(),
+                         QStringList(), QStringList(), QStringList(), QStringList(), QStringList(),
+                         condition.since, condition.until, true, condition.languages, QStringList(),
+                         false, false, QString(), QString(), false, false, false, QString());
+}
+
+void SearchPostListModel::searchPostsLatest()
+{
+    AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
+    connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
+        if (success) {
+            if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                m_cursor = posts->cursor();
+            }
+            appendPosts(posts->postsList(), false);
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
+        }
+        QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
+        posts->deleteLater();
+    });
+    posts->setAccount(account());
+    posts->setLabelers(labelerDids());
+    posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                       QString(), QString(), QString(), QString(), QStringList(), 10, QString());
+}
+
+void SearchPostListModel::searchPostsNext()
+{
+    AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
+    connect(posts, &AppBskyFeedSearchPosts::finished, this, [=](bool success) {
+        if (success) {
+            m_cursor = posts->cursor();
+            appendPosts(posts->postsList(), true);
+        } else {
+            emit errorOccurred(posts->errorCode(), posts->errorMessage());
+        }
+        QTimer::singleShot(10, this, &SearchPostListModel::displayQueuedPostsNext);
+        posts->deleteLater();
+    });
+    posts->setAccount(account());
+    posts->setLabelers(labelerDids());
+    posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                       QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
+}
+
+bool SearchPostListModel::isSearchPostsV2Unsupported(const int http_status_code,
+                                                     const QString &error_code) const
+{
+    // サービスがsearchPostsV2を実装していないときだけsearchPostsに切り替える
+    // (通信エラーや認証エラー、リクエスト内容のエラーでは切り替えない)
+    return (http_status_code == 404 || http_status_code == 501
+            || error_code == QStringLiteral("MethodNotImplemented")
+            || error_code == QStringLiteral("XRPCNotSupported"));
+}
+
+void SearchPostListModel::switchToSearchPosts()
+{
+    qDebug().noquote() << "Switch to app.bsky.feed.searchPosts";
+    m_useSearchPostsV2 = false;
+    m_cursor.clear();
+}
+
+void SearchPostListModel::appendPosts(const QList<AtProtocolType::AppBskyFeedDefs::PostView> &posts,
+                                      const bool next)
+{
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
+    for (const auto &post : posts) {
+        AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
+        feed_view_post.post = post;
+        feed_view_post_list.append(feed_view_post);
+    }
+    if (next) {
+        copyFromNext(feed_view_post_list);
+    } else {
+        copyFrom(feed_view_post_list);
+    }
 }
 
 QString SearchPostListModel::replaceSearchCommand(const QString &command)
@@ -86,6 +184,27 @@ QString SearchPostListModel::replaceSearchCommand(const QString &command)
         }
     }
     return replaced_items.join(' ');
+}
+
+SearchPostsV2Condition SearchPostListModel::makeSearchPostsV2Condition(const QString &command)
+{
+    // searchPostsV2はqueryに含まれるsince:/until:/lang:を解釈しないのでパラメータに移す
+    SearchPostsV2Condition condition;
+    QStringList items = replaceSearchCommand(command).split(' ');
+    QStringList query_items;
+    for (const auto &item : std::as_const(items)) {
+        if (item.startsWith("since:") && item.length() > 6) {
+            condition.since = item.mid(6);
+        } else if (item.startsWith("until:") && item.length() > 6) {
+            condition.until = item.mid(6);
+        } else if (item.startsWith("lang:") && item.length() > 5) {
+            condition.languages.append(item.mid(5));
+        } else {
+            query_items.append(item);
+        }
+    }
+    condition.query = query_items.join(' ').trimmed();
+    return condition;
 }
 
 QString SearchPostListModel::text() const

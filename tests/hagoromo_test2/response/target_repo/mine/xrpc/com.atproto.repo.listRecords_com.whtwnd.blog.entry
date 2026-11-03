@@ -1,0 +1,37 @@
+{
+    "records": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/com.whtwnd.blog.entry/entry1",
+            "cid": "cid_1",
+            "value": {
+                "$type": "com.whtwnd.blog.entry",
+                "title": "Public entry",
+                "content": "content 1",
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "visibility": "public"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/com.whtwnd.blog.entry/entry2",
+            "cid": "cid_2",
+            "value": {
+                "$type": "com.whtwnd.blog.entry",
+                "title": "Url entry",
+                "content": "content 2",
+                "createdAt": "2024-02-01T00:00:00.000Z",
+                "visibility": "url"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/com.whtwnd.blog.entry/entry3",
+            "cid": "cid_3",
+            "value": {
+                "$type": "com.whtwnd.blog.entry",
+                "title": "Author only entry",
+                "content": "content 3",
+                "createdAt": "2024-03-01T00:00:00.000Z",
+                "visibility": "author"
+            }
+        }
+    ]
+}

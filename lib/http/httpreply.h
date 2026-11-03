@@ -50,6 +50,8 @@ public:
     void setRecvData(const QByteArray &newRecvData);
     Error error() const;
     void setError(Error newError);
+    int statusCode() const;
+    void setStatusCode(int newStatusCode);
     QString contentType() const;
     void setContentType(const QString &newContentType);
     void setContentType(const QByteArray &name, const QByteArray &value);
@@ -69,6 +71,7 @@ private:
     QByteArray m_sendData;
     QByteArray m_recvData;
     Error m_error;
+    int m_statusCode;
     QString m_contentType;
 };
 

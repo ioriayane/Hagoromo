@@ -18,7 +18,7 @@ ColumnLayout {
     property int imageLayoutType: 1
     property string subTitle: ""
     property string postUri: ""
-
+    property bool useNext: false
     property alias listView: rootListView
     property alias model: rootListView.model
 
@@ -78,6 +78,11 @@ ColumnLayout {
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
             maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+            onMovementEnded: {
+                if(atYEnd && postThreadView.useNext){
+                    rootListView.model.getNext()
+                }
+            }
 
             SystemTool {
                 id: systemTool
@@ -94,6 +99,12 @@ ColumnLayout {
                     visible: rootListView.model.running
                 }
             }
+            footer: BusyIndicator {
+                width: rootListView.width
+                height: AdjustedValues.i24
+                visible: rootListView.model.running && rootListView.model.rowCount() > 0
+            }
+
 
             //            add: Transition {
             //                NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }

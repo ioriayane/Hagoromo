@@ -43,6 +43,12 @@ jobs:
               exit 1
           fi
           echo ok
+      - name: Check support providers are up to date
+        run: |
+          if ! python3 scripts/update_support_providers.py --check; then
+              echo "::error::Support provider table is out of date. Please run scripts/update_support_providers.py."
+              exit 1
+          fi
       - name: Check translations are up to date
         run: |
           cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h

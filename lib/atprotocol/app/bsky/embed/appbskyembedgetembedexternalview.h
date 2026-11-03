@@ -13,18 +13,33 @@ class AppBskyEmbedGetEmbedExternalView : public AccessAtProtocol
 public:
     explicit AppBskyEmbedGetEmbedExternalView(QObject *parent = nullptr);
 
-    void getEmbedExternalView(const QString &url, const QList<QString> &uris);
+    void getEmbedExternalView(const QString &url, const QString &canonicalUri,
+                              const QList<QString> &uris);
 
     const AtProtocolType::AppBskyEmbedExternal::View &view() const;
+    const AtProtocolType::AppBskyEmbedExternal::ViewArticle &viewArticle() const;
+    const AtProtocolType::AppBskyEmbedExternal::ViewArticlePublication &
+    viewArticlePublication() const;
+    const AtProtocolType::AppBskyEmbedExternal::ViewGallery &viewGallery() const;
+    const AtProtocolType::AppBskyEmbedExternal::ViewLivestream &viewLivestream() const;
     const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &associatedRefsList() const;
     const QVariant &associatedRecordsList() const;
+    const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
+    unverifiedAssociatedRefsList() const;
+    const QVariant &unverifiedAssociatedRecordsList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::AppBskyEmbedExternal::View m_view;
+    AtProtocolType::AppBskyEmbedExternal::ViewArticle m_viewArticle;
+    AtProtocolType::AppBskyEmbedExternal::ViewArticlePublication m_viewArticlePublication;
+    AtProtocolType::AppBskyEmbedExternal::ViewGallery m_viewGallery;
+    AtProtocolType::AppBskyEmbedExternal::ViewLivestream m_viewLivestream;
     QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> m_associatedRefsList;
     QVariant m_associatedRecordsList;
+    QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> m_unverifiedAssociatedRefsList;
+    QVariant m_unverifiedAssociatedRecordsList;
 };
 
 }

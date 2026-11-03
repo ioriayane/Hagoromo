@@ -17,11 +17,15 @@ AppBskyEmbedGetEmbedExternalView::AppBskyEmbedGetEmbedExternalView(QObject *pare
 }
 
 void AppBskyEmbedGetEmbedExternalView::getEmbedExternalView(const QString &url,
+                                                            const QString &canonicalUri,
                                                             const QList<QString> &uris)
 {
     QUrlQuery url_query;
     if (!url.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("url"), url);
+    }
+    if (!canonicalUri.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("canonicalUri"), canonicalUri);
     }
     for (const auto &value : uris) {
         url_query.addQueryItem(QStringLiteral("uris"), value);
@@ -35,6 +39,30 @@ const AtProtocolType::AppBskyEmbedExternal::View &AppBskyEmbedGetEmbedExternalVi
     return m_view;
 }
 
+const AtProtocolType::AppBskyEmbedExternal::ViewArticle &
+AppBskyEmbedGetEmbedExternalView::viewArticle() const
+{
+    return m_viewArticle;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewArticlePublication &
+AppBskyEmbedGetEmbedExternalView::viewArticlePublication() const
+{
+    return m_viewArticlePublication;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewGallery &
+AppBskyEmbedGetEmbedExternalView::viewGallery() const
+{
+    return m_viewGallery;
+}
+
+const AtProtocolType::AppBskyEmbedExternal::ViewLivestream &
+AppBskyEmbedGetEmbedExternalView::viewLivestream() const
+{
+    return m_viewLivestream;
+}
+
 const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
 AppBskyEmbedGetEmbedExternalView::associatedRefsList() const
 {
@@ -46,14 +74,41 @@ const QVariant &AppBskyEmbedGetEmbedExternalView::associatedRecordsList() const
     return m_associatedRecordsList;
 }
 
+const QList<AtProtocolType::ComAtprotoRepoStrongRef::Main> &
+AppBskyEmbedGetEmbedExternalView::unverifiedAssociatedRefsList() const
+{
+    return m_unverifiedAssociatedRefsList;
+}
+
+const QVariant &AppBskyEmbedGetEmbedExternalView::unverifiedAssociatedRecordsList() const
+{
+    return m_unverifiedAssociatedRecordsList;
+}
+
 bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty() || !json_doc.object().contains("associatedRefs")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("associatedRefs")
+        || !json_doc.object().contains("unverifiedAssociatedRefs")) {
         success = false;
     } else {
         AtProtocolType::AppBskyEmbedExternal::copyView(json_doc.object().value("view").toObject(),
                                                        m_view);
+        QString type;
+        type = json_doc.object().value("data").toObject().value("$type").toString();
+        if (type == QStringLiteral("app.bsky.embed.external#viewArticle")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewArticle(
+                    json_doc.object().value("data").toObject(), m_viewArticle);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewArticlePublication")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewArticlePublication(
+                    json_doc.object().value("data").toObject(), m_viewArticlePublication);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewGallery")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewGallery(
+                    json_doc.object().value("data").toObject(), m_viewGallery);
+        } else if (type == QStringLiteral("app.bsky.embed.external#viewLivestream")) {
+            AtProtocolType::AppBskyEmbedExternal::copyViewLivestream(
+                    json_doc.object().value("data").toObject(), m_viewLivestream);
+        }
         for (const auto &value : json_doc.object().value("associatedRefs").toArray()) {
             AtProtocolType::ComAtprotoRepoStrongRef::Main data;
             AtProtocolType::ComAtprotoRepoStrongRef::copyMain(value.toObject(), data);
@@ -61,6 +116,14 @@ bool AppBskyEmbedGetEmbedExternalView::parseJson(bool success, const QString rep
         }
         AtProtocolType::LexiconsTypeUnknown::copyUnknown(
                 json_doc.object().value("associatedRecords").toArray(), m_associatedRecordsList);
+        for (const auto &value : json_doc.object().value("unverifiedAssociatedRefs").toArray()) {
+            AtProtocolType::ComAtprotoRepoStrongRef::Main data;
+            AtProtocolType::ComAtprotoRepoStrongRef::copyMain(value.toObject(), data);
+            m_unverifiedAssociatedRefsList.append(data);
+        }
+        AtProtocolType::LexiconsTypeUnknown::copyUnknown(
+                json_doc.object().value("unverifiedAssociatedRecords").toArray(),
+                m_unverifiedAssociatedRecordsList);
     }
 
     return success;
