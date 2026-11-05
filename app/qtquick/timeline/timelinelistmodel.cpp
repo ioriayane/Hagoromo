@@ -25,6 +25,20 @@ TimelineListModel::TimelineListModel(QObject *parent)
       m_visibleRepostOfMine(true),
       m_visibleRepostByMe(true)
 {
+    m_toLongPostRoles[HasLongPostRole] = AtpAbstractListModel::LongPostRoles::HasLongPostRole;
+    m_toLongPostRoles[LongPostRunningRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostRunningRole;
+    m_toLongPostRoles[LongPostFailedRole] = AtpAbstractListModel::LongPostRoles::LongPostFailedRole;
+    m_toLongPostRoles[LongPostTextRole] = AtpAbstractListModel::LongPostRoles::LongPostTextRole;
+    m_toLongPostRoles[LongPostEditedRole] = AtpAbstractListModel::LongPostRoles::LongPostEditedRole;
+    m_toLongPostRoles[LongPostArticleUrlRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostArticleUrlRole;
+    m_toLongPostRoles[LongPostImagesRole] = AtpAbstractListModel::LongPostRoles::LongPostImagesRole;
+    m_toLongPostRoles[LongPostImagesAltRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostImagesAltRole;
+    m_toLongPostRoles[LongPostImagesRatioRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostImagesRatioRole;
+
     m_toQuoteRecordRoles[HasQuoteRecordRole] =
             AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
     m_toQuoteRecordRoles[QuoteRecordIsMineRole] =
@@ -187,9 +201,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
-        return LexiconsTypeUnknown::copyRecordText(current.post.record);
+        return getLongPostRecordText(current.post.record, current.post.author.did);
     else if (role == RecordTextPlainRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
+        return getLongPostRecordTextPlain(current.post.cid, current.post.record,
+                                          current.post.author.did);
     else if (role == RecordTextTranslationRole)
         return getTranslation(current.post.cid);
     else if (role == ReplyCountRole)
@@ -425,6 +440,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
                               AtProtocolType::AppBskyFeedPost::Main>(current.post.record));
     } else if (role == SkyblurPostTextRole) {
         return SkyblurOperator::getInstance()->getUnbluredText(current.post.cid);
+    } else if (m_toLongPostRoles.contains(role)) {
+        return getLongPostItem(current.post.cid, current.post.record, current.post.author.did,
+                               current.post.author.handle, m_toLongPostRoles.value(role));
     }
 
     return QVariant();
@@ -577,8 +595,8 @@ QString TimelineListModel::getRecordText(const QString &cid)
         return QString();
     if (!m_viewPostHash.contains(cid))
         return QString();
-    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(m_viewPostHash[cid].post.record)
-            .text;
+    return getLongPostRecordTextPlain(cid, m_viewPostHash[cid].post.record,
+                                      m_viewPostHash[cid].post.author.did);
 }
 
 QString TimelineListModel::getItemOfficialUrl(int row) const
@@ -594,6 +612,17 @@ QString TimelineListModel::getSkyblurPostUri(const QString &cid) const
         return QString();
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(m_viewPostHash[cid].post.record)
             .uk_skyblur_post_uri;
+}
+
+bool TimelineListModel::getLongPostSource(const QString &cid, AppBskyFeedPost::Main &record,
+                                          QString &author_did) const
+{
+    if (!m_cidList.contains(cid) || !m_viewPostHash.contains(cid))
+        return false;
+    const auto &post = m_viewPostHash[cid].post;
+    record = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record);
+    author_did = post.author.did;
+    return true;
 }
 
 bool TimelineListModel::getLatest()
@@ -1125,6 +1154,15 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[HasSkyblurLinkRole] = "hasSkyblurLink";
     roles[SkyblurPostTextRole] = "skyblurPostText";
+    roles[HasLongPostRole] = "hasLongPost";
+    roles[LongPostRunningRole] = "longPostRunning";
+    roles[LongPostFailedRole] = "longPostFailed";
+    roles[LongPostTextRole] = "longPostText";
+    roles[LongPostEditedRole] = "longPostEdited";
+    roles[LongPostArticleUrlRole] = "longPostArticleUrl";
+    roles[LongPostImagesRole] = "longPostImages";
+    roles[LongPostImagesAltRole] = "longPostImagesAlt";
+    roles[LongPostImagesRatioRole] = "longPostImagesRatio";
 
     roles[OpThreadPostIndexRole] = "opThreadPostIndex";
     roles[OpThreadPostCountRole] = "opThreadPostCount";

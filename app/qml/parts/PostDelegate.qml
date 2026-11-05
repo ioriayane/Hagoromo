@@ -36,11 +36,13 @@ ClickableFrame {
     property alias postAuthor: postAuthor
     property alias authorLabels: authorLabels
     property alias recordText: recordText
+    property alias longPostContent: longPostContent
     property alias skyblurContent: skyblurContent
     property alias pollContent: pollContent
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
+    property alias longPostImagePreview: longPostImagePreview
     property alias quoteFilterFrame: quoteFilterFrame
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordAvatarImage: quoteRecordFrame.quoteRecordAvatarImage
@@ -250,6 +252,12 @@ ClickableFrame {
                         }
                     }
 
+                    LongPostContent {
+                        id: longPostContent
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
                     SkyblurContent {
                         id: skyblurContent
                         Layout.preferredWidth: parent.width
@@ -272,6 +280,12 @@ ClickableFrame {
                     }
                     ImagePreview {
                         id: postImagePreview
+                        Layout.preferredWidth: parent.width
+                        layoutWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+                    ImagePreview {
+                        id: longPostImagePreview
                         Layout.preferredWidth: parent.width
                         layoutWidth: parent.width
                         Layout.topMargin: 5
