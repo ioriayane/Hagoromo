@@ -2672,6 +2672,8 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
         dest.space_aoisora_post_via = src.value("space.aoisora.post.via").toString();
         dest.uk_skyblur_post_uri = src.value("uk.skyblur.post.uri").toString();
         dest.uk_skyblur_post_visibility = src.value("uk.skyblur.post.visibility").toString();
+        ComAtprotoRepoStrongRef::copyMain(src.value("site.mochott.longPost").toObject(),
+                                          dest.site_mochott_longPost);
     }
 }
 }
