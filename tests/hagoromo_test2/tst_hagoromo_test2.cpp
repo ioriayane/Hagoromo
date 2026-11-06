@@ -7,6 +7,7 @@
 #include "webserver.h"
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
+#include "operation/mochottoperator.h"
 #include "operation/recordoperator.h"
 #include "operation/draftoperator.h"
 #include "feedgenerator/feedgeneratorlistmodel.h"
@@ -57,6 +58,7 @@ private slots:
     void test_DraftOperator_getDrafts();
     void test_BlogEntryListModel();
     void test_AnyFeedListModel();
+    void test_TimelineListModel_longPost();
 
 private:
     WebServer m_mockServer;
@@ -1532,6 +1534,105 @@ void hagoromo_test::test_AnyFeedListModel()
     }
 
     AccountManager::getInstance()->removeAccount(uuid);
+}
+
+void hagoromo_test::test_TimelineListModel_longPost()
+{
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/mochott", "id", "pass", "did:plc:viewer", "viewer.bsky.social",
+            "email", "accessJwt", "refreshJwt", true);
+
+    TimelineListModel model;
+    model.setAccount(uuid);
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait(10 * 1000);
+    QCOMPARE(spy.count(), 2);
+    QCOMPARE(model.rowCount(), 7);
+
+    const QString opening = QString::fromUtf8("🌈本文…");
+    const QString opening_with_more = opening + QString::fromUtf8("もっと見る");
+    const auto text = [&](const QString &cid, TimelineListModel::TimelineListModelRoles role) {
+        return model.item(model.indexOf(cid), role).toString();
+    };
+    const auto flag = [&](const QString &cid, TimelineListModel::TimelineListModelRoles role) {
+        return model.item(model.indexOf(cid), role).toBool();
+    };
+    const auto fetch = [&](const QString &service, const QString &cid) {
+        MochottOperator::getInstance()->setServiceUrl(m_service + "/mochott/" + service);
+        QSignalSpy state_spy(MochottOperator::getInstance(), &MochottOperator::stateChanged);
+        model.getLongPostArticle(cid);
+        // 開始時に実行中へ変わる
+        QCOMPARE(state_spy.count(), 1);
+        QVERIFY(flag(cid, TimelineListModel::LongPostRunningRole));
+        // 実行中に呼ばれても二重に取得しない
+        model.getLongPostArticle(cid);
+        QCOMPARE(state_spy.count(), 1);
+        QVERIFY(state_spy.wait(10 * 1000));
+        QVERIFY(!flag(cid, TimelineListModel::LongPostRunningRole));
+    };
+
+    // 取得前は冒頭だけ
+    QVERIFY(flag("cid_long", TimelineListModel::HasLongPostRole));
+    QCOMPARE(text("cid_long", TimelineListModel::RecordTextRole), opening);
+    QCOMPARE(text("cid_long", TimelineListModel::RecordTextPlainRole), opening);
+    QCOMPARE(text("cid_long", TimelineListModel::LongPostTextRole), QString());
+    QCOMPARE(text("cid_long", TimelineListModel::LongPostArticleUrlRole),
+             QString("https://mochott.site/alice.bsky.social/3m4abcdefgh22"));
+
+    // 投稿者と記事のDIDが異なるものは長文投稿として扱わない
+    QVERIFY(!flag("cid_other_did", TimelineListModel::HasLongPostRole));
+    QVERIFY(text("cid_other_did", TimelineListModel::RecordTextRole)
+                    .contains("<a href=\"https://mochott.site/alice.bsky.social/3m4abcdefgh22\">"));
+    QCOMPARE(text("cid_other_did", TimelineListModel::RecordTextPlainRole), opening_with_more);
+    model.getLongPostArticle("cid_other_did");
+    QVERIFY(!flag("cid_other_did", TimelineListModel::LongPostRunningRole));
+
+    QVERIFY(!flag("cid_normal", TimelineListModel::HasLongPostRole));
+    QCOMPARE(text("cid_normal", TimelineListModel::RecordTextRole), QString("normal post"));
+
+    // 末尾のリンクが無いときは本文をそのまま表示してURLを組み立てる
+    QVERIFY(flag("cid_no_tail", TimelineListModel::HasLongPostRole));
+    QCOMPARE(text("cid_no_tail", TimelineListModel::RecordTextRole), QString("no tail"));
+    QCOMPARE(text("cid_no_tail", TimelineListModel::LongPostArticleUrlRole),
+             QString("https://mochott.site/alice.bsky.social/3m4abcdefgh22"));
+
+    // 全文の取得
+    fetch("ok", "cid_long");
+    QVERIFY(!flag("cid_long", TimelineListModel::LongPostFailedRole));
+    QVERIFY(!flag("cid_long", TimelineListModel::LongPostEditedRole));
+    QCOMPARE(text("cid_long", TimelineListModel::LongPostTextRole),
+             QString::fromUtf8("🌈本文の&lt;全文&gt;<br/><a href=\"https://example.com/\">リンク</a>"
+                               "<br/><br/>次の段落"));
+    QCOMPARE(text("cid_long", TimelineListModel::RecordTextPlainRole),
+             QString::fromUtf8("🌈本文の<全文>\nリンク\n\n次の段落"));
+    QCOMPARE(model.getRecordText("cid_long"),
+             QString::fromUtf8("🌈本文の<全文>\nリンク\n\n次の段落"));
+    // ポストのembedと同じ画像は含めない
+    const int row = model.indexOf("cid_long");
+    QCOMPARE(model.item(row, TimelineListModel::LongPostImagesRole).toStringList(),
+             QStringList() << "https://mochott.site/api/image/did:plc:mochott_author/bafkreiextra");
+    QCOMPARE(model.item(row, TimelineListModel::LongPostImagesAltRole).toStringList(),
+             QStringList() << "extra");
+    QCOMPARE(model.item(row, TimelineListModel::LongPostImagesRatioRole).toStringList(),
+             QStringList() << "0.5");
+
+    // 投稿後に編集された記事
+    fetch("edited", "cid_edited");
+    QVERIFY(flag("cid_edited", TimelineListModel::LongPostEditedRole));
+    QCOMPARE(text("cid_edited", TimelineListModel::LongPostTextRole), QString::fromUtf8("編集後"));
+
+    // 取得できないときは記事へのリンクに切り替える
+    fetch("not_found", "cid_not_found");
+    QVERIFY(flag("cid_not_found", TimelineListModel::LongPostFailedRole));
+    QCOMPARE(text("cid_not_found", TimelineListModel::LongPostTextRole), QString());
+
+    // 表示できないノードがあるときも同じ
+    fetch("unknown_node", "cid_unknown_node");
+    QVERIFY(flag("cid_unknown_node", TimelineListModel::LongPostFailedRole));
+    QCOMPARE(text("cid_unknown_node", TimelineListModel::LongPostTextRole), QString());
 }
 
 QTEST_MAIN(hagoromo_test)

@@ -34,6 +34,20 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_aggregateReactions(true),
       m_visibleSubscribedPost(true)
 {
+    m_toLongPostRoles[HasLongPostRole] = AtpAbstractListModel::LongPostRoles::HasLongPostRole;
+    m_toLongPostRoles[LongPostRunningRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostRunningRole;
+    m_toLongPostRoles[LongPostFailedRole] = AtpAbstractListModel::LongPostRoles::LongPostFailedRole;
+    m_toLongPostRoles[LongPostTextRole] = AtpAbstractListModel::LongPostRoles::LongPostTextRole;
+    m_toLongPostRoles[LongPostEditedRole] = AtpAbstractListModel::LongPostRoles::LongPostEditedRole;
+    m_toLongPostRoles[LongPostArticleUrlRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostArticleUrlRole;
+    m_toLongPostRoles[LongPostImagesRole] = AtpAbstractListModel::LongPostRoles::LongPostImagesRole;
+    m_toLongPostRoles[LongPostImagesAltRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostImagesAltRole;
+    m_toLongPostRoles[LongPostImagesRatioRole] =
+            AtpAbstractListModel::LongPostRoles::LongPostImagesRatioRole;
+
     m_toQuoteRecordRoles[HasQuoteRecordRole] =
             AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
     m_toQuoteRecordRoles[QuoteRecordIsMineRole] =
@@ -186,11 +200,9 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else if (role == MutedRole)
         return current.author.viewer.muted;
     else if (role == RecordTextRole)
-        return AtProtocolType::LexiconsTypeUnknown::copyRecordText(current.record);
+        return getLongPostRecordText(current.record, current.author.did);
     else if (role == RecordTextPlainRole)
-        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
-                .text;
+        return getLongPostRecordTextPlain(current.cid, current.record, current.author.did);
     else if (role == RecordTextTranslationRole)
         return getTranslation(current.cid);
     else if (role == IndexedAtRole)
@@ -338,6 +350,9 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                               AtProtocolType::AppBskyFeedPost::Main>(current.record));
     } else if (role == SkyblurPostTextRole) {
         return SkyblurOperator::getInstance()->getUnbluredText(current.cid);
+    } else if (m_toLongPostRoles.contains(role)) {
+        return getLongPostItem(current.cid, current.record, current.author.did,
+                               current.author.handle, m_toLongPostRoles.value(role));
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -677,9 +692,8 @@ QString NotificationListModel::getRecordText(const QString &cid)
     if (!m_notificationHash.contains(cid))
         return QString();
 
-    return AtProtocolType::LexiconsTypeUnknown::fromQVariant<AtProtocolType::AppBskyFeedPost::Main>(
-                   m_notificationHash.value(cid).record)
-            .text;
+    const auto &current = m_notificationHash[cid];
+    return getLongPostRecordTextPlain(cid, current.record, current.author.did);
 }
 
 QString NotificationListModel::getItemOfficialUrl(int row) const
@@ -695,6 +709,19 @@ QString NotificationListModel::getSkyblurPostUri(const QString &cid) const
     return AtProtocolType::LexiconsTypeUnknown::fromQVariant<AtProtocolType::AppBskyFeedPost::Main>(
                    m_notificationHash.value(cid).record)
             .uk_skyblur_post_uri;
+}
+
+bool NotificationListModel::getLongPostSource(const QString &cid,
+                                              AtProtocolType::AppBskyFeedPost::Main &record,
+                                              QString &author_did) const
+{
+    if (!m_notificationHash.contains(cid))
+        return false;
+    const auto &current = m_notificationHash[cid];
+    record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+            AtProtocolType::AppBskyFeedPost::Main>(current.record);
+    author_did = current.author.did;
+    return true;
 }
 
 bool NotificationListModel::getLatest()
@@ -1212,6 +1239,15 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[HasSkyblurLinkRole] = "hasSkyblurLink";
     roles[SkyblurPostTextRole] = "skyblurPostText";
+    roles[HasLongPostRole] = "hasLongPost";
+    roles[LongPostRunningRole] = "longPostRunning";
+    roles[LongPostFailedRole] = "longPostFailed";
+    roles[LongPostTextRole] = "longPostText";
+    roles[LongPostEditedRole] = "longPostEdited";
+    roles[LongPostArticleUrlRole] = "longPostArticleUrl";
+    roles[LongPostImagesRole] = "longPostImages";
+    roles[LongPostImagesAltRole] = "longPostImagesAlt";
+    roles[LongPostImagesRatioRole] = "longPostImagesRatio";
 
     return roles;
 }

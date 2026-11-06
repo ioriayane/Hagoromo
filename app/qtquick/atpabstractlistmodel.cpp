@@ -4,7 +4,9 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "operation/mochottoperator.h"
 #include "operation/skybluroperator.h"
+#include "tools/mochottlongpost.h"
 #include "operation/tokimekipolloperator.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
@@ -44,6 +46,8 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator,
         auto skyblur = SkyblurOperator::getInstance();
         connect(skyblur, &SkyblurOperator::finished, this,
                 &AtpAbstractListModel::finishedRestoreBluredText);
+        connect(MochottOperator::getInstance(), &MochottOperator::stateChanged, this,
+                &AtpAbstractListModel::changedLongPostState);
     }
     connect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
             &AtpAbstractListModel::finishedTokimekiPoll);
@@ -62,6 +66,8 @@ AtpAbstractListModel::~AtpAbstractListModel()
         auto skyblur = SkyblurOperator::getInstance();
         disconnect(skyblur, &SkyblurOperator::finished, this,
                    &AtpAbstractListModel::finishedRestoreBluredText);
+        disconnect(MochottOperator::getInstance(), &MochottOperator::stateChanged, this,
+                   &AtpAbstractListModel::changedLongPostState);
     }
     disconnect(&m_tokimekiPoll, &TokimekiPollOperator::finished, this,
                &AtpAbstractListModel::finishedTokimekiPoll);
@@ -97,6 +103,16 @@ QString AtpAbstractListModel::getSkyblurPostUri(const QString &cid) const
 {
     Q_UNUSED(cid)
     return QString();
+}
+
+bool AtpAbstractListModel::getLongPostSource(const QString &cid,
+                                             AtProtocolType::AppBskyFeedPost::Main &record,
+                                             QString &author_did) const
+{
+    Q_UNUSED(cid)
+    Q_UNUSED(record)
+    Q_UNUSED(author_did)
+    return false;
 }
 
 QList<int> AtpAbstractListModel::indexsOf(const QString &cid) const
@@ -166,6 +182,19 @@ void AtpAbstractListModel::restoreBluredText(const QString &cid)
     skyblur->restoreBluredText(cid, getSkyblurPostUri(cid));
 }
 
+void AtpAbstractListModel::getLongPostArticle(const QString &cid)
+{
+    if (!m_useTranslator)
+        return;
+
+    AppBskyFeedPost::Main record;
+    QString author_did;
+    if (!getLongPostSource(cid, record, author_did))
+        return;
+    MochottOperator::getInstance()->getArticle(
+            cid, MochottLongPost::parseReference(record, author_did), record, author_did);
+}
+
 void AtpAbstractListModel::voteToPoll(const QString &post_cid, const QString &poll_uri,
                                       const QString &poll_cid, const QString &option_index)
 {
@@ -207,6 +236,14 @@ void AtpAbstractListModel::finishedRestoreBluredText(bool success, const QString
         if (row >= 0 && success) {
             emit dataChanged(index(row), index(row));
         }
+    }
+}
+
+void AtpAbstractListModel::changedLongPostState(const QString &cid)
+{
+    const auto rows = indexsOf(cid);
+    for (const auto row : rows) {
+        emit dataChanged(index(row), index(row));
     }
 }
 
@@ -551,6 +588,76 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
     } else {
         return post.via;
     }
+}
+
+QVariant AtpAbstractListModel::getLongPostItem(const QString &cid, const QVariant &record,
+                                               const QString &author_did,
+                                               const QString &author_handle,
+                                               const AtpAbstractListModel::LongPostRoles role) const
+{
+    const auto post = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record);
+    const auto reference = MochottLongPost::parseReference(post, author_did);
+    const bool has_long_post = reference.isValid();
+    const auto mochott = MochottOperator::getInstance();
+
+    if (role == HasLongPostRole) {
+        return has_long_post;
+    } else if (!has_long_post) {
+        if (role == LongPostRunningRole || role == LongPostFailedRole
+            || role == LongPostEditedRole) {
+            return false;
+        } else if (role == LongPostImagesRole || role == LongPostImagesAltRole
+                   || role == LongPostImagesRatioRole) {
+            return QStringList();
+        }
+        return QString();
+    } else if (role == LongPostRunningRole) {
+        return mochott->running(cid);
+    } else if (role == LongPostFailedRole) {
+        return mochott->failed(cid);
+    } else if (role == LongPostArticleUrlRole) {
+        const auto opening = MochottLongPost::parseOpening(post, reference.rkey);
+        return opening.article_url.isEmpty()
+                ? MochottLongPost::makeArticleUrl(author_handle, reference.rkey)
+                : opening.article_url;
+    }
+
+    const auto article = mochott->article(cid);
+    if (role == LongPostTextRole) {
+        return article.text;
+    } else if (role == LongPostEditedRole) {
+        return article.edited;
+    } else if (role == LongPostImagesRole) {
+        return article.images;
+    } else if (role == LongPostImagesAltRole) {
+        return article.images_alt;
+    } else if (role == LongPostImagesRatioRole) {
+        return article.images_ratio;
+    }
+    return QVariant();
+}
+
+QString AtpAbstractListModel::getLongPostRecordText(const QVariant &record,
+                                                    const QString &author_did) const
+{
+    const auto post = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record);
+    const auto reference = MochottLongPost::parseReference(post, author_did);
+    if (!reference.isValid())
+        return LexiconsTypeUnknown::copyRecordText(record);
+    const auto opening = MochottLongPost::parseOpening(post, reference.rkey);
+    return LexiconsTypeUnknown::applyFacetsTo(opening.text, opening.facets);
+}
+
+QString AtpAbstractListModel::getLongPostRecordTextPlain(const QString &cid, const QVariant &record,
+                                                         const QString &author_did) const
+{
+    const auto post = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record);
+    const auto reference = MochottLongPost::parseReference(post, author_did);
+    if (!reference.isValid())
+        return post.text;
+    const auto article = MochottOperator::getInstance()->article(cid);
+    return article.valid ? article.text_plain
+                         : MochottLongPost::parseOpening(post, reference.rkey).text;
 }
 
 QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,

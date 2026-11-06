@@ -10,6 +10,8 @@
 #include "tools/tid.h"
 #include "tools/supportprovider.h"
 #include "tools/encryption.h"
+#include "tools/mochottlongpost.h"
+#include "atprotocol/lexicons_func.h"
 
 class tools_test : public QObject
 {
@@ -30,6 +32,10 @@ private slots:
     void test_Leb128();
     void test_CarDecoder();
     void test_Encryption();
+    void test_MochottLongPost_parseReference();
+    void test_MochottLongPost_parseOpening();
+    void test_MochottLongPost_parseArticle();
+    void test_MochottLongPost_parseArticle_invalid();
 };
 
 tools_test::tools_test()
@@ -287,6 +293,206 @@ void tools_test::test_SupportProvider()
     QCOMPARE(SupportProvider::name("ko-fi.com/name"), QString());
     QCOMPARE(SupportProvider::name(""), QString());
     QVERIFY(!SupportProvider::isSupportProvider("https://github.com/ioriayane/Hagoromo"));
+}
+
+namespace {
+
+const QString MOCHOTT_DID = QStringLiteral("did:plc:author");
+const QString MOCHOTT_URI = QStringLiteral("at://did:plc:author/site.mochott.article/3m4abc");
+const QString MOCHOTT_CID = QStringLiteral("bafyreiarticle");
+
+AtProtocolType::AppBskyFeedPost::Main makeMochottRecord(const QByteArray &json)
+{
+    AtProtocolType::AppBskyFeedPost::Main record;
+    AtProtocolType::AppBskyFeedPost::copyMain(QJsonDocument::fromJson(json).object(), record);
+    return record;
+}
+
+MochottLongPost::Article parseMochottArticle(const QByteArray &content,
+                                             const AtProtocolType::AppBskyFeedPost::Main &record =
+                                                     AtProtocolType::AppBskyFeedPost::Main())
+{
+    QJsonObject article;
+    article.insert("uri", MOCHOTT_URI);
+    article.insert("cid", MOCHOTT_CID);
+    QJsonObject doc;
+    doc.insert("type", "doc");
+    doc.insert("content", QJsonDocument::fromJson(content).array());
+    article.insert("contentJSON", doc);
+
+    MochottLongPost::Reference reference;
+    reference.uri = MOCHOTT_URI;
+    reference.cid = MOCHOTT_CID;
+    reference.rkey = QStringLiteral("3m4abc");
+    return MochottLongPost::parseArticle(article, reference, record, MOCHOTT_DID);
+}
+
+}
+
+void tools_test::test_MochottLongPost_parseReference()
+{
+    struct TestCase
+    {
+        QString uri;
+        QString cid;
+        QString rkey;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            << TestCase { MOCHOTT_URI, MOCHOTT_CID, "3m4abc" } // CIDが無い
+            << TestCase { MOCHOTT_URI, QString(), QString() } // URIが無い
+            << TestCase { QString(), MOCHOTT_CID, QString() } // 投稿者と違う
+            << TestCase { "at://did:plc:other/site.mochott.article/3m4abc", MOCHOTT_CID, QString() }
+            // コレクションが違う
+            << TestCase { "at://did:plc:author/app.bsky.feed.post/3m4abc", MOCHOTT_CID, QString() }
+            // rkeyに使えない文字
+            << TestCase { "at://did:plc:author/site.mochott.article/3m4/abc", MOCHOTT_CID,
+                          QString() };
+    for (const auto &item : cases) {
+        AtProtocolType::AppBskyFeedPost::Main record;
+        record.site_mochott_longPost.uri = item.uri;
+        record.site_mochott_longPost.cid = item.cid;
+        const auto reference = MochottLongPost::parseReference(record, MOCHOTT_DID);
+        QCOMPARE(reference.rkey, item.rkey);
+        QCOMPARE(reference.isValid(), !item.rkey.isEmpty());
+    }
+
+    // 文字列以外は無視する
+    const auto record =
+            makeMochottRecord(R"({"text":"a","site.mochott.longPost":{"uri":1,"cid":{"a":"b"}}})");
+    QVERIFY(!MochottLongPost::parseReference(record, MOCHOTT_DID).isValid());
+}
+
+void tools_test::test_MochottLongPost_parseOpening()
+{
+    // 🌈(4)本(3)文(3)…(3)=13 もっと見る(15)=28
+    {
+        const auto record = makeMochottRecord(u8R"({
+            "text":"🌈本文…もっと見る",
+            "facets":[
+                {"index":{"byteStart":4,"byteEnd":7},"features":[{"$type":"app.bsky.richtext.facet#tag","tag":"t"}]},
+                {"index":{"byteStart":13,"byteEnd":28},"features":[{"$type":"app.bsky.richtext.facet#link","uri":"https://mochott.site/alice/3m4abc"}]}
+            ]})");
+        const auto opening = MochottLongPost::parseOpening(record, "3m4abc");
+        QCOMPARE(opening.text, QString::fromUtf8("🌈本文…"));
+        QCOMPARE(opening.article_url, QString("https://mochott.site/alice/3m4abc"));
+        QCOMPARE(opening.facets.count(), 1);
+        QCOMPARE(opening.facets.first().features_Tag.first().tag, QString("t"));
+    }
+    struct TestCase
+    {
+        QByteArray facets;
+    };
+    const QList<TestCase> cases = QList<TestCase>()
+            // 末尾ではない
+            << TestCase { R"([{"index":{"byteStart":13,"byteEnd":27},"features":[{"$type":"app.bsky.richtext.facet#link","uri":"https://mochott.site/alice/3m4abc"}]}])" }
+            // ドメインが違う
+            << TestCase { R"([{"index":{"byteStart":13,"byteEnd":28},"features":[{"$type":"app.bsky.richtext.facet#link","uri":"https://example.com/alice/3m4abc"}]}])" }
+            // rkeyが違う
+            << TestCase { R"([{"index":{"byteStart":13,"byteEnd":28},"features":[{"$type":"app.bsky.richtext.facet#link","uri":"https://mochott.site/alice/3m4xyz"}]}])" }
+            // リンクではない
+            << TestCase {
+                   R"([{"index":{"byteStart":13,"byteEnd":28},"features":[{"$type":"app.bsky.richtext.facet#tag","tag":"3m4abc"}]}])"
+               };
+    for (const auto &item : cases) {
+        const auto record = makeMochottRecord(
+                QByteArray(u8R"({"text":"🌈本文…もっと見る","facets":)") + item.facets + "}");
+        const auto opening = MochottLongPost::parseOpening(record, "3m4abc");
+        QCOMPARE(opening.text, record.text);
+        QCOMPARE(opening.facets.count(), 1);
+        QVERIFY(opening.article_url.isEmpty());
+    }
+}
+
+void tools_test::test_MochottLongPost_parseArticle()
+{
+    {
+        // 実際の応答と同じく末尾の空の段落は取り除き、途中の空の段落は残す
+        const auto article = parseMochottArticle(u8R"JSON([
+            {"type":"paragraph","content":[{"type":"text","text":"一<b>行目"},{"type":"hardBreak"},{"type":"text","text":"二行目"}]},
+            {"type":"paragraph"},
+            {"type":"paragraph","content":[
+                {"type":"text","text":"link","marks":[{"type":"link","attrs":{"href":"https://example.com/?a=1&b=\"2\""}}]},
+                {"type":"text","text":"bad","marks":[{"type":"link","attrs":{"href":"javascript:alert(1)"}}]},
+                {"type":"text","text":"日本語","marks":[{"type":"link","attrs":{"href":"https://example.com/日本語"}}]}
+            ]},
+            {"type":"paragraph"},
+            {"type":"paragraph"}
+        ])JSON");
+        QVERIFY(article.valid);
+        QVERIFY(!article.edited);
+        QCOMPARE(article.text,
+                 QString::fromUtf8("一&lt;b&gt;行目<br/>二行目<br/><br/>"
+                                   "<a href=\"https://example.com/?a=1&amp;b=&quot;2&quot;\">"
+                                   "link</a>bad"
+                                   "<a href=\"https://example.com/日本語\">日本語</a>"));
+        QCOMPARE(article.text_plain, QString::fromUtf8("一<b>行目\n二行目\n\nlinkbad日本語"));
+    }
+    {
+        // ポストのembedと重複するものは除き、残りを表示する
+        const auto record = makeMochottRecord(R"({
+            "text":"a",
+            "embed":{
+                "$type":"app.bsky.embed.recordWithMedia",
+                "record":{"$type":"app.bsky.embed.record","record":{"uri":"at://did:plc:other/app.bsky.feed.post/3post","cid":"c"}},
+                "media":{"$type":"app.bsky.embed.images","images":[{"alt":"","image":{"$type":"blob","ref":{"$link":"bafkreisame"},"mimeType":"image/jpeg","size":1}}]}
+            }})");
+        const auto article = parseMochottArticle(R"([
+            {"type":"paragraph","content":[{"type":"text","text":"body"}]},
+            {"type":"image","attrs":{"src":"/api/image/did:plc:author/bafkreisame"}},
+            {"type":"image","attrs":{"src":"/api/image/did:plc:author/bafkreione","alt":"one","width":100,"height":200}},
+            {"type":"image","attrs":{"src":"/api/image/did:plc:author/bafkreione"}},
+            {"type":"image","attrs":{"src":"/api/image/did:plc:author/bafkreitwo","alt":"two"}},
+            {"type":"image","attrs":{"src":"/api/image/did:plc:other/bafkreiother"}},
+            {"type":"image","attrs":{"src":"https://example.com/a.png"}},
+            {"type":"linkCard","attrs":{"url":"https://example.com/","title":"<T>"}},
+            {"type":"linkCard","attrs":{"url":"file:///etc/passwd","title":"bad"}},
+            {"type":"embed","attrs":{"src":"https://bsky.app/profile/did:plc:other/post/3post","service":"bluesky"}},
+            {"type":"embed","attrs":{"src":"https://bsky.app/profile/did:plc:other/post/3rest","service":"bluesky"}},
+            {"type":"embed","attrs":{"src":"https://example.com/post","service":"bluesky"}},
+            {"type":"embed","attrs":{"src":"https://bsky.app/profile/did:plc:other/post/3svc","service":"other"}}
+        ])",
+                                                 record);
+        QVERIFY(article.valid);
+        QCOMPARE(article.images,
+                 QStringList() << "https://mochott.site/api/image/did:plc:author/bafkreione"
+                               << "https://mochott.site/api/image/did:plc:author/bafkreitwo");
+        QCOMPARE(article.images_alt,
+                 QStringList() << "one"
+                               << "two");
+        // サイズの分からない画像があれば使わない
+        QVERIFY(article.images_ratio.isEmpty());
+        QCOMPARE(article.text,
+                 QString("body<br/><a href=\"https://example.com/\">&lt;T&gt;</a><br/>"
+                         "<a href=\"https://bsky.app/profile/did:plc:other/post/3rest\">"
+                         "https://bsky.app/profile/did:plc:other/post/3rest</a>"));
+    }
+}
+
+void tools_test::test_MochottLongPost_parseArticle_invalid()
+{
+    const QList<QByteArray> contents = QList<QByteArray>()
+            // 表にないノードやマーク
+            << R"([{"type":"heading","content":[{"type":"text","text":"a"}]}])"
+            << R"([{"type":"paragraph","content":[{"type":"mention","attrs":{}}]}])"
+            << R"([{"type":"paragraph","content":[{"type":"text","text":"a","marks":[{"type":"bold"}]}]}])"
+            // 表示するものがない
+            << R"([])"
+            << R"([{"type":"paragraph"}])";
+    for (const auto &content : contents) {
+        QVERIFY2(!parseMochottArticle(content).valid, content.constData());
+    }
+
+    // 要求と異なるURIの記事は使わない
+    QJsonObject article;
+    article.insert("uri", "at://did:plc:author/site.mochott.article/3m4xyz");
+    article.insert("cid", MOCHOTT_CID);
+    MochottLongPost::Reference reference;
+    reference.uri = MOCHOTT_URI;
+    reference.cid = MOCHOTT_CID;
+    reference.rkey = QStringLiteral("3m4abc");
+    QVERIFY(!MochottLongPost::parseArticle(article, reference,
+                                           AtProtocolType::AppBskyFeedPost::Main(), MOCHOTT_DID)
+                     .valid);
 }
 
 QTEST_MAIN(tools_test)

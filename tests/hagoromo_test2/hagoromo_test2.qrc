@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
+        <file>response/mochott/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/mochott/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/mochott/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/mochott/ok/xrpc/site.mochott.article.getArticle</file>
+        <file>response/mochott/edited/xrpc/site.mochott.article.getArticle</file>
+        <file>response/mochott/unknown_node/xrpc/site.mochott.article.getArticle</file>
+        <file>response/mochott/not_found/xrpc/site.mochott.article.getArticle</file>
+        <file>response/mochott/not_found/xrpc/site.mochott.article.getArticle.status</file>
         <file>response/target_repo/mine/xrpc/com.atproto.repo.listRecords_blue.linkat.board</file>
         <file>response/target_repo/mine/xrpc/com.atproto.repo.listRecords_com.whtwnd.blog.entry</file>
         <file>response/target_repo/other/xrpc/com.atproto.repo.listRecords_blue.linkat.board</file>

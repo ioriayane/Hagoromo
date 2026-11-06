@@ -1,0 +1,268 @@
+{
+  "feed": [
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/1",
+        "cid": "cid_long",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "🌈本文…もっと見る",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 28
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://mochott.site/alice.bsky.social/3m4abcdefgh22"
+                }
+              ]
+            }
+          ],
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          },
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": [
+              {
+                "alt": "",
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreipostimage"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 1
+                }
+              }
+            ]
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:someone_else/app.bsky.feed.post/2",
+        "cid": "cid_other_did",
+        "author": {
+          "did": "did:plc:someone_else",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "🌈本文…もっと見る",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 28
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://mochott.site/alice.bsky.social/3m4abcdefgh22"
+                }
+              ]
+            }
+          ],
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/3",
+        "cid": "cid_normal",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "normal post",
+          "createdAt": "2026-11-04T01:00:00.000Z"
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/4",
+        "cid": "cid_no_tail",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "no tail",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/5",
+        "cid": "cid_edited",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "🌈本文…もっと見る",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 28
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://mochott.site/alice.bsky.social/3m4abcdefgh22"
+                }
+              ]
+            }
+          ],
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/6",
+        "cid": "cid_not_found",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "🌈本文…もっと見る",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 28
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://mochott.site/alice.bsky.social/3m4abcdefgh22"
+                }
+              ]
+            }
+          ],
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    },
+    {
+      "post": {
+        "uri": "at://did:plc:mochott_author/app.bsky.feed.post/7",
+        "cid": "cid_unknown_node",
+        "author": {
+          "did": "did:plc:mochott_author",
+          "handle": "alice.bsky.social",
+          "displayName": "Alice"
+        },
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "🌈本文…もっと見る",
+          "createdAt": "2026-11-04T01:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 28
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://mochott.site/alice.bsky.social/3m4abcdefgh22"
+                }
+              ]
+            }
+          ],
+          "site.mochott.longPost": {
+            "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+            "cid": "bafyreiarticle"
+          }
+        },
+        "replyCount": 0,
+        "repostCount": 0,
+        "likeCount": 0,
+        "indexedAt": "2026-11-04T01:00:00.000Z",
+        "viewer": {},
+        "labels": []
+      }
+    }
+  ]
+}

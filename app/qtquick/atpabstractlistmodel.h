@@ -106,6 +106,17 @@ public:
         QuoteRecordVideoAltRole,
     };
 
+    enum LongPostRoles {
+        HasLongPostRole,
+        LongPostRunningRole,
+        LongPostFailedRole,
+        LongPostTextRole,
+        LongPostEditedRole,
+        LongPostArticleUrlRole,
+        LongPostImagesRole,
+        LongPostImagesAltRole,
+        LongPostImagesRatioRole,
+    };
     enum EmbedVideoRoles {
         HasVideoRole,
         VideoPlaylistRole,
@@ -171,12 +182,16 @@ public:
     virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const = 0;
     virtual QString getSkyblurPostUri(const QString &cid) const;
+    virtual bool getLongPostSource(const QString &cid,
+                                   AtProtocolType::AppBskyFeedPost::Main &record,
+                                   QString &author_did) const;
 
     QList<int> indexsOf(const QString &cid) const;
 
     QString getTranslation(const QString &cid) const;
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void restoreBluredText(const QString &cid);
+    Q_INVOKABLE void getLongPostArticle(const QString &cid);
     Q_INVOKABLE void voteToPoll(const QString &post_cid, const QString &poll_uri,
                                 const QString &poll_cid, const QString &option_index);
     Q_INVOKABLE void reflectVisibility();
@@ -228,6 +243,7 @@ public slots:
     virtual Q_INVOKABLE bool getNext() = 0;
     void finishedTransration(const QString &cid, const QString text);
     void finishedRestoreBluredText(bool success, const QString &cid, const QString text);
+    void changedLongPostState(const QString &cid);
     void finishedTokimekiPoll(bool success, const QString &cid,
                               TokimekiPollOperator::FunctionType type);
 
@@ -255,6 +271,12 @@ protected:
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
 
+    QVariant getLongPostItem(const QString &cid, const QVariant &record, const QString &author_did,
+                             const QString &author_handle,
+                             const AtpAbstractListModel::LongPostRoles role) const;
+    QString getLongPostRecordText(const QVariant &record, const QString &author_did) const;
+    QString getLongPostRecordTextPlain(const QString &cid, const QVariant &record,
+                                       const QString &author_did) const;
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const AtpAbstractListModel::QuoteRecordRoles role) const;
     QVariant getEmbedVideoItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,

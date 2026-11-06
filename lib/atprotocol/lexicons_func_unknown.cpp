@@ -567,7 +567,7 @@ QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Mai
             }
             first_part = false;
         }
-        if (pos_prev_end < (text_ba.length() - 1)) {
+        if (pos_prev_end < text_ba.length()) {
             text += replaceCrToBr(text_ba.mid(pos_prev_end), first_part);
         }
 

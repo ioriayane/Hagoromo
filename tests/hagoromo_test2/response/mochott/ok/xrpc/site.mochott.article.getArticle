@@ -1,0 +1,71 @@
+{
+  "article": {
+    "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+    "cid": "bafyreiarticle",
+    "author": {
+      "did": "did:plc:mochott_author",
+      "handle": "alice.bsky.social"
+    },
+    "title": "t",
+    "contentJSON": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "🌈本文の<全文>"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "リンク",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://example.com/"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph"
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "次の段落"
+            }
+          ]
+        },
+        {
+          "type": "paragraph"
+        },
+        {
+          "type": "image",
+          "attrs": {
+            "src": "/api/image/did:plc:mochott_author/bafkreipostimage",
+            "alt": "same"
+          }
+        },
+        {
+          "type": "image",
+          "attrs": {
+            "src": "/api/image/did:plc:mochott_author/bafkreiextra",
+            "alt": "extra",
+            "width": 200,
+            "height": 100
+          }
+        }
+      ]
+    }
+  }
+}
