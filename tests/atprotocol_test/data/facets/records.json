@@ -327,5 +327,49 @@
             "createdAt": "2023-05-28T11:30:01.978Z"
         },
         "expect": "<a href=\"search://test_tag3\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "record": {
+            "text": "#tag.",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 4,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "tag": "tag",
+                            "$type": "app.bsky.richtext.facet#tag"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"search://tag\">#tag</a>."
+    },
+    {
+        "record": {
+            "text": "#tag\n",
+            "$type": "app.bsky.feed.post",
+            "facets": [
+                {
+                    "index": {
+                        "byteEnd": 4,
+                        "byteStart": 0
+                    },
+                    "features": [
+                        {
+                            "tag": "tag",
+                            "$type": "app.bsky.richtext.facet#tag"
+                        }
+                    ]
+                }
+            ],
+            "createdAt": "2023-05-28T11:30:01.978Z"
+        },
+        "expect": "<a href=\"search://tag\">#tag</a><br/>"
     }
 ]
