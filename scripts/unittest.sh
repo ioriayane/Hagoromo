@@ -26,7 +26,7 @@ build_hagoromo(){
             -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
             -DHAGOROMO_UNIT_TEST_BUILD=ON \
             -DCMAKE_BUILD_TYPE:STRING=Debug \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64"
+            -DCMAKE_OSX_ARCHITECTURES="arm64"
     fi
     cmake --build . --target tests/all
 
