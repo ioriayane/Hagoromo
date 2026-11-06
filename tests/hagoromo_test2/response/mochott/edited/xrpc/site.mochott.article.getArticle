@@ -1,0 +1,25 @@
+{
+  "article": {
+    "uri": "at://did:plc:mochott_author/site.mochott.article/3m4abcdefgh22",
+    "cid": "bafyreiedited",
+    "author": {
+      "did": "did:plc:mochott_author",
+      "handle": "alice.bsky.social"
+    },
+    "title": "t",
+    "contentJSON": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "編集後"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

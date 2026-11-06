@@ -148,7 +148,7 @@ ColumnLayout {
                 authorLabels.model: isBasisPost ? model.authorLabels : []
                 authorLabels.iconSources: isBasisPost ? model.authorLabelIcons : []
                 recordText.text: {
-                    var text = model.recordText
+                    var text = model.longPostText.length > 0 ? model.longPostText : model.recordText
                     if(model.recordTextTranslation.length > 0){
                         text = text + "<br/>\n---<br/>\n" + model.recordTextTranslation
                     }
@@ -161,6 +161,14 @@ ColumnLayout {
                 skyblurContent.getPostTextButton.visible: (model.hasSkyblurLink && model.skyblurPostText.length === 0)
                 skyblurContent.getPostTextButton.onClicked: rootListView.model.restoreBluredText(model.cid)
                 skyblurContent.getPostTextButtonBusy.visible: model.runningSkyblurPostText
+
+                longPostContent.active: model.hasLongPost
+                longPostContent.loaded: model.longPostText.length > 0
+                longPostContent.running: model.longPostRunning
+                longPostContent.failed: model.longPostFailed
+                longPostContent.edited: model.longPostEdited
+                longPostContent.articleUrl: model.longPostArticleUrl
+                longPostContent.onRequestGetArticle: rootListView.model.getLongPostArticle(model.cid)
 
                 pollContent.visible: model.hasPoll && contentMediaFilterFrame.showContent
                 pollContent.options: model.pollOptions
@@ -185,6 +193,12 @@ ColumnLayout {
                 postImagePreview.embedAlts: model.embedImagesAlt
                 postImagePreview.embedImageRatios: model.embedImagesRatio
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
+                longPostImagePreview.visible: contentMediaFilterFrame.showContent && model.longPostImages.length > 0
+                longPostImagePreview.layoutType: postThreadView.imageLayoutType
+                longPostImagePreview.embedImages: model.longPostImages
+                longPostImagePreview.embedAlts: model.longPostImagesAlt
+                longPostImagePreview.embedImageRatios: model.longPostImagesRatio
+                longPostImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.longPostImages, model.longPostImagesAlt)
 
                 quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
                 quoteFilterFrame.labelText: qsTr("Quoted content warning")

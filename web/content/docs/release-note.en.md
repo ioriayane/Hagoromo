@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Add
+  - Add support for displaying long posts of 300 characters or more from [mochott](https://mochott.site/)
+
 ### v0.65.0 - 2026/11/3
 
 - Add

@@ -115,6 +115,7 @@ qt_add_qml_module(Hagoromo
         qml/parts/ApplicationShortcut.qml
         qml/parts/FeedGeneratorLinkCard.qml
         qml/parts/SkyblurContent.qml
+        qml/parts/LongPostContent.qml
         qml/parts/ExternalLinkCardPopup.qml
         qml/parts/LiveIconCover.qml
         qml/parts/PollContent.qml

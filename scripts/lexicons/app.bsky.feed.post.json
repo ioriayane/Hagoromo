@@ -23,6 +23,11 @@
                             "public",
                             "password"
                         ]
+                    },
+                    "site.mochott.longPost": {
+                        "type": "ref",
+                        "ref": "com.atproto.repo.strongRef",
+                        "description": "mochott article holding the full text(Unofficial field)"
                     }
                 }
             }

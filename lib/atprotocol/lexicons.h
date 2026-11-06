@@ -1895,6 +1895,7 @@ struct Main
     QString space_aoisora_post_via; // client name(Unofficial field)
     QString uk_skyblur_post_uri; // at-uri , Skyblur at:uri(Unofficial field)
     QString uk_skyblur_post_visibility; // Skyblur visibility(Unofficial field)
+    ComAtprotoRepoStrongRef::Main site_mochott_longPost;
 };
 }
 

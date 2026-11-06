@@ -259,6 +259,8 @@ add_library(HagoromoLib STATIC
     extension/oauth/oauthrequesttoken.h
     extension/oauth/oauthrevoketoken.cpp
     extension/oauth/oauthrevoketoken.h
+    extension/site/mochott/sitemochottarticlegetarticle.cpp
+    extension/site/mochott/sitemochottarticlegetarticle.h
     extension/well-known/wellknownatprotodid.cpp
     extension/well-known/wellknownatprotodid.h
     extension/well-known/wellknownoauthauthorizationserver.cpp
@@ -333,6 +335,8 @@ add_library(HagoromoLib STATIC
     tools/leb128.h
     tools/listitemscache.cpp
     tools/listitemscache.h
+    tools/mochottlongpost.cpp
+    tools/mochottlongpost.h
     tools/opengraphprotocol.cpp
     tools/opengraphprotocol.h
     tools/pinnedpostcache.cpp

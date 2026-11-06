@@ -181,6 +181,16 @@ public:
         HasSkyblurLinkRole,
         SkyblurPostTextRole,
 
+        HasLongPostRole,
+        LongPostRunningRole,
+        LongPostFailedRole,
+        LongPostTextRole,
+        LongPostEditedRole,
+        LongPostArticleUrlRole,
+        LongPostImagesRole,
+        LongPostImagesAltRole,
+        LongPostImagesRatioRole,
+
         OpThreadPostIndexRole,
         OpThreadPostCountRole,
     };
@@ -199,6 +209,9 @@ public:
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const;
     virtual QString getSkyblurPostUri(const QString &cid) const;
+    virtual bool getLongPostSource(const QString &cid,
+                                   AtProtocolType::AppBskyFeedPost::Main &record,
+                                   QString &author_did) const;
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
@@ -276,6 +289,8 @@ private:
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::LongPostRoles>
+            m_toLongPostRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
             m_toEmbedVideoRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>

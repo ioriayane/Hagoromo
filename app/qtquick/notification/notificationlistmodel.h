@@ -156,6 +156,16 @@ public:
 
         HasSkyblurLinkRole,
         SkyblurPostTextRole,
+
+        HasLongPostRole,
+        LongPostRunningRole,
+        LongPostFailedRole,
+        LongPostTextRole,
+        LongPostEditedRole,
+        LongPostArticleUrlRole,
+        LongPostImagesRole,
+        LongPostImagesAltRole,
+        LongPostImagesRatioRole,
     };
     Q_ENUM(NotificationListModelRoles)
 
@@ -189,6 +199,9 @@ public:
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const;
     virtual QString getSkyblurPostUri(const QString &cid) const;
+    virtual bool getLongPostSource(const QString &cid,
+                                   AtProtocolType::AppBskyFeedPost::Main &record,
+                                   QString &author_did) const;
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
@@ -263,6 +276,8 @@ private:
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::LongPostRoles>
+            m_toLongPostRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
             m_toEmbedVideoRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>

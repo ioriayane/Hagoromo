@@ -385,14 +385,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="761"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="768"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="868"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="875"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="764"/>
-        <location filename="qtquick/atpabstractlistmodel.cpp" line="771"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="871"/>
+        <location filename="qtquick/atpabstractlistmodel.cpp" line="878"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -2379,6 +2379,24 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
+    <name>LongPostContent</name>
+    <message>
+        <location filename="qml/parts/LongPostContent.qml" line="28"/>
+        <source>Edited after posting</source>
+        <translation>投稿後に編集されています</translation>
+    </message>
+    <message>
+        <location filename="qml/parts/LongPostContent.qml" line="35"/>
+        <source>Read on mochott</source>
+        <translation>mochottで読む</translation>
+    </message>
+    <message>
+        <location filename="qml/parts/LongPostContent.qml" line="35"/>
+        <source>Show more</source>
+        <translation>もっと見る</translation>
+    </message>
+</context>
+<context>
     <name>MessageDialog</name>
     <message>
         <location filename="qml/dialogs/MessageDialog.qml" line="24"/>
@@ -2431,27 +2449,27 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="154"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="156"/>
         <source>Your repost has been liked.</source>
         <translation>あなたのリポストがいいねされました。</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="168"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="170"/>
         <source>Your repost has been reposted.</source>
         <translation>あなたのリポストがリポストされました。</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="195"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="197"/>
         <source>verified you</source>
         <translation>あなたを認証しました</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="208"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="210"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="qml/parts/NotificationDelegate.qml" line="190"/>
+        <location filename="qml/parts/NotificationDelegate.qml" line="192"/>
         <source>signed up with your starter pack</source>
         <translation>あなたのスターターパックで登録しました</translation>
     </message>
@@ -2459,7 +2477,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="qtquick/notification/notificationlistmodel.cpp" line="327"/>
+        <location filename="qtquick/notification/notificationlistmodel.cpp" line="339"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2800,7 +2818,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="qml/parts/PostDelegate.qml" line="110"/>
+        <location filename="qml/parts/PostDelegate.qml" line="112"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2876,12 +2894,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="190"/>
+        <location filename="qml/view/PostThreadView.qml" line="204"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="qml/view/PostThreadView.qml" line="241"/>
+        <location filename="qml/view/PostThreadView.qml" line="255"/>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
@@ -4880,7 +4898,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="344"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="359"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -4888,7 +4906,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="qml/view/TimelineView.qml" line="183"/>
+        <location filename="qml/view/TimelineView.qml" line="197"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

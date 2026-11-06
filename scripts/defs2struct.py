@@ -403,22 +403,22 @@ class Defs2Struct:
                     self.append_pre_define(namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                     self.output_text[namespace].append('    QSharedPointer<%s> %s;%s' % (
-                        self.to_struct_style(ref_struct_name), property_name, comment,
+                        self.to_struct_style(ref_struct_name), self.to_property_style(property_name), comment,
                         ))
                 else:
                     self.output_text[namespace].append('    %s %s;%s' % (
-                        self.to_struct_style(ref_struct_name), property_name, comment,
+                        self.to_struct_style(ref_struct_name), self.to_property_style(property_name), comment,
                         ))
             else:
                 if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                     self.append_pre_define(namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                     self.output_text[namespace].append('    QList<QSharedPointer<%s>> %s;%s' % (
-                        self.to_struct_style(ref_struct_name), property_name, comment,
+                        self.to_struct_style(ref_struct_name), self.to_property_style(property_name), comment,
                         ))
                 else:
                     self.output_text[namespace].append('    QList<%s> %s;%s' % (
-                        self.to_struct_style(ref_struct_name), property_name, comment,
+                        self.to_struct_style(ref_struct_name), self.to_property_style(property_name), comment,
                         ))
         else:
             # 履歴で自分の方が前にいるということは宣言が後ろなのでポインタにする
@@ -430,22 +430,22 @@ class Defs2Struct:
                     self.append_pre_define(ref_namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                     self.output_text[namespace].append('    QSharedPointer<%s::%s> %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name,
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), self.to_property_style(property_name),
                         ))
                 else:
                     self.output_text[namespace].append('    %s::%s %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name,
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), self.to_property_style(property_name),
                         ))
             else:
                 if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack or (my_history_pos < ref_history_pos):
                     self.append_pre_define(ref_namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                     self.output_text[namespace].append('    QList<QSharedPointer<%s::%s>> %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), self.to_property_style(property_name)
                         ))
                 else:
                     self.output_text[namespace].append('    QList<%s::%s> %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), self.to_property_style(property_name)
                         ))
 
 
