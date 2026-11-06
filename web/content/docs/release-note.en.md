@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add support for displaying long posts of 300 characters or more from [mochott](https://mochott.site/)
+- Fix
+  - Fix a bug where characters after a tag would sometimes disappear
 
 ### v0.65.0 - 2026/11/3
 
