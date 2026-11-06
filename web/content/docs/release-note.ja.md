@@ -8,6 +8,8 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 2026
 
+### v0.66.0 - 2026/11/6
+
 - 追加
   - [mochott](https://mochott.site/)による300文字以上の長文投稿の表示に対応
 - 修正
