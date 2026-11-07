@@ -33,7 +33,7 @@ env:
 jobs:
   build-for-mac:
     # x86_64 needs an Intel runner so that its unit tests can run natively
-    runs-on: ${{ inputs.arch == 'x86_64' && 'macos-15-intel' || 'macos-latest' }}
+    runs-on: ${{ inputs.arch == 'x86_64' && 'macos-26-intel' || 'macos-latest' }}
     env:
       ARCH_TYPE: ${{ inputs.arch }}
       # The universal archive keeps the plain name because the release uses it
