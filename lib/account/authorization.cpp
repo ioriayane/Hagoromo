@@ -446,8 +446,8 @@ void Authorization::startRedirectServer()
                 qDebug().noquote() << "  " << request.url().path();
 
                 if (request.url().path() != "/tech/relog/hagoromo/oauth-callback") {
-                    result = SimpleHttpServer::readFile(":/account/oauth/" + request.url().fileName(),
-                                                        data);
+                    result = SimpleHttpServer::readFile(
+                            ":/account/oauth/" + request.url().fileName(), data);
                     mime_type = m_MimeDb.mimeTypeForFile(request.url().fileName()).name().toUtf8();
                     qDebug().noquote() << "Other file:" << result << request.url().fileName()
                                        << ", " << mime_type;
