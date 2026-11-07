@@ -140,7 +140,7 @@ add_library(HagoromoLib STATIC
     atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp
     atprotocol/app/bsky/labeler/appbskylabelergetservices.h
     atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
-    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.cpp
+    atprotocol/app/bsky/notification/appbskynotificationgetpreferences.h
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp
     atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h
     atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.cpp
@@ -346,7 +346,6 @@ add_library(HagoromoLib STATIC
     realtime/orpostselector.h
     realtime/xorpostselector.cpp
     realtime/xorpostselector.h
-    search/search.h
     util/deviceinfo.cpp
     util/deviceinfo.h
     util/qstringex.h

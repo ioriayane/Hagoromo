@@ -190,7 +190,6 @@ private:
     QList<QByteArray> m_resourceAuthorizations;
     QList<QByteArray> m_resourceDPops;
 
-    void test_get(const QString &url, const QByteArray &except_data);
     QByteArray read_reply(QNetworkReply *reply);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
     static QJsonObject decode_jwt_part(const QByteArray &part);
@@ -1970,27 +1969,6 @@ QByteArray oauth_test::generate_private_key_pem()
     Es256 key;
     key.generateKey();
     return key.privateKeyPem();
-}
-
-void oauth_test::test_get(const QString &url, const QByteArray &except_data)
-{
-    qDebug() << "test_get url" << url;
-    QNetworkRequest request((QUrl(url)));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << "test_get reply" << reply->error() << reply->url();
-
-        QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
-
-        QCOMPARE(reply->error(), QNetworkReply::NoError);
-        QCOMPARE(reply->readAll(), except_data);
-
-        reply->deleteLater();
-        manager->deleteLater();
-    });
-    manager->get(request);
 }
 
 QByteArray oauth_test::read_reply(QNetworkReply *reply)
