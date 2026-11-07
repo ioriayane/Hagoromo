@@ -7,6 +7,16 @@ make_dir(){
     mkdir $1
 }
 
+build_openssl_for_mac(){
+    # $1: x86_64 or arm64
+    make_dir "../build-openssl-$1"
+    cd "../build-openssl-$1"
+    ../openssl/Configure darwin64-$1-cc --prefix="${ROOT_FOLDER}/openssl_$1" --openssldir="${ROOT_FOLDER}/openssl_$1"
+    make -j4
+    make install_sw
+    make clean
+}
+
 build_openssl(){
     pushd $(pwd)
 
@@ -19,38 +29,30 @@ build_openssl(){
         make -j4
         make install
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        # Universal build for mac: x86_64 and arm64
-        OPENSSL_BUILD_DIR_X86="build-openssl-x86_64"
-        OPENSSL_BUILD_DIR_ARM="build-openssl-arm64"
-        OPENSSL_INSTALL_DIR_X86="${ROOT_FOLDER}/openssl_x86_64"
-        OPENSSL_INSTALL_DIR_ARM="${ROOT_FOLDER}/openssl_arm64"
-        OPENSSL_UNIVERSAL_DIR="${ROOT_FOLDER}/openssl"
-
-        # x86_64 build
-        make_dir "../${OPENSSL_BUILD_DIR_X86}"
-        cd "../${OPENSSL_BUILD_DIR_X86}"
-        ../openssl/Configure darwin64-x86_64-cc --prefix="${OPENSSL_INSTALL_DIR_X86}" --openssldir="${OPENSSL_INSTALL_DIR_X86}"
-        make -j4
-        make install_sw
-        make clean
-
-        # arm64 build
-        make_dir "../${OPENSSL_BUILD_DIR_ARM}"
-        cd "../${OPENSSL_BUILD_DIR_ARM}"
-        ../openssl/Configure darwin64-arm64-cc --prefix="${OPENSSL_INSTALL_DIR_ARM}" --openssldir="${OPENSSL_INSTALL_DIR_ARM}"
-        make -j4
-        make install_sw
-        make clean
-
-        # Create universal binaries
-        mkdir -p "${OPENSSL_UNIVERSAL_DIR}/lib"
+        OPENSSL_OUTPUT_DIR="${ROOT_FOLDER}/openssl"
         declare -a libraries=("libssl.a" "libcrypto.a" "libssl.dylib" "libcrypto.dylib" "libssl.3.dylib" "libcrypto.3.dylib")
-        for lib in "${libraries[@]}"; do
-            lipo -create "${OPENSSL_INSTALL_DIR_X86}/lib/${lib}" "${OPENSSL_INSTALL_DIR_ARM}/lib/${lib}" -output "${OPENSSL_UNIVERSAL_DIR}/lib/${lib}"
-        done
+        mkdir -p "${OPENSSL_OUTPUT_DIR}/lib"
+        mkdir -p "${OPENSSL_OUTPUT_DIR}/include"
+
+        if [ "${ARCH_TYPE}" == "universal" ]; then
+            build_openssl_for_mac "x86_64"
+            build_openssl_for_mac "arm64"
+
+            # Create universal binaries
+            for lib in "${libraries[@]}"; do
+                lipo -create "${ROOT_FOLDER}/openssl_x86_64/lib/${lib}" "${ROOT_FOLDER}/openssl_arm64/lib/${lib}" -output "${OPENSSL_OUTPUT_DIR}/lib/${lib}"
+            done
+            OPENSSL_HEADER_DIR="${ROOT_FOLDER}/openssl_x86_64/include"
+        else
+            build_openssl_for_mac "${ARCH_TYPE}"
+
+            for lib in "${libraries[@]}"; do
+                cp -L "${ROOT_FOLDER}/openssl_${ARCH_TYPE}/lib/${lib}" "${OPENSSL_OUTPUT_DIR}/lib/${lib}"
+            done
+            OPENSSL_HEADER_DIR="${ROOT_FOLDER}/openssl_${ARCH_TYPE}/include"
+        fi
         # Copy headers
-        mkdir -p "${OPENSSL_UNIVERSAL_DIR}/include"
-        cp -R "${OPENSSL_INSTALL_DIR_X86}/include/"* "${OPENSSL_UNIVERSAL_DIR}/include/"
+        cp -R "${OPENSSL_HEADER_DIR}/"* "${OPENSSL_OUTPUT_DIR}/include/"
     fi
 
     popd
@@ -66,7 +68,7 @@ build_zlib(){
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
         cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="${OSX_ARCHITECTURES}"
     fi
     cmake --build . --config RELEASE --target install
     cmake --build . --config DEBUG --target install
@@ -97,7 +99,7 @@ build_hagoromo(){
             -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
             -DHAGOROMO_RELEASE_BUILD=ON \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+            -DCMAKE_OSX_ARCHITECTURES="${OSX_ARCHITECTURES}"
     fi
     cmake --build . --target update_translations
     cmake --build . --target install
@@ -151,7 +153,11 @@ deploy_hagoromo(){
     fi
 
     cd ${work_root_dir}
-    zip -r hagoromo_${VERSION_NO}_${PLATFORM_TYPE}.zip hagoromo/
+    archive_suffix=""
+    if [ "${PLATFORM_TYPE}" == "mac" ] && [ "${ARCH_TYPE}" != "universal" ]; then
+        archive_suffix="_${ARCH_TYPE}"
+    fi
+    zip -r hagoromo_${VERSION_NO}_${PLATFORM_TYPE}${archive_suffix}.zip hagoromo/
 
     popd
 }
@@ -163,12 +169,20 @@ update_web(){
     echo "ok"
 }
 
+usage(){
+    echo "usage $(basename $0) PLATFORM_TYPE QTDIR [ARCH_TYPE]"
+    echo " PLATFORM_TYPE   linux or mac"
+    echo " QTDIR           ex: ~/Qt/6.11.0/gcc_64/"
+    echo " ARCH_TYPE       mac only: x86_64, arm64 or universal (default: universal, for release)"
+}
+
 SCRIPT_FOLDER=$(cd $(dirname $0); pwd)
 cd $SCRIPT_FOLDER/..
 ROOT_FOLDER=$(pwd)
 
 PLATFORM_TYPE=$1
 QTDIR=$2
+ARCH_TYPE=${3:-universal}
 
 if [[ "$QTDIR" == */6.* ]]; then
 QT_VERSION=6
@@ -177,10 +191,19 @@ QT_VERSION=5
 fi
 
 if [ -z "${QTDIR}" ] || [ -z "${PLATFORM_TYPE}" ]; then
-    echo "usage $(basename $0) PLATFORM_TYPE QTDIR"
-    echo " PLATFORM_TYPE   linux or mac"
-    echo " QTDIR           ex: ~/Qt/6.11.0/gcc_64/"
+    usage
     exit 1
+fi
+
+if [ "${PLATFORM_TYPE}" == "mac" ]; then
+    case "${ARCH_TYPE}" in
+        x86_64|arm64) OSX_ARCHITECTURES="${ARCH_TYPE}" ;;
+        universal) OSX_ARCHITECTURES="x86_64;arm64" ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
 fi
 
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")

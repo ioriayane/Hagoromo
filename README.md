@@ -103,6 +103,12 @@ $ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
 
+第3引数で対象アーキテクチャを指定できます。`x86_64`、`arm64`、`universal`(デフォルト、リリース用)から選択してください。
+
+```bash
+$ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/ arm64
+```
+
 ## コントリビューション
 
 変更を加えるときは`dev`からブランチして、`dev`にプルリクエストを提出してください。
@@ -141,6 +147,7 @@ Mac
 ```bash
 $ ./scripts/unittest.sh mac path/to/Qt/6.11.0/gcc_64/
 ```
+第3引数で対象アーキテクチャを指定できます。`x86_64`、`arm64`(デフォルト)、`universal`から選択してください。事前に build.sh で同じアーキテクチャの OpenSSL と zlib をビルドしておいてください。
 
 ---
 
@@ -287,6 +294,12 @@ $ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
 
+The third argument selects the target architecture: `x86_64`, `arm64` or `universal` (default, used for releases).
+
+```bash
+$ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/ arm64
+```
+
 ## Contribution
 
 If you want to make changes, please branch from `dev` and submit a pull request to `dev`.
@@ -326,6 +339,7 @@ Mac
 ```bash
 $ ./scripts/unittest.sh mac path/to/Qt/6.11.0/gcc_64/
 ```
+The third argument selects the target architecture: `x86_64`, `arm64` (default) or `universal`. Build OpenSSL and zlib for that architecture with build.sh first.
 
 ## Development Support
 

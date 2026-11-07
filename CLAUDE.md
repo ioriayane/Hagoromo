@@ -92,6 +92,9 @@ Qt 6.11.0 を用意したうえで、次を実行します:
 ./scripts/unittest.sh mac path/to/Qt/6.11.0/gcc_64/
 ```
 
+第3引数で対象アーキテクチャを指定できます(`x86_64` / `arm64` / `universal`)。
+`build.sh` のデフォルトはリリース用の `universal`、`unittest.sh` のデフォルトは `arm64` です。
+
 これらのスクリプトは開発時に Debug テストをビルドします。
 リリースビルドは配布向けで、環境固有の Qt / OpenSSL / zlib のランタイムファイルを扱います。
 
