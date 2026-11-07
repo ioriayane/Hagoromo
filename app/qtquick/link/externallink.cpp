@@ -1,5 +1,5 @@
 #include "externallink.h"
-#include "tools/opengraphprotocol.h"
+#include "content/opengraphprotocol.h"
 
 #include <QDebug>
 #include <QUrl>

@@ -3,8 +3,8 @@
 #include "atprotocol/app/bsky/draft/appbskydraftupdatedraft.h"
 #include "atprotocol/app/bsky/draft/appbskydraftdeletedraft.h"
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
-#include "tools/accountmanager.h"
-#include "tools/deviceinfo.h"
+#include "account/accountmanager.h"
+#include "util/deviceinfo.h"
 
 #include <QJsonArray>
 

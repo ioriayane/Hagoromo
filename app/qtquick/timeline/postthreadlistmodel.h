@@ -3,7 +3,7 @@
 
 #include "atprotocol/lexicons.h"
 #include "timelinelistmodel.h"
-#include "tools/labelprovider.h"
+#include "moderation/labelprovider.h"
 #include <QObject>
 
 class PostThreadListModel : public TimelineListModel

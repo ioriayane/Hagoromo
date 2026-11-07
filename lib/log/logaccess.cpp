@@ -1,5 +1,5 @@
 #include "logaccess.h"
-#include "tools/cardecoder.h"
+#include "encoding/cardecoder.h"
 
 #include <QCoreApplication>
 #include <QDebug>

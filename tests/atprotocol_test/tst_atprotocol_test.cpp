@@ -26,12 +26,12 @@
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/opengraphprotocol.h"
-#include "tools/configurablelabels.h"
-#include "tools/labelerprovider.h"
-#include "tools/labelprovider.h"
-#include "tools/listitemscache.h"
-#include "tools/pinnedpostcache.h"
+#include "content/opengraphprotocol.h"
+#include "moderation/configurablelabels.h"
+#include "moderation/labelerprovider.h"
+#include "moderation/labelprovider.h"
+#include "cache/listitemscache.h"
+#include "cache/pinnedpostcache.h"
 #include "unittest_common.h"
 
 using namespace AtProtocolType;

@@ -56,7 +56,7 @@ flowchart TB
         createSession["CreateSession"]
     end
 
-    subgraph Tools["lib/tools"]
+    subgraph Tools["lib/account, lib/crypto"]
         accountManager["AccountManager<br/>(+ Private: アカウントごと)"]
         authorization["Authorization"]
         identityResolver["IdentityResolver"]
@@ -103,17 +103,17 @@ flowchart TB
 
 | クラス | 場所 | 役割 |
 |---|---|---|
-| `AccountManager` | `lib/tools/accountmanager.*` | アカウント一覧の保持・保存・読み込み、セッションの作成・リフレッシュ・失効の管理(シングルトン)。アカウントごとの処理は内部クラス `AccountManager::Private` が持つ |
+| `AccountManager` | `lib/account/accountmanager.*` | アカウント一覧の保持・保存・読み込み、セッションの作成・リフレッシュ・失効の管理(シングルトン)。アカウントごとの処理は内部クラス `AccountManager::Private` が持つ |
 | `AccountListModel` | `app/qtquick/account/accountlistmodel.*` | `AccountManager` を QML に公開する Model。`updatedAccount` を受けて `dataChanged` を出す |
 | `OAuthLogin` | `app/qtquick/account/oauthlogin.*` | QML からの OAuth ログイン。`Authorization` を動かし、結果を `OAuthSession` にまとめる |
 | `CreateSession` | `app/qtquick/account/createsession.*` | QML からのアプリパスワードでのログイン |
-| `Authorization` | `lib/tools/authorization.*` | OAuth のシーケンス本体(サーバーの探索、PAR、リダイレクトの受信、token の取得・リフレッシュ、失効) |
-| `IdentityResolver` | `lib/tools/identityresolver.*` | ハンドル / DID から DID・ハンドル・PDS を双方向に検証しながら解決する |
-| `DPopSessionStore` | `lib/tools/dpopsessionstore.*` | OAuth アカウントごとの DPoP の秘密鍵と、送信先 origin ごとの nonce を保持し、DPoP proof を作る |
-| `SessionStateStore` | `lib/tools/sessionstatestore.*` | アカウントごとの最新のアクセストークンと、セッションの状態(再ログインが必要か、アクセストークンの期限)を保持し、リフレッシュの依頼を中継する |
+| `Authorization` | `lib/account/authorization.*` | OAuth のシーケンス本体(サーバーの探索、PAR、リダイレクトの受信、token の取得・リフレッシュ、失効) |
+| `IdentityResolver` | `lib/account/identityresolver.*` | ハンドル / DID から DID・ハンドル・PDS を双方向に検証しながら解決する |
+| `DPopSessionStore` | `lib/account/dpopsessionstore.*` | OAuth アカウントごとの DPoP の秘密鍵と、送信先 origin ごとの nonce を保持し、DPoP proof を作る |
+| `SessionStateStore` | `lib/account/sessionstatestore.*` | アカウントごとの最新のアクセストークンと、セッションの状態(再ログインが必要か、アクセストークンの期限)を保持し、リフレッシュの依頼を中継する |
 | `AccessAtProtocol` | `lib/atprotocol/accessatprotocol.*` | すべての API クラスの基底。Authorization ヘッダーの付与、送信前の確認、DPoP の nonce による再送 |
-| `JsonWebToken` / `Es256` | `lib/tools/jsonwebtoken.*`, `es256.*` | DPoP proof(ES256 の JWT)の生成、鍵の生成・PEM の読み書き |
-| `Encryption` | `lib/tools/encryption.*` | 保存するパスワード・refresh token・秘密鍵の暗号化 |
+| `JsonWebToken` / `Es256` | `lib/crypto/jsonwebtoken.*`, `es256.*` | DPoP proof(ES256 の JWT)の生成、鍵の生成・PEM の読み書き |
+| `Encryption` | `lib/crypto/encryption.*` | 保存するパスワード・refresh token・秘密鍵の暗号化 |
 
 ### 2.3 アカウントの情報の持ち方
 

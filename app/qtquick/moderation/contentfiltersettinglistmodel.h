@@ -1,7 +1,7 @@
 #ifndef CONTENTFILTERSETTINGLISTMODEL_H
 #define CONTENTFILTERSETTINGLISTMODEL_H
 
-#include "tools/configurablelabels.h"
+#include "moderation/configurablelabels.h"
 
 #include <QAbstractListModel>
 

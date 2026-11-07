@@ -3,7 +3,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
-#include "tools/tid.h"
+#include "encoding/tid.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>

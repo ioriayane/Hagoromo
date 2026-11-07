@@ -41,10 +41,10 @@ git submodule update --init --recursive
 
 ```bash
 # Unix
-cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
+cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
 
 # Windows cmd
-copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
+copy lib\crypto\encryption_seed_template.h lib\crypto\encryption_seed.h
 ```
 
 資格情報、実アカウント情報、秘密鍵や暗号化シードをコミットしないでください。

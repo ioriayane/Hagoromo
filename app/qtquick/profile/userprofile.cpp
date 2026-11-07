@@ -1,14 +1,14 @@
 #include "userprofile.h"
-#include "tools/listitemscache.h"
+#include "cache/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "extension/directory/plc/directoryplclogaudit.h"
-#include "tools/labelerprovider.h"
-#include "tools/accountmanager.h"
-#include "tools/supportprovider.h"
+#include "moderation/labelerprovider.h"
+#include "account/accountmanager.h"
+#include "content/supportprovider.h"
 
 #include <QPointer>
 #include <QUrl>

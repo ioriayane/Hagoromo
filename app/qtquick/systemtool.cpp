@@ -1,7 +1,7 @@
 #include "systemtool.h"
 #include "qregularexpression.h"
-#include "tools/qstringex.h"
-#include "tools/supportprovider.h"
+#include "util/qstringex.h"
+#include "content/supportprovider.h"
 #include "common.h"
 
 #include <QClipboard>

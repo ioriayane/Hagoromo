@@ -12,15 +12,15 @@
 #include <openssl/pem.h>
 #include <openssl/bn.h>
 
-#include "tools/authorization.h"
-#include "tools/jsonwebtoken.h"
-#include "tools/es256.h"
-#include "tools/identityresolver.h"
-#include "tools/dpopsessionstore.h"
-#include "tools/sessionstatestore.h"
+#include "account/authorization.h"
+#include "crypto/jsonwebtoken.h"
+#include "crypto/es256.h"
+#include "account/identityresolver.h"
+#include "account/dpopsessionstore.h"
+#include "account/sessionstatestore.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
-#include "tools/accountmanager.h"
-#include "tools/encryption.h"
+#include "account/accountmanager.h"
+#include "crypto/encryption.h"
 #include "common.h"
 #include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"
@@ -191,6 +191,7 @@ private:
     QList<QByteArray> m_resourceDPops;
 
     void test_get(const QString &url, const QByteArray &except_data);
+    QByteArray read_reply(QNetworkReply *reply);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
     static QJsonObject decode_jwt_part(const QByteArray &part);
     static QByteArray generate_private_key_pem();
@@ -263,7 +264,11 @@ oauth_test::oauth_test()
 
 oauth_test::~oauth_test() { }
 
-void oauth_test::initTestCase() { }
+void oauth_test::initTestCase()
+{
+    // HagoromoLibは静的ライブラリなので、明示しないとリソースがリンクされない
+    Q_INIT_RESOURCE(lib);
+}
 
 void oauth_test::cleanupTestCase() { }
 
@@ -504,10 +509,15 @@ void oauth_test::test_oauth()
             QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
             oauth.startRedirectServer();
             invalid_url.setPort(oauth.listenPort().toInt());
-            test_get(invalid_url.toString(), QByteArray());
+            QNetworkAccessManager manager;
+            QNetworkReply *reply = manager.get(QNetworkRequest(invalid_url));
             spy.wait();
             QCOMPARE(spy.count(), 1);
             QVERIFY(!spy.takeFirst().at(0).toBool());
+            // ブラウザには失敗のページが返ること
+            const QByteArray page = read_reply(reply);
+            QVERIFY2(page.contains("authentication process for"), page.constData());
+            QVERIFY(!page.contains("%HANDLE%"));
             QCOMPARE(spy_error.count(), 1);
             QCOMPARE(spy_error.takeFirst().at(0).toString(),
                      QString("Invalid authorization response"));
@@ -533,9 +543,15 @@ void oauth_test::test_oauth()
         oauth.startRedirectServer();
         redirect_url.setPort(oauth.listenPort().toInt());
         qDebug().noquote() << "port updated " << redirect_url;
-        test_get(redirect_url.toString(), QByteArray()); // ブラウザへのアクセスを模擬
+        // ブラウザへのアクセスを模擬
+        QNetworkAccessManager manager;
+        QNetworkReply *reply = manager.get(QNetworkRequest(redirect_url));
         spy.wait();
         QCOMPARE(spy.count(), 1);
+        // ブラウザには成功のページが返ること
+        const QByteArray page = read_reply(reply);
+        QVERIFY2(page.contains("return to Hagoromo"), page.constData());
+        QVERIFY(!page.contains("%HANDLE%"));
     }
 
     QCOMPARE(oauth.token().access_token, "access token");
@@ -1975,6 +1991,15 @@ void oauth_test::test_get(const QString &url, const QByteArray &except_data)
         manager->deleteLater();
     });
     manager->get(request);
+}
+
+QByteArray oauth_test::read_reply(QNetworkReply *reply)
+{
+    if (!reply->isFinished()) {
+        QSignalSpy spy(reply, &QNetworkReply::finished);
+        spy.wait();
+    }
+    return reply->error() == QNetworkReply::NoError ? reply->readAll() : QByteArray();
 }
 
 void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)

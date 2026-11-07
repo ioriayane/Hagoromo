@@ -4,145 +4,145 @@
 <context>
     <name>ConfigurableLabels</name>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="690"/>
-        <location filename="tools/configurablelabels.cpp" line="692"/>
+        <location filename="moderation/configurablelabels.cpp" line="690"/>
+        <location filename="moderation/configurablelabels.cpp" line="692"/>
         <source>Content hidden</source>
         <translation>閲覧不可</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="691"/>
-        <location filename="tools/configurablelabels.cpp" line="704"/>
+        <location filename="moderation/configurablelabels.cpp" line="691"/>
+        <location filename="moderation/configurablelabels.cpp" line="704"/>
         <source>Moderator overrides for special cases.</source>
         <translation>特別な場合のためのモデレーターによるオーバーライド。</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="703"/>
-        <location filename="tools/configurablelabels.cpp" line="705"/>
+        <location filename="moderation/configurablelabels.cpp" line="703"/>
+        <location filename="moderation/configurablelabels.cpp" line="705"/>
         <source>Content warning</source>
         <translation>閲覧警告</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="769"/>
-        <location filename="tools/configurablelabels.cpp" line="771"/>
+        <location filename="moderation/configurablelabels.cpp" line="769"/>
+        <location filename="moderation/configurablelabels.cpp" line="771"/>
         <source>Legal</source>
         <translation>法的</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="770"/>
+        <location filename="moderation/configurablelabels.cpp" line="770"/>
         <source>Content removed for legal reasons.</source>
         <translation>法的な理由で削除されたコンテンツ。</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="718"/>
+        <location filename="moderation/configurablelabels.cpp" line="718"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="683"/>
+        <location filename="moderation/configurablelabels.cpp" line="683"/>
         <source>Basic Moderation</source>
         <translation>基本モデレーション</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="684"/>
+        <location filename="moderation/configurablelabels.cpp" line="684"/>
         <source>Basic configuration independent of moderation services.</source>
         <translation>モデレーションサービスに依存しない基本設定。</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="716"/>
+        <location filename="moderation/configurablelabels.cpp" line="716"/>
         <source>Pornography</source>
         <translation>ポルノ</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="717"/>
+        <location filename="moderation/configurablelabels.cpp" line="717"/>
         <source>Explicit sexual images.</source>
         <translation>露骨な性的な画像。</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="730"/>
-        <location filename="tools/configurablelabels.cpp" line="732"/>
+        <location filename="moderation/configurablelabels.cpp" line="730"/>
+        <location filename="moderation/configurablelabels.cpp" line="732"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="731"/>
+        <location filename="moderation/configurablelabels.cpp" line="731"/>
         <source>Does not include nudity</source>
         <translation>ヌードは含まない</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="743"/>
-        <location filename="tools/configurablelabels.cpp" line="745"/>
+        <location filename="moderation/configurablelabels.cpp" line="743"/>
+        <location filename="moderation/configurablelabels.cpp" line="745"/>
         <source>Graphic Media</source>
         <translation>グラフィックメディア</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="744"/>
+        <location filename="moderation/configurablelabels.cpp" line="744"/>
         <source>Explicit or potentially disturbing media.</source>
         <translation>露骨な、あるいは不穏なメディア。</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="756"/>
-        <location filename="tools/configurablelabels.cpp" line="758"/>
+        <location filename="moderation/configurablelabels.cpp" line="756"/>
+        <location filename="moderation/configurablelabels.cpp" line="758"/>
         <source>Non-sexual Nudity</source>
         <translation>性的でないヌード</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="757"/>
+        <location filename="moderation/configurablelabels.cpp" line="757"/>
         <source>E.g. artistic nudes.</source>
         <translation>例：芸術的なヌード</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="783"/>
+        <location filename="moderation/configurablelabels.cpp" line="783"/>
         <source>Violent / Bloody</source>
         <translation>暴力 / 流血</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="784"/>
+        <location filename="moderation/configurablelabels.cpp" line="784"/>
         <source>Gore, self-harm, torture</source>
         <translation>血糊、自傷行為、拷問</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="785"/>
+        <location filename="moderation/configurablelabels.cpp" line="785"/>
         <source>Violence</source>
         <translation>暴力</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="800"/>
+        <location filename="moderation/configurablelabels.cpp" line="800"/>
         <source>Hate Group Iconography</source>
         <translation>ヘイトグループの象徴</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="801"/>
+        <location filename="moderation/configurablelabels.cpp" line="801"/>
         <source>Images of terror groups, articles covering events, etc.</source>
         <translation>テロ集団の画像、事件を取り上げた記事など</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="802"/>
+        <location filename="moderation/configurablelabels.cpp" line="802"/>
         <source>Hate Groups</source>
         <translation>ヘイトグループ</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="822"/>
-        <location filename="tools/configurablelabels.cpp" line="824"/>
+        <location filename="moderation/configurablelabels.cpp" line="822"/>
+        <location filename="moderation/configurablelabels.cpp" line="824"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="823"/>
+        <location filename="moderation/configurablelabels.cpp" line="823"/>
         <source>Excessive unwanted interactions</source>
         <translation>過剰な不要な干渉</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="836"/>
+        <location filename="moderation/configurablelabels.cpp" line="836"/>
         <source>Impersonation / Scam</source>
         <translation>なりすまし / 詐欺</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="838"/>
+        <location filename="moderation/configurablelabels.cpp" line="838"/>
         <source>Impersonation</source>
         <translation>なりすまし</translation>
     </message>
     <message>
-        <location filename="tools/configurablelabels.cpp" line="837"/>
+        <location filename="moderation/configurablelabels.cpp" line="837"/>
         <source>Accounts falsely claiming to be people or orgs</source>
         <translation>個人や団体を偽ったアカウント</translation>
     </message>
@@ -262,7 +262,7 @@
 <context>
     <name>OpenGraphProtocol</name>
     <message>
-        <location filename="tools/opengraphprotocol.cpp" line="79"/>
+        <location filename="content/opengraphprotocol.cpp" line="79"/>
         <source>Premium Bandai</source>
         <translation>プレミアムバンダイ</translation>
     </message>

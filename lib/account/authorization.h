@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QMimeDatabase>
 #include "atprotocol/lexicons.h"
-#include "tools/es256.h"
+#include "crypto/es256.h"
 
 class Authorization : public QObject
 {

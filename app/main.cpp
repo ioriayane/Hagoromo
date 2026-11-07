@@ -68,7 +68,7 @@
 #include "qtquick/realtime/realtimefeedstatusgraph.h"
 
 #include "tools/globalsettings.h"
-#include "tools/encryption.h"
+#include "crypto/encryption.h"
 #include "tools/translatorchanger.h"
 
 int main(int argc, char *argv[])

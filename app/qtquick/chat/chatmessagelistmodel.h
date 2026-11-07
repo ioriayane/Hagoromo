@@ -3,8 +3,8 @@
 
 #include "atpchatabstractlistmodel.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
-#include "tools/chatlogsubscriber.h"
-#include "tools/configurablelabels.h"
+#include "realtime/chatlogsubscriber.h"
+#include "moderation/configurablelabels.h"
 
 class ChatMessageListModel : public AtpChatAbstractListModel
 {

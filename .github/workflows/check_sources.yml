@@ -51,7 +51,7 @@ jobs:
           fi
       - name: Check translations are up to date
         run: |
-          cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
+          cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
           echo "::group::Update translations"
           cmake -S . -B build-hagoromo -G Ninja \
               -DCMAKE_PREFIX_PATH:PATH="${QT_ROOT_DIR}" \

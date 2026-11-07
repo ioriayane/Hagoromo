@@ -1,7 +1,7 @@
 #include "reporter.h"
 
 #include "extension/com/atproto/moderation/comatprotomoderationcreatereportex.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::ComAtprotoModerationCreateReportEx;
 

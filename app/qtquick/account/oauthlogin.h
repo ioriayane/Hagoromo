@@ -1,7 +1,7 @@
 #ifndef OAUTHLOGIN_H
 #define OAUTHLOGIN_H
 
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 #include <QObject>
 #include <QPointer>

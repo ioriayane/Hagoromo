@@ -2,7 +2,7 @@
 #define ATPCHATABSTRACTLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "tools/configurablelabels.h"
+#include "moderation/configurablelabels.h"
 
 #include <QAbstractListModel>
 #include <QTimer>
