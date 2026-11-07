@@ -7,7 +7,7 @@
 #include <QSettings>
 #include <QUuid>
 
-#include <tools/accountmanager.h>
+#include <account/accountmanager.h>
 
 ColumnListModel::ColumnListModel(QObject *parent)
     : QAbstractListModel { parent }, m_selectedPosition(-1)

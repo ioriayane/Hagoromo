@@ -3,7 +3,7 @@
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 #include "common.h"
 
 #include <QDateTime>

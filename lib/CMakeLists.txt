@@ -31,6 +31,18 @@ qt_standard_project_setup(
 )
 
 add_library(HagoromoLib STATIC
+    account/accountmanager.cpp
+    account/accountmanager.h
+    account/authorization.cpp
+    account/authorization.h
+    account/dpopsessionstore.cpp
+    account/dpopsessionstore.h
+    account/identityresolver.cpp
+    account/identityresolver.h
+    account/serviceendpointresolver.cpp
+    account/serviceendpointresolver.h
+    account/sessionstatestore.cpp
+    account/sessionstatestore.h
     atprotocol/accessatprotocol.cpp
     atprotocol/accessatprotocol.h
     atprotocol/app/bsky/actor/appbskyactorgetpreferences.cpp
@@ -226,7 +238,34 @@ add_library(HagoromoLib STATIC
     atprotocol/lexicons_func.h
     atprotocol/lexicons_func_unknown.cpp
     atprotocol/lexicons_func_unknown.h
+    cache/listitemscache.cpp
+    cache/listitemscache.h
+    cache/pinnedpostcache.cpp
+    cache/pinnedpostcache.h
     common.h
+    content/imagecompressor.cpp
+    content/imagecompressor.h
+    content/mochottlongpost.cpp
+    content/mochottlongpost.h
+    content/opengraphprotocol.cpp
+    content/opengraphprotocol.h
+    content/supportprovider.cpp
+    content/supportprovider.h
+    crypto/encryption.cpp
+    crypto/encryption.h
+    crypto/encryption_seed.h
+    crypto/es256.cpp
+    crypto/es256.h
+    crypto/jsonwebtoken.cpp
+    crypto/jsonwebtoken.h
+    encoding/base32.cpp
+    encoding/base32.h
+    encoding/cardecoder.cpp
+    encoding/cardecoder.h
+    encoding/leb128.cpp
+    encoding/leb128.h
+    encoding/tid.cpp
+    encoding/tid.h
     extension/app/bsky/actor/appbskyactorputpreferencesex.cpp
     extension/app/bsky/actor/appbskyactorputpreferencesex.h
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp
@@ -279,10 +318,18 @@ add_library(HagoromoLib STATIC
     log/logaccess.h
     log/logmanager.cpp
     log/logmanager.h
+    moderation/configurablelabels.cpp
+    moderation/configurablelabels.h
+    moderation/labelerprovider.cpp
+    moderation/labelerprovider.h
+    moderation/labelprovider.cpp
+    moderation/labelprovider.h
     realtime/abstractpostselector.cpp
     realtime/abstractpostselector.h
     realtime/andpostselector.cpp
     realtime/andpostselector.h
+    realtime/chatlogsubscriber.cpp
+    realtime/chatlogsubscriber.h
     realtime/firehosereceiver.cpp
     realtime/firehosereceiver.h
     realtime/followerspostselector.cpp
@@ -300,56 +347,9 @@ add_library(HagoromoLib STATIC
     realtime/xorpostselector.cpp
     realtime/xorpostselector.h
     search/search.h
-    tools/accountmanager.cpp
-    tools/accountmanager.h
-    tools/authorization.cpp
-    tools/authorization.h
-    tools/identityresolver.cpp
-    tools/identityresolver.h
-    tools/base32.cpp
-    tools/base32.h
-    tools/cardecoder.cpp
-    tools/cardecoder.h
-    tools/chatlogsubscriber.cpp
-    tools/chatlogsubscriber.h
-    tools/configurablelabels.cpp
-    tools/configurablelabels.h
-    tools/deviceinfo.cpp
-    tools/deviceinfo.h
-    tools/dpopsessionstore.cpp
-    tools/dpopsessionstore.h
-    tools/encryption.cpp
-    tools/encryption.h
-    tools/encryption_seed.h
-    tools/es256.cpp
-    tools/es256.h
-    tools/imagecompressor.cpp
-    tools/imagecompressor.h
-    tools/jsonwebtoken.cpp
-    tools/jsonwebtoken.h
-    tools/labelerprovider.cpp
-    tools/labelerprovider.h
-    tools/labelprovider.cpp
-    tools/labelprovider.h
-    tools/leb128.cpp
-    tools/leb128.h
-    tools/listitemscache.cpp
-    tools/listitemscache.h
-    tools/mochottlongpost.cpp
-    tools/mochottlongpost.h
-    tools/opengraphprotocol.cpp
-    tools/opengraphprotocol.h
-    tools/pinnedpostcache.cpp
-    tools/pinnedpostcache.h
-    tools/qstringex.h
-    tools/serviceendpointresolver.cpp
-    tools/serviceendpointresolver.h
-    tools/sessionstatestore.cpp
-    tools/sessionstatestore.h
-    tools/supportprovider.cpp
-    tools/supportprovider.h
-    tools/tid.cpp
-    tools/tid.h
+    util/deviceinfo.cpp
+    util/deviceinfo.h
+    util/qstringex.h
     # resources
     lib.qrc
 )

@@ -4,7 +4,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;

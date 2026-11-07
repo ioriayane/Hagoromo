@@ -1,6 +1,6 @@
 #include "comatprotosyncsubscribereposex.h"
 
-#include "tools/cardecoder.h"
+#include "encoding/cardecoder.h"
 
 #include <QtNetwork/QSslError>
 

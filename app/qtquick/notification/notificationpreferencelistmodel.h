@@ -2,7 +2,7 @@
 #define NOTIFICATIONPREFERENCELISTMODEL_H
 
 #include "atprotocol/lexicons.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 #include <QAbstractListModel>
 #include <QObject>

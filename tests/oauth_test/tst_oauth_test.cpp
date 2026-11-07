@@ -12,15 +12,15 @@
 #include <openssl/pem.h>
 #include <openssl/bn.h>
 
-#include "tools/authorization.h"
-#include "tools/jsonwebtoken.h"
-#include "tools/es256.h"
-#include "tools/identityresolver.h"
-#include "tools/dpopsessionstore.h"
-#include "tools/sessionstatestore.h"
+#include "account/authorization.h"
+#include "crypto/jsonwebtoken.h"
+#include "crypto/es256.h"
+#include "account/identityresolver.h"
+#include "account/dpopsessionstore.h"
+#include "account/sessionstatestore.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
-#include "tools/accountmanager.h"
-#include "tools/encryption.h"
+#include "account/accountmanager.h"
+#include "crypto/encryption.h"
 #include "common.h"
 #include "extension/well-known/wellknownatprotodid.h"
 #include "http/simplehttpserver.h"

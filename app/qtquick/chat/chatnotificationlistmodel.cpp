@@ -1,5 +1,5 @@
 #include "chatnotificationlistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 
 using AtProtocolInterface::ChatBskyConvoListConvos;

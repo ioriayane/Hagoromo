@@ -11,9 +11,9 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
-#include "tools/accountmanager.h"
-#include "tools/supportprovider.h"
-#include "tools/tid.h"
+#include "account/accountmanager.h"
+#include "content/supportprovider.h"
+#include "encoding/tid.h"
 #include "tokimekipolloperator.h"
 
 #include <QFile>

@@ -6,8 +6,8 @@
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "extension/oauth/oauthrequesttoken.h"
 #include "extension/oauth/oauthrevoketoken.h"
-#include "tools/jsonwebtoken.h"
-#include "tools/identityresolver.h"
+#include "crypto/jsonwebtoken.h"
+#include "account/identityresolver.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -493,10 +493,10 @@ void Authorization::startRedirectServer()
                 result = true;
                 if (authorized) {
                     SimpleHttpServer::readFile(
-                            ":/tech/relog/hagoromo/tools/oauth/oauth_success.html", data);
+                            ":/tech/relog/hagoromo/account/oauth/oauth_success.html", data);
                 } else {
-                    SimpleHttpServer::readFile(":/tech/relog/hagoromo/tools/oauth/oauth_fail.html",
-                                               data);
+                    SimpleHttpServer::readFile(
+                            ":/tech/relog/hagoromo/account/oauth/oauth_fail.html", data);
                 }
                 data.replace("%HANDLE%", m_handle.toLocal8Bit());
                 qDebug().noquote() << "Result html:" << data;

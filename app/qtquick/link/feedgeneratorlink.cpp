@@ -2,7 +2,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerator;

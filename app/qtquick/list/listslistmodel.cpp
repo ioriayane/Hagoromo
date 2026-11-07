@@ -1,6 +1,6 @@
 #include "listslistmodel.h"
 #include "operation/recordoperator.h"
-#include "tools/listitemscache.h"
+#include "cache/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"

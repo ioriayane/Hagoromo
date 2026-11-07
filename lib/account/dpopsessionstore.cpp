@@ -1,6 +1,6 @@
 #include "dpopsessionstore.h"
-#include "tools/es256.h"
-#include "tools/jsonwebtoken.h"
+#include "crypto/es256.h"
+#include "crypto/jsonwebtoken.h"
 
 #include <QMutexLocker>
 

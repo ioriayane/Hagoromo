@@ -4,7 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 // #include "atprotocol/lexicons.h"
 #include "systemtool.h"
-#include "tools/labelprovider.h"
+#include "moderation/labelprovider.h"
 
 #include <QObject>
 

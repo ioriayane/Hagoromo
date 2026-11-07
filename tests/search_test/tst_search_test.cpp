@@ -5,7 +5,7 @@
 #include "webserver.h"
 #include "timeline/searchpostlistmodel.h"
 #include "profile/searchprofilelistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 class search_test : public QObject
 {

@@ -2,7 +2,7 @@
 #define ANYFEEDLISTMODEL_H
 
 #include "timelinelistmodel.h"
-#include "tools/serviceendpointresolver.h"
+#include "account/serviceendpointresolver.h"
 
 class AnyFeedListModel : public TimelineListModel
 {

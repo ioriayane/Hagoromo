@@ -18,7 +18,7 @@
 #include "list/listitemlistmodel.h"
 #include "list/listfeedlistmodel.h"
 #include "notification/notificationpreferencelistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 #include "blog/blogentrylistmodel.h"
 #include "timeline/anyfeedlistmodel.h"
 

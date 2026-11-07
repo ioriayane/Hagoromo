@@ -2,7 +2,7 @@
 #define COMATPROTOREPOUPLOADBLOB_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "tools/imagecompressor.h"
+#include "content/imagecompressor.h"
 
 #include <QSize>
 #include <QThread>

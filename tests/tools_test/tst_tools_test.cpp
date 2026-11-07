@@ -4,13 +4,13 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-#include "tools/base32.h"
-#include "tools/leb128.h"
-#include "tools/cardecoder.h"
-#include "tools/tid.h"
-#include "tools/supportprovider.h"
-#include "tools/encryption.h"
-#include "tools/mochottlongpost.h"
+#include "encoding/base32.h"
+#include "encoding/leb128.h"
+#include "encoding/cardecoder.h"
+#include "encoding/tid.h"
+#include "content/supportprovider.h"
+#include "crypto/encryption.h"
+#include "content/mochottlongpost.h"
 #include "atprotocol/lexicons_func.h"
 
 class tools_test : public QObject

@@ -5,7 +5,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "operation/recordoperator.h"
 #include "operation/skybluroperator.h"
-#include "tools/pinnedpostcache.h"
+#include "cache/pinnedpostcache.h"
 
 #include <QDebug>
 

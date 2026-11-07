@@ -1,5 +1,5 @@
 #include "accountmanager.h"
-#include "encryption.h"
+#include "crypto/encryption.h"
 #include "extension/app/bsky/actor/appbskyactorputpreferencesex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
@@ -11,10 +11,10 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/pinnedpostcache.h"
-#include "tools/authorization.h"
-#include "tools/dpopsessionstore.h"
-#include "tools/sessionstatestore.h"
+#include "cache/pinnedpostcache.h"
+#include "account/authorization.h"
+#include "account/dpopsessionstore.h"
+#include "account/sessionstatestore.h"
 #include "common.h"
 
 #include <QDebug>

@@ -1,5 +1,5 @@
 # social-app の providers.ts にある SUPPORT_PROVIDERS から下記を生成するツール
-#   - lib/tools/supportprovider.cpp のプロバイダーテーブル
+#   - lib/content/supportprovider.cpp のプロバイダーテーブル
 #   - app/qml/images/community/ のアイコン（assets/icons/community/*.svg のコピー）と README.md
 #   - app/app.qrc のアイコンのエントリ
 # https://github.com/bluesky-social/social-app/blob/main/src/features/profileLinks/providers.ts
@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
     providers_ts = os.path.join(args.social_app, 'src/features/profileLinks/providers.ts')
     icons_dir = os.path.join(args.social_app, 'assets/icons/community')
-    cpp_path = os.path.join(args.root, 'lib/tools/supportprovider.cpp')
+    cpp_path = os.path.join(args.root, 'lib/content/supportprovider.cpp')
     qrc_path = os.path.join(args.root, 'app/app.qrc')
     out_icons_dir = os.path.join(args.root, 'app/qml/images/community')
 

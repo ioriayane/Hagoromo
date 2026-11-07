@@ -1,7 +1,7 @@
 #include "blogentrylistmodel.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 

@@ -4,8 +4,8 @@
 #include "webserver.h"
 #include "chat/chatlistmodel.h"
 #include "chat/chatmessagelistmodel.h"
-#include "tools/chatlogsubscriber.h"
-#include "tools/accountmanager.h"
+#include "realtime/chatlogsubscriber.h"
+#include "account/accountmanager.h"
 
 class chat_test : public QObject
 {

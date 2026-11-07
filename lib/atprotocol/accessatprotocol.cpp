@@ -1,6 +1,6 @@
 #include "accessatprotocol.h"
-#include "tools/dpopsessionstore.h"
-#include "tools/sessionstatestore.h"
+#include "account/dpopsessionstore.h"
+#include "account/sessionstatestore.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>

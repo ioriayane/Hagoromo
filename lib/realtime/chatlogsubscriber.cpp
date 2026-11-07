@@ -1,5 +1,5 @@
 #include "chatlogsubscriber.h"
-#include "tools/labelerprovider.h"
+#include "moderation/labelerprovider.h"
 
 #include <QDebug>
 #include <QPointer>
