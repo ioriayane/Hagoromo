@@ -1,6 +1,14 @@
 name: Build for Mac
 on:
   workflow_dispatch:
+    inputs:
+      arch:
+        type: choice
+        options:
+          - universal
+          - x86_64
+          - arm64
+        default: universal
   workflow_call:
     inputs:
       upload:
@@ -12,6 +20,10 @@ on:
       unit_test:
         type: boolean
         default: false
+      arch:
+        description: "x86_64, arm64 or universal (for release)"
+        type: string
+        default: universal
     outputs:
       ARCHIVE_NAME:
         value: ${{ jobs.build-for-mac.outputs.ARCHIVE_NAME }}
@@ -20,7 +32,12 @@ env:
 
 jobs:
   build-for-mac:
-    runs-on: macos-latest
+    # x86_64 needs an Intel runner so that its unit tests can run natively
+    runs-on: ${{ inputs.arch == 'x86_64' && 'macos-26-intel' || 'macos-latest' }}
+    env:
+      ARCH_TYPE: ${{ inputs.arch }}
+      # The universal archive keeps the plain name because the release uses it
+      ARCH_SUFFIX: ${{ inputs.arch != 'universal' && format('_{0}', inputs.arch) || '' }}
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
@@ -50,7 +67,7 @@ jobs:
           echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
           echo "#define ENCRYPT_SEED \"$ENCRYPT_SEED\"" >> ./lib/tools/encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
-          ./scripts/build.sh mac ${QT_ROOT_DIR}
+          ./scripts/build.sh mac ${QT_ROOT_DIR} "${ARCH_TYPE}"
           echo "::endgroup::"
 
           # echo "Make for Mac"
@@ -61,23 +78,23 @@ jobs:
           # cd ..
 
           ls -l deploy-hagoromo
-          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac.zip" >> "$GITHUB_OUTPUT"
+          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac${ARCH_SUFFIX}.zip" >> "$GITHUB_OUTPUT"
       - name: Upload a archive
         if: ${{ inputs.upload == true }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: archive_for_mac
+          name: archive_for_mac${{ env.ARCH_SUFFIX }}
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
           retention-days: 2
       - name: Unit test
         if: ${{ inputs.unit_test == true }}
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh mac ${QT_ROOT_DIR}
+        run: scripts/unittest.sh mac ${QT_ROOT_DIR} "${ARCH_TYPE}"
       - name: Upload a unit test result
         if: ${{ inputs.unit_test == true && failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: unit_test_result_for_mac
+          name: unit_test_result_for_mac${{ env.ARCH_SUFFIX }}
           path: "build-hagoromo/tests/Testing/Temporary/LastTest.log"
           retention-days: 5

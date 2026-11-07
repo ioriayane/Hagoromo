@@ -26,11 +26,18 @@ build_hagoromo(){
             -DCMAKE_INSTALL_PREFIX:PATH='../deploy-hagoromo/hagoromo' \
             -DHAGOROMO_UNIT_TEST_BUILD=ON \
             -DCMAKE_BUILD_TYPE:STRING=Debug \
-            -DCMAKE_OSX_ARCHITECTURES="arm64"
+            -DCMAKE_OSX_ARCHITECTURES="${OSX_ARCHITECTURES}"
     fi
     cmake --build . --target tests/all
 
     popd
+}
+
+usage(){
+    echo "usage $(basename $0) PLATFORM_TYPE QTDIR [ARCH_TYPE]"
+    echo " PLATFORM_TYPE   linux or mac"
+    echo " QTDIR           ex: ~/Qt/6.11.0/gcc_64/"
+    echo " ARCH_TYPE       mac only: x86_64, arm64 or universal (default: arm64)"
 }
 
 SCRIPT_FOLDER=$(cd $(dirname $0); pwd)
@@ -39,12 +46,22 @@ ROOT_FOLDER=$(pwd)
 
 PLATFORM_TYPE=$1
 QTDIR=$2
+ARCH_TYPE=${3:-arm64}
 
 if [ -z "${QTDIR}" ] || [ -z "${PLATFORM_TYPE}" ]; then
-    echo "usage $(basename $0) PLATFORM_TYPE QTDIR"
-    echo " PLATFORM_TYPE   linux or mac"
-    echo " QTDIR           ex: ~/Qt/6.11.0/gcc_64/"
+    usage
     exit 1
+fi
+
+if [ "${PLATFORM_TYPE}" == "mac" ]; then
+    case "${ARCH_TYPE}" in
+        x86_64|arm64) OSX_ARCHITECTURES="${ARCH_TYPE}" ;;
+        universal) OSX_ARCHITECTURES="x86_64;arm64" ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
 fi
 
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")

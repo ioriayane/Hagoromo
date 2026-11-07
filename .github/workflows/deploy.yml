@@ -70,6 +70,7 @@ jobs:
       upload: true
       VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: false
+      arch: universal
 
   make-release:
     runs-on: ubuntu-22.04

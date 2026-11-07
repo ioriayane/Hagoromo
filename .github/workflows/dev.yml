@@ -45,12 +45,17 @@ jobs:
 
   mac:
     needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, arm64]
     uses: ./.github/workflows/build_mac.yml
     secrets: inherit
     with:
       upload: true
       VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
       unit_test: true
+      arch: ${{ matrix.arch }}
 
   check-sources:
     uses: ./.github/workflows/check_sources.yml
