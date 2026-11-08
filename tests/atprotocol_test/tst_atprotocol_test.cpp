@@ -20,6 +20,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
 #include "extension/app/bsky/actor/appbskyactorputpreferencesex.h"
+#include "extension/com/atproto/repo/comatprotorepoapplywritesex.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -63,6 +64,7 @@ private slots:
     void test_ConfigurableLabels_contains_mutedword();
     void test_LabelerProvider();
     void test_LabelProvider();
+    void test_ComAtprotoRepoApplyWrites();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_ComAtprotoRepoCreateRecord_postgate();
@@ -1747,6 +1749,52 @@ void atprotocol_test::test_LabelProvider()
     // did:plc:labeler_1
     // did:plc:labeler_2
     // did:plc:labeler_3
+}
+
+void atprotocol_test::test_ComAtprotoRepoApplyWrites()
+{
+    AtProtocolInterface::ComAtprotoRepoApplyWritesEx apply;
+    apply.setAccount(m_account);
+    apply.setService(QString("http://127.0.0.1:%1/response/applywrites/1").arg(m_listenPort));
+    apply.appendCreate("app.bsky.feed.post", "3kggopmh3kd2s", QJsonObject());
+    apply.appendCreate("app.bsky.feed.threadgate", "3kggopmh3kd2s", QJsonObject());
+    {
+        QSignalSpy spy(&apply, SIGNAL(finished(bool)));
+        apply.apply();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(spy.takeFirst().at(0).toBool());
+    }
+    QCOMPARE(apply.commit().rev, QString("3mabcdefgh222"));
+    QCOMPARE(apply.resultsCreateResultList().count(), 2);
+    QCOMPARE(apply.resultsCreateResultList().at(0).uri,
+             QString("at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s"));
+    QCOMPARE(apply.resultsCreateResultList().at(0).cid, QString("post-cid"));
+    QCOMPARE(apply.resultsCreateResultList().at(1).cid, QString("threadgate-cid"));
+
+    // 書き込み数と結果の数が一致しない
+    AtProtocolInterface::ComAtprotoRepoApplyWritesEx mismatch;
+    mismatch.setAccount(m_account);
+    mismatch.setService(QString("http://127.0.0.1:%1/response/applywrites/2").arg(m_listenPort));
+    mismatch.appendCreate("app.bsky.feed.post", "3kggopmh3kd2s", QJsonObject());
+    mismatch.appendCreate("app.bsky.feed.threadgate", "3kggopmh3kd2s", QJsonObject());
+    {
+        QSignalSpy spy(&mismatch, SIGNAL(finished(bool)));
+        mismatch.apply();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+    }
+
+    // 何も追加していない
+    AtProtocolInterface::ComAtprotoRepoApplyWritesEx empty;
+    empty.setAccount(m_account);
+    {
+        QSignalSpy spy(&empty, SIGNAL(finished(bool)));
+        empty.apply();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+    }
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()

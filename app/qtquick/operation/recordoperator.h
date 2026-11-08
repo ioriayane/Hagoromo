@@ -134,10 +134,11 @@ private:
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
+    void finishPost(const QString &uri, const QString &cid);
+    bool makeThreadGateRules(AtProtocolType::ThreadGateType &type,
+                             QList<AtProtocolType::ThreadGateAllow> &rules) const;
     bool threadGate(const QString &uri,
                     std::function<void(bool, const QString &, const QString &)> callback);
-    void postGate(const QString &uri,
-                  std::function<void(bool, const QString &, const QString &)> callback);
     void tokimekiPoll(const QString &uri, const QString cid,
                       std::function<void(bool, const QString &, const QString &)> callback);
     void updateProfileLinks(int index, std::function<void(bool)> callback);
