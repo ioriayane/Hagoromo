@@ -1,8 +1,11 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QDir>
 #include <QFile>
+#include <QImage>
+#include <QTemporaryDir>
 
 #include "webserver.h"
 #include "unittest_common.h"
@@ -34,6 +37,10 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void test_RecordOperator();
+    void test_RecordOperator_applyWrites();
+    void test_RecordOperator_applyWrites_noGate();
+    void test_RecordOperator_applyWrites_invalidThreadGate();
+    void test_RecordOperator_applyWrites_sequential();
     void test_RecordOperator_profile();
     void test_RecordOperator_profileLinks();
     void test_RecordOperator_requestProfileLinks();
@@ -66,6 +73,12 @@ private:
     QString m_service;
     QStringList m_profileLinksRequests;
 
+    QList<QByteArray> m_applyWritesRequests;
+    QList<QByteArray> m_applyWritesCreateRecordRequests;
+
+    QString makeApplyWritesAccount();
+    QString makeApplyWritesResponse(const QByteArray &body) const;
+    void test_RecordOperatorApplyWrites(const QByteArray &body);
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
@@ -84,9 +97,24 @@ hagoromo_test::hagoromo_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                if (request.url().path() == "/response/facet/xrpc/com.atproto.repo.createRecord") {
-                    test_RecordOperatorCreateRecord(request.body());
-                    json = "{\"cid\":\"CID\",\"uri\":\"URI\"}";
+                if (request.url().path() == "/response/facet/xrpc/com.atproto.repo.applyWrites") {
+                    test_RecordOperatorApplyWrites(request.body());
+                    json = makeApplyWritesResponse(request.body());
+                    result = true;
+                } else if (request.url().path()
+                           == "/response/applywrites/xrpc/com.atproto.repo.applyWrites") {
+                    m_applyWritesRequests.append(request.body());
+                    json = makeApplyWritesResponse(request.body());
+                    result = true;
+                } else if (request.url().path()
+                           == "/response/applywrites/xrpc/com.atproto.repo.createRecord") {
+                    m_applyWritesCreateRecordRequests.append(request.body());
+                    json = "{\"cid\":\"poll-cid\",\"uri\":\"at://poll-uri\"}";
+                    result = true;
+                } else if (request.url().path()
+                           == "/response/applywrites/xrpc/com.atproto.repo.uploadBlob") {
+                    json = "{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"blob-cid\"},"
+                           "\"mimeType\":\"image/png\",\"size\":1}}";
                     result = true;
                 } else if (request.url().path()
                            == "/response/tokimeki/xrpc/com.atproto.repo.createRecord") {
@@ -208,6 +236,186 @@ void hagoromo_test::test_RecordOperator()
         QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
         QCOMPARE(arguments.at(0).toBool(), true);
     }
+}
+
+QString hagoromo_test::makeApplyWritesAccount()
+{
+    m_applyWritesRequests.clear();
+    m_applyWritesCreateRecordRequests.clear();
+    return AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/applywrites", "id", "pass", "did:plc:applywrites",
+            "applywrites.bsky.social", "email", "accessJwt", "refreshJwt", true);
+}
+
+void hagoromo_test::test_RecordOperator_applyWrites()
+{
+    const QString uuid = makeApplyWritesAccount();
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.setText("post with gates");
+    ope.setThreadGate("choice",
+                      QStringList() << "mentioned"
+                                    << "followed");
+    ope.setPostGate(false, QStringList());
+    ope.setPoll(QStringList() << "a"
+                              << "b",
+                600);
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.post();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    // ポストとゲートは1回の書き込みにまとまっている
+    QCOMPARE(m_applyWritesRequests.count(), 1);
+    const QJsonObject request = QJsonDocument::fromJson(m_applyWritesRequests.first()).object();
+    QCOMPARE(request.value("repo").toString(), QString("did:plc:applywrites"));
+    QCOMPARE(request.value("validate").toBool(), true);
+    const QJsonArray writes = request.value("writes").toArray();
+    QCOMPARE(writes.count(), 3);
+
+    const QStringList collections = QStringList() << "app.bsky.feed.post"
+                                                  << "app.bsky.feed.threadgate"
+                                                  << "app.bsky.feed.postgate";
+    const QString rkey = writes.at(0).toObject().value("rkey").toString();
+    QVERIFY(!rkey.isEmpty());
+    const QString post_uri = QString("at://did:plc:applywrites/app.bsky.feed.post/%1").arg(rkey);
+    for (int i = 0; i < collections.count(); i++) {
+        const QJsonObject write = writes.at(i).toObject();
+        QCOMPARE(write.value("$type").toString(), QString("com.atproto.repo.applyWrites#create"));
+        QCOMPARE(write.value("collection").toString(), collections.at(i));
+        QCOMPARE(write.value("rkey").toString(), rkey);
+        QCOMPARE(write.value("value").toObject().value("$type").toString(), collections.at(i));
+    }
+    QCOMPARE(writes.at(0).toObject().value("value").toObject().value("text").toString(),
+             QString("post with gates"));
+    QCOMPARE(writes.at(1).toObject().value("value").toObject().value("post").toString(), post_uri);
+    QCOMPARE(writes.at(1).toObject().value("value").toObject().value("allow").toArray().count(), 2);
+    QCOMPARE(writes.at(2).toObject().value("value").toObject().value("post").toString(), post_uri);
+
+    // 投票はポストのCIDを参照するので別のリクエスト
+    QCOMPARE(m_applyWritesCreateRecordRequests.count(), 1);
+    const QJsonObject poll =
+            QJsonDocument::fromJson(m_applyWritesCreateRecordRequests.first()).object();
+    QCOMPARE(poll.value("collection").toString(), QString("tech.tokimeki.poll.poll"));
+    const QJsonObject subject = poll.value("record").toObject().value("subject").toObject();
+    QCOMPARE(subject.value("uri").toString(), post_uri);
+    QCOMPARE(subject.value("cid").toString(), QString("cid-%1").arg(rkey));
+
+    // 結果はポストのuriとcid
+    const QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    QCOMPARE(arguments.at(1).toString(), post_uri);
+    QCOMPARE(arguments.at(2).toString(), QString("cid-%1").arg(rkey));
+}
+
+void hagoromo_test::test_RecordOperator_applyWrites_noGate()
+{
+    const QString uuid = makeApplyWritesAccount();
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText("post only");
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.post();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.takeFirst().at(0).toBool(), true);
+
+    QCOMPARE(m_applyWritesRequests.count(), 1);
+    const QJsonArray writes = QJsonDocument::fromJson(m_applyWritesRequests.first())
+                                      .object()
+                                      .value("writes")
+                                      .toArray();
+    QCOMPARE(writes.count(), 1);
+    QCOMPARE(writes.at(0).toObject().value("collection").toString(), QString("app.bsky.feed.post"));
+    QCOMPARE(m_applyWritesCreateRecordRequests.count(), 0);
+}
+
+void hagoromo_test::test_RecordOperator_applyWrites_invalidThreadGate()
+{
+    const QString uuid = makeApplyWritesAccount();
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText("invalid gate");
+    ope.setThreadGate("choice", QStringList());
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    QSignalSpy spy_error(&ope, SIGNAL(errorOccurred(const QString &, const QString &)));
+    ope.post();
+
+    // ポストを作成せずに失敗する
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.takeFirst().at(0).toBool(), false);
+    QCOMPARE(spy_error.count(), 1);
+    QCOMPARE(spy_error.takeFirst().at(0).toString(), QString("InvalidThreadGateSetting"));
+    QCOMPARE(ope.running(), false);
+    QCOMPARE(m_applyWritesRequests.count(), 0);
+}
+
+void hagoromo_test::test_RecordOperator_applyWrites_sequential()
+{
+    const QString uuid = makeApplyWritesAccount();
+
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString image_path = dir.filePath("image.png");
+    QImage image(4, 4, QImage::Format_RGB32);
+    image.fill(Qt::white);
+    QVERIFY(image.save(image_path));
+
+    QStringList images;
+    QStringList alts;
+    for (int i = 0; i < 11; i++) {
+        images.append(QUrl::fromLocalFile(image_path).toString());
+        alts.append(QString());
+    }
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText("sequential");
+    ope.setThreadGate("nobody", QStringList());
+    ope.setPostGate(false, QStringList());
+    ope.setImages(images, alts);
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.postWithImages();
+    spy.wait();
+    QCOMPARE(spy.count(), 1);
+
+    QCOMPARE(m_applyWritesRequests.count(), 2);
+
+    // ゲートは1件目のみ
+    const QJsonArray writes1 =
+            QJsonDocument::fromJson(m_applyWritesRequests.at(0)).object().value("writes").toArray();
+    QCOMPARE(writes1.count(), 3);
+    const QString rkey1 = writes1.at(0).toObject().value("rkey").toString();
+    const QString uri1 = QString("at://did:plc:applywrites/app.bsky.feed.post/%1").arg(rkey1);
+    const QString cid1 = QString("cid-%1").arg(rkey1);
+
+    // 2件目は1件目へのリプライ
+    const QJsonArray writes2 =
+            QJsonDocument::fromJson(m_applyWritesRequests.at(1)).object().value("writes").toArray();
+    QCOMPARE(writes2.count(), 1);
+    const QString rkey2 = writes2.at(0).toObject().value("rkey").toString();
+    QVERIFY(rkey1 != rkey2);
+    const QJsonObject reply =
+            writes2.at(0).toObject().value("value").toObject().value("reply").toObject();
+    QCOMPARE(reply.value("root").toObject().value("uri").toString(), uri1);
+    QCOMPARE(reply.value("root").toObject().value("cid").toString(), cid1);
+    QCOMPARE(reply.value("parent").toObject().value("uri").toString(), uri1);
+    QCOMPARE(reply.value("parent").toObject().value("cid").toString(), cid1);
+
+    const QList<QVariant> arguments = spy.takeFirst();
+    QCOMPARE(arguments.at(0).toBool(), true);
+    QCOMPARE(arguments.at(1).toString(),
+             QString("at://did:plc:applywrites/app.bsky.feed.post/%1").arg(rkey2));
 }
 
 void hagoromo_test::test_RecordOperator_profile()
@@ -1250,6 +1458,41 @@ void hagoromo_test::test_DraftOperator_getDrafts()
     QList<QVariant> arguments = spyFinished.takeFirst();
     QCOMPARE(arguments.at(0).typeId(), QMetaType::Bool);
     QCOMPARE(arguments.at(0).toBool(), true);
+}
+
+QString hagoromo_test::makeApplyWritesResponse(const QByteArray &body) const
+{
+    const QJsonObject request = QJsonDocument::fromJson(body).object();
+    QJsonArray results;
+    for (const auto &value : request.value("writes").toArray()) {
+        const QJsonObject write = value.toObject();
+        QJsonObject result;
+        result.insert("$type", "com.atproto.repo.applyWrites#createResult");
+        result.insert("uri",
+                      QString("at://%1/%2/%3")
+                              .arg(request.value("repo").toString(),
+                                   write.value("collection").toString(),
+                                   write.value("rkey").toString()));
+        result.insert("cid", QString("cid-%1").arg(write.value("rkey").toString()));
+        results.append(result);
+    }
+    QJsonObject response;
+    response.insert("results", results);
+    return QString::fromUtf8(QJsonDocument(response).toJson(QJsonDocument::Compact));
+}
+
+void hagoromo_test::test_RecordOperatorApplyWrites(const QByteArray &body)
+{
+    const QJsonObject request = QJsonDocument::fromJson(body).object();
+    for (const auto &value : request.value("writes").toArray()) {
+        const QJsonObject write = value.toObject();
+        // createRecordの形式に変換して期待値と比較する
+        QJsonObject converted;
+        converted.insert("repo", request.value("repo"));
+        converted.insert("collection", write.value("collection"));
+        converted.insert("record", write.value("value"));
+        test_RecordOperatorCreateRecord(QJsonDocument(converted).toJson(QJsonDocument::Compact));
+    }
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

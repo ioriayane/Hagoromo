@@ -70,6 +70,23 @@ struct AccountData
     QString accountKey() const { return QString("%1_%2").arg(QUrl(service).host()).arg(did); }
 };
 
+// app.bsky.feed.postのレコードの作成に必要な情報（本文以外）
+struct PostRecordData
+{
+    AtProtocolType::ComAtprotoRepoStrongRef::Main reply_parent;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main reply_root;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main embed_quote;
+    QList<AtProtocolType::Blob> embed_image_blobs;
+    QList<AtProtocolType::AppBskyRichtextFacet::Main> facets;
+    QStringList post_languages;
+    QString external_link_uri;
+    QString external_link_title;
+    QString external_link_description;
+    QString feed_generator_link_uri;
+    QString feed_generator_link_cid;
+    QStringList self_labels;
+};
+
 class AtProtocolAccount : public QObject
 {
     Q_OBJECT
@@ -137,6 +154,7 @@ protected:
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
     void setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject &json_aspect_ratio);
 
+    QJsonObject makePostJsonObject(const QString &text, const PostRecordData &data);
     QJsonObject makeThreadGateJsonObject(const QString &uri,
                                          const AtProtocolType::ThreadGateType type,
                                          const QList<AtProtocolType::ThreadGateAllow> &allow_rules);

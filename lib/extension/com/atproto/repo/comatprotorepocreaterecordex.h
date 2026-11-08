@@ -47,18 +47,7 @@ public:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
-    AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
-    AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
-    QList<AtProtocolType::Blob> m_embedImageBlobs;
-    QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
-    QStringList m_postLanguages;
-    QString m_externalLinkUri;
-    QString m_externalLinkTitle;
-    QString m_externalLinkDescription;
-    QString m_feedGeneratorLinkUri;
-    QString m_feedGeneratorLinkCid;
-    QStringList m_selfLabels;
+    PostRecordData m_postData;
 };
 
 }

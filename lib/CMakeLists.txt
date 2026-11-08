@@ -209,6 +209,8 @@ add_library(HagoromoLib STATIC
     atprotocol/chat/bsky/moderation/chatbskymoderationupdateactoraccess.h
     atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp
     atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h
+    atprotocol/com/atproto/repo/comatprotorepoapplywrites.cpp
+    atprotocol/com/atproto/repo/comatprotorepoapplywrites.h
     atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp
     atprotocol/com/atproto/repo/comatprotorepocreaterecord.h
     atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp
@@ -270,6 +272,8 @@ add_library(HagoromoLib STATIC
     extension/app/bsky/actor/appbskyactorputpreferencesex.h
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp
     extension/com/atproto/moderation/comatprotomoderationcreatereportex.h
+    extension/com/atproto/repo/comatprotorepoapplywritesex.cpp
+    extension/com/atproto/repo/comatprotorepoapplywritesex.h
     extension/com/atproto/repo/comatprotorepocreaterecordex.cpp
     extension/com/atproto/repo/comatprotorepocreaterecordex.h
     extension/com/atproto/repo/comatprotorepodeleterecordex.cpp

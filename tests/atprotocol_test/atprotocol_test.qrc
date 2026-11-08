@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>response/xrpc/com.atproto.server.createSession</file>
+        <file>response/applywrites/1/xrpc/com.atproto.repo.applyWrites</file>
+        <file>response/applywrites/2/xrpc/com.atproto.repo.applyWrites</file>
         <file>response/ogp/file1.html</file>
         <file>response/ogp/images/file1.jpg</file>
         <file>response/ogp/file2.html</file>

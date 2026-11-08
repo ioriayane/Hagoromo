@@ -7,6 +7,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "extension/com/atproto/repo/comatprotorepoapplywritesex.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
@@ -30,12 +31,14 @@ using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
+using AtProtocolInterface::ComAtprotoRepoApplyWritesEx;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
+using AtProtocolInterface::PostRecordData;
 using namespace AtProtocolType;
 
 #define EMBED_IMAGES_MAX 10
@@ -316,6 +319,19 @@ void RecordOperator::post()
 
     setRunning(true);
 
+    // 不正な設定で投稿だけが作成されないように書き込み前に確認する
+    AtProtocolType::ThreadGateType thread_gate_type = AtProtocolType::ThreadGateType::Everybody;
+    QList<AtProtocolType::ThreadGateAllow> thread_gate_rules;
+    if (!makeThreadGateRules(thread_gate_type, thread_gate_rules)) {
+        setProgressMessage(QString());
+        emit errorOccurred("InvalidThreadGateSetting",
+                           QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
+                                   .arg(m_threadGateType, m_threadGateRules.join(", ")));
+        emit finished(false, QString(), QString());
+        setRunning(false);
+        return;
+    }
+
     if (m_embedImageBlobs.count() > EMBED_IMAGES_MAX && m_sequentialPostsTotal == 0) {
         m_sequentialPostsTotal = static_cast<int>(m_embedImageBlobs.count() / EMBED_IMAGES_MAX)
                 + ((m_embedImageBlobs.count() % EMBED_IMAGES_MAX) > 0 ? 1 : 0);
@@ -343,97 +359,90 @@ void RecordOperator::post()
     LexiconsTypeUnknown::makeFacets(
             this, account(), m_text,
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
-                ComAtprotoRepoCreateRecordEx *create_record =
-                        new ComAtprotoRepoCreateRecordEx(this);
-                connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this,
+                const QString rkey = Tid::next();
+                const QString post_uri =
+                        QString("at://%1/app.bsky.feed.post/%2").arg(account().did, rkey);
+
+                PostRecordData data;
+                data.reply_parent = m_replyParent;
+                data.reply_root = m_replyRoot;
+                data.embed_quote = m_embedQuote;
+                data.embed_image_blobs = embed_imageBlobs;
+                data.facets = facets;
+                data.post_languages = m_postLanguages;
+                data.external_link_uri = m_externalLinkUri;
+                data.external_link_title = m_externalLinkTitle;
+                data.external_link_description = m_externalLinkDescription;
+                data.feed_generator_link_uri = m_feedGeneratorLinkUri;
+                data.feed_generator_link_cid = m_feedGeneratorLinkCid;
+                data.self_labels = m_selfLabels;
+
+                ComAtprotoRepoApplyWritesEx *apply_writes = new ComAtprotoRepoApplyWritesEx(this);
+                connect(apply_writes, &ComAtprotoRepoApplyWritesEx::finished, this,
                         [=](bool success) {
                             if (success) {
-                                QString last_post_uri = create_record->uri();
-                                QString last_post_cid = create_record->cid();
-                                tokimekiPoll(
-                                        last_post_uri, last_post_cid,
-                                        [=](bool poll_success, const QString &poll_uri,
-                                            const QString &poll_cid) {
-                                            Q_UNUSED(poll_success)
-                                            Q_UNUSED(poll_uri)
-                                            Q_UNUSED(poll_cid)
-
-                                            bool ret = threadGate(
-                                                    last_post_uri,
-                                                    [=](bool success2, const QString &uri,
-                                                        const QString &cid) {
-                                                        Q_UNUSED(uri)
-                                                        Q_UNUSED(cid)
-                                                        postGate(
-                                                                last_post_uri,
-                                                                [=](bool success3,
-                                                                    const QString &uri3,
-                                                                    const QString &cid3) {
-                                                                    Q_UNUSED(success3)
-                                                                    m_sequentialPostsCurrent++;
-                                                                    if (m_sequentialPostsCurrent
-                                                                        >= m_sequentialPostsTotal) {
-                                                                        setProgressMessage(
-                                                                                QString());
-                                                                        emit finished(success2,
-                                                                                      uri3, cid3);
-                                                                        setRunning(false);
-                                                                    } else {
-                                                                        setPostGate(true,
-                                                                                    QStringList());
-                                                                        m_threadGateType =
-                                                                                "everybody";
-                                                                        if (m_sequentialPostsCurrent
-                                                                                    == 1
-                                                                            && m_replyRoot.uri
-                                                                                       .isEmpty()) {
-                                                                            m_replyRoot.uri =
-                                                                                    last_post_uri;
-                                                                            m_replyRoot.cid =
-                                                                                    last_post_cid;
-                                                                        }
-                                                                        m_replyParent.uri =
-                                                                                last_post_uri;
-                                                                        m_replyParent.cid =
-                                                                                last_post_cid;
-                                                                        post();
-                                                                    }
-                                                                });
-                                                    });
-                                            if (!ret) {
-                                                setProgressMessage(QString());
-                                                emit errorOccurred(
-                                                        "InvalidThreadGateSetting",
-                                                        QString("Invalid thread gate "
-                                                                "setting.\ntype:%1\nrules:%2")
-                                                                .arg(m_threadGateType,
-                                                                     m_threadGateRules.join(", ")));
-                                                emit finished(ret, QString(), QString());
-                                                setRunning(false);
-                                            }
-                                        });
+                                // 先頭に追加したレコードがポスト
+                                const auto &result =
+                                        apply_writes->resultsCreateResultList().first();
+                                const QString last_post_uri = result.uri;
+                                const QString last_post_cid = result.cid;
+                                // 投票のレコードはポストのCIDを参照するのでまとめられない
+                                tokimekiPoll(last_post_uri, last_post_cid,
+                                             [=](bool poll_success, const QString &poll_uri,
+                                                 const QString &poll_cid) {
+                                                 Q_UNUSED(poll_success)
+                                                 Q_UNUSED(poll_uri)
+                                                 Q_UNUSED(poll_cid)
+                                                 finishPost(last_post_uri, last_post_cid);
+                                             });
                             } else {
                                 setProgressMessage(QString());
-                                emit errorOccurred(create_record->errorCode(),
-                                                   create_record->errorMessage());
+                                emit errorOccurred(apply_writes->errorCode(),
+                                                   apply_writes->errorMessage());
                                 emit finished(success, QString(), QString());
                                 setRunning(false);
                             }
-                            create_record->deleteLater();
+                            apply_writes->deleteLater();
                         });
-                create_record->setAccount(account());
-                create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
-                                        m_replyRoot.uri);
-                create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
-                create_record->setImageBlobs(embed_imageBlobs);
-                create_record->setFacets(facets);
-                create_record->setPostLanguages(m_postLanguages);
-                create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
-                                               m_externalLinkDescription);
-                create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
-                create_record->setSelfLabels(m_selfLabels);
-                create_record->post(m_text);
+                apply_writes->setAccount(account());
+                // Firehoseの受信側はopsの先頭を見ることがあるのでポストを先頭にする
+                apply_writes->appendPost(rkey, m_text, data);
+                if (thread_gate_type != AtProtocolType::ThreadGateType::Everybody) {
+                    apply_writes->appendThreadGate(post_uri, thread_gate_type, thread_gate_rules);
+                }
+                const auto post_gate_type = (m_postGateEmbeddingRule == "disableRule")
+                        ? AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                                embeddingRules_DisableRule
+                        : AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+                if (post_gate_type
+                            != AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none
+                    || !m_postGateDetachedEmbeddingUris.isEmpty()) {
+                    apply_writes->appendPostGate(post_uri, post_gate_type,
+                                                 m_postGateDetachedEmbeddingUris);
+                }
+                apply_writes->apply();
             });
+}
+
+void RecordOperator::finishPost(const QString &uri, const QString &cid)
+{
+    m_sequentialPostsCurrent++;
+    if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
+        setProgressMessage(QString());
+        emit finished(true, uri, cid);
+        setRunning(false);
+    } else {
+        // 2件目以降はゲートなしのリプライとして続ける
+        setPostGate(true, QStringList());
+        m_threadGateType = "everybody";
+        if (m_sequentialPostsCurrent == 1 && m_replyRoot.uri.isEmpty()) {
+            m_replyRoot.uri = uri;
+            m_replyRoot.cid = cid;
+        }
+        m_replyParent.uri = uri;
+        m_replyParent.cid = cid;
+        post();
+    }
 }
 
 void RecordOperator::postWithImages()
@@ -1766,46 +1775,59 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     delete_record->deleteListItem(r_key);
 }
 
+bool RecordOperator::makeThreadGateRules(AtProtocolType::ThreadGateType &type,
+                                         QList<AtProtocolType::ThreadGateAllow> &rules) const
+{
+    AtProtocolType::ThreadGateAllow rule;
+
+    type = AtProtocolType::ThreadGateType::Everybody;
+    rules.clear();
+
+    if (m_threadGateType == "everybody") {
+        return true;
+    } else if (m_threadGateType == "nobody") {
+        type = AtProtocolType::ThreadGateType::Nobody;
+        return true;
+    }
+
+    for (const auto &cmd : m_threadGateRules) {
+        if (cmd == "mentioned") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+            rule.uri.clear();
+        } else if (cmd == "followed") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+            rule.uri.clear();
+        } else if (cmd == "follower") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Follower;
+            rule.uri.clear();
+        } else if (cmd.startsWith("at://")) {
+            rule.type = AtProtocolType::ThreadGateAllowType::List;
+            rule.uri = cmd;
+        } else {
+            continue;
+        }
+        rules.append(rule);
+    }
+    if (rules.isEmpty()) {
+        return false;
+    }
+    type = AtProtocolType::ThreadGateType::Choice;
+    return true;
+}
+
 bool RecordOperator::threadGate(
         const QString &uri, std::function<void(bool, const QString &, const QString &)> callback)
 {
     AtProtocolType::ThreadGateType type = AtProtocolType::ThreadGateType::Everybody;
     QList<AtProtocolType::ThreadGateAllow> rules;
-    AtProtocolType::ThreadGateAllow rule;
 
-    if (m_threadGateType == "everybody") {
+    if (!makeThreadGateRules(type, rules)) {
+        return false;
+    }
+    if (type == AtProtocolType::ThreadGateType::Everybody) {
         qDebug().noquote() << "Not set thread gate.";
         callback(true, QString(), QString());
         return true;
-    } else if (m_threadGateType == "nobody") {
-        type = AtProtocolType::ThreadGateType::Nobody;
-    } else {
-        for (const auto &cmd : m_threadGateRules) {
-            if (cmd == "mentioned") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd == "followed") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Followed;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd == "follower") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Follower;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd.startsWith("at://")) {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::List;
-                rule.uri = cmd;
-                rules.append(rule);
-            }
-        }
-        if (m_threadGateRules.isEmpty()) {
-            return false;
-        }
     }
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
@@ -1819,36 +1841,6 @@ bool RecordOperator::threadGate(
     create_record->setAccount(account());
     create_record->threadGate(uri, type, rules);
     return true;
-}
-
-void RecordOperator::postGate(const QString &uri,
-                              std::function<void(bool, const QString &, const QString &)> callback)
-{
-    const QString rule = "disableRule";
-
-    if (m_postGateEmbeddingRule != rule && m_postGateDetachedEmbeddingUris.isEmpty()) {
-        qDebug().noquote() << "Not set post gate.";
-        callback(true, QString(), QString());
-        return;
-    }
-
-    AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type =
-            AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
-    if (m_postGateEmbeddingRule == rule) {
-        type = AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
-                embeddingRules_DisableRule;
-    }
-
-    ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
-        if (!success) {
-            emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
-        }
-        callback(success, create_record->uri(), create_record->cid());
-        create_record->deleteLater();
-    });
-    create_record->setAccount(account());
-    create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
 
 void RecordOperator::tokimekiPoll(
