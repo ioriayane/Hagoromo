@@ -823,8 +823,8 @@ Item {
                             text: !postDialogItem.longPostAvailable ?
                                       qsTr("A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.") :
                                       postDialogItem.mochottWaiting ?
-                                          qsTr("After linking your account with mochott in your browser, press Post again.") :
-                                          qsTr("Posts over 300 characters are posted as a long post with mochott.")
+                                          qsTr("After linking your account with mochott in your browser, press Long post again.") :
+                                          qsTr("Posts over 300 characters are posted as a long post with mochott. To post normally, shorten it to 300 characters or less.")
                         }
 
                         RowLayout {
@@ -907,9 +907,7 @@ Item {
                                 Layout.leftMargin: 5
                                 Layout.alignment: Qt.AlignVCenter
                                 font.pointSize: AdjustedValues.f8
-                                text: postDialogItem.longPostMode ?
-                                          qsTr("Long post") :
-                                          300 - embedImageListModel.adjustPostLength - postText.realTextLength
+                                text: 300 - embedImageListModel.adjustPostLength - postText.realTextLength
                             }
                             ProgressCircle {
                                 Layout.leftMargin: 5
@@ -931,7 +929,8 @@ Item {
                                          !feedGeneratorLink.running &&
                                          !listLink.running
                                 font.pointSize: AdjustedValues.f10
-                                text: qsTr("Post")
+                                // 300文字を超えたらmochottの長文ポストになることをボタンで示す
+                                text: postDialogItem.longPostMode ? qsTr("Long post") : qsTr("Post")
                                 onClicked: {
                                     if(postDialogItem.longPostMode && !mochottLink.ready){
                                         postDialogItem.checkMochottLink(true)

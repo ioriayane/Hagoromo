@@ -27,7 +27,7 @@ Dialog {
                        "The full text is saved as a mochott article in your repository, " +
                        "and the beginning is posted to Bluesky.") + "\n\n" +
                   qsTr("To continue, please agree to the following and link your account with mochott in your browser. " +
-                       "After linking, press Post again.")
+                       "After linking, press Long post again.")
         }
         Label {
             Layout.preferredWidth: 400 * AdjustedValues.ratio
