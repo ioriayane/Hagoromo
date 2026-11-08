@@ -302,8 +302,12 @@ add_library(HagoromoLib STATIC
     extension/oauth/oauthrequesttoken.h
     extension/oauth/oauthrevoketoken.cpp
     extension/oauth/oauthrevoketoken.h
+    extension/site/mochott/sitemochottaccountgetauthorization.cpp
+    extension/site/mochott/sitemochottaccountgetauthorization.h
     extension/site/mochott/sitemochottarticlegetarticle.cpp
     extension/site/mochott/sitemochottarticlegetarticle.h
+    extension/site/mochott/sitemochottpublicationgetpublication.cpp
+    extension/site/mochott/sitemochottpublicationgetpublication.h
     extension/well-known/wellknownatprotodid.cpp
     extension/well-known/wellknownatprotodid.h
     extension/well-known/wellknownoauthauthorizationserver.cpp

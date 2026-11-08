@@ -283,6 +283,11 @@ QStringList Authorization::defaultScopes()
                          << QStringLiteral("rpc:app.bsky.draft.updateDraft?") + appview
                          << QStringLiteral("repo:tech.tokimeki.poll.poll")
                          << QStringLiteral("repo:tech.tokimeki.poll.vote")
+                         // mochottの長文投稿
+                         << QStringLiteral("repo:site.mochott.article")
+                         << QStringLiteral("repo:site.standard.document")
+                         << QStringLiteral("rpc:site.mochott.account.getAuthorization?aud=did:web:"
+                                           "mochott.site%23mochott_appview")
                          << QStringLiteral("blob:*/*")
                          // ラベラーへの通報
                          << QStringLiteral("rpc:com.atproto.moderation.createReport?aud=*");

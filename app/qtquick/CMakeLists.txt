@@ -99,6 +99,8 @@ add_library(HagoromoGuiLib STATIC
     notification/notificationpreferencelistmodel.h
     operation/draftoperator.cpp
     operation/draftoperator.h
+    operation/mochottlinkoperator.cpp
+    operation/mochottlinkoperator.h
     operation/mochottoperator.cpp
     operation/mochottoperator.h
     operation/recordoperator.cpp

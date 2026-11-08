@@ -6,6 +6,7 @@ import QtQuick.Controls.Material
 import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.mochottlinkoperator 1.0
 import tech.relog.hagoromo.draftoperator 1.0
 import tech.relog.hagoromo.draftlistmodel 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -61,6 +62,14 @@ Item {
     property alias postText: postText
     property alias recordOperator: createRecord
 
+    // 300文字を超えるときはmochottの長文投稿にする
+    property bool longPostMode: postText.realTextLength > (300 - embedImageListModel.adjustPostLength)
+    property bool longPostAvailable: addPollDialog.appliedOptions.length === 0 &&
+                                     embedImageListModel.count <= 10 &&
+                                     postText.byteLength <= 100000
+    // ブラウザでmochottとの連携をしてもらっている
+    property bool mochottWaiting: false
+
     signal errorOccurred(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
@@ -91,6 +100,76 @@ Item {
         visible = false
         closedDialog()
         closed()
+    }
+
+    function currentAccountUuid(){
+        return postDialogItem.accountModel.item(accountCombo.currentIndex, AccountListModel.UuidRole)
+    }
+
+    // 長文投稿の前にmochottとの連携とpublicationを確認する
+    // post_after_check: 確認できたらそのまま投稿する(ユーザーが投稿を押したときだけ)
+    function checkMochottLink(post_after_check){
+        var uuid = currentAccountUuid()
+        mochottLink.setAccount(uuid)
+        if(!mochottLink.hasRequiredScope()){
+            postDialogItem.errorOccurred(uuid, "MochottScopeMissing",
+                                         qsTr("Posting a long post requires permission to write to mochott. Please log in to this account again."))
+            return
+        }
+        mochottLink.postAfterCheck = post_after_check
+        mochottLink.check()
+    }
+
+    function submitPost(){
+        postDialog.close()
+
+        var row = accountCombo.currentIndex;
+
+        // 下書きを適用していたら消す
+        if(selectDraftDialog.appliedDraftId.length > 0){
+            draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+            draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
+        }
+        // 投稿
+        createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+        createRecord.clear()
+        createRecord.setText(postText.text)
+        createRecord.setPostLanguages(languageSelectionDialog.selectedLanguages)
+        if(postDialogItem.longPostMode){
+            createRecord.setLongPost(mochottLink.profileUri, mochottLink.standardPublication, qsTr("Show more"))
+        }
+        if(postDialogItem.postType !== "reply"){
+            // replyのときは制限の設定はできない
+            createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+            createRecord.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
+        }
+        if(postDialogItem.postType === "reply"){
+            createRecord.setReply(postDialogItem.replyCid, postDialogItem.replyUri, postDialogItem.replyRootCid, postDialogItem.replyRootUri)
+        }
+        if(postDialogItem.quoteValid){
+            createRecord.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
+        }
+        if(selfLabelsButton.value.length > 0){
+            createRecord.setSelfLabels([selfLabelsButton.value])
+        }
+        if(externalLink.valid){
+            createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
+            createRecord.postWithImages()
+        }else if(feedGeneratorLink.valid){
+            createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+            createRecord.post()
+        }else if(listLink.valid){
+            createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
+            createRecord.post()
+        }else if(embedImageListModel.count > 0){
+            createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
+            createRecord.postWithImages()
+        }else if(addPollDialog.appliedOptions.length > 0){
+            createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
+            createRecord.postWithPoll()
+        }else{
+            createRecord.post()
+        }
     }
 
     function openWithFiles(urls){
@@ -192,6 +271,41 @@ Item {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
                     postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                }
+            }
+            MochottLinkOperator {
+                id: mochottLink
+                property bool postAfterCheck: false
+                onFinished: (success) => {
+                    if(!success){
+                        return
+                    }
+                    if(mochottLink.ready){
+                        postDialogItem.mochottWaiting = false
+                        if(mochottLink.postAfterCheck){
+                            postDialogItem.submitPost()
+                        }
+                    }else if(!postDialogItem.mochottWaiting){
+                        if(mochottLink.authorizeUrl.length > 0){
+                            mochottConnectDialog.open()
+                        }else{
+                            postDialogItem.errorOccurred(postDialogItem.currentAccountUuid(), "MochottAuthorizeUrlInvalid",
+                                                         qsTr("Could not get the page to link your account with mochott."))
+                        }
+                    }
+                }
+                onErrorOccurred: (code, message) => {
+                    postDialogItem.errorOccurred(postDialogItem.currentAccountUuid(), code, message)
+                }
+            }
+            Connections {
+                target: Qt.application
+                function onStateChanged() {
+                    // ブラウザから戻ってきたら連携できたか確かめる(投稿はしない)
+                    if(Qt.application.state === Qt.ApplicationActive &&
+                            postDialogItem.mochottWaiting && !mochottLink.running){
+                        postDialogItem.checkMochottLink(false)
+                    }
                 }
             }
             DraftOperator {
@@ -350,6 +464,8 @@ Item {
                                 }
 
                                 onCurrentIndexChanged: {
+                                    postDialogItem.mochottWaiting = false
+                                    mochottLink.reset()
                                     var row = accountCombo.currentIndex
                                     if(row >= 0){
                                         var uuid = postDialogItem.accountModel.item(row, AccountListModel.UuidRole)
@@ -438,6 +554,7 @@ Item {
                                 selectByMouse: true
                                 font.pointSize: AdjustedValues.f10
                                 property int realTextLength: systemTool.countText(text)
+                                property int byteLength: postDialogItem.longPostMode ? systemTool.countBytes(text) : 0
                                 onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
                                 Keys.onPressed: (event) => {
                                     if(mentionSuggestionView.visible){
@@ -697,6 +814,19 @@ Item {
                             }
                         }
 
+                        Label {
+                            Layout.preferredWidth: postText.width
+                            visible: postDialogItem.longPostMode
+                            wrapMode: Text.Wrap
+                            font.pointSize: AdjustedValues.f8
+                            color: postDialogItem.longPostAvailable ? Material.foreground : Material.color(Material.Red)
+                            text: !postDialogItem.longPostAvailable ?
+                                      qsTr("A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.") :
+                                      postDialogItem.mochottWaiting ?
+                                          qsTr("After linking your account with mochott in your browser, press Post again.") :
+                                          qsTr("Posts over 300 characters are posted as a long post with mochott.")
+                        }
+
                         RowLayout {
                             spacing: 0
                             Button {
@@ -777,7 +907,9 @@ Item {
                                 Layout.leftMargin: 5
                                 Layout.alignment: Qt.AlignVCenter
                                 font.pointSize: AdjustedValues.f8
-                                text: 300 - embedImageListModel.adjustPostLength - postText.realTextLength
+                                text: postDialogItem.longPostMode ?
+                                          qsTr("Long post") :
+                                          300 - embedImageListModel.adjustPostLength - postText.realTextLength
                             }
                             ProgressCircle {
                                 Layout.leftMargin: 5
@@ -792,65 +924,25 @@ Item {
                                 id: postButton
                                 Layout.alignment: Qt.AlignRight
                                 enabled: postText.text.length > 0 &&
-                                         postText.realTextLength <= (300 - embedImageListModel.adjustPostLength) &&
+                                         (!postDialogItem.longPostMode || postDialogItem.longPostAvailable) &&
                                          !createRecord.running &&
+                                         !mochottLink.running &&
                                          !externalLink.running &&
                                          !feedGeneratorLink.running &&
                                          !listLink.running
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Post")
                                 onClicked: {
-                                    postDialog.close()
-
-                                    var row = accountCombo.currentIndex;
-
-                                    // 下書きを適用していたら消す
-                                    if(selectDraftDialog.appliedDraftId.length > 0){
-                                        draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
-                                        draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
-                                    }
-                                    // 投稿
-                                    createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
-                                    createRecord.clear()
-                                    createRecord.setText(postText.text)
-                                    createRecord.setPostLanguages(languageSelectionDialog.selectedLanguages)
-                                    if(postDialogItem.postType !== "reply"){
-                                        // replyのときは制限の設定はできない
-                                        createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
-                                        createRecord.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
-                                    }
-                                    if(postDialogItem.postType === "reply"){
-                                        createRecord.setReply(postDialogItem.replyCid, postDialogItem.replyUri, postDialogItem.replyRootCid, postDialogItem.replyRootUri)
-                                    }
-                                    if(postDialogItem.quoteValid){
-                                        createRecord.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
-                                    }
-                                    if(selfLabelsButton.value.length > 0){
-                                        createRecord.setSelfLabels([selfLabelsButton.value])
-                                    }
-                                    if(externalLink.valid){
-                                        createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
-                                        createRecord.postWithImages()
-                                    }else if(feedGeneratorLink.valid){
-                                        createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
-                                        createRecord.post()
-                                    }else if(listLink.valid){
-                                        createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
-                                        createRecord.post()
-                                    }else if(embedImageListModel.count > 0){
-                                        createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
-                                        createRecord.postWithImages()
-                                    }else if(addPollDialog.appliedOptions.length > 0){
-                                        createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
-                                        createRecord.postWithPoll()
+                                    if(postDialogItem.longPostMode && !mochottLink.ready){
+                                        postDialogItem.checkMochottLink(true)
                                     }else{
-                                        createRecord.post()
+                                        postDialogItem.submitPost()
                                     }
                                 }
                                 BusyIndicator {
                                     anchors.fill: parent
                                     anchors.margins: 3
-                                    visible: createRecord.running
+                                    visible: createRecord.running || mochottLink.running
                                 }
                             }
                             IconButton {
@@ -1007,6 +1099,14 @@ Item {
                         selectThreadGateDialog.selectedType = threadGateType
                         selectThreadGateDialog.selectedOptions = threadGateRules
                     }
+                }
+            }
+
+            MochottConnectDialog {
+                id: mochottConnectDialog
+                onAccepted: {
+                    postDialogItem.mochottWaiting = true
+                    Qt.openUrlExternally(mochottLink.authorizeUrl)
                 }
             }
 

@@ -152,6 +152,9 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
             } else if (endpoint.startsWith("chat.bsky.")
                        && header.second == "did:web:api.bsky.chat#bsky_chat") {
                 // ok
+            } else if (endpoint.startsWith("site.mochott.account.")
+                       && header.second == "did:web:mochott.site#mochott_appview") {
+                // ok
             } else {
                 qDebug() << "Proxy Error:" << request.url().host() << endpoint << header.first
                          << header.second;

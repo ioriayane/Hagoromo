@@ -18,6 +18,7 @@ enum class AccountStatus : int {
 
 enum class AccountScope : int {
     DirectMessage,
+    Mochott, // mochottの長文投稿の書き込み
 };
 
 enum class AuthType : int {
@@ -85,6 +86,8 @@ struct PostRecordData
     QString feed_generator_link_uri;
     QString feed_generator_link_cid;
     QStringList self_labels;
+    // mochottの長文投稿の記事(site.mochott.longPost)
+    AtProtocolType::ComAtprotoRepoStrongRef::Main long_post;
 };
 
 class AtProtocolAccount : public QObject

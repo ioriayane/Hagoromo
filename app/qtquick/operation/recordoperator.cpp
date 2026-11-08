@@ -13,10 +13,12 @@
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "account/accountmanager.h"
+#include "content/mochottlongpost.h"
 #include "content/supportprovider.h"
 #include "encoding/tid.h"
 #include "tokimekipolloperator.h"
 
+#include <QDateTime>
 #include <QFile>
 #include <QTimer>
 #include <QJsonObject>
@@ -278,6 +280,14 @@ void RecordOperator::requestProfileLinks()
     profile->profile(account().did);
 }
 
+void RecordOperator::setLongPost(const QString &profile_uri, const QString &standard_publication,
+                                 const QString &more_label)
+{
+    m_longPostProfile = profile_uri;
+    m_longPostStandardPublication = standard_publication;
+    m_longPostMoreLabel = more_label;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -307,6 +317,10 @@ void RecordOperator::clear()
     m_pollRkey.clear();
     m_pollOgpImagepath.clear();
 
+    m_longPostProfile.clear();
+    m_longPostStandardPublication.clear();
+    m_longPostMoreLabel.clear();
+
     m_updateProfileLinks = false;
     m_profileLinks.clear();
     m_deletedProfileLinkUris.clear();
@@ -329,6 +343,16 @@ void RecordOperator::post()
                                    .arg(m_threadGateType, m_threadGateRules.join(", ")));
         emit finished(false, QString(), QString());
         setRunning(false);
+        return;
+    }
+
+    if (!m_longPostProfile.isEmpty()
+        && (m_embedImageBlobs.count() > EMBED_IMAGES_MAX || !m_pollOptions.isEmpty()
+            || m_sequentialPostsTotal > 0)) {
+        // 長文投稿は1件のポストにまとめる必要がある
+        failPost("InvalidLongPost",
+                 QString("A long post cannot be combined with a poll or more than %1 images.")
+                         .arg(EMBED_IMAGES_MAX));
         return;
     }
 
@@ -359,10 +383,6 @@ void RecordOperator::post()
     LexiconsTypeUnknown::makeFacets(
             this, account(), m_text,
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
-                const QString rkey = Tid::next();
-                const QString post_uri =
-                        QString("at://%1/app.bsky.feed.post/%2").arg(account().did, rkey);
-
                 PostRecordData data;
                 data.reply_parent = m_replyParent;
                 data.reply_root = m_replyRoot;
@@ -377,51 +397,170 @@ void RecordOperator::post()
                 data.feed_generator_link_cid = m_feedGeneratorLinkCid;
                 data.self_labels = m_selfLabels;
 
-                ComAtprotoRepoApplyWritesEx *apply_writes = new ComAtprotoRepoApplyWritesEx(this);
-                connect(apply_writes, &ComAtprotoRepoApplyWritesEx::finished, this,
-                        [=](bool success) {
-                            if (success) {
-                                // 先頭に追加したレコードがポスト
-                                const auto &result =
-                                        apply_writes->resultsCreateResultList().first();
-                                const QString last_post_uri = result.uri;
-                                const QString last_post_cid = result.cid;
-                                // 投票のレコードはポストのCIDを参照するのでまとめられない
-                                tokimekiPoll(last_post_uri, last_post_cid,
-                                             [=](bool poll_success, const QString &poll_uri,
-                                                 const QString &poll_cid) {
-                                                 Q_UNUSED(poll_success)
-                                                 Q_UNUSED(poll_uri)
-                                                 Q_UNUSED(poll_cid)
-                                                 finishPost(last_post_uri, last_post_cid);
-                                             });
-                            } else {
-                                setProgressMessage(QString());
-                                emit errorOccurred(apply_writes->errorCode(),
-                                                   apply_writes->errorMessage());
-                                emit finished(success, QString(), QString());
-                                setRunning(false);
-                            }
-                            apply_writes->deleteLater();
-                        });
-                apply_writes->setAccount(account());
-                // Firehoseの受信側はopsの先頭を見ることがあるのでポストを先頭にする
-                apply_writes->appendPost(rkey, m_text, data);
-                if (thread_gate_type != AtProtocolType::ThreadGateType::Everybody) {
-                    apply_writes->appendThreadGate(post_uri, thread_gate_type, thread_gate_rules);
+                if (!m_longPostProfile.isEmpty()) {
+                    writeLongPost(data, thread_gate_type, thread_gate_rules);
+                    return;
                 }
-                const auto post_gate_type = (m_postGateEmbeddingRule == "disableRule")
-                        ? AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
-                                embeddingRules_DisableRule
-                        : AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
-                if (post_gate_type
-                            != AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none
-                    || !m_postGateDetachedEmbeddingUris.isEmpty()) {
-                    apply_writes->appendPostGate(post_uri, post_gate_type,
-                                                 m_postGateDetachedEmbeddingUris);
-                }
-                apply_writes->apply();
+                writePost(Tid::next(), m_text, data, thread_gate_type, thread_gate_rules,
+                          [=](bool success, const QString &uri, const QString &cid,
+                              const QString &code, const QString &message) {
+                              if (!success) {
+                                  failPost(code, message);
+                                  return;
+                              }
+                              // 投票のレコードはポストのCIDを参照するのでまとめられない
+                              tokimekiPoll(uri, cid,
+                                           [=](bool poll_success, const QString &poll_uri,
+                                               const QString &poll_cid) {
+                                               Q_UNUSED(poll_success)
+                                               Q_UNUSED(poll_uri)
+                                               Q_UNUSED(poll_cid)
+                                               finishPost(uri, cid);
+                                           });
+                          });
             });
+}
+
+void RecordOperator::writePost(const QString &rkey, const QString &text, const PostRecordData &data,
+                               const AtProtocolType::ThreadGateType thread_gate_type,
+                               const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules,
+                               std::function<void(bool, const QString &, const QString &,
+                                                  const QString &, const QString &)>
+                                       callback)
+{
+    const QString post_uri = QString("at://%1/app.bsky.feed.post/%2").arg(account().did, rkey);
+
+    ComAtprotoRepoApplyWritesEx *apply_writes = new ComAtprotoRepoApplyWritesEx(this);
+    connect(apply_writes, &ComAtprotoRepoApplyWritesEx::finished, this, [=](bool success) {
+        if (success) {
+            // 先頭に追加したレコードがポスト
+            const auto &result = apply_writes->resultsCreateResultList().first();
+            callback(true, result.uri, result.cid, QString(), QString());
+        } else {
+            callback(false, QString(), QString(), apply_writes->errorCode(),
+                     apply_writes->errorMessage());
+        }
+        apply_writes->deleteLater();
+    });
+    apply_writes->setAccount(account());
+    // Firehoseの受信側はopsの先頭を見ることがあるのでポストを先頭にする
+    apply_writes->appendPost(rkey, text, data);
+    if (thread_gate_type != AtProtocolType::ThreadGateType::Everybody) {
+        apply_writes->appendThreadGate(post_uri, thread_gate_type, thread_gate_rules);
+    }
+    const auto post_gate_type = (m_postGateEmbeddingRule == "disableRule")
+            ? AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                    embeddingRules_DisableRule
+            : AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+    if (post_gate_type != AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none
+        || !m_postGateDetachedEmbeddingUris.isEmpty()) {
+        apply_writes->appendPostGate(post_uri, post_gate_type, m_postGateDetachedEmbeddingUris);
+    }
+    apply_writes->apply();
+}
+
+// 記事 → ポスト(とゲート) → documentの順に書く
+// mochottは書かれた順に取り込むので記事をポストより先に書く
+void RecordOperator::writeLongPost(const PostRecordData &data,
+                                   const AtProtocolType::ThreadGateType thread_gate_type,
+                                   const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules)
+{
+    const auto current_account = account();
+    const QString article_rkey = Tid::next();
+    const QString post_rkey = Tid::next();
+    const auto opening = MochottLongPost::makeOpening(
+            m_text, data.facets, m_longPostMoreLabel,
+            MochottLongPost::makeArticleUrl(current_account.handle, article_rkey));
+
+    MochottLongPost::ArticleSource source;
+    source.did = current_account.did;
+    source.profile = m_longPostProfile;
+    source.rkey = article_rkey;
+    source.created_at = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
+    source.text = m_text;
+    source.facets = data.facets;
+    source.description = opening.body;
+    source.attachments = data;
+    const QJsonObject article = MochottLongPost::makeArticleRecord(source);
+    const QString standard_publication = m_longPostStandardPublication;
+
+    ComAtprotoRepoCreateRecordEx *create_article = new ComAtprotoRepoCreateRecordEx(this);
+    connect(create_article, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
+        if (!success) {
+            failPost(create_article->errorCode(), create_article->errorMessage());
+            create_article->deleteLater();
+            return;
+        }
+        PostRecordData post_data = data;
+        post_data.facets = opening.facets;
+        post_data.long_post.uri = create_article->uri();
+        post_data.long_post.cid = create_article->cid();
+        create_article->deleteLater();
+
+        writePost(post_rkey, opening.text, post_data, thread_gate_type, thread_gate_rules,
+                  [=](bool post_success, const QString &uri, const QString &cid,
+                      const QString &code, const QString &message) {
+                      if (!post_success) {
+                          // ポストのない記事を残さない
+                          ComAtprotoRepoDeleteRecordEx *delete_article =
+                                  new ComAtprotoRepoDeleteRecordEx(this);
+                          connect(delete_article, &ComAtprotoRepoDeleteRecordEx::finished, this,
+                                  [=](bool delete_success) {
+                                      if (!delete_success) {
+                                          qWarning().noquote()
+                                                  << "Failed to delete the mochott article:"
+                                                  << delete_article->errorMessage();
+                                      }
+                                      failPost(code, message);
+                                      delete_article->deleteLater();
+                                  });
+                          delete_article->setAccount(account());
+                          delete_article->deleteRecord(current_account.did,
+                                                       QStringLiteral("site.mochott.article"),
+                                                       article_rkey, QString(), QString());
+                          return;
+                      }
+                      if (standard_publication.isEmpty()) {
+                          finishPost(uri, cid);
+                          return;
+                      }
+                      AtProtocolType::ComAtprotoRepoStrongRef::Main post_ref;
+                      post_ref.uri = uri;
+                      post_ref.cid = cid;
+                      ComAtprotoRepoCreateRecordEx *create_document =
+                              new ComAtprotoRepoCreateRecordEx(this);
+                      connect(create_document, &ComAtprotoRepoCreateRecordEx::finished, this,
+                              [=](bool document_success) {
+                                  if (!document_success) {
+                                      // ポストは完成しているので投稿は成功として扱う
+                                      qWarning().noquote()
+                                              << "Failed to create the standard.site document:"
+                                              << create_document->errorMessage();
+                                  }
+                                  finishPost(uri, cid);
+                                  create_document->deleteLater();
+                              });
+                      create_document->setAccount(account());
+                      create_document->createRecord(
+                              current_account.did, QStringLiteral("site.standard.document"),
+                              article_rkey, false,
+                              MochottLongPost::makeDocumentRecord(article, standard_publication,
+                                                                  post_ref),
+                              QString());
+                  });
+    });
+    create_article->setAccount(current_account);
+    // PDSが知らないlexiconなので検証しない
+    create_article->createRecord(current_account.did, QStringLiteral("site.mochott.article"),
+                                 article_rkey, false, article, QString());
+}
+
+void RecordOperator::failPost(const QString &code, const QString &message)
+{
+    setProgressMessage(QString());
+    emit errorOccurred(code, message);
+    emit finished(false, QString(), QString());
+    setRunning(false);
 }
 
 void RecordOperator::finishPost(const QString &uri, const QString &cid)
