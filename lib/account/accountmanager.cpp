@@ -83,6 +83,7 @@ private:
     void scheduleOAuthRefresh(int expires_in);
     Authorization *oauth();
     static bool allowedChatScope(const QString &scope);
+    static bool allowedMochottScope(const QString &scope);
     static bool isOAuthReauthRequiredError(const QString &code);
     static QDateTime accessTokenExpiresAt(int expires_in);
 
@@ -614,6 +615,13 @@ void AccountManager::Private::getAccountScope()
         } else {
             m_account.scope.removeAll(AtProtocolInterface::AccountScope::DirectMessage);
         }
+        if (allowedMochottScope(m_oauthScope)) {
+            if (!m_account.scope.contains(AtProtocolInterface::AccountScope::Mochott)) {
+                m_account.scope.append(AtProtocolInterface::AccountScope::Mochott);
+            }
+        } else {
+            m_account.scope.removeAll(AtProtocolInterface::AccountScope::Mochott);
+        }
         return;
     }
     QStringList items = m_account.accessJwt.split(".");
@@ -888,6 +896,29 @@ bool AccountManager::Private::allowedChatScope(const QString &scope)
         }
     }
     return false;
+}
+
+bool AccountManager::Private::allowedMochottScope(const QString &scope)
+{
+    bool article = false;
+    bool document = false;
+    bool authorization = false;
+    for (const auto &item : scope.split(' ', Qt::SkipEmptyParts)) {
+        if (item == "transition:generic") {
+            return true;
+        }
+        if (item == "repo:*" || item.startsWith("repo:site.mochott.article")) {
+            article = true;
+        }
+        if (item == "repo:*" || item.startsWith("repo:site.standard.document")) {
+            document = true;
+        }
+        if (item.startsWith("rpc:*")
+            || item.startsWith("rpc:site.mochott.account.getAuthorization")) {
+            authorization = true;
+        }
+    }
+    return article && document && authorization;
 }
 
 void AccountManager::Private::setMain(bool is)

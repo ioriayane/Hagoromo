@@ -10,6 +10,8 @@
 #include "webserver.h"
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
+#include "operation/mochottlinkoperator.h"
+#include "util/qstringex.h"
 #include "operation/mochottoperator.h"
 #include "operation/recordoperator.h"
 #include "operation/draftoperator.h"
@@ -66,6 +68,10 @@ private slots:
     void test_BlogEntryListModel();
     void test_AnyFeedListModel();
     void test_TimelineListModel_longPost();
+    void test_RecordOperator_longPost();
+    void test_RecordOperator_longPost_noDocument();
+    void test_RecordOperator_longPost_failure();
+    void test_MochottLinkOperator();
 
 private:
     WebServer m_mockServer;
@@ -74,6 +80,8 @@ private:
     QStringList m_profileLinksRequests;
 
     QList<QByteArray> m_applyWritesRequests;
+    // QPair<エンドポイント, ボディ>
+    QList<QPair<QString, QByteArray>> m_longPostRequests;
     QList<QByteArray> m_applyWritesCreateRecordRequests;
 
     QString makeApplyWritesAccount();
@@ -97,7 +105,26 @@ hagoromo_test::hagoromo_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                if (request.url().path() == "/response/facet/xrpc/com.atproto.repo.applyWrites") {
+                if (request.url().path().startsWith("/response/longpost/")) {
+                    // ok: すべて成功 / fail: ポストの書き込みだけ失敗
+                    const QString endpoint = request.url().fileName();
+                    m_longPostRequests.append(qMakePair(endpoint, request.body()));
+                    const QJsonObject body = QJsonDocument::fromJson(request.body()).object();
+                    if (endpoint == "com.atproto.repo.createRecord") {
+                        json = QString("{\"uri\":\"at://%1/%2/%3\",\"cid\":\"cid-%2\"}")
+                                       .arg(body.value("repo").toString(),
+                                            body.value("collection").toString(),
+                                            body.value("rkey").toString());
+                        result = true;
+                    } else if (endpoint == "com.atproto.repo.applyWrites") {
+                        json = makeApplyWritesResponse(request.body());
+                        result = !request.url().path().startsWith("/response/longpost/fail/");
+                    } else if (endpoint == "com.atproto.repo.deleteRecord") {
+                        json = "{}";
+                        result = true;
+                    }
+                } else if (request.url().path()
+                           == "/response/facet/xrpc/com.atproto.repo.applyWrites") {
                     test_RecordOperatorApplyWrites(request.body());
                     json = makeApplyWritesResponse(request.body());
                     result = true;
@@ -1876,6 +1903,232 @@ void hagoromo_test::test_TimelineListModel_longPost()
     fetch("unknown_node", "cid_unknown_node");
     QVERIFY(flag("cid_unknown_node", TimelineListModel::LongPostFailedRole));
     QCOMPARE(text("cid_unknown_node", TimelineListModel::LongPostTextRole), QString());
+}
+
+namespace {
+
+QString makeLongPostText()
+{
+    // 300文字を超える本文。冒頭の切り出し位置の近くにリンクを置く
+    QString text = QString::fromUtf8("一行目のタイトル\n\n");
+    while (text.length() < 280) {
+        text += QString::fromUtf8("長文の本文です。");
+    }
+    text += " https://example.com/very/long/path/to/the/page\n";
+    while (text.length() < 600) {
+        text += QString::fromUtf8("続きの本文です。");
+    }
+    return text;
+}
+
+}
+
+void hagoromo_test::test_RecordOperator_longPost()
+{
+    m_longPostRequests.clear();
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/longpost/ok", "id", "pass", "did:plc:longpost",
+            "longpost.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText(makeLongPostText());
+    ope.setThreadGate("choice", QStringList() << "mentioned");
+    ope.setQuote("quote-cid", "at://did:plc:quoted/app.bsky.feed.post/3mquote");
+    ope.setLongPost("at://did:plc:longpost/site.mochott.profile/self",
+                    "at://did:plc:longpost/site.standard.publication/3m4pub", "Show more");
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.post();
+    QVERIFY(spy.wait());
+    QCOMPARE(spy.count(), 1);
+    const QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+
+    // 記事 → ポスト(とゲート) → documentの順
+    QCOMPARE(m_longPostRequests.count(), 3);
+    QCOMPARE(m_longPostRequests.at(0).first, QString("com.atproto.repo.createRecord"));
+    QCOMPARE(m_longPostRequests.at(1).first, QString("com.atproto.repo.applyWrites"));
+    QCOMPARE(m_longPostRequests.at(2).first, QString("com.atproto.repo.createRecord"));
+
+    const QJsonObject article_request =
+            QJsonDocument::fromJson(m_longPostRequests.at(0).second).object();
+    QCOMPARE(article_request.value("collection").toString(), QString("site.mochott.article"));
+    QCOMPARE(article_request.value("validate").toBool(true), false);
+    const QString article_rkey = article_request.value("rkey").toString();
+    const QJsonObject article = article_request.value("record").toObject();
+    QCOMPARE(article.value("profile").toString(),
+             QString("at://did:plc:longpost/site.mochott.profile/self"));
+    QCOMPARE(article.value("title").toString(), QString::fromUtf8("一行目のタイトル"));
+    QCOMPARE(article.value("textContent").toString(), makeLongPostText());
+    QCOMPARE(article.value("via").toString(), QString("tech.relog.hagoromo"));
+    QCOMPARE(article.value("path").toString(), "/" + article_rkey);
+    const QJsonArray content = article.value("content").toObject().value("content").toArray();
+    QCOMPARE(content.last().toObject().value("type").toString(), QString("embed"));
+    QCOMPARE(content.last().toObject().value("attrs").toObject().value("src").toString(),
+             QString("https://bsky.app/profile/did:plc:quoted/post/3mquote"));
+
+    // ポストは先頭でゲートと一緒に書き、記事を参照する
+    const QJsonObject apply = QJsonDocument::fromJson(m_longPostRequests.at(1).second).object();
+    QCOMPARE(apply.value("validate").toBool(), true);
+    const QJsonArray writes = apply.value("writes").toArray();
+    QCOMPARE(writes.count(), 2);
+    QCOMPARE(writes.at(0).toObject().value("collection").toString(), QString("app.bsky.feed.post"));
+    QCOMPARE(writes.at(1).toObject().value("collection").toString(),
+             QString("app.bsky.feed.threadgate"));
+    const QJsonObject post = writes.at(0).toObject().value("value").toObject();
+    const QString post_rkey = writes.at(0).toObject().value("rkey").toString();
+    QVERIFY(post_rkey != article_rkey);
+    QCOMPARE(post.value("site.mochott.longPost").toObject().value("uri").toString(),
+             QString("at://did:plc:longpost/site.mochott.article/%1").arg(article_rkey));
+    QCOMPARE(post.value("site.mochott.longPost").toObject().value("cid").toString(),
+             QString("cid-site.mochott.article"));
+    const QString post_text = post.value("text").toString();
+    QVERIFY(post_text.endsWith(QString::fromUtf8("…Show more")));
+    QVERIFY(QStringEx(post_text).length() <= 300);
+    // リンクの途中で切らない
+    QVERIFY(!post_text.contains("https://"));
+    const QJsonArray facets = post.value("facets").toArray();
+    QCOMPARE(facets.count(), 1);
+    const QJsonObject tail = facets.first().toObject();
+    QCOMPARE(tail.value("index").toObject().value("byteEnd").toInt(), post_text.toUtf8().size());
+    QCOMPARE(tail.value("features").toArray().first().toObject().value("uri").toString(),
+             QString("https://mochott.site/longpost.bsky.social/%1").arg(article_rkey));
+    QCOMPARE(post.value("embed").toObject().value("$type").toString(),
+             QString("app.bsky.embed.record"));
+
+    const QJsonObject document_request =
+            QJsonDocument::fromJson(m_longPostRequests.at(2).second).object();
+    QCOMPARE(document_request.value("collection").toString(), QString("site.standard.document"));
+    QCOMPARE(document_request.value("rkey").toString(), article_rkey);
+    QCOMPARE(document_request.value("validate").toBool(true), false);
+    const QJsonObject document = document_request.value("record").toObject();
+    QCOMPARE(document.value("site").toString(),
+             QString("at://did:plc:longpost/site.standard.publication/3m4pub"));
+    QCOMPARE(document.value("publishedAt").toString(), article.value("createdAt").toString());
+    QCOMPARE(document.value("bskyPostRef").toObject().value("uri").toString(),
+             QString("at://did:plc:longpost/app.bsky.feed.post/%1").arg(post_rkey));
+    QCOMPARE(document.value("bskyPostRef").toObject().value("cid").toString(),
+             QString("cid-%1").arg(post_rkey));
+    QCOMPARE(arguments.at(1).toString(),
+             QString("at://did:plc:longpost/app.bsky.feed.post/%1").arg(post_rkey));
+}
+
+void hagoromo_test::test_RecordOperator_longPost_noDocument()
+{
+    m_longPostRequests.clear();
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/longpost/ok", "id", "pass", "did:plc:longpost",
+            "longpost.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText(makeLongPostText());
+    // standard publicationが無ければdocumentは書かない
+    ope.setLongPost("at://did:plc:longpost/site.standard.publication/self", QString(), "more");
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.post();
+    QVERIFY(spy.wait());
+    QVERIFY(spy.takeFirst().at(0).toBool());
+    QCOMPARE(m_longPostRequests.count(), 2);
+    QCOMPARE(m_longPostRequests.at(1).first, QString("com.atproto.repo.applyWrites"));
+}
+
+void hagoromo_test::test_RecordOperator_longPost_failure()
+{
+    m_longPostRequests.clear();
+    const QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/longpost/fail", "id", "pass", "did:plc:longpost",
+            "longpost.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
+    RecordOperator ope;
+    ope.setAccount(uuid);
+    ope.clear();
+    ope.setText(makeLongPostText());
+    ope.setLongPost("at://did:plc:longpost/site.mochott.profile/self",
+                    "at://did:plc:longpost/site.standard.publication/3m4pub", "more");
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    QSignalSpy error_spy(&ope, SIGNAL(errorOccurred(const QString &, const QString &)));
+    ope.post();
+    QVERIFY(spy.wait());
+    QVERIFY(!spy.takeFirst().at(0).toBool());
+    QCOMPARE(error_spy.count(), 1);
+    QVERIFY(!ope.running());
+
+    // ポストが書けなければ記事を消す
+    QCOMPARE(m_longPostRequests.count(), 3);
+    QCOMPARE(m_longPostRequests.at(2).first, QString("com.atproto.repo.deleteRecord"));
+    const QJsonObject article_request =
+            QJsonDocument::fromJson(m_longPostRequests.at(0).second).object();
+    const QJsonObject delete_request =
+            QJsonDocument::fromJson(m_longPostRequests.at(2).second).object();
+    QCOMPARE(delete_request.value("collection").toString(), QString("site.mochott.article"));
+    QCOMPARE(delete_request.value("rkey").toString(), article_request.value("rkey").toString());
+}
+
+void hagoromo_test::test_MochottLinkOperator()
+{
+    struct TestCase
+    {
+        QString name;
+        bool success;
+        bool authorized;
+        bool ready;
+        QString authorize_url;
+        QString profile;
+        QString standard_publication;
+    };
+    const QString did = QStringLiteral("did:plc:mochottlink");
+    const QList<TestCase> cases = QList<TestCase>()
+            << TestCase { "ok",
+                          true,
+                          true,
+                          true,
+                          QString(),
+                          "at://did:plc:mochottlink/site.mochott.profile/self",
+                          "at://did:plc:mochottlink/site.standard.publication/3m4pub" }
+            << TestCase { "unauthorized",
+                          true,
+                          false,
+                          false,
+                          "https://mochott.site/oauth/login?handle=did%3Aplc%3Amochottlink&"
+                          "returnTo=%2Foauth%2Fdone",
+                          QString(),
+                          QString() } // mochott以外のURLは開かない
+            << TestCase { "bad_url", true, false, false, QString(), QString(), QString() }
+            // 別のアカウントのpublication
+            << TestCase { "other_did", false, true, false, QString(), QString(), QString() }
+            // 別のアカウントのstandard publicationは使わない
+            << TestCase { "no_standard", true,
+                          true,          true,
+                          QString(),     "at://did:plc:mochottlink/site.standard.publication/self",
+                          QString() };
+
+    for (const auto &item : cases) {
+        const QString uuid = AccountManager::getInstance()->updateAccount(
+                QString(), m_service + "/mochottlink/" + item.name, "id", "pass", did,
+                "mochottlink.bsky.social", "email", "accessJwt", "refreshJwt", true);
+        MochottLinkOperator ope;
+        ope.setAccount(uuid);
+        ope.setServiceUrl(m_service + "/mochottlink/" + item.name);
+        // アプリパスワードは書き込みの権限がある
+        QVERIFY(ope.hasRequiredScope());
+
+        QSignalSpy spy(&ope, SIGNAL(finished(bool)));
+        ope.check();
+        QVERIFY(spy.wait());
+        QCOMPARE(spy.takeFirst().at(0).toBool(), item.success);
+        QVERIFY2(ope.authorized() == item.authorized, item.name.toLocal8Bit());
+        QVERIFY2(ope.ready() == item.ready, item.name.toLocal8Bit());
+        QCOMPARE(ope.authorizeUrl(), item.authorize_url);
+        QCOMPARE(ope.profileUri(), item.profile);
+        QCOMPARE(ope.standardPublication(), item.standard_publication);
+        QVERIFY(!ope.running());
+    }
 }
 
 QTEST_MAIN(hagoromo_test)

@@ -1,0 +1,6 @@
+{
+  "publication": {
+    "uri": "at://did:plc:mochottlink/site.mochott.profile/self",
+    "standardPublication": "at://did:plc:mochottlink/site.standard.publication/3m4pub"
+  }
+}

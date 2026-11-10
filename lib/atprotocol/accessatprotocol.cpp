@@ -685,6 +685,13 @@ QJsonObject AccessAtProtocol::makePostJsonObject(const QString &text, const Post
         json_record.insert("labels", json_labels);
     }
 
+    if (!data.long_post.uri.isEmpty() && !data.long_post.cid.isEmpty()) {
+        QJsonObject json_long_post;
+        json_long_post.insert("uri", data.long_post.uri);
+        json_long_post.insert("cid", data.long_post.cid);
+        json_record.insert("site.mochott.longPost", json_long_post);
+    }
+
     return json_record;
 }
 

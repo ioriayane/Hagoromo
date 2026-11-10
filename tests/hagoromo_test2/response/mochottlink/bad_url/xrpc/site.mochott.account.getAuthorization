@@ -1,0 +1,4 @@
+{
+  "authorized": false,
+  "authorizeUrl": "https://example.com/oauth/login"
+}

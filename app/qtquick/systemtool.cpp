@@ -35,6 +35,11 @@ int SystemTool::countText(const QString &text) const
     return QStringEx(text).length();
 }
 
+int SystemTool::countBytes(const QString &text) const
+{
+    return text.toUtf8().size();
+}
+
 bool SystemTool::isSupportProviderLink(const QString &url) const
 {
     return SupportProvider::isSupportProvider(url);
