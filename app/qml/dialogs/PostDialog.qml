@@ -20,6 +20,7 @@ import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
+import "../compat"
 import "../parts"
 
 Item {
@@ -70,6 +71,18 @@ Item {
     // ブラウザでmochottとの連携をしてもらっている
     property bool mochottWaiting: false
 
+    // 入力欄のサイズ（AdjustedValues.ratio適用前の値。SettingsCで保存）
+    readonly property real editorMinimumWidth: 520
+    readonly property real editorMinimumHeight: 150
+    property real editorWidth: editorMinimumWidth
+    property real editorHeight: editorMinimumHeight
+
+    SettingsC {
+        category: "PostDialog"
+        property alias editorWidth: postDialogItem.editorWidth
+        property alias editorHeight: postDialogItem.editorHeight
+    }
+
     signal errorOccurred(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
@@ -78,7 +91,29 @@ Item {
     signal requestClearProgress(string itemId, string contentId)
     signal requestClearAllProgress(string itemId)
 
+    // 要求サイズ(ratio適用前)を表示可能な範囲に収めて入力欄に適用し、適用後のサイズ(ratio適用前)を返す
+    // from_origin: trueのときはダイアログが左上にある前提で上限を計算する（表示位置の決定前用）
+    function fitEditorSize(request_width, request_height, from_origin){
+        var ratio = AdjustedValues.ratio
+        var others_width = postDialog.width - postTextFrame.width
+        var others_height = postDialog.height - postTextFrame.height
+        var max_width = postDialogItem.parentWidth - others_width
+        var max_height = postDialogItem.basisHeight - (mainLayout.height - postTextFrame.height)
+        if(!from_origin){
+            max_width -= postDialogPosition.x
+            max_height = Math.min(max_height,
+                                  postDialogItem.parentHeight - postDialogPosition.y - others_height)
+        }
+        var w = Math.max(editorMinimumWidth * ratio, Math.min(request_width * ratio, max_width))
+        var h = Math.max(editorMinimumHeight * ratio, Math.min(request_height * ratio, max_height))
+        postTextFrame.Layout.preferredWidth = w
+        postTextFrame.Layout.preferredHeight = h
+        return Qt.size(w / ratio, h / ratio)
+    }
+
     function open(){
+        // 保存値はウインドウが広い場合に備えて維持し、表示サイズのみ収める
+        fitEditorSize(postDialogItem.editorWidth, postDialogItem.editorHeight, true)
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
         var tmp_y = (postDialogItem.parentHeight - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
         var offset = AdjustedValues.s15
@@ -542,10 +577,13 @@ Item {
                             }
                         }
 
-                        ScrollView {
+                        Item {
+                            id: postTextFrame
                             z: 99   // MentionSuggetionViewを最前に表示するため
-                            Layout.preferredWidth: 520 * AdjustedValues.ratio
-                            Layout.preferredHeight: 150 * AdjustedValues.ratio
+                            Layout.preferredWidth: postDialogItem.editorMinimumWidth * AdjustedValues.ratio
+                            Layout.preferredHeight: postDialogItem.editorMinimumHeight * AdjustedValues.ratio
+                        ScrollView {
+                            anchors.fill: parent
                             TextArea {
                                 id: postText
                                 verticalAlignment: TextInput.AlignTop
@@ -597,6 +635,65 @@ Item {
                                     }
                                 }
                             }
+                        }
+                        Canvas {
+                            id: postTextResizeHandle
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            width: AdjustedValues.i12
+                            height: AdjustedValues.i12
+                            property color lineColor: Material.color(Material.Grey)
+                            onLineColorChanged: requestPaint()
+                            onPaint: {
+                                var ctx = getContext("2d")
+                                ctx.reset()
+                                ctx.strokeStyle = lineColor
+                                ctx.lineWidth = 1
+                                ctx.beginPath()
+                                for(var i = 1; i <= 3; i++){
+                                    var d = width * i / 3
+                                    ctx.moveTo(width - d, height)
+                                    ctx.lineTo(width, height - d)
+                                }
+                                ctx.stroke()
+                            }
+                            MouseArea {
+                                // ハンドルの外側まで掴めるように少し広げる
+                                anchors.fill: parent
+                                anchors.margins: -4
+                                cursorShape: Qt.SizeFDiagCursor
+                                preventStealing: true
+                                property point startScenePos
+                                property size startSize
+                                onPressed: (mouse) => {
+                                    startScenePos = mapToItem(null, mouse.x, mouse.y)
+                                    startSize = Qt.size(postTextFrame.width / AdjustedValues.ratio,
+                                                        postTextFrame.height / AdjustedValues.ratio)
+                                }
+                                onPositionChanged: (mouse) => {
+                                    if(!pressed){
+                                        return
+                                    }
+                                    // ハンドル自体が移動するのでシーン座標で差分をとる
+                                    var pos = mapToItem(null, mouse.x, mouse.y)
+                                    var applied = postDialogItem.fitEditorSize(
+                                                startSize.width + (pos.x - startScenePos.x) / AdjustedValues.ratio,
+                                                startSize.height + (pos.y - startScenePos.y) / AdjustedValues.ratio,
+                                                false)
+                                    postDialogItem.editorWidth = applied.width
+                                    postDialogItem.editorHeight = applied.height
+                                }
+                                onReleased: postText.forceActiveFocus()
+                                onDoubleClicked: {
+                                    var applied = postDialogItem.fitEditorSize(
+                                                postDialogItem.editorMinimumWidth,
+                                                postDialogItem.editorMinimumHeight,
+                                                false)
+                                    postDialogItem.editorWidth = applied.width
+                                    postDialogItem.editorHeight = applied.height
+                                }
+                            }
+                        }
                         }
 
                         RowLayout {
@@ -682,6 +779,8 @@ Item {
                             Layout.preferredWidth: postText.width
                             // Layout.maximumHeight: 280 * AdjustedValues.ratio
                             visible: externalLink.valid
+                            // 入力欄の幅を広げても既定幅のときの高さを超えないようにする
+                            thumbMaximumHeight: postDialogItem.editorMinimumWidth * 0.5 * AdjustedValues.ratio
 
                             thumbImage.source: externalLink.thumbLocal
                             uriLabel.text: externalLink.uri

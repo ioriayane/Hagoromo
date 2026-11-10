@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Supports long posts of 300 characters or more via [mochott](https://mochott.site/) (requires agreement to mochott's Terms of Service, etc.)
+- Update
+  - Changes to Allow Resizing of Text Input Areas in Post-Dialog Boxes
 
 ### v0.66.0 - 2026/11/6
 

@@ -2897,7 +2897,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="615"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="712"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2910,57 +2910,57 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="116"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="151"/>
         <source>Posting a long post requires permission to write to mochott. Please log in to this account again.</source>
         <translation>長文投稿にはmochottへの書き込みの許可が必要です。このアカウントでもう一度ログインしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="139"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="174"/>
         <source>Show more</source>
         <translation>もっと見る</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="293"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="328"/>
         <source>Could not get the page to link your account with mochott.</source>
         <translation>mochottと連携するページを取得できませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="614"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="711"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="824"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="923"/>
         <source>A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.</source>
         <translation>長文投稿は投票や11枚以上の画像と組み合わせられません。また、100,000バイト以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="826"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="925"/>
         <source>After linking your account with mochott in your browser, press Long post again.</source>
         <translation>ブラウザでmochottとの連携が済んだら、もう一度「長文ポスト」を押してください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="827"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="926"/>
         <source>Posts over 300 characters are posted as a long post with mochott. To post normally, shorten it to 300 characters or less.</source>
         <translation>300文字を超えるとmochottの長文ポストになります。通常のポストにするには300文字以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="836"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="935"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="933"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1032"/>
         <source>Long post</source>
         <translation>長文ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="933"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1032"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="973"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1072"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
