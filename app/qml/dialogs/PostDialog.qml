@@ -6,6 +6,7 @@ import QtQuick.Controls.Material
 import Qt.labs.platform as P
 
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.mochottlinkoperator 1.0
 import tech.relog.hagoromo.draftoperator 1.0
 import tech.relog.hagoromo.draftlistmodel 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -19,6 +20,7 @@ import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
+import "../compat"
 import "../parts"
 
 Item {
@@ -61,6 +63,26 @@ Item {
     property alias postText: postText
     property alias recordOperator: createRecord
 
+    // 300文字を超えるときはmochottの長文投稿にする
+    property bool longPostMode: postText.realTextLength > (300 - embedImageListModel.adjustPostLength)
+    property bool longPostAvailable: addPollDialog.appliedOptions.length === 0 &&
+                                     embedImageListModel.count <= 10 &&
+                                     postText.byteLength <= 100000
+    // ブラウザでmochottとの連携をしてもらっている
+    property bool mochottWaiting: false
+
+    // 入力欄のサイズ（AdjustedValues.ratio適用前の値。SettingsCで保存）
+    readonly property real editorMinimumWidth: 520
+    readonly property real editorMinimumHeight: 150
+    property real editorWidth: editorMinimumWidth
+    property real editorHeight: editorMinimumHeight
+
+    SettingsC {
+        category: "PostDialog"
+        property alias editorWidth: postDialogItem.editorWidth
+        property alias editorHeight: postDialogItem.editorHeight
+    }
+
     signal errorOccurred(string account_uuid, string code, string message)
     signal closed()
     signal closedDialog()
@@ -69,7 +91,29 @@ Item {
     signal requestClearProgress(string itemId, string contentId)
     signal requestClearAllProgress(string itemId)
 
+    // 要求サイズ(ratio適用前)を表示可能な範囲に収めて入力欄に適用し、適用後のサイズ(ratio適用前)を返す
+    // from_origin: trueのときはダイアログが左上にある前提で上限を計算する（表示位置の決定前用）
+    function fitEditorSize(request_width, request_height, from_origin){
+        var ratio = AdjustedValues.ratio
+        var others_width = postDialog.width - postTextFrame.width
+        var others_height = postDialog.height - postTextFrame.height
+        var max_width = postDialogItem.parentWidth - others_width
+        var max_height = postDialogItem.basisHeight - (mainLayout.height - postTextFrame.height)
+        if(!from_origin){
+            max_width -= postDialogPosition.x
+            max_height = Math.min(max_height,
+                                  postDialogItem.parentHeight - postDialogPosition.y - others_height)
+        }
+        var w = Math.max(editorMinimumWidth * ratio, Math.min(request_width * ratio, max_width))
+        var h = Math.max(editorMinimumHeight * ratio, Math.min(request_height * ratio, max_height))
+        postTextFrame.Layout.preferredWidth = w
+        postTextFrame.Layout.preferredHeight = h
+        return Qt.size(w / ratio, h / ratio)
+    }
+
     function open(){
+        // 保存値はウインドウが広い場合に備えて維持し、表示サイズのみ収める
+        fitEditorSize(postDialogItem.editorWidth, postDialogItem.editorHeight, true)
         var tmp_x = (postDialogItem.parentWidth - postDialog.width) * 0.5
         var tmp_y = (postDialogItem.parentHeight - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
         var offset = AdjustedValues.s15
@@ -91,6 +135,76 @@ Item {
         visible = false
         closedDialog()
         closed()
+    }
+
+    function currentAccountUuid(){
+        return postDialogItem.accountModel.item(accountCombo.currentIndex, AccountListModel.UuidRole)
+    }
+
+    // 長文投稿の前にmochottとの連携とpublicationを確認する
+    // post_after_check: 確認できたらそのまま投稿する(ユーザーが投稿を押したときだけ)
+    function checkMochottLink(post_after_check){
+        var uuid = currentAccountUuid()
+        mochottLink.setAccount(uuid)
+        if(!mochottLink.hasRequiredScope()){
+            postDialogItem.errorOccurred(uuid, "MochottScopeMissing",
+                                         qsTr("Posting a long post requires permission to write to mochott. Please log in to this account again."))
+            return
+        }
+        mochottLink.postAfterCheck = post_after_check
+        mochottLink.check()
+    }
+
+    function submitPost(){
+        postDialog.close()
+
+        var row = accountCombo.currentIndex;
+
+        // 下書きを適用していたら消す
+        if(selectDraftDialog.appliedDraftId.length > 0){
+            draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+            draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
+        }
+        // 投稿
+        createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
+        createRecord.clear()
+        createRecord.setText(postText.text)
+        createRecord.setPostLanguages(languageSelectionDialog.selectedLanguages)
+        if(postDialogItem.longPostMode){
+            createRecord.setLongPost(mochottLink.profileUri, mochottLink.standardPublication, qsTr("Show more"))
+        }
+        if(postDialogItem.postType !== "reply"){
+            // replyのときは制限の設定はできない
+            createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+            createRecord.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
+        }
+        if(postDialogItem.postType === "reply"){
+            createRecord.setReply(postDialogItem.replyCid, postDialogItem.replyUri, postDialogItem.replyRootCid, postDialogItem.replyRootUri)
+        }
+        if(postDialogItem.quoteValid){
+            createRecord.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
+        }
+        if(selfLabelsButton.value.length > 0){
+            createRecord.setSelfLabels([selfLabelsButton.value])
+        }
+        if(externalLink.valid){
+            createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
+            createRecord.postWithImages()
+        }else if(feedGeneratorLink.valid){
+            createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+            createRecord.post()
+        }else if(listLink.valid){
+            createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
+            createRecord.post()
+        }else if(embedImageListModel.count > 0){
+            createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
+            createRecord.postWithImages()
+        }else if(addPollDialog.appliedOptions.length > 0){
+            createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
+            createRecord.postWithPoll()
+        }else{
+            createRecord.post()
+        }
     }
 
     function openWithFiles(urls){
@@ -192,6 +306,41 @@ Item {
                     postDialog.open()
                     var row = accountCombo.currentIndex;
                     postDialogItem.errorOccurred(postDialogItem.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                }
+            }
+            MochottLinkOperator {
+                id: mochottLink
+                property bool postAfterCheck: false
+                onFinished: (success) => {
+                    if(!success){
+                        return
+                    }
+                    if(mochottLink.ready){
+                        postDialogItem.mochottWaiting = false
+                        if(mochottLink.postAfterCheck){
+                            postDialogItem.submitPost()
+                        }
+                    }else if(!postDialogItem.mochottWaiting){
+                        if(mochottLink.authorizeUrl.length > 0){
+                            mochottConnectDialog.open()
+                        }else{
+                            postDialogItem.errorOccurred(postDialogItem.currentAccountUuid(), "MochottAuthorizeUrlInvalid",
+                                                         qsTr("Could not get the page to link your account with mochott."))
+                        }
+                    }
+                }
+                onErrorOccurred: (code, message) => {
+                    postDialogItem.errorOccurred(postDialogItem.currentAccountUuid(), code, message)
+                }
+            }
+            Connections {
+                target: Qt.application
+                function onStateChanged() {
+                    // ブラウザから戻ってきたら連携できたか確かめる(投稿はしない)
+                    if(Qt.application.state === Qt.ApplicationActive &&
+                            postDialogItem.mochottWaiting && !mochottLink.running){
+                        postDialogItem.checkMochottLink(false)
+                    }
                 }
             }
             DraftOperator {
@@ -350,6 +499,8 @@ Item {
                                 }
 
                                 onCurrentIndexChanged: {
+                                    postDialogItem.mochottWaiting = false
+                                    mochottLink.reset()
                                     var row = accountCombo.currentIndex
                                     if(row >= 0){
                                         var uuid = postDialogItem.accountModel.item(row, AccountListModel.UuidRole)
@@ -426,10 +577,13 @@ Item {
                             }
                         }
 
-                        ScrollView {
+                        Item {
+                            id: postTextFrame
                             z: 99   // MentionSuggetionViewを最前に表示するため
-                            Layout.preferredWidth: 520 * AdjustedValues.ratio
-                            Layout.preferredHeight: 150 * AdjustedValues.ratio
+                            Layout.preferredWidth: postDialogItem.editorMinimumWidth * AdjustedValues.ratio
+                            Layout.preferredHeight: postDialogItem.editorMinimumHeight * AdjustedValues.ratio
+                        ScrollView {
+                            anchors.fill: parent
                             TextArea {
                                 id: postText
                                 verticalAlignment: TextInput.AlignTop
@@ -438,6 +592,7 @@ Item {
                                 selectByMouse: true
                                 font.pointSize: AdjustedValues.f10
                                 property int realTextLength: systemTool.countText(text)
+                                property int byteLength: postDialogItem.longPostMode ? systemTool.countBytes(text) : 0
                                 onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
                                 Keys.onPressed: (event) => {
                                     if(mentionSuggestionView.visible){
@@ -480,6 +635,65 @@ Item {
                                     }
                                 }
                             }
+                        }
+                        Canvas {
+                            id: postTextResizeHandle
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            width: AdjustedValues.i12
+                            height: AdjustedValues.i12
+                            property color lineColor: Material.color(Material.Grey)
+                            onLineColorChanged: requestPaint()
+                            onPaint: {
+                                var ctx = getContext("2d")
+                                ctx.reset()
+                                ctx.strokeStyle = lineColor
+                                ctx.lineWidth = 1
+                                ctx.beginPath()
+                                for(var i = 1; i <= 3; i++){
+                                    var d = width * i / 3
+                                    ctx.moveTo(width - d, height)
+                                    ctx.lineTo(width, height - d)
+                                }
+                                ctx.stroke()
+                            }
+                            MouseArea {
+                                // ハンドルの外側まで掴めるように少し広げる
+                                anchors.fill: parent
+                                anchors.margins: -4
+                                cursorShape: Qt.SizeFDiagCursor
+                                preventStealing: true
+                                property point startScenePos
+                                property size startSize
+                                onPressed: (mouse) => {
+                                    startScenePos = mapToItem(null, mouse.x, mouse.y)
+                                    startSize = Qt.size(postTextFrame.width / AdjustedValues.ratio,
+                                                        postTextFrame.height / AdjustedValues.ratio)
+                                }
+                                onPositionChanged: (mouse) => {
+                                    if(!pressed){
+                                        return
+                                    }
+                                    // ハンドル自体が移動するのでシーン座標で差分をとる
+                                    var pos = mapToItem(null, mouse.x, mouse.y)
+                                    var applied = postDialogItem.fitEditorSize(
+                                                startSize.width + (pos.x - startScenePos.x) / AdjustedValues.ratio,
+                                                startSize.height + (pos.y - startScenePos.y) / AdjustedValues.ratio,
+                                                false)
+                                    postDialogItem.editorWidth = applied.width
+                                    postDialogItem.editorHeight = applied.height
+                                }
+                                onReleased: postText.forceActiveFocus()
+                                onDoubleClicked: {
+                                    var applied = postDialogItem.fitEditorSize(
+                                                postDialogItem.editorMinimumWidth,
+                                                postDialogItem.editorMinimumHeight,
+                                                false)
+                                    postDialogItem.editorWidth = applied.width
+                                    postDialogItem.editorHeight = applied.height
+                                }
+                            }
+                        }
                         }
 
                         RowLayout {
@@ -565,6 +779,8 @@ Item {
                             Layout.preferredWidth: postText.width
                             // Layout.maximumHeight: 280 * AdjustedValues.ratio
                             visible: externalLink.valid
+                            // 入力欄の幅を広げても既定幅のときの高さを超えないようにする
+                            thumbMaximumHeight: postDialogItem.editorMinimumWidth * 0.5 * AdjustedValues.ratio
 
                             thumbImage.source: externalLink.thumbLocal
                             uriLabel.text: externalLink.uri
@@ -697,6 +913,19 @@ Item {
                             }
                         }
 
+                        Label {
+                            Layout.preferredWidth: postText.width
+                            visible: postDialogItem.longPostMode
+                            wrapMode: Text.Wrap
+                            font.pointSize: AdjustedValues.f8
+                            color: postDialogItem.longPostAvailable ? Material.foreground : Material.color(Material.Red)
+                            text: !postDialogItem.longPostAvailable ?
+                                      qsTr("A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.") :
+                                      postDialogItem.mochottWaiting ?
+                                          qsTr("After linking your account with mochott in your browser, press Long post again.") :
+                                          qsTr("Posts over 300 characters are posted as a long post with mochott. To post normally, shorten it to 300 characters or less.")
+                        }
+
                         RowLayout {
                             spacing: 0
                             Button {
@@ -792,65 +1021,26 @@ Item {
                                 id: postButton
                                 Layout.alignment: Qt.AlignRight
                                 enabled: postText.text.length > 0 &&
-                                         postText.realTextLength <= (300 - embedImageListModel.adjustPostLength) &&
+                                         (!postDialogItem.longPostMode || postDialogItem.longPostAvailable) &&
                                          !createRecord.running &&
+                                         !mochottLink.running &&
                                          !externalLink.running &&
                                          !feedGeneratorLink.running &&
                                          !listLink.running
                                 font.pointSize: AdjustedValues.f10
-                                text: qsTr("Post")
+                                // 300文字を超えたらmochottの長文ポストになることをボタンで示す
+                                text: postDialogItem.longPostMode ? qsTr("Long post") : qsTr("Post")
                                 onClicked: {
-                                    postDialog.close()
-
-                                    var row = accountCombo.currentIndex;
-
-                                    // 下書きを適用していたら消す
-                                    if(selectDraftDialog.appliedDraftId.length > 0){
-                                        draftOperator.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
-                                        draftOperator.deleteDraft(selectDraftDialog.appliedDraftId)
-                                    }
-                                    // 投稿
-                                    createRecord.setAccount(postDialogItem.accountModel.item(row, AccountListModel.UuidRole))
-                                    createRecord.clear()
-                                    createRecord.setText(postText.text)
-                                    createRecord.setPostLanguages(languageSelectionDialog.selectedLanguages)
-                                    if(postDialogItem.postType !== "reply"){
-                                        // replyのときは制限の設定はできない
-                                        createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
-                                        createRecord.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
-                                    }
-                                    if(postDialogItem.postType === "reply"){
-                                        createRecord.setReply(postDialogItem.replyCid, postDialogItem.replyUri, postDialogItem.replyRootCid, postDialogItem.replyRootUri)
-                                    }
-                                    if(postDialogItem.quoteValid){
-                                        createRecord.setQuote(postDialogItem.quoteCid, postDialogItem.quoteUri)
-                                    }
-                                    if(selfLabelsButton.value.length > 0){
-                                        createRecord.setSelfLabels([selfLabelsButton.value])
-                                    }
-                                    if(externalLink.valid){
-                                        createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
-                                        createRecord.postWithImages()
-                                    }else if(feedGeneratorLink.valid){
-                                        createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
-                                        createRecord.post()
-                                    }else if(listLink.valid){
-                                        createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
-                                        createRecord.post()
-                                    }else if(embedImageListModel.count > 0){
-                                        createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
-                                        createRecord.postWithImages()
-                                    }else if(addPollDialog.appliedOptions.length > 0){
-                                        createRecord.setPoll(addPollDialog.appliedOptions, addPollDialog.appliedDuration)
-                                        createRecord.postWithPoll()
+                                    if(postDialogItem.longPostMode && !mochottLink.ready){
+                                        postDialogItem.checkMochottLink(true)
                                     }else{
-                                        createRecord.post()
+                                        postDialogItem.submitPost()
                                     }
                                 }
                                 BusyIndicator {
                                     anchors.fill: parent
                                     anchors.margins: 3
-                                    visible: createRecord.running
+                                    visible: createRecord.running || mochottLink.running
                                 }
                             }
                             IconButton {
@@ -1007,6 +1197,14 @@ Item {
                         selectThreadGateDialog.selectedType = threadGateType
                         selectThreadGateDialog.selectedOptions = threadGateRules
                     }
+                }
+            }
+
+            MochottConnectDialog {
+                id: mochottConnectDialog
+                onAccepted: {
+                    postDialogItem.mochottWaiting = true
+                    Qt.openUrlExternally(mochottLink.authorizeUrl)
                 }
             }
 

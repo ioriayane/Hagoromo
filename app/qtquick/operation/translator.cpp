@@ -1,5 +1,5 @@
 #include "translator.h"
-#include "tools/encryption.h"
+#include "crypto/encryption.h"
 
 #include <QLocale>
 #include <QSettings>

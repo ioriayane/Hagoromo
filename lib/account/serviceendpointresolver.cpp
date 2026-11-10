@@ -1,5 +1,5 @@
 #include "serviceendpointresolver.h"
-#include "tools/identityresolver.h"
+#include "account/identityresolver.h"
 
 ServiceEndpointResolver::ServiceEndpointResolver(QObject *parent) : QObject { parent } { }
 

@@ -24,6 +24,8 @@ ClickableFrame {
     property alias titleLabel: titleLabel
     property alias uriLabel: uriLabel
     property alias descriptionLabel: descriptionLabel
+    // サムネイルの高さの上限（幅に連動して伸びすぎないようにする場合に指定）
+    property real thumbMaximumHeight: Number.POSITIVE_INFINITY
 
     ColumnLayout {
         id: contentRootLayout
@@ -31,7 +33,8 @@ ClickableFrame {
         ImageWithIndicator {
             id: thumbImage
             Layout.preferredWidth: externalLinkFrame.width
-            Layout.preferredHeight: (thumbImage.source + "") !== "" ? externalLinkFrame.width * 0.5 : 5
+            Layout.preferredHeight: (thumbImage.source + "") !== "" ?
+                                        Math.min(externalLinkFrame.width * 0.5, externalLinkFrame.thumbMaximumHeight) : 5
             fillMode: Image.PreserveAspectCrop
         }
         Label {

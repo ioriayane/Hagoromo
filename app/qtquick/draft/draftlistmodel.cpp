@@ -3,7 +3,7 @@
 #include "atprotocol/app/bsky/draft/appbskydraftgetdrafts.h"
 #include "atprotocol/app/bsky/draft/appbskydraftdeletedraft.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/deviceinfo.h"
+#include "util/deviceinfo.h"
 
 using AtProtocolInterface::AppBskyDraftDeleteDraft;
 using AtProtocolInterface::AppBskyDraftGetDrafts;

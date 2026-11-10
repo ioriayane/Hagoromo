@@ -1,6 +1,7 @@
 #include "accessatprotocol.h"
-#include "tools/dpopsessionstore.h"
-#include "tools/sessionstatestore.h"
+#include "account/dpopsessionstore.h"
+#include "account/sessionstatestore.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -556,6 +557,142 @@ void AccessAtProtocol::setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject
         json_aspect_ratio.insert("width", aspect_ratio.width());
         json_aspect_ratio.insert("height", aspect_ratio.height());
     }
+}
+
+QJsonObject AccessAtProtocol::makePostJsonObject(const QString &text, const PostRecordData &data)
+{
+    QJsonObject json_record;
+    json_record.insert("text", text);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("space.aoisora.post.via", "Hagoromo");
+    if (!data.post_languages.isEmpty()) {
+        QJsonArray json_langs;
+        for (const auto &lang : std::as_const(data.post_languages)) {
+            json_langs.append(lang);
+        }
+        json_record.insert("langs", json_langs);
+    }
+
+    if (!data.reply_parent.cid.isEmpty() && !data.reply_parent.uri.isEmpty()) {
+        QJsonObject json_root;
+        if (!data.reply_root.cid.isEmpty() && !data.reply_root.uri.isEmpty()) {
+            json_root.insert("cid", data.reply_root.cid);
+            json_root.insert("uri", data.reply_root.uri);
+        } else {
+            json_root.insert("cid", data.reply_parent.cid);
+            json_root.insert("uri", data.reply_parent.uri);
+        }
+        QJsonObject json_parent;
+        json_parent.insert("cid", data.reply_parent.cid);
+        json_parent.insert("uri", data.reply_parent.uri);
+        QJsonObject json_reply;
+        json_reply.insert("root", json_root);
+        json_reply.insert("parent", json_parent);
+        json_record.insert("reply", json_reply);
+    }
+
+    QJsonObject json_embed_images;
+
+    if (!data.external_link_uri.isEmpty()) {
+        // リンクカードと画像添付は排他
+        QJsonObject json_external;
+        json_external.insert("uri", data.external_link_uri);
+        json_external.insert("title", data.external_link_title.left(300));
+        json_external.insert("description", data.external_link_description.left(1000));
+        if (!data.embed_image_blobs.isEmpty()) {
+            QJsonObject json_external_thumb;
+            setJsonBlob(data.embed_image_blobs.at(0), json_external_thumb);
+            json_external.insert("thumb", json_external_thumb);
+        }
+        json_embed_images.insert("$type", "app.bsky.embed.external");
+        json_embed_images.insert("external", json_external);
+
+    } else if (!data.feed_generator_link_uri.isEmpty()) {
+        // カスタムフィードカードとリンクカード
+        QJsonObject json_generator;
+        json_generator.insert("uri", data.feed_generator_link_uri);
+        json_generator.insert("cid", data.feed_generator_link_cid);
+        json_embed_images.insert("$type", "app.bsky.embed.record");
+        json_embed_images.insert("record", json_generator);
+
+    } else if (!data.embed_image_blobs.isEmpty()) {
+        QJsonArray json_blobs;
+        for (const auto &blob : std::as_const(data.embed_image_blobs)) {
+            QJsonObject json_blob;
+            QJsonObject json_image;
+            QJsonObject json_aspect_ratio;
+            setJsonAspectRatio(blob.aspect_ratio, json_aspect_ratio);
+            if (!json_aspect_ratio.isEmpty()) {
+                json_blob.insert("aspectRatio", json_aspect_ratio);
+            }
+            setJsonBlob(blob, json_image);
+            json_blob.insert("image", json_image);
+            json_blob.insert("alt", blob.alt);
+            if (data.embed_image_blobs.length() > 4) {
+                json_blob.insert("$type", "app.bsky.embed.gallery#image");
+            }
+
+            json_blobs.append(json_blob);
+        }
+
+        if (data.embed_image_blobs.length() > 4) {
+            json_embed_images.insert("$type", "app.bsky.embed.gallery");
+            json_embed_images.insert("items", json_blobs);
+        } else {
+            json_embed_images.insert("$type", "app.bsky.embed.images");
+            json_embed_images.insert("images", json_blobs);
+        }
+    }
+
+    if (!data.embed_quote.cid.isEmpty() && !data.embed_quote.uri.isEmpty()) {
+        QJsonObject json_quote;
+        json_quote.insert("cid", data.embed_quote.cid);
+        json_quote.insert("uri", data.embed_quote.uri);
+
+        QJsonObject json_embed;
+        if (json_embed_images.isEmpty()) {
+            json_embed.insert("$type", "app.bsky.embed.record");
+            json_embed.insert("record", json_quote);
+        } else {
+            json_embed.insert("$type", "app.bsky.embed.recordWithMedia");
+            json_embed.insert("media", json_embed_images);
+            QJsonObject json_record2;
+            json_record2.insert("$type", "app.bsky.embed.record");
+            json_record2.insert("record", json_quote);
+            json_embed.insert("record", json_record2);
+        }
+
+        json_record.insert("embed", json_embed);
+
+    } else if (!json_embed_images.isEmpty()) {
+        json_record.insert("embed", json_embed_images);
+    }
+
+    if (!data.facets.isEmpty()) {
+        LexiconsTypeUnknown::insertFacetsJson(json_record, data.facets);
+    }
+
+    if (!data.self_labels.isEmpty()) {
+        QJsonObject json_labels;
+        QJsonArray json_label_vals;
+        for (const auto &label : std::as_const(data.self_labels)) {
+            QJsonObject json_val;
+            json_val.insert("val", label);
+            json_label_vals.append(json_val);
+        }
+        json_labels.insert("$type", "com.atproto.label.defs#selfLabels");
+        json_labels.insert("values", json_label_vals);
+        json_record.insert("labels", json_labels);
+    }
+
+    if (!data.long_post.uri.isEmpty() && !data.long_post.cid.isEmpty()) {
+        QJsonObject json_long_post;
+        json_long_post.insert("uri", data.long_post.uri);
+        json_long_post.insert("cid", data.long_post.cid);
+        json_record.insert("site.mochott.longPost", json_long_post);
+    }
+
+    return json_record;
 }
 
 QJsonObject AccessAtProtocol::makeThreadGateJsonObject(

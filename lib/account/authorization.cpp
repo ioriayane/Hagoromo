@@ -6,8 +6,8 @@
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "extension/oauth/oauthrequesttoken.h"
 #include "extension/oauth/oauthrevoketoken.h"
-#include "tools/jsonwebtoken.h"
-#include "tools/identityresolver.h"
+#include "crypto/jsonwebtoken.h"
+#include "account/identityresolver.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -283,6 +283,11 @@ QStringList Authorization::defaultScopes()
                          << QStringLiteral("rpc:app.bsky.draft.updateDraft?") + appview
                          << QStringLiteral("repo:tech.tokimeki.poll.poll")
                          << QStringLiteral("repo:tech.tokimeki.poll.vote")
+                         // mochottの長文投稿
+                         << QStringLiteral("repo:site.mochott.article")
+                         << QStringLiteral("repo:site.standard.document")
+                         << QStringLiteral("rpc:site.mochott.account.getAuthorization?aud=did:web:"
+                                           "mochott.site%23mochott_appview")
                          << QStringLiteral("blob:*/*")
                          // ラベラーへの通報
                          << QStringLiteral("rpc:com.atproto.moderation.createReport?aud=*");
@@ -446,8 +451,8 @@ void Authorization::startRedirectServer()
                 qDebug().noquote() << "  " << request.url().path();
 
                 if (request.url().path() != "/tech/relog/hagoromo/oauth-callback") {
-                    result = SimpleHttpServer::readFile(":/tools/oauth/" + request.url().fileName(),
-                                                        data);
+                    result = SimpleHttpServer::readFile(
+                            ":/account/oauth/" + request.url().fileName(), data);
                     mime_type = m_MimeDb.mimeTypeForFile(request.url().fileName()).name().toUtf8();
                     qDebug().noquote() << "Other file:" << result << request.url().fileName()
                                        << ", " << mime_type;
@@ -493,10 +498,10 @@ void Authorization::startRedirectServer()
                 result = true;
                 if (authorized) {
                     SimpleHttpServer::readFile(
-                            ":/tech/relog/hagoromo/tools/oauth/oauth_success.html", data);
+                            ":/tech/relog/hagoromo/account/oauth/oauth_success.html", data);
                 } else {
-                    SimpleHttpServer::readFile(":/tech/relog/hagoromo/tools/oauth/oauth_fail.html",
-                                               data);
+                    SimpleHttpServer::readFile(
+                            ":/tech/relog/hagoromo/account/oauth/oauth_fail.html", data);
                 }
                 data.replace("%HANDLE%", m_handle.toLocal8Bit());
                 qDebug().noquote() << "Result html:" << data;

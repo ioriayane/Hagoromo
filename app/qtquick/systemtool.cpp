@@ -1,7 +1,7 @@
 #include "systemtool.h"
 #include "qregularexpression.h"
-#include "tools/qstringex.h"
-#include "tools/supportprovider.h"
+#include "util/qstringex.h"
+#include "content/supportprovider.h"
 #include "common.h"
 
 #include <QClipboard>
@@ -33,6 +33,11 @@ void SystemTool::copyToClipboard(const QString &text) const
 int SystemTool::countText(const QString &text) const
 {
     return QStringEx(text).length();
+}
+
+int SystemTool::countBytes(const QString &text) const
+{
+    return text.toUtf8().size();
 }
 
 bool SystemTool::isSupportProviderLink(const QString &url) const

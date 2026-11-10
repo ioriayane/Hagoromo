@@ -160,6 +160,7 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/AddPollDialog.qml
         qml/dialogs/SelectDraftDialog.qml
         qml/dialogs/DraftConfirmationDialog.qml
+        qml/dialogs/MochottConnectDialog.qml
         qml/controls/ComboBoxEx.qml
         qml/controls/IconLabelFrame.qml
         qml/controls/CalendarPicker.qml

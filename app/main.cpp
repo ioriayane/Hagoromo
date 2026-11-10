@@ -6,6 +6,7 @@
 
 #include "qtquick/account/createsession.h"
 #include "qtquick/account/oauthlogin.h"
+#include "qtquick/operation/mochottlinkoperator.h"
 #include "qtquick/operation/recordoperator.h"
 #include "qtquick/operation/draftoperator.h"
 #include "qtquick/draft/draftlistmodel.h"
@@ -68,7 +69,7 @@
 #include "qtquick/realtime/realtimefeedstatusgraph.h"
 
 #include "tools/globalsettings.h"
-#include "tools/encryption.h"
+#include "crypto/encryption.h"
 #include "tools/translatorchanger.h"
 
 int main(int argc, char *argv[])
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.66.0"));
+    app.setApplicationVersion(QStringLiteral("0.67.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -88,6 +89,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
     qmlRegisterType<OAuthLogin>("tech.relog.hagoromo.oauthlogin", 1, 0, "OAuthLogin");
     qmlRegisterType<RecordOperator>("tech.relog.hagoromo.recordoperator", 1, 0, "RecordOperator");
+    qmlRegisterType<MochottLinkOperator>("tech.relog.hagoromo.mochottlinkoperator", 1, 0,
+                                         "MochottLinkOperator");
     qmlRegisterType<DraftOperator>("tech.relog.hagoromo.draftoperator", 1, 0, "DraftOperator");
     qmlRegisterType<DraftListModel>("tech.relog.hagoromo.draftlistmodel", 1, 0, "DraftListModel");
     qmlRegisterType<AccountListModel>("tech.relog.hagoromo.accountlistmodel", 1, 0,

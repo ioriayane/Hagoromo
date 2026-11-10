@@ -2,7 +2,7 @@
 #define MOCHOTTOPERATOR_H
 
 #include "atprotocol/lexicons.h"
-#include "tools/mochottlongpost.h"
+#include "content/mochottlongpost.h"
 
 #include <QCache>
 #include <QObject>

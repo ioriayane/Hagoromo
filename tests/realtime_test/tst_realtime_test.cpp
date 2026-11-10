@@ -12,7 +12,7 @@
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
 #include "realtime/editselectorlistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using namespace RealtimeFeed;
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;

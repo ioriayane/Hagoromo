@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 #include "webserver.h"
 #include "log/logmanager.h"
 #include "log/logoperator.h"

@@ -163,7 +163,6 @@ class Defs2Struct:
             'com.atproto.admin.',
             'com.atproto.identity.',
             'com.atproto.label.',
-            'com.atproto.repo.applyWrites',
             'com.atproto.repo.importRepo',
             'com.atproto.repo.uploadBlob',
             'com.atproto.repo.listMissingBlobs',
@@ -238,6 +237,7 @@ class Defs2Struct:
         self.need_extension = [
             'app.bsky.actor.putPreferences',
             'com.atproto.moderation.createReport',
+            'com.atproto.repo.applyWrites',
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',
             'com.atproto.repo.getRecord',
@@ -1090,7 +1090,8 @@ class Defs2Struct:
             data['variable_to'] = '.toArray()'
         else:
             data['variable_to'] = '.toObject()'
-        data['union_ref'] = ref
+        # レスポンスの$typeは完全な形式なので同じファイル内の参照(#xxx)はNSIDを補う
+        data['union_ref'] = (namespace + ref) if ref.startswith('#') else ref
 
         return data
 
@@ -1217,6 +1218,9 @@ class Defs2Struct:
                                 if pro_ref.startswith('#'):
                                     pro_ref = namespace + pro_ref
                                 arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                            elif pro_type == 'union':
+                                # unionの配列は要素の型が混在するのでJSONの配列のまま受け取る
+                                arguments.append(FunctionArgument('json_array', pro_name, False))
                             else:
                                 arguments.append(FunctionArgument(pro_type, pro_name, True))
                         elif pro_type == 'ref':

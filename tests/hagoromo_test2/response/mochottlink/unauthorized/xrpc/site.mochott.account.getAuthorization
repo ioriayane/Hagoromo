@@ -1,0 +1,4 @@
+{
+  "authorized": false,
+  "authorizeUrl": "https://mochott.site/oauth/login?handle=did%3Aplc%3Amochottlink&returnTo=%2Foauth%2Fdone"
+}

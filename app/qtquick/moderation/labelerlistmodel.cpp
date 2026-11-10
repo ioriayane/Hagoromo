@@ -1,7 +1,7 @@
 #include "labelerlistmodel.h"
 
 #include "atprotocol/accessatprotocol.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/labeler/appbskylabelergetservices.h"
 

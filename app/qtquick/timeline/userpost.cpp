@@ -3,8 +3,8 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/accountmanager.h"
-#include "tools/labelerprovider.h"
+#include "account/accountmanager.h"
+#include "moderation/labelerprovider.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetPosts;

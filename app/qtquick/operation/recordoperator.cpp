@@ -7,15 +7,18 @@
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationputactivitysubscription.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "extension/com/atproto/repo/comatprotorepoapplywritesex.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
-#include "tools/accountmanager.h"
-#include "tools/supportprovider.h"
-#include "tools/tid.h"
+#include "account/accountmanager.h"
+#include "content/mochottlongpost.h"
+#include "content/supportprovider.h"
+#include "encoding/tid.h"
 #include "tokimekipolloperator.h"
 
+#include <QDateTime>
 #include <QFile>
 #include <QTimer>
 #include <QJsonObject>
@@ -30,12 +33,14 @@ using AtProtocolInterface::AppBskyBookmarkDeleteBookmark;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::AppBskyNotificationPutActivitySubscription;
+using AtProtocolInterface::ComAtprotoRepoApplyWritesEx;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
+using AtProtocolInterface::PostRecordData;
 using namespace AtProtocolType;
 
 #define EMBED_IMAGES_MAX 10
@@ -275,6 +280,14 @@ void RecordOperator::requestProfileLinks()
     profile->profile(account().did);
 }
 
+void RecordOperator::setLongPost(const QString &profile_uri, const QString &standard_publication,
+                                 const QString &more_label)
+{
+    m_longPostProfile = profile_uri;
+    m_longPostStandardPublication = standard_publication;
+    m_longPostMoreLabel = more_label;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -304,6 +317,10 @@ void RecordOperator::clear()
     m_pollRkey.clear();
     m_pollOgpImagepath.clear();
 
+    m_longPostProfile.clear();
+    m_longPostStandardPublication.clear();
+    m_longPostMoreLabel.clear();
+
     m_updateProfileLinks = false;
     m_profileLinks.clear();
     m_deletedProfileLinkUris.clear();
@@ -315,6 +332,29 @@ void RecordOperator::post()
         return;
 
     setRunning(true);
+
+    // 不正な設定で投稿だけが作成されないように書き込み前に確認する
+    AtProtocolType::ThreadGateType thread_gate_type = AtProtocolType::ThreadGateType::Everybody;
+    QList<AtProtocolType::ThreadGateAllow> thread_gate_rules;
+    if (!makeThreadGateRules(thread_gate_type, thread_gate_rules)) {
+        setProgressMessage(QString());
+        emit errorOccurred("InvalidThreadGateSetting",
+                           QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
+                                   .arg(m_threadGateType, m_threadGateRules.join(", ")));
+        emit finished(false, QString(), QString());
+        setRunning(false);
+        return;
+    }
+
+    if (!m_longPostProfile.isEmpty()
+        && (m_embedImageBlobs.count() > EMBED_IMAGES_MAX || !m_pollOptions.isEmpty()
+            || m_sequentialPostsTotal > 0)) {
+        // 長文投稿は1件のポストにまとめる必要がある
+        failPost("InvalidLongPost",
+                 QString("A long post cannot be combined with a poll or more than %1 images.")
+                         .arg(EMBED_IMAGES_MAX));
+        return;
+    }
 
     if (m_embedImageBlobs.count() > EMBED_IMAGES_MAX && m_sequentialPostsTotal == 0) {
         m_sequentialPostsTotal = static_cast<int>(m_embedImageBlobs.count() / EMBED_IMAGES_MAX)
@@ -343,97 +383,205 @@ void RecordOperator::post()
     LexiconsTypeUnknown::makeFacets(
             this, account(), m_text,
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
-                ComAtprotoRepoCreateRecordEx *create_record =
-                        new ComAtprotoRepoCreateRecordEx(this);
-                connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this,
-                        [=](bool success) {
-                            if (success) {
-                                QString last_post_uri = create_record->uri();
-                                QString last_post_cid = create_record->cid();
-                                tokimekiPoll(
-                                        last_post_uri, last_post_cid,
-                                        [=](bool poll_success, const QString &poll_uri,
-                                            const QString &poll_cid) {
-                                            Q_UNUSED(poll_success)
-                                            Q_UNUSED(poll_uri)
-                                            Q_UNUSED(poll_cid)
+                PostRecordData data;
+                data.reply_parent = m_replyParent;
+                data.reply_root = m_replyRoot;
+                data.embed_quote = m_embedQuote;
+                data.embed_image_blobs = embed_imageBlobs;
+                data.facets = facets;
+                data.post_languages = m_postLanguages;
+                data.external_link_uri = m_externalLinkUri;
+                data.external_link_title = m_externalLinkTitle;
+                data.external_link_description = m_externalLinkDescription;
+                data.feed_generator_link_uri = m_feedGeneratorLinkUri;
+                data.feed_generator_link_cid = m_feedGeneratorLinkCid;
+                data.self_labels = m_selfLabels;
 
-                                            bool ret = threadGate(
-                                                    last_post_uri,
-                                                    [=](bool success2, const QString &uri,
-                                                        const QString &cid) {
-                                                        Q_UNUSED(uri)
-                                                        Q_UNUSED(cid)
-                                                        postGate(
-                                                                last_post_uri,
-                                                                [=](bool success3,
-                                                                    const QString &uri3,
-                                                                    const QString &cid3) {
-                                                                    Q_UNUSED(success3)
-                                                                    m_sequentialPostsCurrent++;
-                                                                    if (m_sequentialPostsCurrent
-                                                                        >= m_sequentialPostsTotal) {
-                                                                        setProgressMessage(
-                                                                                QString());
-                                                                        emit finished(success2,
-                                                                                      uri3, cid3);
-                                                                        setRunning(false);
-                                                                    } else {
-                                                                        setPostGate(true,
-                                                                                    QStringList());
-                                                                        m_threadGateType =
-                                                                                "everybody";
-                                                                        if (m_sequentialPostsCurrent
-                                                                                    == 1
-                                                                            && m_replyRoot.uri
-                                                                                       .isEmpty()) {
-                                                                            m_replyRoot.uri =
-                                                                                    last_post_uri;
-                                                                            m_replyRoot.cid =
-                                                                                    last_post_cid;
-                                                                        }
-                                                                        m_replyParent.uri =
-                                                                                last_post_uri;
-                                                                        m_replyParent.cid =
-                                                                                last_post_cid;
-                                                                        post();
-                                                                    }
-                                                                });
-                                                    });
-                                            if (!ret) {
-                                                setProgressMessage(QString());
-                                                emit errorOccurred(
-                                                        "InvalidThreadGateSetting",
-                                                        QString("Invalid thread gate "
-                                                                "setting.\ntype:%1\nrules:%2")
-                                                                .arg(m_threadGateType,
-                                                                     m_threadGateRules.join(", ")));
-                                                emit finished(ret, QString(), QString());
-                                                setRunning(false);
-                                            }
-                                        });
-                            } else {
-                                setProgressMessage(QString());
-                                emit errorOccurred(create_record->errorCode(),
-                                                   create_record->errorMessage());
-                                emit finished(success, QString(), QString());
-                                setRunning(false);
-                            }
-                            create_record->deleteLater();
-                        });
-                create_record->setAccount(account());
-                create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
-                                        m_replyRoot.uri);
-                create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
-                create_record->setImageBlobs(embed_imageBlobs);
-                create_record->setFacets(facets);
-                create_record->setPostLanguages(m_postLanguages);
-                create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
-                                               m_externalLinkDescription);
-                create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
-                create_record->setSelfLabels(m_selfLabels);
-                create_record->post(m_text);
+                if (!m_longPostProfile.isEmpty()) {
+                    writeLongPost(data, thread_gate_type, thread_gate_rules);
+                    return;
+                }
+                writePost(Tid::next(), m_text, data, thread_gate_type, thread_gate_rules,
+                          [=](bool success, const QString &uri, const QString &cid,
+                              const QString &code, const QString &message) {
+                              if (!success) {
+                                  failPost(code, message);
+                                  return;
+                              }
+                              // 投票のレコードはポストのCIDを参照するのでまとめられない
+                              tokimekiPoll(uri, cid,
+                                           [=](bool poll_success, const QString &poll_uri,
+                                               const QString &poll_cid) {
+                                               Q_UNUSED(poll_success)
+                                               Q_UNUSED(poll_uri)
+                                               Q_UNUSED(poll_cid)
+                                               finishPost(uri, cid);
+                                           });
+                          });
             });
+}
+
+void RecordOperator::writePost(const QString &rkey, const QString &text, const PostRecordData &data,
+                               const AtProtocolType::ThreadGateType thread_gate_type,
+                               const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules,
+                               std::function<void(bool, const QString &, const QString &,
+                                                  const QString &, const QString &)>
+                                       callback)
+{
+    const QString post_uri = QString("at://%1/app.bsky.feed.post/%2").arg(account().did, rkey);
+
+    ComAtprotoRepoApplyWritesEx *apply_writes = new ComAtprotoRepoApplyWritesEx(this);
+    connect(apply_writes, &ComAtprotoRepoApplyWritesEx::finished, this, [=](bool success) {
+        if (success) {
+            // 先頭に追加したレコードがポスト
+            const auto &result = apply_writes->resultsCreateResultList().first();
+            callback(true, result.uri, result.cid, QString(), QString());
+        } else {
+            callback(false, QString(), QString(), apply_writes->errorCode(),
+                     apply_writes->errorMessage());
+        }
+        apply_writes->deleteLater();
+    });
+    apply_writes->setAccount(account());
+    // Firehoseの受信側はopsの先頭を見ることがあるのでポストを先頭にする
+    apply_writes->appendPost(rkey, text, data);
+    if (thread_gate_type != AtProtocolType::ThreadGateType::Everybody) {
+        apply_writes->appendThreadGate(post_uri, thread_gate_type, thread_gate_rules);
+    }
+    const auto post_gate_type = (m_postGateEmbeddingRule == "disableRule")
+            ? AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                    embeddingRules_DisableRule
+            : AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+    if (post_gate_type != AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none
+        || !m_postGateDetachedEmbeddingUris.isEmpty()) {
+        apply_writes->appendPostGate(post_uri, post_gate_type, m_postGateDetachedEmbeddingUris);
+    }
+    apply_writes->apply();
+}
+
+// 記事 → ポスト(とゲート) → documentの順に書く
+// mochottは書かれた順に取り込むので記事をポストより先に書く
+void RecordOperator::writeLongPost(const PostRecordData &data,
+                                   const AtProtocolType::ThreadGateType thread_gate_type,
+                                   const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules)
+{
+    const auto current_account = account();
+    const QString article_rkey = Tid::next();
+    const QString post_rkey = Tid::next();
+    const auto opening = MochottLongPost::makeOpening(
+            m_text, data.facets, m_longPostMoreLabel,
+            MochottLongPost::makeArticleUrl(current_account.handle, article_rkey));
+
+    MochottLongPost::ArticleSource source;
+    source.did = current_account.did;
+    source.profile = m_longPostProfile;
+    source.rkey = article_rkey;
+    source.created_at = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
+    source.text = m_text;
+    source.facets = data.facets;
+    source.description = opening.body;
+    source.attachments = data;
+    const QJsonObject article = MochottLongPost::makeArticleRecord(source);
+    const QString standard_publication = m_longPostStandardPublication;
+
+    ComAtprotoRepoCreateRecordEx *create_article = new ComAtprotoRepoCreateRecordEx(this);
+    connect(create_article, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
+        if (!success) {
+            failPost(create_article->errorCode(), create_article->errorMessage());
+            create_article->deleteLater();
+            return;
+        }
+        PostRecordData post_data = data;
+        post_data.facets = opening.facets;
+        post_data.long_post.uri = create_article->uri();
+        post_data.long_post.cid = create_article->cid();
+        create_article->deleteLater();
+
+        writePost(post_rkey, opening.text, post_data, thread_gate_type, thread_gate_rules,
+                  [=](bool post_success, const QString &uri, const QString &cid,
+                      const QString &code, const QString &message) {
+                      if (!post_success) {
+                          // ポストのない記事を残さない
+                          ComAtprotoRepoDeleteRecordEx *delete_article =
+                                  new ComAtprotoRepoDeleteRecordEx(this);
+                          connect(delete_article, &ComAtprotoRepoDeleteRecordEx::finished, this,
+                                  [=](bool delete_success) {
+                                      if (!delete_success) {
+                                          qWarning().noquote()
+                                                  << "Failed to delete the mochott article:"
+                                                  << delete_article->errorMessage();
+                                      }
+                                      failPost(code, message);
+                                      delete_article->deleteLater();
+                                  });
+                          delete_article->setAccount(account());
+                          delete_article->deleteRecord(current_account.did,
+                                                       QStringLiteral("site.mochott.article"),
+                                                       article_rkey, QString(), QString());
+                          return;
+                      }
+                      if (standard_publication.isEmpty()) {
+                          finishPost(uri, cid);
+                          return;
+                      }
+                      AtProtocolType::ComAtprotoRepoStrongRef::Main post_ref;
+                      post_ref.uri = uri;
+                      post_ref.cid = cid;
+                      ComAtprotoRepoCreateRecordEx *create_document =
+                              new ComAtprotoRepoCreateRecordEx(this);
+                      connect(create_document, &ComAtprotoRepoCreateRecordEx::finished, this,
+                              [=](bool document_success) {
+                                  if (!document_success) {
+                                      // ポストは完成しているので投稿は成功として扱う
+                                      qWarning().noquote()
+                                              << "Failed to create the standard.site document:"
+                                              << create_document->errorMessage();
+                                  }
+                                  finishPost(uri, cid);
+                                  create_document->deleteLater();
+                              });
+                      create_document->setAccount(account());
+                      create_document->createRecord(
+                              current_account.did, QStringLiteral("site.standard.document"),
+                              article_rkey, false,
+                              MochottLongPost::makeDocumentRecord(article, standard_publication,
+                                                                  post_ref),
+                              QString());
+                  });
+    });
+    create_article->setAccount(current_account);
+    // PDSが知らないlexiconなので検証しない
+    create_article->createRecord(current_account.did, QStringLiteral("site.mochott.article"),
+                                 article_rkey, false, article, QString());
+}
+
+void RecordOperator::failPost(const QString &code, const QString &message)
+{
+    setProgressMessage(QString());
+    emit errorOccurred(code, message);
+    emit finished(false, QString(), QString());
+    setRunning(false);
+}
+
+void RecordOperator::finishPost(const QString &uri, const QString &cid)
+{
+    m_sequentialPostsCurrent++;
+    if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
+        setProgressMessage(QString());
+        emit finished(true, uri, cid);
+        setRunning(false);
+    } else {
+        // 2件目以降はゲートなしのリプライとして続ける
+        setPostGate(true, QStringList());
+        m_threadGateType = "everybody";
+        if (m_sequentialPostsCurrent == 1 && m_replyRoot.uri.isEmpty()) {
+            m_replyRoot.uri = uri;
+            m_replyRoot.cid = cid;
+        }
+        m_replyParent.uri = uri;
+        m_replyParent.cid = cid;
+        post();
+    }
 }
 
 void RecordOperator::postWithImages()
@@ -1766,46 +1914,59 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     delete_record->deleteListItem(r_key);
 }
 
+bool RecordOperator::makeThreadGateRules(AtProtocolType::ThreadGateType &type,
+                                         QList<AtProtocolType::ThreadGateAllow> &rules) const
+{
+    AtProtocolType::ThreadGateAllow rule;
+
+    type = AtProtocolType::ThreadGateType::Everybody;
+    rules.clear();
+
+    if (m_threadGateType == "everybody") {
+        return true;
+    } else if (m_threadGateType == "nobody") {
+        type = AtProtocolType::ThreadGateType::Nobody;
+        return true;
+    }
+
+    for (const auto &cmd : m_threadGateRules) {
+        if (cmd == "mentioned") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+            rule.uri.clear();
+        } else if (cmd == "followed") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+            rule.uri.clear();
+        } else if (cmd == "follower") {
+            rule.type = AtProtocolType::ThreadGateAllowType::Follower;
+            rule.uri.clear();
+        } else if (cmd.startsWith("at://")) {
+            rule.type = AtProtocolType::ThreadGateAllowType::List;
+            rule.uri = cmd;
+        } else {
+            continue;
+        }
+        rules.append(rule);
+    }
+    if (rules.isEmpty()) {
+        return false;
+    }
+    type = AtProtocolType::ThreadGateType::Choice;
+    return true;
+}
+
 bool RecordOperator::threadGate(
         const QString &uri, std::function<void(bool, const QString &, const QString &)> callback)
 {
     AtProtocolType::ThreadGateType type = AtProtocolType::ThreadGateType::Everybody;
     QList<AtProtocolType::ThreadGateAllow> rules;
-    AtProtocolType::ThreadGateAllow rule;
 
-    if (m_threadGateType == "everybody") {
+    if (!makeThreadGateRules(type, rules)) {
+        return false;
+    }
+    if (type == AtProtocolType::ThreadGateType::Everybody) {
         qDebug().noquote() << "Not set thread gate.";
         callback(true, QString(), QString());
         return true;
-    } else if (m_threadGateType == "nobody") {
-        type = AtProtocolType::ThreadGateType::Nobody;
-    } else {
-        for (const auto &cmd : m_threadGateRules) {
-            if (cmd == "mentioned") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd == "followed") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Followed;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd == "follower") {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::Follower;
-                rule.uri.clear();
-                rules.append(rule);
-            } else if (cmd.startsWith("at://")) {
-                type = AtProtocolType::ThreadGateType::Choice;
-                rule.type = AtProtocolType::ThreadGateAllowType::List;
-                rule.uri = cmd;
-                rules.append(rule);
-            }
-        }
-        if (m_threadGateRules.isEmpty()) {
-            return false;
-        }
     }
 
     ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
@@ -1819,36 +1980,6 @@ bool RecordOperator::threadGate(
     create_record->setAccount(account());
     create_record->threadGate(uri, type, rules);
     return true;
-}
-
-void RecordOperator::postGate(const QString &uri,
-                              std::function<void(bool, const QString &, const QString &)> callback)
-{
-    const QString rule = "disableRule";
-
-    if (m_postGateEmbeddingRule != rule && m_postGateDetachedEmbeddingUris.isEmpty()) {
-        qDebug().noquote() << "Not set post gate.";
-        callback(true, QString(), QString());
-        return;
-    }
-
-    AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type =
-            AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
-    if (m_postGateEmbeddingRule == rule) {
-        type = AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
-                embeddingRules_DisableRule;
-    }
-
-    ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, this, [=](bool success) {
-        if (!success) {
-            emit errorOccurred(create_record->errorCode(), create_record->errorMessage());
-        }
-        callback(success, create_record->uri(), create_record->cid());
-        create_record->deleteLater();
-    });
-    create_record->setAccount(account());
-    create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
 
 void RecordOperator::tokimekiPoll(

@@ -2,7 +2,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;

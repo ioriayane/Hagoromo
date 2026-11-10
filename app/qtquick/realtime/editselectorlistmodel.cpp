@@ -1,5 +1,5 @@
 #include "editselectorlistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 #include <QJsonDocument>
 

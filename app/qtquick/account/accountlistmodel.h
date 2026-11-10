@@ -2,8 +2,8 @@
 #define ACCOUNTLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "tools/encryption.h"
-#include "tools/accountmanager.h"
+#include "crypto/encryption.h"
+#include "account/accountmanager.h"
 
 #include <QAbstractListModel>
 #include <QObject>

@@ -1,5 +1,5 @@
 #include "contentfiltersettinglistmodel.h"
-#include "tools/accountmanager.h"
+#include "account/accountmanager.h"
 
 ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
     : QAbstractListModel { parent }, m_saving(false), m_running(false), m_modified(false)

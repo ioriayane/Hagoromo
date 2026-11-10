@@ -62,6 +62,9 @@ public:
     Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
     Q_INVOKABLE void setPostGate(const bool quote_enabled, const QStringList &uris);
     Q_INVOKABLE void setPoll(const QStringList &options, const int duration);
+    // mochottの長文投稿にする(getPublicationの結果と「もっと見る」の文言)
+    Q_INVOKABLE void setLongPost(const QString &profile_uri, const QString &standard_publication,
+                                 const QString &more_label);
     Q_INVOKABLE void setProfileLinks(const QVariantList &links, const QStringList &deleted_uris);
     Q_INVOKABLE QVariantList profileLinks() const;
     Q_INVOKABLE void requestProfileLinks();
@@ -134,10 +137,22 @@ private:
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
+    void finishPost(const QString &uri, const QString &cid);
+    void failPost(const QString &code, const QString &message);
+    void writePost(const QString &rkey, const QString &text,
+                   const AtProtocolInterface::PostRecordData &data,
+                   const AtProtocolType::ThreadGateType thread_gate_type,
+                   const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules,
+                   std::function<void(bool, const QString &, const QString &, const QString &,
+                                      const QString &)>
+                           callback);
+    void writeLongPost(const AtProtocolInterface::PostRecordData &data,
+                       const AtProtocolType::ThreadGateType thread_gate_type,
+                       const QList<AtProtocolType::ThreadGateAllow> &thread_gate_rules);
+    bool makeThreadGateRules(AtProtocolType::ThreadGateType &type,
+                             QList<AtProtocolType::ThreadGateAllow> &rules) const;
     bool threadGate(const QString &uri,
                     std::function<void(bool, const QString &, const QString &)> callback);
-    void postGate(const QString &uri,
-                  std::function<void(bool, const QString &, const QString &)> callback);
     void tokimekiPoll(const QString &uri, const QString cid,
                       std::function<void(bool, const QString &, const QString &)> callback);
     void updateProfileLinks(int index, std::function<void(bool)> callback);
@@ -181,6 +196,9 @@ private:
     int m_pollDuration; // sec
     QString m_pollRkey;
     QString m_pollOgpImagepath;
+    QString m_longPostProfile;
+    QString m_longPostStandardPublication;
+    QString m_longPostMoreLabel;
     bool m_updateProfileLinks;
     QList<ProfileLinkItem> m_profileLinks;
     QStringList m_deletedProfileLinkUris;

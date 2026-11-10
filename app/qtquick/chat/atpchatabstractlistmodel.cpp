@@ -1,8 +1,8 @@
 #include "atpchatabstractlistmodel.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
-#include "tools/labelerprovider.h"
-#include "tools/accountmanager.h"
+#include "moderation/labelerprovider.h"
+#include "account/accountmanager.h"
 
 using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using AtProtocolInterface::DirectoryPlc;

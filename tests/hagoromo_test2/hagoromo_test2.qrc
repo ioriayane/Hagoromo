@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
+        <file>response/mochottlink/ok/xrpc/site.mochott.account.getAuthorization</file>
+        <file>response/mochottlink/ok/xrpc/site.mochott.publication.getPublication</file>
+        <file>response/mochottlink/unauthorized/xrpc/site.mochott.account.getAuthorization</file>
+        <file>response/mochottlink/bad_url/xrpc/site.mochott.account.getAuthorization</file>
+        <file>response/mochottlink/other_did/xrpc/site.mochott.account.getAuthorization</file>
+        <file>response/mochottlink/other_did/xrpc/site.mochott.publication.getPublication</file>
+        <file>response/mochottlink/no_standard/xrpc/site.mochott.account.getAuthorization</file>
+        <file>response/mochottlink/no_standard/xrpc/site.mochott.publication.getPublication</file>
         <file>response/mochott/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/mochott/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/mochott/xrpc/app.bsky.labeler.getServices</file>

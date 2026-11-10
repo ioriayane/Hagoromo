@@ -5,7 +5,7 @@
 #include "atprotocol/lexicons.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "operation/tokimekipolloperator.h"
-#include "tools/configurablelabels.h"
+#include "moderation/configurablelabels.h"
 
 #include <QAbstractListModel>
 #include <QObject>

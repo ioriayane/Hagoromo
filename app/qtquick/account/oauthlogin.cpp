@@ -1,5 +1,5 @@
 #include "oauthlogin.h"
-#include "tools/authorization.h"
+#include "account/authorization.h"
 
 #include <QDebug>
 

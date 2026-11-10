@@ -58,7 +58,7 @@ REM checkout repo
 >cd Hagoromo
 >git submodule update -i
 REM copy and edit encryption seed
->copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
+>copy lib\crypto\encryption_seed_template.h lib\crypto\encryption_seed.h
 REM build Hagoromo
 >.\scripts\build.bat path\to\Qt\6.11.0\msvc2022_64\
 REM Execute
@@ -77,8 +77,8 @@ $ git submodule update -i
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
-$ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
-$ vi lib/tools/encryption_seed.h
+$ cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
+$ vi lib/crypto/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh linux path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
@@ -95,8 +95,8 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # copy and edit encryption seed
-$ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
-$ vi lib/tools/encryption_seed.h
+$ cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
+$ vi lib/crypto/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
@@ -242,7 +242,7 @@ REM checkout repo
 >cd Hagoromo
 >git submodule update -i
 REM copy and edit encryption seed
->copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
+>copy lib\crypto\encryption_seed_template.h lib\crypto\encryption_seed.h
 REM build Hagoromo
 >.\scripts\build.bat path\to\Qt\6.11.0\msvc2022_64\
 REM Execute
@@ -261,8 +261,8 @@ $ git submodule update -i
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev ninja-build
 # copy and edit encryption seed
-$ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
-$ vi lib/tools/encryption_seed.h
+$ cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
+$ vi lib/crypto/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh linux path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo
@@ -279,8 +279,8 @@ $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
 # copy and edit encryption seed
-$ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
-$ vi lib/tools/encryption_seed.h
+$ cp lib/crypto/encryption_seed_template.h lib/crypto/encryption_seed.h
+$ vi lib/crypto/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh mac path/to/Qt/6.11.0/gcc_64/
 # exec hagoromo

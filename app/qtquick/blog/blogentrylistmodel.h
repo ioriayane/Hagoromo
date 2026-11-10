@@ -2,7 +2,7 @@
 #define BLOGENTRYLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "tools/serviceendpointresolver.h"
+#include "account/serviceendpointresolver.h"
 
 #include <QAbstractListModel>
 
