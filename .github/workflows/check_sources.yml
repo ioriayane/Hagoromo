@@ -7,7 +7,7 @@ env:
 
 jobs:
   check-sources:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Install dependencies (linux)
         run: sudo apt install ninja-build zlib1g-dev
