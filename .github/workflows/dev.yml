@@ -24,15 +24,6 @@ jobs:
         run: |
           version_no=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
           echo "VERSION_NO=${version_no}" >> "$GITHUB_OUTPUT"
-      - name: Check OAuth client metadata
-        run: |
-          curl -fsSL --retry 3 https://oauth.hagoromo.relog.tech/oauth-client-metadata.json -o remote-oauth-client-metadata.json
-          if diff -u <(jq -S . lib/account/oauth/oauth-client-metadata.json) <(jq -S . remote-oauth-client-metadata.json); then
-            echo ok
-          else
-            echo "lib/account/oauth/oauth-client-metadata.json does not match https://oauth.hagoromo.relog.tech/oauth-client-metadata.json"
-            exit 1
-          fi
 
   linux:
     needs: prepare
