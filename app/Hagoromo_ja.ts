@@ -2313,67 +2313,87 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>LoginDialog</name>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="81"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="36"/>
+        <source>The requested permissions are not allowed by the server.</source>
+        <translation>要求した権限がサーバーで許可されていません。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LoginDialog.qml" line="38"/>
+        <source>The authorization was denied in the web browser.</source>
+        <translation>Webブラウザで認証が拒否されました。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LoginDialog.qml" line="40"/>
+        <source>The authorization in the web browser timed out. Please try again.</source>
+        <translation>Webブラウザでの認証がタイムアウトしました。もう一度お試しください。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LoginDialog.qml" line="42"/>
+        <source>Login failed.</source>
+        <translation>ログインに失敗しました。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/LoginDialog.qml" line="110"/>
         <source>Login method</source>
         <translation>ログイン方法</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="90"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="119"/>
         <source>Browser (OAuth)</source>
         <translation>ブラウザ（OAuth）</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="97"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="126"/>
         <source>App password</source>
         <translation>アプリパスワード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="106"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="135"/>
         <source>Service</source>
         <translation>サービス</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="117"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="146"/>
         <source>Identifier</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="128"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="157"/>
         <source>Password</source>
         <translation>パスワード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="142"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="171"/>
         <source>2FA Confirmation</source>
         <translation>2要素認証</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="162"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="191"/>
         <source>Log in on the page opened in your web browser. When the session expires, you will need to log in again.</source>
         <translation>Webブラウザで開いたページでログインしてください。セッションが切れると再ログインが必要です。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="178"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="207"/>
         <source>Waiting for authorization in your web browser...</source>
         <translation>Webブラウザでの認証を待機中...</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="179"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="208"/>
         <source>Preparing authorization...</source>
         <translation>認証の準備中...</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="186"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="215"/>
         <source>Open the browser again</source>
         <translation>ブラウザをもう一度開いてください</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="195"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="235"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/LoginDialog.qml" line="213"/>
+        <location filename="qml/dialogs/LoginDialog.qml" line="253"/>
         <source>Login</source>
         <translation>ログイン</translation>
     </message>
