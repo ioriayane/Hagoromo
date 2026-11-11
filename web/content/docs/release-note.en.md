@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Fix
+  - Change to display errors that occur during OAuth authentication in the login dialog
+
 ### v0.67.0 - 2026/11/10
 
 - Add

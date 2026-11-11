@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.createsession 1.0
 import tech.relog.hagoromo.oauthlogin 1.0
@@ -23,12 +24,36 @@ Dialog {
     property string authMethod: "oauth"
     readonly property bool useOAuth: authMethod === "oauth"
     readonly property bool running: session.running || oauthLogin.running
+    // OAuthのログインで起きたエラー(ダイアログ内に表示する)
+    property string oauthErrorText: ""
 
     signal errorOccurred(string code, string message)
 
+    // OAuthのエラーコードを表示用の文言にする
+    function makeOAuthErrorText(code, message) {
+        var text = ""
+        if(code === "invalid_scope"){
+            text = qsTr("The requested permissions are not allowed by the server.")
+        }else if(code === "access_denied"){
+            text = qsTr("The authorization was denied in the web browser.")
+        }else if(code === "AuthorizationTimeout"){
+            text = qsTr("The authorization in the web browser timed out. Please try again.")
+        }else{
+            text = qsTr("Login failed.")
+        }
+        var detail = code
+        if(message.length > 0){
+            detail += ": " + message
+        }
+        return text + "\n(" + detail + ")"
+    }
+
+    onOpened: oauthErrorText = ""
+    onAuthMethodChanged: oauthErrorText = ""
     onClosed: {
         // ブラウザでの認可を待っていたら止める
         oauthLogin.cancel()
+        oauthErrorText = ""
         mfaCodeTextInput.visible = false
         mfaCodeTextInput.text = ""
     }
@@ -68,7 +93,11 @@ Dialog {
                             loginDialog.accept()
                         }
                     }
-        onErrorOccurred: (code, message) => loginDialog.errorOccurred(code, message)
+        // ダイアログ内に表示するので、トーストには流さない
+        onErrorOccurred: (code, message) => {
+                             console.log("OAuth login error: " + code + ":" + message)
+                             loginDialog.oauthErrorText = loginDialog.makeOAuthErrorText(code, message)
+                         }
     }
 
     GridLayout {
@@ -187,6 +216,17 @@ Dialog {
                 onClicked: Qt.openUrlExternally(oauthLogin.authorizationUrl)
             }
         }
+        Label {
+            id: oauthErrorLabel
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.maximumWidth: loginDialog.parentWidth * 1.3
+            visible: loginDialog.useOAuth && !oauthLogin.running && loginDialog.oauthErrorText.length > 0
+            wrapMode: Text.WrapAnywhere
+            font.pointSize: AdjustedValues.f8
+            color: Material.color(Material.Red)
+            text: loginDialog.oauthErrorText
+        }
 
         Button {
             Layout.alignment: Qt.AlignLeft
@@ -213,6 +253,7 @@ Dialog {
             text: qsTr("Login")
             onClicked: {
                 if(loginDialog.useOAuth){
+                    loginDialog.oauthErrorText = ""
                     oauthLogin.start()
                 }else{
                     session.create()
