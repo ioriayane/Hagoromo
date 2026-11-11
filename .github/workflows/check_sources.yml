@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Install dependencies (linux)
-        run: sudo apt install ninja-build zlib1g-dev
+        run: sudo apt update && sudo apt install ninja-build zlib1g-dev
       - name: Install Qt
         uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
         with:

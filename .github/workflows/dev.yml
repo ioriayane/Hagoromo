@@ -62,20 +62,20 @@ jobs:
     steps:
       - name: Check results
         run: |
-          # run-tests が「成功」または「スキップ」ならOK、失敗なら落とす
-          if [[ "${{ needs.linux.result }}" == "failure" || "${{ needs.linux.result }}" == "cancelled" ]]; then
+          # run-tests が「成功」じゃなければNGにする
+          if [[ "${{ needs.linux.result }}" != "success" ]]; then
             echo "Linux tests failed or cancelled"
             exit 1
           fi
-          if [[ "${{ needs.windows.result }}" == "failure" || "${{ needs.windows.result }}" == "cancelled" ]]; then
+          if [[ "${{ needs.windows.result }}" != "success" ]]; then
             echo "Windows tests failed or cancelled"
             exit 1
           fi
-          if [[ "${{ needs.mac.result }}" == "failure" || "${{ needs.mac.result }}" == "cancelled" ]]; then
+          if [[ "${{ needs.mac.result }}" != "success" ]]; then
             echo "Mac tests failed or cancelled"
             exit 1
           fi
-          if [[ "${{ needs.check-sources.result }}" == "failure" || "${{ needs.check-sources.result }}" == "cancelled" ]]; then
+          if [[ "${{ needs.check-sources.result }}" != "success" ]]; then
             echo "Check sources failed or cancelled"
             exit 1
           fi
