@@ -40,9 +40,6 @@ namespace AppBskyActorDefs {
 struct ProfileView;
 struct ProfileViewBasic;
 }
-namespace AppBskyEmbedDefs {
-struct AspectRatio;
-}
 namespace AppBskyEmbedRecord {
 struct Main;
 struct View;
@@ -273,8 +270,24 @@ struct Main
 // A URI with a content-hash fingerprint.
 }
 
+// app.bsky.embed.defs
+namespace AppBskyEmbedDefs {
+struct AspectRatio
+{
+    int width = 0;
+    int height = 0;
+};
+}
+
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
+enum class ViewDataType : int {
+    none,
+    data_ViewArticle,
+    data_ViewArticlePublication,
+    data_ViewGallery,
+    data_ViewLivestream,
+};
 enum class ViewGalleryItemsType : int {
     none,
     items_ViewGalleryImage,
@@ -316,22 +329,6 @@ struct ViewExternal
     ViewExternalSource source;
     QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
     QList<QSharedPointer<AppBskyActorDefs::ProfileViewBasic>> associatedProfiles;
-};
-struct View
-{
-    ViewExternal external;
-};
-struct External
-{
-    QString uri; // uri
-    QString title;
-    QString description;
-    Blob thumb;
-    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
-};
-struct Main
-{
-    External external;
 };
 struct ViewArticlePublicationTheme
 {
@@ -380,7 +377,7 @@ struct ViewGalleryImage
                       // fetched. May or may not be the exact original blob. For example, CDN
                       // location provided by the App View.
     QString alt; // Alt text description of the image, for accessibility.
-    QSharedPointer<AppBskyEmbedDefs::AspectRatio> aspectRatio;
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
 };
 struct ViewGallery
 {
@@ -416,6 +413,33 @@ struct ViewLivestream
                          // served, false if it has ended.
     QString startedAt; // datetime
     QString endedAt; // datetime
+};
+struct View
+{
+    ViewExternal external;
+    // union start : data
+    ViewDataType data_type = ViewDataType::none;
+    ViewArticle data_ViewArticle; // Hydrated modality-specific data for the external embed, when
+                                  // available.
+    ViewArticlePublication data_ViewArticlePublication; // Hydrated modality-specific data for the
+                                                        // external embed, when available.
+    ViewGallery data_ViewGallery; // Hydrated modality-specific data for the external embed, when
+                                  // available.
+    ViewLivestream data_ViewLivestream; // Hydrated modality-specific data for the external embed,
+                                        // when available.
+    // union end : data
+};
+struct External
+{
+    QString uri; // uri
+    QString title;
+    QString description;
+    Blob thumb;
+    QList<ComAtprotoRepoStrongRef::Main> associatedRefs;
+};
+struct Main
+{
+    External external;
 };
 }
 
@@ -1068,15 +1092,6 @@ struct Event
 };
 }
 
-// app.bsky.embed.defs
-namespace AppBskyEmbedDefs {
-struct AspectRatio
-{
-    int width = 0;
-    int height = 0;
-};
-}
-
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
 struct ViewImage
@@ -1513,6 +1528,9 @@ struct PostView
     int repostCount = 0;
     int likeCount = 0;
     int quoteCount = 0;
+    int viewCount = 0; // Approximate number of times the post has been viewed. Only included in
+                       // authenticated responses to the post's author when eligible to see the
+                       // count. Counts less than 100 are omitted.
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -1606,6 +1624,8 @@ struct Interaction
 {
     QString item; // at-uri
     QString event;
+    QString viewContext; // The view in which the interaction occurred.
+    QVariant payload; // Additional data for the interaction, with an application-defined structure.
     QString feedContext; // Context on a feed item that was originally supplied by the feed
                          // generator on getFeedSkeleton.
     QString reqId; // Unique identifier per request that may be passed back alongside interactions.
@@ -3466,6 +3486,20 @@ struct IdentityInfo
 };
 }
 
+// com.atproto.label.record
+namespace ComAtprotoLabelRecord {
+struct Main
+{
+    QString uri; // uri , URI of the record, repository (account), or other resource that this label
+                 // applies to. Currently only intended for use in the context of atproto spaces.
+    QString cid; // cid , Optionally, CID specifying the specific version of 'uri' resource this
+                 // label applies to.
+    QString val; // The short string name of the value or type of this label.
+    QString cts; // datetime , Timestamp when this label was created.
+    QString exp; // datetime , Timestamp at which this label expires (no longer applies).
+};
+}
+
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 struct Labels
@@ -3872,6 +3906,15 @@ struct Event
 };
 }
 
+// tools.ozone.inbox.ackPushNotifications
+namespace ToolsOzoneInboxAckPushNotifications {
+struct Item
+{
+    int id = 0;
+    QString leaseToken;
+};
+}
+
 // tools.ozone.inbox.appealActionedSubject
 namespace ToolsOzoneInboxAppealActionedSubject {
 struct ActionRef
@@ -3895,6 +3938,16 @@ enum class NotificationTargetType : int {
     target_SubjectRef,
     target_StandingRef,
 };
+enum class SubjectViewDetailSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+enum class SubjectViewSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
 enum class SubjectRefSubjectType : int {
     none,
     subject_ComAtprotoAdminDefs_RepoRef,
@@ -3905,15 +3958,32 @@ enum class ReportRefSubjectType : int {
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
-enum class SubjectViewDetailSubjectType : int {
-    none,
-    subject_ComAtprotoAdminDefs_RepoRef,
-    subject_ComAtprotoRepoStrongRef_Main,
+struct ReportRef
+{
+    int reportId = 0;
+    // union start : subject
+    ReportRefSubjectType subject_type = ReportRefSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QString status;
 };
-enum class SubjectViewSubjectType : int {
-    none,
-    subject_ComAtprotoAdminDefs_RepoRef,
-    subject_ComAtprotoRepoStrongRef_Main,
+struct SubjectRef
+{
+    QString appealOutcome; // Decision captured when an appealResolved notification was created.
+                           // Omitted when the outcome is unknown.
+    // union start : subject
+    SubjectRefSubjectType subject_type = SubjectRefSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QString actionType;
+    int actionId = 0;
+};
+struct StandingRef
+{
+    QString standing;
+    QString previousStanding;
 };
 struct EnforcementView
 {
@@ -3965,6 +4035,11 @@ struct SubjectView
     QString updatedAt; // datetime
     bool isRead = false;
 };
+struct AccountPreview
+{
+    QString handle; // handle
+    QVariant profile; // Raw app.bsky.actor.profile record, when available.
+};
 struct ReportsSummary
 {
     QList<QString> reasonTypes; // Distinct reason types reported, deduplicated and unordered.
@@ -3985,6 +4060,7 @@ struct SubjectViewDetail
     // union end : subject
     QVariant record; // Raw record JSON for the subject, when the subject is a record and the record
                      // is available.
+    AccountPreview account; // Best-effort current profile information for an account subject.
     EnforcementView enforcement;
     AppealView appeal;
     QList<QString> availableActions;
@@ -3996,33 +4072,6 @@ struct SubjectViewDetail
                             // enforcement.
     QString createdAt; // datetime
     QString updatedAt; // datetime
-};
-struct ReportRef
-{
-    int reportId = 0;
-    // union start : subject
-    ReportRefSubjectType subject_type = ReportRefSubjectType::none;
-    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
-    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
-    // union end : subject
-    QString status;
-};
-struct SubjectRef
-{
-    QString appealOutcome; // Decision captured when an appealResolved notification was created.
-                           // Omitted when the outcome is unknown.
-    // union start : subject
-    SubjectRefSubjectType subject_type = SubjectRefSubjectType::none;
-    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
-    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
-    // union end : subject
-    QString actionType;
-    int actionId = 0;
-};
-struct StandingRef
-{
-    QString standing;
-    QString previousStanding;
 };
 struct Notification
 {
@@ -4049,6 +4098,31 @@ struct NotificationPreferences
 };
 }
 
+// tools.ozone.inbox.claimPushNotifications
+namespace ToolsOzoneInboxClaimPushNotifications {
+enum class ItemTargetType : int {
+    none,
+    target_ToolsOzoneInboxDefs_ReportRef,
+    target_ToolsOzoneInboxDefs_SubjectRef,
+    target_ToolsOzoneInboxDefs_StandingRef,
+};
+struct Item
+{
+    int id = 0;
+    QString leaseToken;
+    QString recipientDid; // did
+    QString reason;
+    QString category;
+    // union start : target
+    ItemTargetType target_type = ItemTargetType::none;
+    ToolsOzoneInboxDefs::ReportRef target_ToolsOzoneInboxDefs_ReportRef;
+    ToolsOzoneInboxDefs::SubjectRef target_ToolsOzoneInboxDefs_SubjectRef;
+    ToolsOzoneInboxDefs::StandingRef target_ToolsOzoneInboxDefs_StandingRef;
+    // union end : target
+    QString createdAt; // datetime
+};
+}
+
 // tools.ozone.inbox.getReport
 namespace ToolsOzoneInboxGetReport {
 enum class ReportViewSubjectType : int {
@@ -4057,6 +4131,17 @@ enum class ReportViewSubjectType : int {
     subject_ComAtprotoRepoStrongRef_Main,
     subject_ChatBskyConvoDefs_MessageRef,
     subject_ChatBskyConvoDefs_ConvoRef,
+};
+struct AccountStatus
+{
+    QString enforcement; // Current enforcement by this moderation service.
+    QString hosting; // Last known account hosting state, omitted when unknown.
+};
+struct RecordStatus
+{
+    bool takendown = false; // Whether this moderation service has taken down the record.
+    bool deleted =
+            false; // Whether the record has been deleted by its repository, omitted when unknown.
 };
 struct ReportView
 {
@@ -4074,6 +4159,9 @@ struct ReportView
     // union end : subject
     QVariant record; // Raw record JSON for the subject, when the subject is a record and the record
                      // is available.
+    AccountStatus accountStatus; // Current status of the reported account or record owner,
+                                 // independent of the report's resolution.
+    RecordStatus subjectStatus; // Current status of a reported record, when known.
     QString status;
     QString createdAt; // datetime
     QString updatedAt; // datetime
@@ -4492,25 +4580,6 @@ struct RecordHosting
     QString deletedAt; // datetime
 };
 typedef QString SubjectReviewState;
-struct AccountStats
-{
-    int reportCount = 0; // Total number of reports on the account
-    int appealCount = 0; // Total number of appeals against a moderation action on the account
-    int suspendCount = 0; // Number of times the account was suspended
-    int escalateCount = 0; // Number of times the account was escalated
-    int takedownCount = 0; // Number of times the account was taken down
-};
-struct RecordsStats
-{
-    int totalReports = 0; // Cumulative sum of the number of reports on the items in the set
-    int reportedCount = 0; // Number of items that were reported at least once
-    int escalatedCount = 0; // Number of items that were escalated at least once
-    int appealedCount = 0; // Number of items that were appealed at least once
-    int subjectCount = 0; // Total number of item in the set
-    int pendingCount = 0; // Number of item currently in "reviewOpen" or "reviewEscalated" state
-    int processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
-    int takendownCount = 0; // Number of item currently taken down
-};
 struct AccountStrike
 {
     int activeStrikeCount = 0; // Current number of active strikes (excluding expired strikes)
@@ -4556,9 +4625,6 @@ struct SubjectStatusView
                            // appeal was resolved by moderators.
     QString suspendUntil; // datetime
     QList<QString> tags;
-    AccountStats accountStats; // Statistics related to the account subject
-    RecordsStats recordsStats; // Statistics related to the record subjects authored by the
-                               // subject's account
     AccountStrike accountStrike; // Strike information for the account (account-level only)
     QString ageAssuranceState; // Current age assurance state of the subject.
     QString ageAssuranceUpdatedBy; // Whether or not the last successful update to age assurance was
@@ -4756,13 +4822,78 @@ struct ScheduledActionView
 
 // tools.ozone.moderation.emitEvent
 namespace ToolsOzoneModerationEmitEvent {
+enum class ReportActionSubjectsType : int {
+    none,
+    subjects_ComAtprotoAdminDefs_RepoRef,
+    subjects_ComAtprotoRepoStrongRef_Main,
+};
 struct ReportAction
 {
     QList<int> ids; // Target specific report IDs
     QList<QString> types; // Target reports matching these report types on the subject (fully
-                          // qualified NSIDs)
-    bool all = false; // Target ALL reports on the subject
+                          // qualified NSIDs). Excludes assigned and escalated reports.
+    bool all = false; // Target ALL reports on the subject. Excludes assigned and escalated reports.
+    bool allOwned = false; // Target all eligible reports on the account and its owned subjects,
+                           // including records, messages, and conversations. Only valid for account
+                           // subjects and events that close reports. Excludes assigned, escalated,
+                           // and actively assigned reports unless explicitly targeted by ID.
+    // union start : subjects
+    ReportActionSubjectsType subjects_type = ReportActionSubjectsType::none;
+    QList<ComAtprotoAdminDefs::RepoRef>
+            subjects_ComAtprotoAdminDefs_RepoRef; // Expands report targeting to include additional
+                                                  // subjects. Requires event subject to be an
+                                                  // account. Mutually exclusive with
+                                                  // `subjectTypes`.
+    QList<ComAtprotoRepoStrongRef::Main>
+            subjects_ComAtprotoRepoStrongRef_Main; // Expands report targeting to include additional
+                                                   // subjects. Requires event subject to be an
+                                                   // account. Mutually exclusive with
+                                                   // `subjectTypes`.
+    // union end : subjects
+    QList<QString> subjectTypes; // Expands report targeting to include owned subjects of these
+                                 // types. Requires event subject to be an account. Mutually
+                                 // exclusive with `subjects`.
     QString note; // Note to send to reporter(s) when actioning their report
+    bool isAutomated =
+            false; // Set true when the report activities are created by an automated process.
+};
+}
+
+// tools.ozone.moderation.emitEvents
+namespace ToolsOzoneModerationEmitEvents {
+enum class FailedEventSubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+enum class SubjectEntrySubjectType : int {
+    none,
+    subject_ComAtprotoAdminDefs_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+struct SubjectEntry
+{
+    // union start : subject
+    SubjectEntrySubjectType subject_type = SubjectEntrySubjectType::none;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QList<QString> subjectBlobCids;
+    QString externalId; // Deduplicate events of this type for this subject using an external ID.
+    ToolsOzoneModerationEmitEvent::ReportAction reportAction;
+};
+struct FailedEvent
+{
+    QString error; // Error message describing the reason for failure.
+    QString errorName; // Typed error identifier for programmatic handling. Omitted when the error
+                       // is unexpected/uncategorized.
+    // union start : subject
+    FailedEventSubjectType subject_type = FailedEventSubjectType::none;
+    ComAtprotoAdminDefs::RepoRef
+            subject_ComAtprotoAdminDefs_RepoRef; // The subject from the failed event input.
+    ComAtprotoRepoStrongRef::Main
+            subject_ComAtprotoRepoStrongRef_Main; // The subject from the failed event input.
+    // union end : subject
 };
 }
 
@@ -5091,6 +5222,23 @@ struct AssignmentView
 };
 }
 
+// tools.ozone.report.queryModeratorActivity
+namespace ToolsOzoneReportQueryModeratorActivity {
+struct ActivityRow
+{
+    QString source;
+    int id = 0;
+    QString createdAt; // datetime
+    QString createdBy; // did
+    QString type;
+    QString subject;
+    int reportId = 0;
+    int actionEventId = 0;
+    ToolsOzoneModerationDefs::ModEventView event;
+    ToolsOzoneReportDefs::ReportActivityView activity;
+};
+}
+
 // tools.ozone.safelink.defs
 namespace ToolsOzoneSafelinkDefs {
 typedef QString EventType;
@@ -5204,6 +5352,15 @@ struct RelatedAccount
 {
     ComAtprotoAdminDefs::AccountView account;
     QList<ToolsOzoneSignatureDefs::SigDetail> similarities;
+};
+}
+
+// tools.ozone.team.listOnlineMembers
+namespace ToolsOzoneTeamListOnlineMembers {
+struct OnlineMember
+{
+    QString did; // did
+    QString lastActive; // datetime
 };
 }
 
