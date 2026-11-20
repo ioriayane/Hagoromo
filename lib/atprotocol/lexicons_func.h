@@ -104,9 +104,6 @@ void copyViewExternalSourceTheme(const QJsonObject &src,
                                  AppBskyEmbedExternal::ViewExternalSourceTheme &dest);
 void copyViewExternalSource(const QJsonObject &src, AppBskyEmbedExternal::ViewExternalSource &dest);
 void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest);
-void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
-void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
-void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
 void copyViewArticlePublicationTheme(const QJsonObject &src,
                                      AppBskyEmbedExternal::ViewArticlePublicationTheme &dest);
 void copyViewArticlePublication(const QJsonObject &src,
@@ -115,10 +112,17 @@ void copyViewArticle(const QJsonObject &src, AppBskyEmbedExternal::ViewArticle &
 void copyViewGalleryImage(const QJsonObject &src, AppBskyEmbedExternal::ViewGalleryImage &dest);
 void copyViewGallery(const QJsonObject &src, AppBskyEmbedExternal::ViewGallery &dest);
 void copyViewLivestream(const QJsonObject &src, AppBskyEmbedExternal::ViewLivestream &dest);
+void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
+void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
 }
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
+}
+// app.bsky.embed.defs
+namespace AppBskyEmbedDefs {
+void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest);
 }
 // app.bsky.feed.threadgate
 namespace AppBskyFeedThreadgate {
@@ -195,10 +199,6 @@ void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonR
 void copySkeletonReasonPin(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonPin &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
 void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest);
-}
-// app.bsky.embed.defs
-namespace AppBskyEmbedDefs {
-void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest);
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
@@ -688,6 +688,10 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
 namespace ComAtprotoIdentityDefs {
 void copyIdentityInfo(const QJsonObject &src, ComAtprotoIdentityDefs::IdentityInfo &dest);
 }
+// com.atproto.label.record
+namespace ComAtprotoLabelRecord {
+void copyMain(const QJsonObject &src, ComAtprotoLabelRecord::Main &dest);
+}
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest);
@@ -810,6 +814,10 @@ void copyHandleUpdated(const QJsonObject &src,
                        ToolsOzoneHostingGetAccountHistory::HandleUpdated &dest);
 void copyEvent(const QJsonObject &src, ToolsOzoneHostingGetAccountHistory::Event &dest);
 }
+// tools.ozone.inbox.ackPushNotifications
+namespace ToolsOzoneInboxAckPushNotifications {
+void copyItem(const QJsonObject &src, ToolsOzoneInboxAckPushNotifications::Item &dest);
+}
 // tools.ozone.inbox.appealActionedSubject
 namespace ToolsOzoneInboxAppealActionedSubject {
 void copyActionRef(const QJsonObject &src, ToolsOzoneInboxAppealActionedSubject::ActionRef &dest);
@@ -819,22 +827,29 @@ void copyTakedownRef(const QJsonObject &src,
 }
 // tools.ozone.inbox.defs
 namespace ToolsOzoneInboxDefs {
+void copyReportRef(const QJsonObject &src, ToolsOzoneInboxDefs::ReportRef &dest);
+void copySubjectRef(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectRef &dest);
+void copyStandingRef(const QJsonObject &src, ToolsOzoneInboxDefs::StandingRef &dest);
 void copyEnforcementView(const QJsonObject &src, ToolsOzoneInboxDefs::EnforcementView &dest);
 void copyAppealView(const QJsonObject &src, ToolsOzoneInboxDefs::AppealView &dest);
 void copyPolicyView(const QJsonObject &src, ToolsOzoneInboxDefs::PolicyView &dest);
 void copyActionView(const QJsonObject &src, ToolsOzoneInboxDefs::ActionView &dest);
 void copySubjectView(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectView &dest);
+void copyAccountPreview(const QJsonObject &src, ToolsOzoneInboxDefs::AccountPreview &dest);
 void copyReportsSummary(const QJsonObject &src, ToolsOzoneInboxDefs::ReportsSummary &dest);
 void copySubjectViewDetail(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectViewDetail &dest);
-void copyReportRef(const QJsonObject &src, ToolsOzoneInboxDefs::ReportRef &dest);
-void copySubjectRef(const QJsonObject &src, ToolsOzoneInboxDefs::SubjectRef &dest);
-void copyStandingRef(const QJsonObject &src, ToolsOzoneInboxDefs::StandingRef &dest);
 void copyNotification(const QJsonObject &src, ToolsOzoneInboxDefs::Notification &dest);
 void copyNotificationPreferences(const QJsonObject &src,
                                  ToolsOzoneInboxDefs::NotificationPreferences &dest);
 }
+// tools.ozone.inbox.claimPushNotifications
+namespace ToolsOzoneInboxClaimPushNotifications {
+void copyItem(const QJsonObject &src, ToolsOzoneInboxClaimPushNotifications::Item &dest);
+}
 // tools.ozone.inbox.getReport
 namespace ToolsOzoneInboxGetReport {
+void copyAccountStatus(const QJsonObject &src, ToolsOzoneInboxGetReport::AccountStatus &dest);
+void copyRecordStatus(const QJsonObject &src, ToolsOzoneInboxGetReport::RecordStatus &dest);
 void copyReportView(const QJsonObject &src, ToolsOzoneInboxGetReport::ReportView &dest);
 void copyResolutionView(const QJsonObject &src, ToolsOzoneInboxGetReport::ResolutionView &dest);
 }
@@ -898,8 +913,6 @@ void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::Accoun
 void copyRecordHosting(const QJsonObject &src, ToolsOzoneModerationDefs::RecordHosting &dest);
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
-void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest);
-void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest);
 void copyAccountStrike(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStrike &dest);
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest);
@@ -926,6 +939,11 @@ void copyScheduledActionView(const QJsonObject &src,
 // tools.ozone.moderation.emitEvent
 namespace ToolsOzoneModerationEmitEvent {
 void copyReportAction(const QJsonObject &src, ToolsOzoneModerationEmitEvent::ReportAction &dest);
+}
+// tools.ozone.moderation.emitEvents
+namespace ToolsOzoneModerationEmitEvents {
+void copySubjectEntry(const QJsonObject &src, ToolsOzoneModerationEmitEvents::SubjectEntry &dest);
+void copyFailedEvent(const QJsonObject &src, ToolsOzoneModerationEmitEvents::FailedEvent &dest);
 }
 // tools.ozone.moderation.getAccountTimeline
 namespace ToolsOzoneModerationGetAccountTimeline {
@@ -972,6 +990,11 @@ void copyLiveStats(const QJsonObject &src, ToolsOzoneReportDefs::LiveStats &dest
 void copyHistoricalStats(const QJsonObject &src, ToolsOzoneReportDefs::HistoricalStats &dest);
 void copyAssignmentView(const QJsonObject &src, ToolsOzoneReportDefs::AssignmentView &dest);
 }
+// tools.ozone.report.queryModeratorActivity
+namespace ToolsOzoneReportQueryModeratorActivity {
+void copyActivityRow(const QJsonObject &src,
+                     ToolsOzoneReportQueryModeratorActivity::ActivityRow &dest);
+}
 // tools.ozone.safelink.defs
 namespace ToolsOzoneSafelinkDefs {
 void copyEventType(const QJsonValue &src, ToolsOzoneSafelinkDefs::EventType &dest);
@@ -1012,6 +1035,10 @@ void copySigDetail(const QJsonObject &src, ToolsOzoneSignatureDefs::SigDetail &d
 namespace ToolsOzoneSignatureFindRelatedAccounts {
 void copyRelatedAccount(const QJsonObject &src,
                         ToolsOzoneSignatureFindRelatedAccounts::RelatedAccount &dest);
+}
+// tools.ozone.team.listOnlineMembers
+namespace ToolsOzoneTeamListOnlineMembers {
+void copyOnlineMember(const QJsonObject &src, ToolsOzoneTeamListOnlineMembers::OnlineMember &dest);
 }
 // tools.ozone.verification.defs
 namespace ToolsOzoneVerificationDefs {

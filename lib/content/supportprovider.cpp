@@ -30,6 +30,7 @@ const ProviderRule SUPPORT_PROVIDERS[] = {
     { "Givebutter", "Givebutter", "givebutter.com", nullptr },
     { "GiveSendGo", "GiveSendGo", "givesendgo.com", nullptr },
     { "GoFundMe", "GoFundMe", "gofundme.com", nullptr },
+    { "GitHub Sponsors", "Github", "github.com", "/sponsors/" },
     { "Gumroad", "Gumroad", "gumroad.com", nullptr },
     { "Indiegogo", "Indiegogo", "indiegogo.com", nullptr },
     { "INPRNT", "Inprint", "inprnt.com", "/gallery/" },
