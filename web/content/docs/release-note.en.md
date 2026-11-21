@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Update
+  - Changed the real-time feed to show only the most recent reposts of the same post
 - Fix
   - Change to display errors that occur during OAuth authentication in the login dialog
 
