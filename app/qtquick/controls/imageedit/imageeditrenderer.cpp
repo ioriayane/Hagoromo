@@ -149,6 +149,11 @@ qreal ImageEditRenderer::lineWidthPixels(int line_width, int long_edge)
     return qMax(1.0, long_edge * line_width / 400.0);
 }
 
+qreal ImageEditRenderer::arrowHeadLength(int line_width, int long_edge)
+{
+    return qMax(lineWidthPixels(line_width, long_edge) * 3, long_edge / 80.0);
+}
+
 void ImageEditRenderer::drawLayer(QImage &image, const ImageEditLayer &layer, qreal scale,
                                   int long_edge)
 {
@@ -178,6 +183,27 @@ void ImageEditRenderer::drawLayer(QImage &image, const ImageEditLayer &layer, qr
         painter.drawRect(rect);
     } else if (layer.type == ImageEditLayer::DrawEllipse) {
         painter.drawEllipse(rect);
+    } else if (layer.type == ImageEditLayer::Arrow && layer.points.count() == 2) {
+        const QPointF start = layer.points.at(0) * scale;
+        const QPointF end = layer.points.at(1) * scale;
+        const QPointF delta = end - start;
+        const qreal length = qSqrt(delta.x() * delta.x() + delta.y() * delta.y());
+        if (length <= 0) {
+            painter.drawPoint(end);
+            return;
+        }
+        const QPointF dir = delta / length;
+        const QPointF normal(-dir.y(), dir.x());
+        // 三角形は線の長さを超えない
+        const qreal head = qMin(arrowHeadLength(layer.lineWidth, long_edge) * scale, length);
+        const QPointF base = end - dir * head;
+        // 線は三角形の中ほどまで（先端から線がはみ出さないように）
+        painter.drawLine(start, end - dir * (head / 2));
+        QPolygonF triangle;
+        triangle << end << base + normal * (head / 2) << base - normal * (head / 2);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(layer.color);
+        painter.drawPolygon(triangle);
     } else if (layer.isPointBased() && !layer.points.isEmpty()) {
         if (layer.points.count() == 1) {
             painter.drawPoint(layer.points.first() * scale);
@@ -232,7 +258,12 @@ bool ImageEditRenderer::contains(const ImageEditLayer &layer, const QPointF &poi
                                  int long_edge)
 {
     if (layer.isDrawing()) {
-        const qreal margin = lineWidthPixels(layer.lineWidth, long_edge) / 2 + tolerance;
+        qreal margin = lineWidthPixels(layer.lineWidth, long_edge) / 2;
+        if (layer.type == ImageEditLayer::Arrow) {
+            // 三角形の部分もつかめるように
+            margin = qMax(margin, arrowHeadLength(layer.lineWidth, long_edge) / 2);
+        }
+        margin += tolerance;
         if (!layer.bounds().adjusted(-margin, -margin, margin, margin).contains(point))
             return false;
         if (layer.isPointBased()) {

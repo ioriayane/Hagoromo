@@ -125,5 +125,6 @@
         <file>qml/images/palette.png</file>
         <file>qml/images/pen_size_2.png</file>
         <file>qml/images/approval.png</file>
+        <file>qml/images/north_east.png</file>
     </qresource>
 </RCC>

@@ -36,6 +36,7 @@ private slots:
     void test_ImageEditModel_layers();
     void test_ImageEditRenderer_drawing();
     void test_ImageEditModel_drawing();
+    void test_ImageEditRenderer_arrow();
     void test_ImageEditModel_stamp();
     void test_StampHistoryModel();
     void test_EmbedImageListModel_editedFiles();
@@ -703,6 +704,69 @@ void imageedit_test::test_ImageEditModel_drawing()
     QVERIFY(isReddish(result.pixelColor(200, 100)));
     QVERIFY(!isReddish(result.pixelColor(50, 20)));
     QFile::remove(exported);
+}
+
+void imageedit_test::test_ImageEditRenderer_arrow()
+{
+    // 長辺400、太さ4 -> 線4px、三角形 max(4*3, 400/80) = 12px
+    QCOMPARE(ImageEditRenderer::arrowHeadLength(4, 400), 12.0);
+    QCOMPARE(ImageEditRenderer::arrowHeadLength(1, 4000), 50.0);
+
+    auto isRed = [](const QColor &c) { return c.red() > 200 && c.green() < 50 && c.blue() < 50; };
+    auto isWhite = [](const QColor &c) {
+        return c.red() > 240 && c.green() > 240 && c.blue() > 240;
+    };
+
+    QImage image(400, 200, QImage::Format_RGB32);
+    image.fill(Qt::white);
+    ImageEditLayer layer;
+    layer.type = ImageEditLayer::Arrow;
+    layer.points << QPointF(100, 100) << QPointF(300, 100);
+    layer.color = QColor(255, 0, 0);
+    layer.lineWidth = 4;
+    ImageEditRenderer::drawLayer(image, layer, 1.0, 400);
+    // 線
+    QVERIFY(isRed(image.pixelColor(150, 100)));
+    QVERIFY(isWhite(image.pixelColor(150, 104)));
+    // 三角形（底辺 x=288 で幅12）
+    QVERIFY(isRed(image.pixelColor(289, 103)));
+    QVERIFY(isRed(image.pixelColor(289, 96)));
+    QVERIFY(isRed(image.pixelColor(297, 100)));
+    // 先端より先と始点側には三角形は無い
+    QVERIFY(isWhite(image.pixelColor(303, 100)));
+    QVERIFY(isWhite(image.pixelColor(110, 104)));
+
+    // 三角形の部分もつかめる
+    QVERIFY(ImageEditRenderer::contains(layer, QPointF(290, 105), 0, 400));
+    QVERIFY(!ImageEditRenderer::contains(layer, QPointF(200, 120), 0, 400));
+
+    // 線より三角形が長いときは線の長さに合わせる
+    QImage small(100, 100, QImage::Format_RGB32);
+    small.fill(Qt::white);
+    layer.points.clear();
+    layer.points << QPointF(50, 50) << QPointF(56, 50);
+    ImageEditRenderer::drawLayer(small, layer, 1.0, 400);
+    QVERIFY(isWhite(small.pixelColor(45, 50)));
+    QVERIFY(isRed(small.pixelColor(54, 50)));
+
+    // モデル
+    const QString path = m_tempDir.filePath("arrow.png");
+    QVERIFY(image.save(path, "PNG"));
+    ImageEditModel model;
+    model.setSource(QUrl::fromLocalFile(path).toString());
+    QCOMPARE(model.addArrow(0, 0, 2, 2, QColor(0, 0, 255), 3), -1);
+    QCOMPARE(model.addArrow(10, 20, 110, 20, QColor(0, 0, 255), 3), 0);
+    QCOMPARE(model.selectedLayerType(), static_cast<int>(ImageEditModel::TypeArrow));
+    QCOMPARE(model.layerAt(60, 20, 0, ImageEditModel::CategoryDrawing), 0);
+    // 端点の変更は2点のみ
+    model.setLayerPoints(0, QVariantList() << QPointF(10, 20), false);
+    QCOMPARE(model.selectedLayerPoints().count(), 2);
+    model.setLayerPoints(0, QVariantList() << QPointF(20, 30) << QPointF(120, 80), false);
+    QCOMPARE(model.selectedLayerPoints(), QVariantList() << QPointF(20, 30) << QPointF(120, 80));
+    // 回転で向きも回転する（400x200 -> 200x400）
+    model.rotateRight();
+    QCOMPARE(model.selectedLayerPoints(),
+             QVariantList() << QPointF(200 - 30, 20) << QPointF(200 - 80, 120));
 }
 
 void imageedit_test::test_ImageEditModel_stamp()

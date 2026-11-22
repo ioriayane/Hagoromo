@@ -1203,222 +1203,227 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ImageEditDialog</name>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="115"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="118"/>
         <source>Failed to load the image.</source>
         <translation>画像を読み込めませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="150"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="153"/>
         <source>Select an image to paste</source>
         <translation>貼り付ける画像の選択</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="151"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="154"/>
         <source>Image files</source>
         <translation>画像ファイル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="165"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="168"/>
         <source>Select color</source>
         <translation>色の選択</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="201"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="204"/>
         <source>Crop</source>
         <translation>切り抜き</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="212"/>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="363"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="215"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="366"/>
         <source>Mosaic</source>
         <translation>モザイク</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="223"/>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="445"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="226"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="448"/>
         <source>Draw</source>
         <translation>描画</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="234"/>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="582"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="237"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="586"/>
         <source>Stamp</source>
         <translation>スタンプ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="244"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="247"/>
         <source>Rotate left</source>
         <translation>左に回転</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="254"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="257"/>
         <source>Rotate right</source>
         <translation>右に回転</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="261"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="264"/>
         <source>This image format cannot be edited.</source>
         <translation>この形式の画像は編集できません。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="275"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="278"/>
         <source>Undo</source>
         <translation>元に戻す</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="285"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="288"/>
         <source>Redo</source>
         <translation>やり直す</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="295"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="298"/>
         <source>Reset all edits</source>
         <translation>すべての編集をリセット</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="370"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="373"/>
         <source>Drag on the image to add an area. Click an area to select it.</source>
         <translation>画像上をドラッグして範囲を追加します。範囲をクリックすると選択できます。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="375"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="378"/>
         <source>Shape</source>
         <translation>形</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="387"/>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="464"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="390"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="468"/>
         <source>Rectangle</source>
         <translation>四角</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="397"/>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="465"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="400"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="469"/>
         <source>Ellipse</source>
         <translation>楕円</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="403"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="406"/>
         <source>Coarseness</source>
         <translation>粗さ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="426"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="429"/>
         <source>Delete area</source>
         <translation>範囲を削除</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="452"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="455"/>
         <source>Drag on the image to draw. Click a drawing to select it.</source>
         <translation>画像上をドラッグして描きます。描いたものをクリックすると選択できます。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="457"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="460"/>
         <source>Tool</source>
         <translation>ツール</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="463"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="466"/>
         <source>Line</source>
         <translation>直線</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="466"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="467"/>
+        <source>Arrow</source>
+        <translation>矢印</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="470"/>
         <source>Freehand</source>
         <translation>フリー描画</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="484"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="488"/>
         <source>Color</source>
         <translation>色</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="522"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="526"/>
         <source>Other colors</source>
         <translation>その他の色</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="532"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="536"/>
         <source>Width</source>
         <translation>太さ</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="553"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="557"/>
         <source>Fill</source>
         <translation>塗りつぶし</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="563"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="567"/>
         <source>Delete drawing</source>
         <translation>描画を削除</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="589"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="593"/>
         <source>Click an image to paste it. You can also drop an image file onto the picture.</source>
         <translation>画像をクリックすると貼り付けます。画像ファイルを編集中の画像にドロップしても貼り付けられます。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="595"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="599"/>
         <source>Add image</source>
         <translation>画像を追加</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="601"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="605"/>
         <source>Pinned</source>
         <translation>ピン止め</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="616"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="620"/>
         <source>History</source>
         <translation>履歴</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="640"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="644"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="663"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="667"/>
         <source>Delete stamp</source>
         <translation>スタンプを削除</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="678"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="682"/>
         <source>Alt text</source>
         <translation>代替テキスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="688"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="692"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="720"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="724"/>
         <source>Failed to save the edited image.</source>
         <translation>編集した画像を保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="773"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="777"/>
         <source>Unpin</source>
         <translation>ピン止めを外す</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="774"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="778"/>
         <source>Pin</source>
         <translation>ピン止め</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="774"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="778"/>
         <source>Up to %1 images can be pinned.</source>
         <translation>ピン止めできるのは%1個までです。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="787"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="791"/>
         <source>Remove from history</source>
         <translation>履歴から削除</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/ImageEditDialog.qml" line="714"/>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="718"/>
         <source>Apply</source>
         <translation>適用</translation>
     </message>

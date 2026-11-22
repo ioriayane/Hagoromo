@@ -19,6 +19,7 @@ struct ImageEditLayer
         DrawEllipse = 3,
         Freehand = 4,
         Stamp = 5,
+        Arrow = 6,
     };
     enum Shape {
         Rectangle = 0,
@@ -29,8 +30,8 @@ struct ImageEditLayer
     int shape = Rectangle; // Mosaicの形
     QRect rect; // Mosaic, DrawRectangle, DrawEllipse, Stamp
     int strength = 5; // Mosaicの粗さ（1〜10）
-    QList<QPointF> points; // Line（2点）, Freehand
-    QColor color = QColor(Qt::red); // Line, DrawRectangle, DrawEllipse, Freehand
+    QList<QPointF> points; // Line（2点）, Arrow（2点、終点側が矢印）, Freehand
+    QColor color = QColor(Qt::red); // Line, Arrow, DrawRectangle, DrawEllipse, Freehand
     int lineWidth = 3; // 線の太さ（1〜20）
     bool fill = false; // DrawRectangle, DrawEllipse
     QString stampPath; // Stampの画像ファイル
@@ -39,9 +40,12 @@ struct ImageEditLayer
 
     bool isDrawing() const
     {
-        return type == Line || type == DrawRectangle || type == DrawEllipse || type == Freehand;
+        return type == Line || type == Arrow || type == DrawRectangle || type == DrawEllipse
+                || type == Freehand;
     }
-    bool isPointBased() const { return type == Line || type == Freehand; }
+    bool isPointBased() const { return type == Line || type == Arrow || type == Freehand; }
+    // 始点と終点の2点で表すレイヤー
+    bool isTwoPoint() const { return type == Line || type == Arrow; }
     // 範囲（回転後の原寸座標）。点で表すレイヤーは点を囲む矩形
     QRectF bounds() const;
 
@@ -97,6 +101,8 @@ public:
     static void applyMosaic(QImage &image, const QRectF &rect, int shape, int block_size);
     // 線の太さ（原寸座標）
     static qreal lineWidthPixels(int line_width, int long_edge);
+    // 矢印の三角形の長さ（原寸座標）。幅は長さと同じ
+    static qreal arrowHeadLength(int line_width, int long_edge);
     static void drawLayer(QImage &image, const ImageEditLayer &layer, qreal scale, int long_edge);
     // 点がレイヤーの範囲内か（線は太さの半分 + toleranceまで）
     static bool contains(const ImageEditLayer &layer, const QPointF &point, qreal tolerance = 0,

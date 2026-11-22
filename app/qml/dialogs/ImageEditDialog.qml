@@ -464,6 +464,7 @@ Dialog {
                     Repeater {
                         model: [
                             { type: ImageEditModel.TypeLine, icon: "../images/pen_size_2.png", name: qsTr("Line") },
+                            { type: ImageEditModel.TypeArrow, icon: "../images/north_east.png", name: qsTr("Arrow") },
                             { type: ImageEditModel.TypeRectangle, icon: "../images/rectangle.png", name: qsTr("Rectangle") },
                             { type: ImageEditModel.TypeEllipse, icon: "../images/circle.png", name: qsTr("Ellipse") },
                             { type: ImageEditModel.TypeFreehand, icon: "../images/gesture.png", name: qsTr("Freehand") }

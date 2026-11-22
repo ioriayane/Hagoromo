@@ -26,7 +26,8 @@ Item {
     readonly property real imageWidth: editModel ? editModel.imageWidth : 0
     readonly property real imageHeight: editModel ? editModel.imageHeight : 0
     readonly property bool selectedLine: editModel !== null && editModel.selectedLayer >= 0 &&
-                                         editModel.selectedLayerType === ImageEditModel.TypeLine
+                                         (editModel.selectedLayerType === ImageEditModel.TypeLine ||
+                                          editModel.selectedLayerType === ImageEditModel.TypeArrow)
     // 線をつかむときの余裕（画像座標）
     readonly property real tolerance: 6 * AdjustedValues.ratio / paintedScale
 
@@ -155,10 +156,16 @@ Item {
                 points.push(end)
                 drawingPoints = points
                 overlay.editModel.setLayerPoints(drawingIndex, drawingPoints, true)
-            }else if(overlay.drawType === ImageEditModel.TypeLine){
+            }else if(overlay.drawType === ImageEditModel.TypeLine ||
+                     overlay.drawType === ImageEditModel.TypeArrow){
                 if(drawingIndex < 0){
-                    drawingIndex = overlay.editModel.addLine(startPos.x, startPos.y, end.x, end.y,
-                                                             overlay.drawColor, overlay.drawLineWidth)
+                    if(overlay.drawType === ImageEditModel.TypeArrow){
+                        drawingIndex = overlay.editModel.addArrow(startPos.x, startPos.y, end.x, end.y,
+                                                                  overlay.drawColor, overlay.drawLineWidth)
+                    }else{
+                        drawingIndex = overlay.editModel.addLine(startPos.x, startPos.y, end.x, end.y,
+                                                                 overlay.drawColor, overlay.drawLineWidth)
+                    }
                 }else{
                     overlay.editModel.setLayerPoints(drawingIndex, [startPos, end], true)
                 }
@@ -241,7 +248,8 @@ Item {
             width: 14 * AdjustedValues.ratio
             height: width
             radius: width / 2
-            color: "white"
+            // 矢印の先端などが隠れないように半透明にする
+            color: "#80ffffff"
             border.color: Material.accent
             border.width: 1
             MouseArea {

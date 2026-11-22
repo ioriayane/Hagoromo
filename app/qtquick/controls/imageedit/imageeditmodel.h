@@ -57,6 +57,7 @@ public:
         TypeEllipse = ImageEditLayer::DrawEllipse,
         TypeFreehand = ImageEditLayer::Freehand,
         TypeStamp = ImageEditLayer::Stamp,
+        TypeArrow = ImageEditLayer::Arrow,
     };
     Q_ENUM(LayerType)
     // layerAt()で対象にするレイヤーの種類
@@ -85,6 +86,9 @@ public:
     // 直線を追加して選択する。追加できなかったときは-1
     Q_INVOKABLE int addLine(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
                             int line_width);
+    // 矢印（終点側に三角形）を追加して選択する。追加できなかったときは-1
+    Q_INVOKABLE int addArrow(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
+                             int line_width);
     // フリー描画（点の配列）を追加して選択する。追加できなかったときは-1
     Q_INVOKABLE int addFreehand(const QVariantList &points, const QColor &color, int line_width);
     // 画像（スタンプ）を追加して選択する。追加できなかったときは-1
@@ -158,6 +162,8 @@ private:
     void applyEdit(const ImageEditState &state, bool transient);
     void pushHistory(const ImageEditState &state);
     int addLayer(const ImageEditLayer &layer);
+    int addTwoPointLayer(int type, qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
+                         int line_width);
     void rotateState(bool clockwise);
     const ImageEditLayer *selectedLayerData() const;
     static QList<QPointF> toPoints(const QVariantList &points);

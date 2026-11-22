@@ -122,17 +122,13 @@ int ImageEditModel::addShape(int type, qreal x, qreal y, qreal width, qreal heig
 int ImageEditModel::addLine(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
                             int line_width)
 {
-    if (!editable())
-        return -1;
-    if (qMax(qAbs(x2 - x1), qAbs(y2 - y1)) < LAYER_MIN_LENGTH)
-        return -1;
+    return addTwoPointLayer(ImageEditLayer::Line, x1, y1, x2, y2, color, line_width);
+}
 
-    ImageEditLayer layer;
-    layer.type = ImageEditLayer::Line;
-    layer.points << QPointF(x1, y1) << QPointF(x2, y2);
-    layer.color = color;
-    layer.lineWidth = qBound(1, line_width, 20);
-    return addLayer(layer);
+int ImageEditModel::addArrow(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
+                             int line_width)
+{
+    return addTwoPointLayer(ImageEditLayer::Arrow, x1, y1, x2, y2, color, line_width);
 }
 
 int ImageEditModel::addFreehand(const QVariantList &points, const QColor &color, int line_width)
@@ -291,7 +287,7 @@ void ImageEditModel::setLayerPoints(int index, const QVariantList &points, bool 
     QList<QPointF> list = toPoints(points);
     if (list.isEmpty())
         return;
-    if (m_state.layers.at(index).type == ImageEditLayer::Line) {
+    if (m_state.layers.at(index).isTwoPoint()) {
         if (list.count() != 2)
             return;
     }
@@ -613,6 +609,22 @@ void ImageEditModel::updatePreview(bool rotation_changed)
     m_previewRendered = m_previewRotated;
     ImageEditRenderer::renderLayers(m_previewRendered, m_state.layers, m_previewScale, longEdge());
     emit previewChanged();
+}
+
+int ImageEditModel::addTwoPointLayer(int type, qreal x1, qreal y1, qreal x2, qreal y2,
+                                     const QColor &color, int line_width)
+{
+    if (!editable())
+        return -1;
+    if (qMax(qAbs(x2 - x1), qAbs(y2 - y1)) < LAYER_MIN_LENGTH)
+        return -1;
+
+    ImageEditLayer layer;
+    layer.type = type;
+    layer.points << QPointF(x1, y1) << QPointF(x2, y2);
+    layer.color = color;
+    layer.lineWidth = qBound(1, line_width, 20);
+    return addLayer(layer);
 }
 
 int ImageEditModel::addLayer(const ImageEditLayer &layer)
