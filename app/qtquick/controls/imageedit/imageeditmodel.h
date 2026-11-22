@@ -3,7 +3,9 @@
 
 #include "imageeditrenderer.h"
 
+#include <QColor>
 #include <QObject>
+#include <QVariantList>
 #include <QImage>
 #include <QList>
 #include <QRectF>
@@ -33,6 +35,11 @@ class ImageEditModel : public QObject
     Q_PROPERTY(QRectF selectedLayerRect READ selectedLayerRect NOTIFY stateChanged FINAL)
     Q_PROPERTY(int selectedLayerShape READ selectedLayerShape NOTIFY stateChanged FINAL)
     Q_PROPERTY(int selectedLayerStrength READ selectedLayerStrength NOTIFY stateChanged FINAL)
+    Q_PROPERTY(int selectedLayerType READ selectedLayerType NOTIFY stateChanged FINAL)
+    Q_PROPERTY(QColor selectedLayerColor READ selectedLayerColor NOTIFY stateChanged FINAL)
+    Q_PROPERTY(int selectedLayerLineWidth READ selectedLayerLineWidth NOTIFY stateChanged FINAL)
+    Q_PROPERTY(bool selectedLayerFill READ selectedLayerFill NOTIFY stateChanged FINAL)
+    Q_PROPERTY(QVariantList selectedLayerPoints READ selectedLayerPoints NOTIFY stateChanged FINAL)
 
 public:
     explicit ImageEditModel(QObject *parent = nullptr);
@@ -42,6 +49,21 @@ public:
         ShapeEllipse = ImageEditLayer::Ellipse,
     };
     Q_ENUM(LayerShape)
+    enum LayerType {
+        TypeMosaic = ImageEditLayer::Mosaic,
+        TypeLine = ImageEditLayer::Line,
+        TypeRectangle = ImageEditLayer::DrawRectangle,
+        TypeEllipse = ImageEditLayer::DrawEllipse,
+        TypeFreehand = ImageEditLayer::Freehand,
+    };
+    Q_ENUM(LayerType)
+    // layerAt()で対象にするレイヤーの種類
+    enum LayerCategory {
+        CategoryAll = 0,
+        CategoryMosaic = 1,
+        CategoryDrawing = 2,
+    };
+    Q_ENUM(LayerCategory)
 
     Q_INVOKABLE void rotateLeft();
     Q_INVOKABLE void rotateRight();
@@ -54,14 +76,30 @@ public:
 
     // モザイクを追加して、追加したレイヤーを選択する。追加できなかったときは-1
     Q_INVOKABLE int addMosaic(qreal x, qreal y, qreal width, qreal height, int shape, int strength);
+    // 図形（TypeRectangle / TypeEllipse）を追加して選択する。追加できなかったときは-1
+    Q_INVOKABLE int addShape(int type, qreal x, qreal y, qreal width, qreal height,
+                             const QColor &color, int line_width, bool fill);
+    // 直線を追加して選択する。追加できなかったときは-1
+    Q_INVOKABLE int addLine(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
+                            int line_width);
+    // フリー描画（点の配列）を追加して選択する。追加できなかったときは-1
+    Q_INVOKABLE int addFreehand(const QVariantList &points, const QColor &color, int line_width);
     // 指定位置（回転後の原寸座標）にある一番上のレイヤー。無ければ-1
-    Q_INVOKABLE int layerAt(qreal x, qreal y) const;
+    // tolerance: 線の判定の余裕（原寸座標）
+    Q_INVOKABLE int layerAt(qreal x, qreal y, qreal tolerance = 0, int category = 0) const;
+    // 一時的な変更を始める（以降の変更はcommitTransient()で1回分の履歴になる）
+    Q_INVOKABLE void beginTransaction();
     // transient=trueのときは履歴に残さずに反映する（ドラッグ中など）
     // その後のtransient=falseの変更かcommitTransient()で、まとめて1回分の履歴にする
+    // 点で表すレイヤーは点を拡大縮小・移動して矩形に合わせる
     Q_INVOKABLE void setLayerRect(int index, qreal x, qreal y, qreal width, qreal height,
                                   bool transient = false);
     Q_INVOKABLE void setLayerShape(int index, int shape);
     Q_INVOKABLE void setLayerStrength(int index, int strength, bool transient = false);
+    Q_INVOKABLE void setLayerPoints(int index, const QVariantList &points, bool transient = false);
+    Q_INVOKABLE void setLayerColor(int index, const QColor &color);
+    Q_INVOKABLE void setLayerLineWidth(int index, int line_width, bool transient = false);
+    Q_INVOKABLE void setLayerFill(int index, bool fill);
     Q_INVOKABLE void removeLayer(int index);
     Q_INVOKABLE void commitTransient();
 
@@ -86,6 +124,11 @@ public:
     QRectF selectedLayerRect() const;
     int selectedLayerShape() const;
     int selectedLayerStrength() const;
+    int selectedLayerType() const;
+    QColor selectedLayerColor() const;
+    int selectedLayerLineWidth() const;
+    bool selectedLayerFill() const;
+    QVariantList selectedLayerPoints() const;
     QList<ImageEditLayer> layers() const;
 
     // 表示用（長辺を制限した縮小画像に回転とレイヤーを適用したもの）
@@ -102,6 +145,10 @@ private:
     void applyState(const ImageEditState &state, bool record_history);
     void applyEdit(const ImageEditState &state, bool transient);
     void pushHistory(const ImageEditState &state);
+    int addLayer(const ImageEditLayer &layer);
+    void rotateState(bool clockwise);
+    const ImageEditLayer *selectedLayerData() const;
+    static QList<QPointF> toPoints(const QVariantList &points);
     void updatePreview(bool rotation_changed);
     QRect validLayerRect(qreal x, qreal y, qreal width, qreal height) const;
     int longEdge() const;

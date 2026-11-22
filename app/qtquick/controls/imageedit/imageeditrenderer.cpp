@@ -9,6 +9,42 @@
 #include <QStandardPaths>
 #include <QTransform>
 #include <QUuid>
+#include <QtMath>
+
+QRectF ImageEditLayer::bounds() const
+{
+    if (isPointBased()) {
+        if (points.isEmpty())
+            return QRectF();
+        qreal x1 = points.first().x();
+        qreal y1 = points.first().y();
+        qreal x2 = x1;
+        qreal y2 = y1;
+        for (const auto &p : points) {
+            x1 = qMin(x1, p.x());
+            y1 = qMin(y1, p.y());
+            x2 = qMax(x2, p.x());
+            y2 = qMax(y2, p.y());
+        }
+        return QRectF(x1, y1, x2 - x1, y2 - y1);
+    }
+    return QRectF(rect);
+}
+
+namespace {
+// 点と線分の距離
+qreal distanceToSegment(const QPointF &p, const QPointF &a, const QPointF &b)
+{
+    const QPointF ab = b - a;
+    const qreal len2 = ab.x() * ab.x() + ab.y() * ab.y();
+    qreal t = 0;
+    if (len2 > 0) {
+        t = qBound(0.0, QPointF::dotProduct(p - a, ab) / len2, 1.0);
+    }
+    const QPointF d = p - (a + ab * t);
+    return qSqrt(d.x() * d.x() + d.y() * d.y());
+}
+}
 
 QImage ImageEditRenderer::load(const QString &path)
 {
@@ -58,6 +94,17 @@ QRect ImageEditRenderer::rotateRect90(const QRect &rect, const QSize &size, bool
     }
 }
 
+QPointF ImageEditRenderer::rotatePoint90(const QPointF &point, const QSize &size, bool clockwise)
+{
+    if (clockwise) {
+        // (x, y) -> (H - y, x)
+        return QPointF(size.height() - point.y(), point.x());
+    } else {
+        // (x, y) -> (y, W - x)
+        return QPointF(point.y(), size.width() - point.x());
+    }
+}
+
 QImage ImageEditRenderer::render(const QImage &image, const ImageEditState &state)
 {
     if (image.isNull())
@@ -85,11 +132,51 @@ void ImageEditRenderer::renderLayers(QImage &image, const QList<ImageEditLayer> 
                                                               : QImage::Format_RGB32);
     }
     for (const auto &layer : layers) {
-        const QRectF rect(layer.rect.x() * scale, layer.rect.y() * scale,
-                          layer.rect.width() * scale, layer.rect.height() * scale);
         if (layer.type == ImageEditLayer::Mosaic) {
+            const QRectF rect(layer.rect.x() * scale, layer.rect.y() * scale,
+                              layer.rect.width() * scale, layer.rect.height() * scale);
             const int block = qMax(1, qRound(mosaicBlockSize(layer.strength, long_edge) * scale));
             applyMosaic(image, rect, layer.shape, block);
+        } else {
+            drawLayer(image, layer, scale, long_edge);
+        }
+    }
+}
+
+qreal ImageEditRenderer::lineWidthPixels(int line_width, int long_edge)
+{
+    line_width = qBound(1, line_width, 20);
+    return qMax(1.0, long_edge * line_width / 400.0);
+}
+
+void ImageEditRenderer::drawLayer(QImage &image, const ImageEditLayer &layer, qreal scale,
+                                  int long_edge)
+{
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    QPen pen(layer.color);
+    pen.setWidthF(lineWidthPixels(layer.lineWidth, long_edge) * scale);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    painter.setPen(pen);
+    painter.setBrush(layer.fill ? QBrush(layer.color) : QBrush(Qt::NoBrush));
+
+    const QRectF rect(layer.rect.x() * scale, layer.rect.y() * scale, layer.rect.width() * scale,
+                      layer.rect.height() * scale);
+    if (layer.type == ImageEditLayer::DrawRectangle) {
+        painter.drawRect(rect);
+    } else if (layer.type == ImageEditLayer::DrawEllipse) {
+        painter.drawEllipse(rect);
+    } else if (layer.isPointBased() && !layer.points.isEmpty()) {
+        if (layer.points.count() == 1) {
+            painter.drawPoint(layer.points.first() * scale);
+        } else {
+            QPainterPath path(layer.points.first() * scale);
+            for (int i = 1; i < layer.points.count(); i++) {
+                path.lineTo(layer.points.at(i) * scale);
+            }
+            painter.setBrush(Qt::NoBrush);
+            painter.drawPath(path);
         }
     }
 }
@@ -130,8 +217,44 @@ void ImageEditRenderer::applyMosaic(QImage &image, const QRectF &rect, int shape
     painter.drawImage(area.topLeft(), blocks, QRect(0, 0, area.width(), area.height()));
 }
 
-bool ImageEditRenderer::contains(const ImageEditLayer &layer, const QPointF &point)
+bool ImageEditRenderer::contains(const ImageEditLayer &layer, const QPointF &point, qreal tolerance,
+                                 int long_edge)
 {
+    if (layer.isDrawing()) {
+        const qreal margin = lineWidthPixels(layer.lineWidth, long_edge) / 2 + tolerance;
+        if (!layer.bounds().adjusted(-margin, -margin, margin, margin).contains(point))
+            return false;
+        if (layer.isPointBased()) {
+            if (layer.points.count() == 1) {
+                return distanceToSegment(point, layer.points.first(), layer.points.first())
+                        <= margin;
+            }
+            for (int i = 1; i < layer.points.count(); i++) {
+                if (distanceToSegment(point, layer.points.at(i - 1), layer.points.at(i)) <= margin)
+                    return true;
+            }
+            return false;
+        }
+        const QRectF rect(layer.rect);
+        if (layer.type == ImageEditLayer::DrawRectangle) {
+            if (layer.fill)
+                return true; // 外側の判定は済み
+            // 枠線の近く
+            return !rect.adjusted(margin, margin, -margin, -margin).contains(point);
+        }
+        // 楕円: 中心からの正規化した距離で判定
+        const qreal rx = rect.width() / 2;
+        const qreal ry = rect.height() / 2;
+        if (rx <= 0 || ry <= 0)
+            return true;
+        const qreal dx = (point.x() - rect.center().x()) / rx;
+        const qreal dy = (point.y() - rect.center().y()) / ry;
+        const qreal d = qSqrt(dx * dx + dy * dy);
+        if (layer.fill)
+            return d <= 1.0 + margin / qMin(rx, ry);
+        return qAbs(d - 1.0) * qMin(rx, ry) <= margin;
+    }
+
     const QRectF rect(layer.rect);
     if (!rect.contains(point))
         return false;

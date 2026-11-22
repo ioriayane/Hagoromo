@@ -1,6 +1,7 @@
 #ifndef IMAGEEDITRENDERER_H
 #define IMAGEEDITRENDERER_H
 
+#include <QColor>
 #include <QImage>
 #include <QList>
 #include <QPointF>
@@ -13,6 +14,10 @@ struct ImageEditLayer
 {
     enum Type {
         Mosaic = 0,
+        Line = 1,
+        DrawRectangle = 2,
+        DrawEllipse = 3,
+        Freehand = 4,
     };
     enum Shape {
         Rectangle = 0,
@@ -20,14 +25,24 @@ struct ImageEditLayer
     };
 
     int type = Mosaic;
-    int shape = Rectangle;
-    QRect rect;
-    int strength = 5; // モザイクの粗さ（1〜10）
+    int shape = Rectangle; // Mosaicの形
+    QRect rect; // Mosaic, DrawRectangle, DrawEllipse
+    int strength = 5; // Mosaicの粗さ（1〜10）
+    QList<QPointF> points; // Line（2点）, Freehand
+    QColor color = QColor(Qt::red); // Line, DrawRectangle, DrawEllipse, Freehand
+    int lineWidth = 3; // 線の太さ（1〜20）
+    bool fill = false; // DrawRectangle, DrawEllipse
+
+    bool isDrawing() const { return type != Mosaic; }
+    bool isPointBased() const { return type == Line || type == Freehand; }
+    // 範囲（回転後の原寸座標）。点で表すレイヤーは点を囲む矩形
+    QRectF bounds() const;
 
     bool operator==(const ImageEditLayer &other) const
     {
         return type == other.type && shape == other.shape && rect == other.rect
-                && strength == other.strength;
+                && strength == other.strength && points == other.points && color == other.color
+                && lineWidth == other.lineWidth && fill == other.fill;
     }
     bool operator!=(const ImageEditLayer &other) const { return !(*this == other); }
 };
@@ -60,6 +75,7 @@ public:
     // size（回転前の画像サイズ）上の矩形を、時計回りに90度(clockwise=true)
     // または反時計回りに90度回転させた座標系の矩形へ変換する
     static QRect rotateRect90(const QRect &rect, const QSize &size, bool clockwise);
+    static QPointF rotatePoint90(const QPointF &point, const QSize &size, bool clockwise);
 
     // 編集内容を原寸画像に適用する
     static QImage render(const QImage &image, const ImageEditState &state);
@@ -71,8 +87,12 @@ public:
     // モザイクのブロックの大きさ（原寸座標）
     static int mosaicBlockSize(int strength, int long_edge);
     static void applyMosaic(QImage &image, const QRectF &rect, int shape, int block_size);
-    // 点がレイヤーの範囲内か
-    static bool contains(const ImageEditLayer &layer, const QPointF &point);
+    // 線の太さ（原寸座標）
+    static qreal lineWidthPixels(int line_width, int long_edge);
+    static void drawLayer(QImage &image, const ImageEditLayer &layer, qreal scale, int long_edge);
+    // 点がレイヤーの範囲内か（線は太さの半分 + toleranceまで）
+    static bool contains(const ImageEditLayer &layer, const QPointF &point, qreal tolerance = 0,
+                         int long_edge = 0);
 
     // 編集済み画像の保存先
     static QString editedFolder();

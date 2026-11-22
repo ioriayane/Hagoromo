@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtQuick.Dialogs as QD
 
 import tech.relog.hagoromo.controls.imageeditmodel 1.0
 import tech.relog.hagoromo.controls.imageeditcanvas 1.0
@@ -27,12 +28,24 @@ Dialog {
     property string embedAlt: ""
     // 編集して保存した画像のURL（編集していない場合は空）
     property string editedImage: ""
-    // 選択中のツール: "" / "crop" / "mosaic"
+    // 選択中のツール: "" / "crop" / "mosaic" / "draw"
     property string tool: ""
     readonly property bool cropMode: tool === "crop"
     // 新しく追加するモザイクの設定
     property int mosaicShape: ImageEditModel.ShapeRectangle
     property int mosaicStrength: 5
+    // 新しく追加する描画の設定
+    property int drawType: ImageEditModel.TypeLine
+    property color drawColor: "#f44336"
+    property int drawLineWidth: 3
+    property bool drawFill: false
+    readonly property bool drawingSelected: imageEditModel.selectedLayer >= 0 &&
+                                            imageEditModel.selectedLayerType !== ImageEditModel.TypeMosaic
+    // 選択中の描画、または新しく追加する描画の設定
+    readonly property int currentDrawType: drawingSelected ? imageEditModel.selectedLayerType : drawType
+    readonly property color currentDrawColor: drawingSelected ? imageEditModel.selectedLayerColor : drawColor
+    readonly property int currentDrawLineWidth: drawingSelected ? imageEditModel.selectedLayerLineWidth : drawLineWidth
+    readonly property bool currentDrawFill: drawingSelected ? imageEditModel.selectedLayerFill : drawFill
 
     function toggleTool(name) {
         imageEditDialog.tool = (imageEditDialog.tool === name) ? "" : name
@@ -50,6 +63,30 @@ Dialog {
         imageEditDialog.mosaicStrength = strength
         if(imageEditModel.selectedLayer >= 0){
             imageEditModel.setLayerStrength(imageEditModel.selectedLayer, strength, transient)
+        }
+    }
+
+    function setDrawType(type) {
+        imageEditDialog.drawType = type
+        // 次のドラッグで新しく描けるように選択を解除する
+        imageEditModel.selectedLayer = -1
+    }
+    function setDrawColor(color) {
+        imageEditDialog.drawColor = color
+        if(imageEditDialog.drawingSelected){
+            imageEditModel.setLayerColor(imageEditModel.selectedLayer, color)
+        }
+    }
+    function setDrawLineWidth(width, transient) {
+        imageEditDialog.drawLineWidth = width
+        if(imageEditDialog.drawingSelected){
+            imageEditModel.setLayerLineWidth(imageEditModel.selectedLayer, width, transient)
+        }
+    }
+    function setDrawFill(fill) {
+        imageEditDialog.drawFill = fill
+        if(imageEditDialog.drawingSelected){
+            imageEditModel.setLayerFill(imageEditModel.selectedLayer, fill)
         }
     }
 
@@ -77,6 +114,15 @@ Dialog {
         category: "ImageEditDialog"
         property alias mosaicShape: imageEditDialog.mosaicShape
         property alias mosaicStrength: imageEditDialog.mosaicStrength
+        property alias drawType: imageEditDialog.drawType
+        property alias drawColor: imageEditDialog.drawColor
+        property alias drawLineWidth: imageEditDialog.drawLineWidth
+        property alias drawFill: imageEditDialog.drawFill
+    }
+    QD.ColorDialog {
+        id: colorDialog
+        title: qsTr("Select color")
+        onAccepted: imageEditDialog.setDrawColor(selectedColor)
     }
 
     Shortcut {
@@ -123,6 +169,17 @@ Dialog {
                 ToolTip.visible: hovered
                 ToolTip.delay: 500
                 ToolTip.text: qsTr("Mosaic")
+            }
+            IconButton {
+                enabled: imageEditModel.editable
+                iconSource: "../images/draw.png"
+                iconSize: AdjustedValues.i18
+                flat: true
+                foreground: imageEditDialog.tool === "draw" ? Material.accent : Material.foreground
+                onClicked: imageEditDialog.toggleTool("draw")
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                ToolTip.text: qsTr("Draw")
             }
             IconButton {
                 enabled: imageEditModel.editable
@@ -212,11 +269,16 @@ Dialog {
                 }
                 ImageLayerOverlay {
                     anchors.fill: parent
-                    visible: imageEditDialog.tool === "mosaic"
+                    visible: imageEditDialog.tool === "mosaic" || imageEditDialog.tool === "draw"
                     canvas: imageEditCanvas
                     editModel: imageEditModel
+                    mode: imageEditDialog.tool === "draw" ? "draw" : "mosaic"
                     newLayerShape: imageEditDialog.mosaicShape
                     newLayerStrength: imageEditDialog.mosaicStrength
+                    drawType: imageEditDialog.drawType
+                    drawColor: imageEditDialog.drawColor
+                    drawLineWidth: imageEditDialog.drawLineWidth
+                    drawFill: imageEditDialog.drawFill
                 }
             }
 
@@ -294,6 +356,143 @@ Dialog {
                     font.pointSize: AdjustedValues.f10
                     icon.source: "../images/delete.png"
                     text: qsTr("Delete area")
+                    onClicked: imageEditModel.removeLayer(imageEditModel.selectedLayer)
+                }
+                Item {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 1
+                }
+            }
+
+            // 描画の設定
+            ColumnLayout {
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.maximumWidth: 200 * AdjustedValues.ratio
+                Layout.fillHeight: true
+                visible: imageEditDialog.tool === "draw"
+                spacing: 5 * AdjustedValues.ratio
+
+                Label {
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Draw")
+                }
+                Label {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    font.pointSize: AdjustedValues.f8
+                    color: Material.color(Material.Grey)
+                    text: qsTr("Drag on the image to draw. Click a drawing to select it.")
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Tool")
+                }
+                RowLayout {
+                    spacing: 0
+                    Repeater {
+                        model: [
+                            { type: ImageEditModel.TypeLine, icon: "../images/pen_size_2.png", name: qsTr("Line") },
+                            { type: ImageEditModel.TypeRectangle, icon: "../images/rectangle.png", name: qsTr("Rectangle") },
+                            { type: ImageEditModel.TypeEllipse, icon: "../images/circle.png", name: qsTr("Ellipse") },
+                            { type: ImageEditModel.TypeFreehand, icon: "../images/gesture.png", name: qsTr("Freehand") }
+                        ]
+                        IconButton {
+                            required property var modelData
+                            iconSource: modelData.icon
+                            iconSize: AdjustedValues.i18
+                            flat: true
+                            foreground: imageEditDialog.currentDrawType === modelData.type ? Material.accent : Material.foreground
+                            onClicked: imageEditDialog.setDrawType(modelData.type)
+                            ToolTip.visible: hovered
+                            ToolTip.delay: 500
+                            ToolTip.text: modelData.name
+                        }
+                    }
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Color")
+                }
+                GridLayout {
+                    columns: 5
+                    rowSpacing: 4 * AdjustedValues.ratio
+                    columnSpacing: 4 * AdjustedValues.ratio
+                    Repeater {
+                        model: ["#ffffff", "#000000", "#f44336", "#ff9800", "#ffeb3b",
+                            "#4caf50", "#00bcd4", "#2196f3", "#9c27b0", "#e91e63"]
+                        Rectangle {
+                            required property string modelData
+                            Layout.preferredWidth: 26 * AdjustedValues.ratio
+                            Layout.preferredHeight: 26 * AdjustedValues.ratio
+                            radius: width / 2
+                            color: modelData
+                            border.width: Qt.colorEqual(imageEditDialog.currentDrawColor, modelData) ? 3 : 1
+                            border.color: Qt.colorEqual(imageEditDialog.currentDrawColor, modelData) ? Material.accent : Material.color(Material.Grey)
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: imageEditDialog.setDrawColor(parent.modelData)
+                            }
+                        }
+                    }
+                }
+                RowLayout {
+                    Rectangle {
+                        Layout.preferredWidth: 26 * AdjustedValues.ratio
+                        Layout.preferredHeight: 26 * AdjustedValues.ratio
+                        radius: width / 2
+                        color: imageEditDialog.currentDrawColor
+                        border.width: 1
+                        border.color: Material.color(Material.Grey)
+                    }
+                    Button {
+                        flat: true
+                        font.pointSize: AdjustedValues.f8
+                        icon.source: "../images/palette.png"
+                        text: qsTr("Other colors")
+                        onClicked: {
+                            colorDialog.selectedColor = imageEditDialog.currentDrawColor
+                            colorDialog.open()
+                        }
+                    }
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Width") + " : " + lineWidthSlider.value
+                }
+                Slider {
+                    id: lineWidthSlider
+                    Layout.fillWidth: true
+                    from: 1
+                    to: 20
+                    stepSize: 1
+                    snapMode: Slider.SnapAlways
+                    value: imageEditDialog.currentDrawLineWidth
+                    onMoved: imageEditDialog.setDrawLineWidth(value, pressed)
+                    onPressedChanged: {
+                        if(!pressed){
+                            imageEditModel.commitTransient()
+                        }
+                    }
+                }
+                CheckBox {
+                    visible: imageEditDialog.currentDrawType === ImageEditModel.TypeRectangle ||
+                             imageEditDialog.currentDrawType === ImageEditModel.TypeEllipse
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Fill")
+                    checked: imageEditDialog.currentDrawFill
+                    onToggled: imageEditDialog.setDrawFill(checked)
+                }
+                Button {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    enabled: imageEditDialog.drawingSelected
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    icon.source: "../images/delete.png"
+                    text: qsTr("Delete drawing")
                     onClicked: imageEditModel.removeLayer(imageEditModel.selectedLayer)
                 }
                 Item {

@@ -18,30 +18,12 @@ ImageEditModel::ImageEditModel(QObject *parent)
 
 void ImageEditModel::rotateLeft()
 {
-    if (!editable())
-        return;
-    const QSize size = imageSize();
-    ImageEditState state = m_state;
-    state.rotation = ImageEditRenderer::normalizeRotation(m_state.rotation - 90);
-    state.crop = ImageEditRenderer::rotateRect90(m_state.crop, size, false);
-    for (auto &layer : state.layers) {
-        layer.rect = ImageEditRenderer::rotateRect90(layer.rect, size, false);
-    }
-    applyState(state, true);
+    rotateState(false);
 }
 
 void ImageEditModel::rotateRight()
 {
-    if (!editable())
-        return;
-    const QSize size = imageSize();
-    ImageEditState state = m_state;
-    state.rotation = ImageEditRenderer::normalizeRotation(m_state.rotation + 90);
-    state.crop = ImageEditRenderer::rotateRect90(m_state.crop, size, true);
-    for (auto &layer : state.layers) {
-        layer.rect = ImageEditRenderer::rotateRect90(layer.rect, size, true);
-    }
-    applyState(state, true);
+    rotateState(true);
 }
 
 void ImageEditModel::setCrop(qreal x, qreal y, qreal width, qreal height)
@@ -107,7 +89,6 @@ int ImageEditModel::addMosaic(qreal x, qreal y, qreal width, qreal height, int s
     const QRect rect = validLayerRect(x, y, width, height);
     if (rect.isNull())
         return -1;
-    commitTransient();
 
     ImageEditLayer layer;
     layer.type = ImageEditLayer::Mosaic;
@@ -115,23 +96,83 @@ int ImageEditModel::addMosaic(qreal x, qreal y, qreal width, qreal height, int s
                                                      : ImageEditLayer::Rectangle;
     layer.rect = rect;
     layer.strength = qBound(1, strength, 10);
-
-    ImageEditState state = m_state;
-    state.layers.append(layer);
-    m_selectedLayer = state.layers.count() - 1;
-    applyState(state, true);
-    return m_selectedLayer;
+    return addLayer(layer);
 }
 
-int ImageEditModel::layerAt(qreal x, qreal y) const
+int ImageEditModel::addShape(int type, qreal x, qreal y, qreal width, qreal height,
+                             const QColor &color, int line_width, bool fill)
+{
+    if (!editable())
+        return -1;
+    if (type != ImageEditLayer::DrawRectangle && type != ImageEditLayer::DrawEllipse)
+        return -1;
+    const QRect rect = validLayerRect(x, y, width, height);
+    if (rect.isNull())
+        return -1;
+
+    ImageEditLayer layer;
+    layer.type = type;
+    layer.rect = rect;
+    layer.color = color;
+    layer.lineWidth = qBound(1, line_width, 20);
+    layer.fill = fill;
+    return addLayer(layer);
+}
+
+int ImageEditModel::addLine(qreal x1, qreal y1, qreal x2, qreal y2, const QColor &color,
+                            int line_width)
+{
+    if (!editable())
+        return -1;
+    if (qMax(qAbs(x2 - x1), qAbs(y2 - y1)) < LAYER_MIN_LENGTH)
+        return -1;
+
+    ImageEditLayer layer;
+    layer.type = ImageEditLayer::Line;
+    layer.points << QPointF(x1, y1) << QPointF(x2, y2);
+    layer.color = color;
+    layer.lineWidth = qBound(1, line_width, 20);
+    return addLayer(layer);
+}
+
+int ImageEditModel::addFreehand(const QVariantList &points, const QColor &color, int line_width)
+{
+    if (!editable())
+        return -1;
+    const QList<QPointF> list = toPoints(points);
+    if (list.isEmpty())
+        return -1;
+
+    ImageEditLayer layer;
+    layer.type = ImageEditLayer::Freehand;
+    layer.points = list;
+    layer.color = color;
+    layer.lineWidth = qBound(1, line_width, 20);
+    return addLayer(layer);
+}
+
+int ImageEditModel::layerAt(qreal x, qreal y, qreal tolerance, int category) const
 {
     const QPointF point(x, y);
     for (int i = m_state.layers.count() - 1; i >= 0; i--) {
-        if (ImageEditRenderer::contains(m_state.layers.at(i), point)) {
+        const ImageEditLayer &layer = m_state.layers.at(i);
+        if (category == CategoryMosaic && layer.isDrawing())
+            continue;
+        if (category == CategoryDrawing && !layer.isDrawing())
+            continue;
+        if (ImageEditRenderer::contains(layer, point, tolerance, longEdge())) {
             return i;
         }
     }
     return -1;
+}
+
+void ImageEditModel::beginTransaction()
+{
+    if (m_transient)
+        return;
+    m_transient = true;
+    m_transientBase = m_state;
 }
 
 void ImageEditModel::setLayerRect(int index, qreal x, qreal y, qreal width, qreal height,
@@ -139,11 +180,27 @@ void ImageEditModel::setLayerRect(int index, qreal x, qreal y, qreal width, qrea
 {
     if (index < 0 || index >= m_state.layers.count())
         return;
-    const QRect rect = validLayerRect(x, y, width, height);
-    if (rect.isNull())
-        return;
     ImageEditState state = m_state;
-    state.layers[index].rect = rect;
+    ImageEditLayer &layer = state.layers[index];
+    if (layer.isPointBased()) {
+        // 点を囲む矩形が指定の矩形になるように拡大縮小・移動する
+        const QRectF from = layer.bounds();
+        const QRectF to = QRectF(x, y, width, height).normalized();
+        for (auto &point : layer.points) {
+            const qreal px = (from.width() > 0)
+                    ? to.x() + (point.x() - from.x()) * to.width() / from.width()
+                    : to.x();
+            const qreal py = (from.height() > 0)
+                    ? to.y() + (point.y() - from.y()) * to.height() / from.height()
+                    : to.y();
+            point = QPointF(px, py);
+        }
+    } else {
+        const QRect rect = validLayerRect(x, y, width, height);
+        if (rect.isNull())
+            return;
+        layer.rect = rect;
+    }
     applyEdit(state, transient);
 }
 
@@ -164,6 +221,51 @@ void ImageEditModel::setLayerStrength(int index, int strength, bool transient)
     ImageEditState state = m_state;
     state.layers[index].strength = qBound(1, strength, 10);
     applyEdit(state, transient);
+}
+
+void ImageEditModel::setLayerPoints(int index, const QVariantList &points, bool transient)
+{
+    if (index < 0 || index >= m_state.layers.count())
+        return;
+    if (!m_state.layers.at(index).isPointBased())
+        return;
+    QList<QPointF> list = toPoints(points);
+    if (list.isEmpty())
+        return;
+    if (m_state.layers.at(index).type == ImageEditLayer::Line) {
+        if (list.count() != 2)
+            return;
+    }
+    ImageEditState state = m_state;
+    state.layers[index].points = list;
+    applyEdit(state, transient);
+}
+
+void ImageEditModel::setLayerColor(int index, const QColor &color)
+{
+    if (index < 0 || index >= m_state.layers.count() || !color.isValid())
+        return;
+    ImageEditState state = m_state;
+    state.layers[index].color = color;
+    applyEdit(state, false);
+}
+
+void ImageEditModel::setLayerLineWidth(int index, int line_width, bool transient)
+{
+    if (index < 0 || index >= m_state.layers.count())
+        return;
+    ImageEditState state = m_state;
+    state.layers[index].lineWidth = qBound(1, line_width, 20);
+    applyEdit(state, transient);
+}
+
+void ImageEditModel::setLayerFill(int index, bool fill)
+{
+    if (index < 0 || index >= m_state.layers.count())
+        return;
+    ImageEditState state = m_state;
+    state.layers[index].fill = fill;
+    applyEdit(state, false);
 }
 
 void ImageEditModel::removeLayer(int index)
@@ -317,9 +419,8 @@ void ImageEditModel::selectLayer(int index)
 
 QRectF ImageEditModel::selectedLayerRect() const
 {
-    if (m_selectedLayer < 0 || m_selectedLayer >= m_state.layers.count())
-        return QRectF();
-    return QRectF(m_state.layers.at(m_selectedLayer).rect);
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->bounds() : QRectF();
 }
 
 int ImageEditModel::selectedLayerShape() const
@@ -334,6 +435,42 @@ int ImageEditModel::selectedLayerStrength() const
     if (m_selectedLayer < 0 || m_selectedLayer >= m_state.layers.count())
         return -1;
     return m_state.layers.at(m_selectedLayer).strength;
+}
+
+int ImageEditModel::selectedLayerType() const
+{
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->type : -1;
+}
+
+QColor ImageEditModel::selectedLayerColor() const
+{
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->color : QColor();
+}
+
+int ImageEditModel::selectedLayerLineWidth() const
+{
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->lineWidth : -1;
+}
+
+bool ImageEditModel::selectedLayerFill() const
+{
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->fill : false;
+}
+
+QVariantList ImageEditModel::selectedLayerPoints() const
+{
+    QVariantList points;
+    const ImageEditLayer *layer = selectedLayerData();
+    if (layer) {
+        for (const auto &point : layer->points) {
+            points.append(point);
+        }
+    }
+    return points;
 }
 
 QList<ImageEditLayer> ImageEditModel::layers() const
@@ -355,7 +492,8 @@ void ImageEditModel::applyState(const ImageEditState &state, bool record_history
 {
     if (state == m_state)
         return;
-    if (record_history) {
+    if (record_history && !m_transient) {
+        // 一時的な変更中は確定時にまとめて履歴に残す
         pushHistory(m_state);
     }
     const bool rotation_changed = (state.rotation != m_state.rotation);
@@ -401,6 +539,51 @@ void ImageEditModel::updatePreview(bool rotation_changed)
     m_previewRendered = m_previewRotated;
     ImageEditRenderer::renderLayers(m_previewRendered, m_state.layers, m_previewScale, longEdge());
     emit previewChanged();
+}
+
+int ImageEditModel::addLayer(const ImageEditLayer &layer)
+{
+    ImageEditState state = m_state;
+    state.layers.append(layer);
+    m_selectedLayer = state.layers.count() - 1;
+    applyState(state, true);
+    return m_selectedLayer;
+}
+
+void ImageEditModel::rotateState(bool clockwise)
+{
+    if (!editable())
+        return;
+    const QSize size = imageSize();
+    ImageEditState state = m_state;
+    state.rotation =
+            ImageEditRenderer::normalizeRotation(m_state.rotation + (clockwise ? 90 : -90));
+    state.crop = ImageEditRenderer::rotateRect90(m_state.crop, size, clockwise);
+    for (auto &layer : state.layers) {
+        layer.rect = ImageEditRenderer::rotateRect90(layer.rect, size, clockwise);
+        for (auto &point : layer.points) {
+            point = ImageEditRenderer::rotatePoint90(point, size, clockwise);
+        }
+    }
+    applyState(state, true);
+}
+
+const ImageEditLayer *ImageEditModel::selectedLayerData() const
+{
+    if (m_selectedLayer < 0 || m_selectedLayer >= m_state.layers.count())
+        return nullptr;
+    return &m_state.layers.at(m_selectedLayer);
+}
+
+QList<QPointF> ImageEditModel::toPoints(const QVariantList &points)
+{
+    QList<QPointF> list;
+    for (const auto &value : points) {
+        if (value.canConvert<QPointF>()) {
+            list.append(value.toPointF());
+        }
+    }
+    return list;
 }
 
 QRect ImageEditModel::validLayerRect(qreal x, qreal y, qreal width, qreal height) const

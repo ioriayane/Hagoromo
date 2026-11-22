@@ -33,6 +33,8 @@ private slots:
     void test_ImageEditModel_export();
     void test_ImageEditRenderer_mosaic();
     void test_ImageEditModel_layers();
+    void test_ImageEditRenderer_drawing();
+    void test_ImageEditModel_drawing();
     void test_EmbedImageListModel_editedFiles();
 
 private:
@@ -505,6 +507,198 @@ void imageedit_test::test_ImageEditModel_layers()
     const QColor b = result.pixelColor(3, 3);
     QVERIFY(qAbs(a.red() - b.red()) < 16 && qAbs(a.green() - b.green()) < 16
             && qAbs(a.blue() - b.blue()) < 16);
+    QFile::remove(exported);
+}
+
+void imageedit_test::test_ImageEditRenderer_drawing()
+{
+    // 長辺400、太さ1 -> 1px
+    QCOMPARE(ImageEditRenderer::lineWidthPixels(1, 400), 1.0);
+    QCOMPARE(ImageEditRenderer::lineWidthPixels(5, 4000), 50.0);
+    QCOMPARE(ImageEditRenderer::lineWidthPixels(1, 10), 1.0);
+    QCOMPARE(ImageEditRenderer::lineWidthPixels(99, 400), 20.0);
+
+    const QColor red(255, 0, 0);
+    auto isRed = [](const QColor &c) { return c.red() > 200 && c.green() < 50 && c.blue() < 50; };
+    auto isWhite = [](const QColor &c) {
+        return c.red() > 240 && c.green() > 240 && c.blue() > 240;
+    };
+
+    // 枠線の四角
+    {
+        QImage image(400, 400, QImage::Format_RGB32);
+        image.fill(Qt::white);
+        ImageEditLayer layer;
+        layer.type = ImageEditLayer::DrawRectangle;
+        layer.rect = QRect(100, 100, 200, 100);
+        layer.color = red;
+        layer.lineWidth = 8; // 8px
+        ImageEditRenderer::drawLayer(image, layer, 1.0, 400);
+        QVERIFY(isRed(image.pixelColor(100, 150)));
+        QVERIFY(isRed(image.pixelColor(200, 100)));
+        QVERIFY(isWhite(image.pixelColor(200, 150)));
+        QVERIFY(isWhite(image.pixelColor(50, 50)));
+
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(102, 150), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(200, 150), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(90, 150), 0, 400));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(90, 150), 7, 400));
+
+        // 塗りつぶし
+        layer.fill = true;
+        ImageEditRenderer::drawLayer(image, layer, 1.0, 400);
+        QVERIFY(isRed(image.pixelColor(200, 150)));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(200, 150), 0, 400));
+    }
+    // 楕円
+    {
+        QImage image(400, 400, QImage::Format_RGB32);
+        image.fill(Qt::white);
+        ImageEditLayer layer;
+        layer.type = ImageEditLayer::DrawEllipse;
+        layer.rect = QRect(100, 100, 200, 200);
+        layer.color = red;
+        layer.lineWidth = 8;
+        ImageEditRenderer::drawLayer(image, layer, 1.0, 400);
+        QVERIFY(isRed(image.pixelColor(100, 200)));
+        QVERIFY(isWhite(image.pixelColor(200, 200)));
+        QVERIFY(isWhite(image.pixelColor(110, 110)));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(101, 200), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(200, 200), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(110, 110), 0, 400));
+    }
+    // 直線とフリー描画（プレビュー用の縮尺）
+    {
+        QImage image(200, 200, QImage::Format_RGB32);
+        image.fill(Qt::white);
+        ImageEditLayer layer;
+        layer.type = ImageEditLayer::Line;
+        layer.points << QPointF(0, 100) << QPointF(400, 100);
+        layer.color = red;
+        layer.lineWidth = 8;
+        ImageEditRenderer::drawLayer(image, layer, 0.5, 400);
+        QVERIFY(isRed(image.pixelColor(100, 50)));
+        QVERIFY(isWhite(image.pixelColor(100, 60)));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(200, 103), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(200, 110), 0, 400));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(200, 110), 7, 400));
+
+        layer.type = ImageEditLayer::Freehand;
+        layer.points.clear();
+        layer.points << QPointF(100, 100) << QPointF(100, 300) << QPointF(300, 300);
+        ImageEditRenderer::drawLayer(image, layer, 0.5, 400);
+        QVERIFY(isRed(image.pixelColor(50, 120)));
+        QVERIFY(isRed(image.pixelColor(120, 150)));
+        QVERIFY(isWhite(image.pixelColor(120, 120)));
+        QVERIFY(ImageEditRenderer::contains(layer, QPointF(200, 300), 0, 400));
+        QVERIFY(!ImageEditRenderer::contains(layer, QPointF(200, 200), 0, 400));
+        QCOMPARE(layer.bounds(), QRectF(100, 100, 200, 200));
+    }
+}
+
+void imageedit_test::test_ImageEditModel_drawing()
+{
+    const QString path = m_tempDir.filePath("drawing.png");
+    QImage white(400, 200, QImage::Format_RGB32);
+    white.fill(Qt::white);
+    QVERIFY(white.save(path, "PNG"));
+
+    ImageEditModel model;
+    model.setSource(QUrl::fromLocalFile(path).toString());
+    const QColor blue(0, 0, 255);
+
+    // 追加
+    QCOMPARE(model.addShape(ImageEditModel::TypeMosaic, 0, 0, 50, 50, blue, 3, false), -1);
+    QCOMPARE(model.addShape(ImageEditModel::TypeRectangle, 10, 10, 100, 50, blue, 4, false), 0);
+    QCOMPARE(model.selectedLayerType(), static_cast<int>(ImageEditModel::TypeRectangle));
+    QCOMPARE(model.selectedLayerColor(), blue);
+    QCOMPARE(model.selectedLayerLineWidth(), 4);
+    QCOMPARE(model.selectedLayerFill(), false);
+    QCOMPARE(model.addLine(0, 0, 2, 2, blue, 3), -1);
+    QCOMPARE(model.addLine(200, 20, 300, 120, blue, 3), 1);
+    QCOMPARE(model.selectedLayerRect(), QRectF(200, 20, 100, 100));
+    QCOMPARE(model.selectedLayerPoints(), QVariantList() << QPointF(200, 20) << QPointF(300, 120));
+    QCOMPARE(model.addMosaic(150, 100, 40, 40, ImageEditModel::ShapeRectangle, 5), 2);
+
+    // 種類で絞り込んで選択
+    QCOMPARE(model.layerAt(160, 110), 2);
+    QCOMPARE(model.layerAt(160, 110, 0, ImageEditModel::CategoryDrawing), -1);
+    QCOMPARE(model.layerAt(60, 10, 0, ImageEditModel::CategoryDrawing), 0);
+    QCOMPARE(model.layerAt(60, 10, 0, ImageEditModel::CategoryMosaic), -1);
+    QCOMPARE(model.layerAt(250, 70, 0, ImageEditModel::CategoryDrawing), 1);
+    // 枠線の内側は選択されない
+    QCOMPARE(model.layerAt(60, 35, 0, ImageEditModel::CategoryDrawing), -1);
+
+    // 直線の端点
+    model.setLayerPoints(1, QVariantList() << QPointF(200, 20), false);
+    QCOMPARE(model.layerCount(), 3);
+    model.selectLayer(1);
+    QCOMPARE(model.selectedLayerRect(), QRectF(200, 20, 100, 100));
+    model.setLayerPoints(1, QVariantList() << QPointF(210, 20) << QPointF(310, 120), false);
+    QCOMPARE(model.selectedLayerRect(), QRectF(210, 20, 100, 100));
+    // 移動は矩形で
+    model.setLayerRect(1, 220, 30, 100, 100);
+    QCOMPARE(model.selectedLayerPoints(), QVariantList() << QPointF(220, 30) << QPointF(320, 130));
+
+    // 色・太さ・塗りつぶし
+    model.selectLayer(0);
+    model.setLayerColor(0, QColor(0, 255, 0));
+    QCOMPARE(model.selectedLayerColor(), QColor(0, 255, 0));
+    model.setLayerColor(0, QColor());
+    QCOMPARE(model.selectedLayerColor(), QColor(0, 255, 0));
+    model.setLayerLineWidth(0, 30);
+    QCOMPARE(model.selectedLayerLineWidth(), 20);
+    model.setLayerFill(0, true);
+    QVERIFY(model.selectedLayerFill());
+    model.undo();
+    model.undo();
+    model.undo();
+    QCOMPARE(model.selectedLayerColor(), blue);
+    QCOMPARE(model.selectedLayerLineWidth(), 4);
+    QVERIFY(!model.selectedLayerFill());
+
+    // フリー描画は追加から描き終わりまでで1回分の履歴
+    const int count = model.layerCount();
+    model.beginTransaction();
+    const int index = model.addFreehand(QVariantList() << QPointF(10, 150), blue, 2);
+    QCOMPARE(index, count);
+    QVariantList points;
+    points << QPointF(10, 150);
+    for (int i = 1; i <= 5; i++) {
+        points << QPointF(10 + i * 20, 150 + (i % 2) * 20);
+        model.setLayerPoints(index, points, true);
+    }
+    model.commitTransient();
+    QCOMPARE(model.layerCount(), count + 1);
+    QCOMPARE(model.selectedLayerPoints().count(), 6);
+    QCOMPARE(model.selectedLayerRect(), QRectF(10, 150, 100, 20));
+    model.undo();
+    QCOMPARE(model.layerCount(), count);
+    model.redo();
+    QCOMPARE(model.layerCount(), count + 1);
+
+    // フリー描画の拡大縮小
+    model.selectLayer(index);
+    model.setLayerRect(index, 10, 150, 200, 40);
+    QCOMPARE(model.selectedLayerPoints().last().toPointF(), QPointF(210, 190));
+
+    // 回転で点も回転する（400x200 -> 200x400）
+    model.selectLayer(1);
+    model.rotateRight();
+    QCOMPARE(model.selectedLayerPoints(),
+             QVariantList() << QPointF(200 - 30, 220) << QPointF(200 - 130, 320));
+    model.rotateLeft();
+    QCOMPARE(model.selectedLayerPoints(), QVariantList() << QPointF(220, 30) << QPointF(320, 130));
+
+    // 書き出しに描画が反映される
+    model.resetAll();
+    QVERIFY(model.addShape(ImageEditModel::TypeRectangle, 100, 50, 200, 100, QColor(255, 0, 0), 5,
+                           true)
+            >= 0);
+    const QString exported = QUrl(model.exportImage(m_tempDir.path())).toLocalFile();
+    const QImage result(exported);
+    QVERIFY(isReddish(result.pixelColor(200, 100)));
+    QVERIFY(!isReddish(result.pixelColor(50, 20)));
     QFile::remove(exported);
 }
 
