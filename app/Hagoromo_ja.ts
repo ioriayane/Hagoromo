@@ -3001,6 +3001,11 @@ Please recreate AppPassword in the official application.</source>
         <source>Archived from %s</source>
         <translation>%s のアーカイブ</translation>
     </message>
+    <message>
+        <location filename="qml/view/PostThreadView.qml" line="258"/>
+        <source>%1 views</source>
+        <translation>閲覧数 %1</translation>
+    </message>
 </context>
 <context>
     <name>ProfileLinkDialog</name>
@@ -4996,7 +5001,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="359"/>
+        <location filename="qtquick/timeline/timelinelistmodel.cpp" line="361"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>

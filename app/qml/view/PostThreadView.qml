@@ -254,6 +254,9 @@ ColumnLayout {
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
                 postInformation.createdAtLongLabel.text: (model.isArchived && model.createdAt.length > 0) ? qsTr("Archived from %s").replace("%s", model.createdAt) : ""
                 postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
+                postInformation.viewCountLabel.text: (postInformation.visible && model.viewCount > 0)
+                                                     ? qsTr("%1 views").arg(Number(model.viewCount).toLocaleString(Qt.locale(), 'f', 0))
+                                                     : ""
                 postInformation.viaTagLabel.text: (postInformation.visible && model.via.length > 0) ? ("via:" + model.via) : ""
 
                 postControls.repostCount: model.repostCount
