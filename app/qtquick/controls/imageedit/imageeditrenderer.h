@@ -18,6 +18,7 @@ struct ImageEditLayer
         DrawRectangle = 2,
         DrawEllipse = 3,
         Freehand = 4,
+        Stamp = 5,
     };
     enum Shape {
         Rectangle = 0,
@@ -26,14 +27,20 @@ struct ImageEditLayer
 
     int type = Mosaic;
     int shape = Rectangle; // Mosaicの形
-    QRect rect; // Mosaic, DrawRectangle, DrawEllipse
+    QRect rect; // Mosaic, DrawRectangle, DrawEllipse, Stamp
     int strength = 5; // Mosaicの粗さ（1〜10）
     QList<QPointF> points; // Line（2点）, Freehand
     QColor color = QColor(Qt::red); // Line, DrawRectangle, DrawEllipse, Freehand
     int lineWidth = 3; // 線の太さ（1〜20）
     bool fill = false; // DrawRectangle, DrawEllipse
+    QString stampPath; // Stampの画像ファイル
+    QImage stampImage; // Stampの画像（stampPathから読み込んだもの。比較には使わない）
+    int opacity = 100; // Stampの不透明度（10〜100）
 
-    bool isDrawing() const { return type != Mosaic; }
+    bool isDrawing() const
+    {
+        return type == Line || type == DrawRectangle || type == DrawEllipse || type == Freehand;
+    }
     bool isPointBased() const { return type == Line || type == Freehand; }
     // 範囲（回転後の原寸座標）。点で表すレイヤーは点を囲む矩形
     QRectF bounds() const;
@@ -42,7 +49,8 @@ struct ImageEditLayer
     {
         return type == other.type && shape == other.shape && rect == other.rect
                 && strength == other.strength && points == other.points && color == other.color
-                && lineWidth == other.lineWidth && fill == other.fill;
+                && lineWidth == other.lineWidth && fill == other.fill
+                && stampPath == other.stampPath && opacity == other.opacity;
     }
     bool operator!=(const ImageEditLayer &other) const { return !(*this == other); }
 };

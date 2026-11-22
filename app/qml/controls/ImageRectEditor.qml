@@ -18,6 +18,8 @@ Item {
     property real boundsHeight: 0
     property bool showGrid: false
     property color frameColor: "white"
+    // 縦横比を保ってリサイズする（四隅のハンドルのみ）
+    property bool keepAspect: false
     readonly property bool dragging: moveArea.pressed || handleRepeater.pressedCount > 0
 
     // ドラッグ中に矩形が変わったとき
@@ -98,6 +100,7 @@ Item {
         ]
         Rectangle {
             required property var modelData
+            visible: !editor.keepAspect || (modelData.px !== 0.5 && modelData.py !== 0.5)
             x: editor.viewLeft + (editor.viewRight - editor.viewLeft) * modelData.px - width / 2
             y: editor.viewTop + (editor.viewBottom - editor.viewTop) * modelData.py - height / 2
             width: editor.handleSize
@@ -145,6 +148,29 @@ Item {
             var x2 = startRect.x + startRect.width
             var y2 = startRect.y + startRect.height
             var min = Math.min(editor.minLength, editor.boundsWidth, editor.boundsHeight)
+            if(editor.keepAspect && !moveAll && (edgeLeft || edgeRight) && (edgeTop || edgeBottom) &&
+                    startRect.width > 0 && startRect.height > 0){
+                // 反対側の角を固定して、横方向の移動量で大きさを決める
+                var ratio = startRect.width / startRect.height
+                var ax = edgeRight ? startRect.x : startRect.x + startRect.width
+                var ay = edgeBottom ? startRect.y : startRect.y + startRect.height
+                var w = edgeRight ? startRect.width + dx : startRect.width - dx
+                w = Math.max(min * Math.max(1, ratio), w)
+                var h = w / ratio
+                var max_w = edgeRight ? editor.boundsWidth - ax : ax
+                var max_h = edgeBottom ? editor.boundsHeight - ay : ay
+                if(w > max_w){
+                    w = max_w
+                    h = w / ratio
+                }
+                if(h > max_h){
+                    h = max_h
+                    w = h * ratio
+                }
+                editor.setRect(edgeRight ? ax : ax - w, edgeBottom ? ay : ay - h, w, h)
+                editor.changing()
+                return
+            }
             if(moveAll){
                 x1 = Math.max(0, Math.min(startRect.x + dx, editor.boundsWidth - startRect.width))
                 y1 = Math.max(0, Math.min(startRect.y + dy, editor.boundsHeight - startRect.height))

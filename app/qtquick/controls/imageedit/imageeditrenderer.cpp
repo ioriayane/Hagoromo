@@ -152,6 +152,17 @@ qreal ImageEditRenderer::lineWidthPixels(int line_width, int long_edge)
 void ImageEditRenderer::drawLayer(QImage &image, const ImageEditLayer &layer, qreal scale,
                                   int long_edge)
 {
+    if (layer.type == ImageEditLayer::Stamp) {
+        if (layer.stampImage.isNull())
+            return;
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        painter.setOpacity(qBound(10, layer.opacity, 100) / 100.0);
+        const QRectF target(layer.rect.x() * scale, layer.rect.y() * scale,
+                            layer.rect.width() * scale, layer.rect.height() * scale);
+        painter.drawImage(target, layer.stampImage);
+        return;
+    }
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing, true);
     QPen pen(layer.color);

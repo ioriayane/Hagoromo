@@ -13,6 +13,7 @@
 #include "controls/embedimagelistmodel.h"
 #include "controls/imageedit/imageeditmodel.h"
 #include "controls/imageedit/imageeditrenderer.h"
+#include "controls/imageedit/stamphistorymodel.h"
 
 class imageedit_test : public QObject
 {
@@ -35,6 +36,8 @@ private slots:
     void test_ImageEditModel_layers();
     void test_ImageEditRenderer_drawing();
     void test_ImageEditModel_drawing();
+    void test_ImageEditModel_stamp();
+    void test_StampHistoryModel();
     void test_EmbedImageListModel_editedFiles();
 
 private:
@@ -700,6 +703,179 @@ void imageedit_test::test_ImageEditModel_drawing()
     QVERIFY(isReddish(result.pixelColor(200, 100)));
     QVERIFY(!isReddish(result.pixelColor(50, 20)));
     QFile::remove(exported);
+}
+
+void imageedit_test::test_ImageEditModel_stamp()
+{
+    const QString path = m_tempDir.filePath("stamp_base.png");
+    QImage white(400, 200, QImage::Format_RGB32);
+    white.fill(Qt::white);
+    QVERIFY(white.save(path, "PNG"));
+
+    // 左半分が赤・右半分が透明のスタンプ（40x20）
+    QImage logo(40, 20, QImage::Format_ARGB32);
+    logo.fill(Qt::transparent);
+    {
+        QPainter painter(&logo);
+        painter.fillRect(QRect(0, 0, 20, 20), QColor(255, 0, 0));
+    }
+    const QString logo_path = m_tempDir.filePath("logo.png");
+    QVERIFY(logo.save(logo_path, "PNG"));
+    const QString logo_url = QUrl::fromLocalFile(logo_path).toString();
+
+    ImageEditModel model;
+    model.setSource(QUrl::fromLocalFile(path).toString());
+    QCOMPARE(model.addStamp(QUrl::fromLocalFile(m_tempDir.filePath("none.png")).toString(), 100,
+                            100, 80),
+             -1);
+    // 長辺80で縦横比を保つ
+    QCOMPARE(model.addStamp(logo_url, 100, 100, 80), 0);
+    QCOMPARE(model.selectedLayerType(), static_cast<int>(ImageEditModel::TypeStamp));
+    QCOMPARE(model.selectedLayerRect(), QRectF(60, 80, 80, 40));
+    QCOMPARE(model.selectedLayerOpacity(), 100);
+    QCOMPARE(model.layerAt(100, 100, 0, ImageEditModel::CategoryStamp), 0);
+    QCOMPARE(model.layerAt(100, 100, 0, ImageEditModel::CategoryDrawing), -1);
+    QCOMPARE(model.layerAt(100, 100, 0, ImageEditModel::CategoryMosaic), -1);
+
+    // 書き出し（透明部分は下の画像が見える）
+    {
+        const QString exported = QUrl(model.exportImage(m_tempDir.path())).toLocalFile();
+        const QImage result(exported);
+        QVERIFY(isReddish(result.pixelColor(80, 100)));
+        const QColor c = result.pixelColor(120, 100);
+        QVERIFY(c.red() > 240 && c.green() > 240 && c.blue() > 240);
+        QFile::remove(exported);
+    }
+
+    // 不透明度
+    model.setLayerOpacity(0, 5);
+    QCOMPARE(model.selectedLayerOpacity(), 10);
+    model.setLayerOpacity(0, 50);
+    QCOMPARE(model.selectedLayerOpacity(), 50);
+    {
+        const QString exported = QUrl(model.exportImage(m_tempDir.path())).toLocalFile();
+        const QColor c = QImage(exported).pixelColor(80, 100);
+        QVERIFY(c.red() > 240 && c.green() > 100 && c.green() < 160);
+        QFile::remove(exported);
+    }
+    model.undo();
+    QCOMPARE(model.selectedLayerOpacity(), 10);
+
+    // 回転しても向きと大きさは変わらず位置だけ回転する（400x200 -> 200x400）
+    model.rotateRight();
+    QCOMPARE(model.selectedLayerRect(), QRectF(200 - 100 - 40, 100 - 20, 80, 40));
+    model.rotateLeft();
+    QCOMPARE(model.selectedLayerRect(), QRectF(60, 80, 80, 40));
+
+    // 元のファイルが消えても描画できる（読み込み済み）
+    QVERIFY(QFile::remove(logo_path));
+    model.setLayerOpacity(0, 100);
+    {
+        const QString exported = QUrl(model.exportImage(m_tempDir.path())).toLocalFile();
+        QVERIFY(isReddish(QImage(exported).pixelColor(80, 100)));
+        QFile::remove(exported);
+    }
+}
+
+void imageedit_test::test_StampHistoryModel()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString folder = dir.filePath("stamps");
+
+    // 色ごとに内容の異なる画像を作る
+    auto makeImage = [&dir](int n) -> QString {
+        QImage image(10, 10, QImage::Format_ARGB32);
+        image.fill(QColor(n * 10 % 256, n * 3 % 256, 100, 200));
+        const QString path = dir.filePath(QString("src%1.png").arg(n));
+        image.save(path, "PNG");
+        return QUrl::fromLocalFile(path).toString();
+    };
+
+    StampHistoryModel model;
+    model.setFolder(folder);
+    QCOMPARE(model.count(), 0);
+    QCOMPARE(model.maxHistory(), 20);
+    QCOMPARE(model.maxPinned(), 5);
+
+    QVERIFY(model.add(QUrl::fromLocalFile(dir.filePath("none.png")).toString()).isEmpty());
+    const QString id0 = model.add(makeImage(0));
+    QVERIFY(!id0.isEmpty());
+    QVERIFY(QFile::exists(QUrl(model.source(id0)).toLocalFile()));
+    // 同じ内容は同じID（重複しない）
+    const QString id0b = model.add(makeImage(0));
+    QCOMPARE(id0b, id0);
+    QCOMPARE(model.count(), 1);
+    // コピーなので元のファイルが消えても使える
+    QVERIFY(QFile::remove(dir.filePath("src0.png")));
+    QVERIFY(QFile::exists(QUrl(model.source(id0)).toLocalFile()));
+
+    // 新しい順
+    QStringList ids;
+    ids << id0;
+    for (int i = 1; i < 8; i++) {
+        ids << model.add(makeImage(i));
+    }
+    QCOMPARE(model.count(), 8);
+    QCOMPARE(model.item(0, StampHistoryModel::IdRole).toString(), ids.at(7));
+    model.touch(id0);
+    QCOMPARE(model.item(0, StampHistoryModel::IdRole).toString(), id0);
+
+    // ピン止めは先頭に（ピン止めした順）、最大5個
+    QVERIFY(model.setPinned(ids.at(3), true));
+    QVERIFY(model.setPinned(ids.at(1), true));
+    QCOMPARE(model.item(0, StampHistoryModel::IdRole).toString(), ids.at(3));
+    QCOMPARE(model.item(1, StampHistoryModel::IdRole).toString(), ids.at(1));
+    QVERIFY(model.item(1, StampHistoryModel::PinnedRole).toBool());
+    QVERIFY(!model.item(2, StampHistoryModel::PinnedRole).toBool());
+    QVERIFY(model.setPinned(ids.at(2), true));
+    QVERIFY(model.setPinned(ids.at(4), true));
+    QVERIFY(model.setPinned(ids.at(5), true));
+    QCOMPARE(model.pinnedCount(), 5);
+    QVERIFY(!model.setPinned(ids.at(6), true));
+    QCOMPARE(model.pinnedCount(), 5);
+
+    // 履歴は20個まで。ピン止めは消えない
+    QStringList added;
+    for (int i = 100; i < 125; i++) {
+        added << model.add(makeImage(i));
+    }
+    QCOMPARE(model.pinnedCount(), 5);
+    QCOMPARE(model.count(), 25);
+    for (int i = 1; i <= 5; i++) {
+        QVERIFY(QFile::exists(QUrl(model.source(ids.at(i))).toLocalFile()));
+    }
+    // 古いものはファイルも削除される
+    QVERIFY(!QFile::exists(QUrl(model.source(ids.at(0))).toLocalFile()));
+    QVERIFY(!QFile::exists(QUrl(model.source(added.at(0))).toLocalFile()));
+    QVERIFY(QFile::exists(QUrl(model.source(added.last())).toLocalFile()));
+
+    // ピン止めを外すと履歴の先頭に入り、一番古い履歴が消える
+    const QString oldest = model.item(model.count() - 1, StampHistoryModel::IdRole).toString();
+    QVERIFY(model.setPinned(ids.at(3), false));
+    QCOMPARE(model.pinnedCount(), 4);
+    QCOMPARE(model.count(), 24);
+    QCOMPARE(model.item(4, StampHistoryModel::IdRole).toString(), ids.at(3));
+    QVERIFY(!QFile::exists(QUrl(model.source(oldest)).toLocalFile()));
+
+    // 削除
+    model.remove(ids.at(3));
+    QCOMPARE(model.count(), 23);
+    QVERIFY(!QFile::exists(QUrl(model.source(ids.at(3))).toLocalFile()));
+
+    // 保存した内容を読み込める
+    StampHistoryModel model2;
+    model2.setFolder(folder);
+    QCOMPARE(model2.count(), model.count());
+    QCOMPARE(model2.pinnedCount(), 4);
+    for (int i = 0; i < model.count(); i++) {
+        QCOMPARE(model2.item(i, StampHistoryModel::IdRole),
+                 model.item(i, StampHistoryModel::IdRole));
+    }
+    // 画像が消えたものは読み込まない
+    QVERIFY(QFile::remove(QUrl(model.source(ids.at(1))).toLocalFile()));
+    model2.load();
+    QCOMPARE(model2.count(), model.count() - 1);
 }
 
 QImage imageedit_test::makeGradientImage(int width, int height) const

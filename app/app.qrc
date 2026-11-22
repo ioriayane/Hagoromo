@@ -124,5 +124,6 @@
         <file>qml/images/gesture.png</file>
         <file>qml/images/palette.png</file>
         <file>qml/images/pen_size_2.png</file>
+        <file>qml/images/approval.png</file>
     </qresource>
 </RCC>

@@ -40,6 +40,7 @@ class ImageEditModel : public QObject
     Q_PROPERTY(int selectedLayerLineWidth READ selectedLayerLineWidth NOTIFY stateChanged FINAL)
     Q_PROPERTY(bool selectedLayerFill READ selectedLayerFill NOTIFY stateChanged FINAL)
     Q_PROPERTY(QVariantList selectedLayerPoints READ selectedLayerPoints NOTIFY stateChanged FINAL)
+    Q_PROPERTY(int selectedLayerOpacity READ selectedLayerOpacity NOTIFY stateChanged FINAL)
 
 public:
     explicit ImageEditModel(QObject *parent = nullptr);
@@ -55,6 +56,7 @@ public:
         TypeRectangle = ImageEditLayer::DrawRectangle,
         TypeEllipse = ImageEditLayer::DrawEllipse,
         TypeFreehand = ImageEditLayer::Freehand,
+        TypeStamp = ImageEditLayer::Stamp,
     };
     Q_ENUM(LayerType)
     // layerAt()で対象にするレイヤーの種類
@@ -62,6 +64,7 @@ public:
         CategoryAll = 0,
         CategoryMosaic = 1,
         CategoryDrawing = 2,
+        CategoryStamp = 3,
     };
     Q_ENUM(LayerCategory)
 
@@ -84,6 +87,9 @@ public:
                             int line_width);
     // フリー描画（点の配列）を追加して選択する。追加できなかったときは-1
     Q_INVOKABLE int addFreehand(const QVariantList &points, const QColor &color, int line_width);
+    // 画像（スタンプ）を追加して選択する。追加できなかったときは-1
+    // 中心と長辺の長さ（回転後の原寸座標）を指定し、縦横比は画像に合わせる
+    Q_INVOKABLE int addStamp(const QString &url, qreal center_x, qreal center_y, qreal max_length);
     // 指定位置（回転後の原寸座標）にある一番上のレイヤー。無ければ-1
     // tolerance: 線の判定の余裕（原寸座標）
     Q_INVOKABLE int layerAt(qreal x, qreal y, qreal tolerance = 0, int category = 0) const;
@@ -100,6 +106,7 @@ public:
     Q_INVOKABLE void setLayerColor(int index, const QColor &color);
     Q_INVOKABLE void setLayerLineWidth(int index, int line_width, bool transient = false);
     Q_INVOKABLE void setLayerFill(int index, bool fill);
+    Q_INVOKABLE void setLayerOpacity(int index, int opacity, bool transient = false);
     Q_INVOKABLE void removeLayer(int index);
     Q_INVOKABLE void commitTransient();
 
@@ -129,6 +136,7 @@ public:
     int selectedLayerLineWidth() const;
     bool selectedLayerFill() const;
     QVariantList selectedLayerPoints() const;
+    int selectedLayerOpacity() const;
     QList<ImageEditLayer> layers() const;
 
     // 表示用（長辺を制限した縮小画像に回転とレイヤーを適用したもの）

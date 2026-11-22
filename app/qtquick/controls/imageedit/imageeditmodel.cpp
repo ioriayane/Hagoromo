@@ -151,14 +151,41 @@ int ImageEditModel::addFreehand(const QVariantList &points, const QColor &color,
     return addLayer(layer);
 }
 
+int ImageEditModel::addStamp(const QString &url, qreal center_x, qreal center_y, qreal max_length)
+{
+    if (!editable() || max_length <= 0)
+        return -1;
+    const QUrl stamp_url(url);
+    const QString path = stamp_url.isLocalFile() ? stamp_url.toLocalFile() : url;
+    const QImage image = ImageEditRenderer::load(path);
+    if (image.isNull())
+        return -1;
+
+    QSizeF size(image.size());
+    size.scale(max_length, max_length, Qt::KeepAspectRatio);
+    const QRect rect = validLayerRect(center_x - size.width() / 2, center_y - size.height() / 2,
+                                      size.width(), size.height());
+    if (rect.isNull())
+        return -1;
+
+    ImageEditLayer layer;
+    layer.type = ImageEditLayer::Stamp;
+    layer.rect = rect;
+    layer.stampPath = path;
+    layer.stampImage = image;
+    return addLayer(layer);
+}
+
 int ImageEditModel::layerAt(qreal x, qreal y, qreal tolerance, int category) const
 {
     const QPointF point(x, y);
     for (int i = m_state.layers.count() - 1; i >= 0; i--) {
         const ImageEditLayer &layer = m_state.layers.at(i);
-        if (category == CategoryMosaic && layer.isDrawing())
+        if (category == CategoryMosaic && layer.type != ImageEditLayer::Mosaic)
             continue;
         if (category == CategoryDrawing && !layer.isDrawing())
+            continue;
+        if (category == CategoryStamp && layer.type != ImageEditLayer::Stamp)
             continue;
         if (ImageEditRenderer::contains(layer, point, tolerance, longEdge())) {
             return i;
@@ -266,6 +293,15 @@ void ImageEditModel::setLayerFill(int index, bool fill)
     ImageEditState state = m_state;
     state.layers[index].fill = fill;
     applyEdit(state, false);
+}
+
+void ImageEditModel::setLayerOpacity(int index, int opacity, bool transient)
+{
+    if (index < 0 || index >= m_state.layers.count())
+        return;
+    ImageEditState state = m_state;
+    state.layers[index].opacity = qBound(10, opacity, 100);
+    applyEdit(state, transient);
 }
 
 void ImageEditModel::removeLayer(int index)
@@ -473,6 +509,12 @@ QVariantList ImageEditModel::selectedLayerPoints() const
     return points;
 }
 
+int ImageEditModel::selectedLayerOpacity() const
+{
+    const ImageEditLayer *layer = selectedLayerData();
+    return layer ? layer->opacity : -1;
+}
+
 QList<ImageEditLayer> ImageEditModel::layers() const
 {
     return m_state.layers;
@@ -560,6 +602,15 @@ void ImageEditModel::rotateState(bool clockwise)
             ImageEditRenderer::normalizeRotation(m_state.rotation + (clockwise ? 90 : -90));
     state.crop = ImageEditRenderer::rotateRect90(m_state.crop, size, clockwise);
     for (auto &layer : state.layers) {
+        if (layer.type == ImageEditLayer::Stamp) {
+            // スタンプは向きと大きさを保ったまま位置だけ回転する
+            const QPointF center =
+                    ImageEditRenderer::rotatePoint90(QRectF(layer.rect).center(), size, clockwise);
+            QRectF moved(layer.rect);
+            moved.moveCenter(center);
+            layer.rect.moveTo(qRound(moved.x()), qRound(moved.y()));
+            continue;
+        }
         layer.rect = ImageEditRenderer::rotateRect90(layer.rect, size, clockwise);
         for (auto &point : layer.points) {
             point = ImageEditRenderer::rotatePoint90(point, size, clockwise);

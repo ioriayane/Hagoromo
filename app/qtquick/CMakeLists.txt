@@ -55,6 +55,8 @@ add_library(HagoromoGuiLib STATIC
     controls/imageedit/imageeditmodel.h
     controls/imageedit/imageeditrenderer.cpp
     controls/imageedit/imageeditrenderer.h
+    controls/imageedit/stamphistorymodel.cpp
+    controls/imageedit/stamphistorymodel.h
     controls/languagelistmodel.cpp
     controls/languagelistmodel.h
     draft/draftlistmodel.cpp

@@ -6,6 +6,7 @@ import QtQuick.Dialogs as QD
 
 import tech.relog.hagoromo.controls.imageeditmodel 1.0
 import tech.relog.hagoromo.controls.imageeditcanvas 1.0
+import tech.relog.hagoromo.controls.stamphistorymodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -28,7 +29,7 @@ Dialog {
     property string embedAlt: ""
     // 編集して保存した画像のURL（編集していない場合は空）
     property string editedImage: ""
-    // 選択中のツール: "" / "crop" / "mosaic" / "draw"
+    // 選択中のツール: "" / "crop" / "mosaic" / "draw" / "stamp"
     property string tool: ""
     readonly property bool cropMode: tool === "crop"
     // 新しく追加するモザイクの設定
@@ -40,7 +41,10 @@ Dialog {
     property int drawLineWidth: 3
     property bool drawFill: false
     readonly property bool drawingSelected: imageEditModel.selectedLayer >= 0 &&
-                                            imageEditModel.selectedLayerType !== ImageEditModel.TypeMosaic
+                                            imageEditModel.selectedLayerType !== ImageEditModel.TypeMosaic &&
+                                            imageEditModel.selectedLayerType !== ImageEditModel.TypeStamp
+    readonly property bool stampSelected: imageEditModel.selectedLayer >= 0 &&
+                                          imageEditModel.selectedLayerType === ImageEditModel.TypeStamp
     // 選択中の描画、または新しく追加する描画の設定
     readonly property int currentDrawType: drawingSelected ? imageEditModel.selectedLayerType : drawType
     readonly property color currentDrawColor: drawingSelected ? imageEditModel.selectedLayerColor : drawColor
@@ -90,12 +94,40 @@ Dialog {
         }
     }
 
+    // 履歴の画像を表示範囲（クロップ後）に貼り付ける
+    // center_x, center_yを省略したときは表示範囲の中央
+    function placeStamp(stamp_id, center_x, center_y) {
+        var source = stampHistoryModel.source(stamp_id)
+        var r = imageEditModel.cropRect
+        var length = Math.min(r.width, r.height) * 0.3
+        if(center_x === undefined || center_y === undefined){
+            center_x = r.x + r.width / 2
+            center_y = r.y + r.height / 2
+        }
+        if(imageEditModel.addStamp(source, center_x, center_y, length) >= 0){
+            stampHistoryModel.touch(stamp_id)
+        }
+    }
+    // 画像ファイルを履歴に追加して貼り付ける
+    function addStampFile(url, center_x, center_y) {
+        var stamp_id = stampHistoryModel.add(url)
+        if(stamp_id.length === 0){
+            errorLabel.text = qsTr("Failed to load the image.")
+            errorLabel.visible = true
+            return
+        }
+        errorLabel.visible = false
+        imageEditDialog.placeStamp(stamp_id, center_x, center_y)
+    }
+
     onToolChanged: imageEditModel.selectedLayer = -1
     onOpened: {
         imageEditDialog.editedImage = ""
         imageEditDialog.tool = ""
         errorLabel.visible = false
         imageEditModel.source = imageEditDialog.embedImage
+        // 他のダイアログで更新されている場合があるので読み込み直す
+        stampHistoryModel.load()
         altTextArea.text = imageEditDialog.embedAlt
         altTextArea.forceActiveFocus()
     }
@@ -109,6 +141,15 @@ Dialog {
     }
     SystemTool {
         id: systemTool
+    }
+    StampHistoryModel {
+        id: stampHistoryModel
+    }
+    QD.FileDialog {
+        id: stampFileDialog
+        title: qsTr("Select an image to paste")
+        nameFilters: [qsTr("Image files") + " (*.png *.jpg *.jpeg *.gif)"]
+        onAccepted: imageEditDialog.addStampFile(selectedFile.toString())
     }
     SettingsC {
         category: "ImageEditDialog"
@@ -180,6 +221,17 @@ Dialog {
                 ToolTip.visible: hovered
                 ToolTip.delay: 500
                 ToolTip.text: qsTr("Draw")
+            }
+            IconButton {
+                enabled: imageEditModel.editable
+                iconSource: "../images/approval.png"
+                iconSize: AdjustedValues.i18
+                flat: true
+                foreground: imageEditDialog.tool === "stamp" ? Material.accent : Material.foreground
+                onClicked: imageEditDialog.toggleTool("stamp")
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                ToolTip.text: qsTr("Stamp")
             }
             IconButton {
                 enabled: imageEditModel.editable
@@ -269,16 +321,32 @@ Dialog {
                 }
                 ImageLayerOverlay {
                     anchors.fill: parent
-                    visible: imageEditDialog.tool === "mosaic" || imageEditDialog.tool === "draw"
+                    visible: imageEditDialog.tool === "mosaic" || imageEditDialog.tool === "draw" ||
+                             imageEditDialog.tool === "stamp"
                     canvas: imageEditCanvas
                     editModel: imageEditModel
-                    mode: imageEditDialog.tool === "draw" ? "draw" : "mosaic"
+                    mode: imageEditDialog.tool === "crop" ? "mosaic" : imageEditDialog.tool
                     newLayerShape: imageEditDialog.mosaicShape
                     newLayerStrength: imageEditDialog.mosaicStrength
                     drawType: imageEditDialog.drawType
                     drawColor: imageEditDialog.drawColor
                     drawLineWidth: imageEditDialog.drawLineWidth
                     drawFill: imageEditDialog.drawFill
+                }
+                // 画像ファイルのドロップで貼り付け
+                DropArea {
+                    anchors.fill: parent
+                    enabled: imageEditModel.editable
+                    onEntered: (drag) => drag.accept(Qt.CopyAction)
+                    onDropped: (drop) => {
+                        if(!drop.hasUrls || drop.urls.length === 0){
+                            return
+                        }
+                        drop.accept(Qt.CopyAction)
+                        imageEditDialog.tool = "stamp"
+                        var p = imageEditCanvas.mapToImage(drop.x, drop.y)
+                        imageEditDialog.addStampFile(drop.urls[0].toString(), p.x, p.y)
+                    }
                 }
             }
 
@@ -500,6 +568,102 @@ Dialog {
                     Layout.preferredWidth: 1
                 }
             }
+
+            // スタンプの設定
+            ColumnLayout {
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.maximumWidth: 200 * AdjustedValues.ratio
+                Layout.fillHeight: true
+                visible: imageEditDialog.tool === "stamp"
+                spacing: 5 * AdjustedValues.ratio
+
+                Label {
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Stamp")
+                }
+                Label {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    font.pointSize: AdjustedValues.f8
+                    color: Material.color(Material.Grey)
+                    text: qsTr("Click an image to paste it. You can also drop an image file onto the picture.")
+                }
+                Button {
+                    flat: true
+                    font.pointSize: AdjustedValues.f8
+                    icon.source: "../images/add_image.png"
+                    text: qsTr("Add image")
+                    onClicked: stampFileDialog.open()
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Pinned") + " (" + stampHistoryModel.pinnedCount + "/" + stampHistoryModel.maxPinned + ")"
+                }
+                Flow {
+                    Layout.fillWidth: true
+                    spacing: 4 * AdjustedValues.ratio
+                    Repeater {
+                        model: stampHistoryModel
+                        StampThumbnail {
+                            visible: pinned
+                        }
+                    }
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("History")
+                }
+                ScrollView {
+                    id: stampHistoryScroll
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.minimumHeight: 60 * AdjustedValues.ratio
+                    clip: true
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                    Flow {
+                        width: stampHistoryScroll.availableWidth
+                        spacing: 4 * AdjustedValues.ratio
+                        Repeater {
+                            model: stampHistoryModel
+                            StampThumbnail {
+                                visible: !pinned
+                            }
+                        }
+                    }
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    visible: imageEditDialog.stampSelected
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Opacity") + " : " + stampOpacitySlider.value + "%"
+                }
+                Slider {
+                    id: stampOpacitySlider
+                    Layout.fillWidth: true
+                    visible: imageEditDialog.stampSelected
+                    from: 10
+                    to: 100
+                    stepSize: 5
+                    snapMode: Slider.SnapAlways
+                    value: imageEditDialog.stampSelected ? imageEditModel.selectedLayerOpacity : 100
+                    onMoved: imageEditModel.setLayerOpacity(imageEditModel.selectedLayer, value, pressed)
+                    onPressedChanged: {
+                        if(!pressed){
+                            imageEditModel.commitTransient()
+                        }
+                    }
+                }
+                Button {
+                    enabled: imageEditDialog.stampSelected
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    icon.source: "../images/delete.png"
+                    text: qsTr("Delete stamp")
+                    onClicked: imageEditModel.removeLayer(imageEditModel.selectedLayer)
+                }
+            }
         }
 
         ScrollView {
@@ -534,7 +698,6 @@ Dialog {
                 visible: false
                 font.pointSize: AdjustedValues.f8
                 color: Material.color(Material.Red)
-                text: qsTr("Failed to save the edited image.")
             }
             Item {
                 Layout.fillWidth: true
@@ -554,6 +717,7 @@ Dialog {
                     if(imageEditModel.modified){
                         edited = imageEditModel.exportImage()
                         if(edited.length === 0){
+                            errorLabel.text = qsTr("Failed to save the edited image.")
                             errorLabel.visible = true
                             return
                         }
@@ -565,6 +729,97 @@ Dialog {
                     imageEditDialog.accept()
                 }
             }
+        }
+    }
+
+    // 履歴の画像（クリックで貼り付け、ピン止め、履歴から削除）
+    component StampThumbnail: Rectangle {
+        id: thumbnail
+        required property string stampId
+        required property string source
+        required property bool pinned
+        width: 56 * AdjustedValues.ratio
+        height: width
+        radius: 3
+        color: Material.theme === Material.Dark ? "#30ffffff" : "#20000000"
+        border.width: 1
+        border.color: hoverHandler.hovered ? Material.accent : "transparent"
+
+        HoverHandler {
+            id: hoverHandler
+        }
+        Image {
+            anchors.fill: parent
+            anchors.margins: 4
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: 112
+            sourceSize.height: 112
+            asynchronous: true
+            source: thumbnail.source
+        }
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: imageEditDialog.placeStamp(thumbnail.stampId)
+        }
+        ThumbnailButton {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            visible: thumbnail.pinned || hoverHandler.hovered
+            readonly property bool available: thumbnail.pinned || stampHistoryModel.pinnedCount < stampHistoryModel.maxPinned
+            dimmed: !available
+            iconSource: "../images/pin.png"
+            iconColor: thumbnail.pinned ? Material.accent : "white"
+            toolTipText: thumbnail.pinned ? qsTr("Unpin") :
+                                            (available ? qsTr("Pin") : qsTr("Up to %1 images can be pinned.").arg(stampHistoryModel.maxPinned))
+            onClicked: {
+                if(available){
+                    stampHistoryModel.setPinned(thumbnail.stampId, !thumbnail.pinned)
+                }
+            }
+        }
+        ThumbnailButton {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            visible: hoverHandler.hovered
+            iconSource: "../images/close.png"
+            iconColor: "white"
+            toolTipText: qsTr("Remove from history")
+            onClicked: stampHistoryModel.remove(thumbnail.stampId)
+        }
+    }
+    component ThumbnailButton: Rectangle {
+        id: thumbnailButton
+        property alias iconSource: buttonIcon.source
+        property color iconColor: "white"
+        property string toolTipText: ""
+        property bool dimmed: false
+        signal clicked()
+        width: 20 * AdjustedValues.ratio
+        height: width
+        radius: width / 2
+        color: "#a0000000"
+        opacity: dimmed ? 0.5 : 1.0
+        Image {
+            id: buttonIcon
+            anchors.centerIn: parent
+            width: parent.width * 0.7
+            height: width
+            layer.enabled: true
+            layer.effect: ColorOverlayC {
+                color: thumbnailButton.iconColor
+            }
+        }
+        HoverHandler {
+            id: buttonHover
+        }
+        ToolTip.visible: buttonHover.hovered && toolTipText.length > 0
+        ToolTip.delay: 500
+        ToolTip.text: toolTipText
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: thumbnailButton.clicked()
         }
     }
 }

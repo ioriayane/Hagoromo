@@ -11,7 +11,7 @@ Item {
 
     property var canvas: null
     property var editModel: null
-    // "mosaic" / "draw"
+    // "mosaic" / "draw" / "stamp"
     property string mode: "mosaic"
     // 新しく追加するモザイクの設定
     property int newLayerShape: 0
@@ -60,7 +60,7 @@ Item {
         id: mouseArea
         anchors.fill: parent
         preventStealing: true
-        cursorShape: Qt.CrossCursor
+        cursorShape: overlay.mode === "stamp" ? Qt.ArrowCursor : Qt.CrossCursor
 
         property bool drawing: false
         property bool moving: false
@@ -88,7 +88,12 @@ Item {
             }
             var p = overlay.canvas.mapToImage(mouse.x, mouse.y)
             startPos = p
-            var category = overlay.mode === "draw" ? ImageEditModel.CategoryDrawing : ImageEditModel.CategoryMosaic
+            var category = ImageEditModel.CategoryMosaic
+            if(overlay.mode === "draw"){
+                category = ImageEditModel.CategoryDrawing
+            }else if(overlay.mode === "stamp"){
+                category = ImageEditModel.CategoryStamp
+            }
             var index = overlay.editModel.layerAt(p.x, p.y, overlay.tolerance, category)
             if(index >= 0){
                 overlay.editModel.selectedLayer = index
@@ -97,6 +102,10 @@ Item {
                 return
             }
             overlay.editModel.selectedLayer = -1
+            if(overlay.mode === "stamp"){
+                // スタンプはパネルから追加する
+                return
+            }
             drawing = true
             if(overlay.mode === "mosaic"){
                 band = Qt.rect(overlay.clampX(p.x), overlay.clampY(p.y), 0, 0)
@@ -211,6 +220,7 @@ Item {
         boundsWidth: overlay.imageWidth
         boundsHeight: overlay.imageHeight
         frameColor: Material.accent
+        keepAspect: overlay.editModel !== null && overlay.editModel.selectedLayerType === ImageEditModel.TypeStamp
         onChanging: {
             overlay.editModel.setLayerRect(overlay.editModel.selectedLayer,
                                            rectX, rectY, rectWidth, rectHeight, true)

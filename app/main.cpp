@@ -36,6 +36,7 @@
 #include "qtquick/controls/embedimagelistmodel.h"
 #include "qtquick/controls/imageedit/imageeditcanvas.h"
 #include "qtquick/controls/imageedit/imageeditmodel.h"
+#include "qtquick/controls/imageedit/stamphistorymodel.h"
 #include "qtquick/controls/emojilistmodel.h"
 #include "qtquick/controls/languagelistmodel.h"
 #include "qtquick/moderation/contentfiltersettinglistmodel.h"
@@ -205,6 +206,8 @@ int main(int argc, char *argv[])
                                     "ImageEditModel");
     qmlRegisterType<ImageEditCanvas>("tech.relog.hagoromo.controls.imageeditcanvas", 1, 0,
                                      "ImageEditCanvas");
+    qmlRegisterType<StampHistoryModel>("tech.relog.hagoromo.controls.stamphistorymodel", 1, 0,
+                                       "StampHistoryModel");
     qmlRegisterType<EmojiListModel>("tech.relog.hagoromo.controls.emojilistmodel", 1, 0,
                                     "EmojiListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.controls.languagelistmodel", 1, 0,
