@@ -12,6 +12,7 @@ ColumnLayout {
     property alias languagesLayout: languagesLayout
     property alias createdAtLongLabel: createdAtLongLabel
     property alias indexedAtLongLabel: indexedAtLongLabel
+    property alias viewCountLabel: viewCountLabel
     property alias viaTagLabel: viaTagLabel
 
     TagLabelLayout {
@@ -48,6 +49,13 @@ ColumnLayout {
     Label {
         id: indexedAtLongLabel
         Layout.topMargin: 5
+        visible: text.length > 0
+        font.pointSize: AdjustedValues.f8
+        color: Material.color(Material.Grey)
+    }
+    Label {
+        id: viewCountLabel
+        Layout.topMargin: 3
         visible: text.length > 0
         font.pointSize: AdjustedValues.f8
         color: Material.color(Material.Grey)
