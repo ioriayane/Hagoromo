@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Add
+  - Add view count to the post details viewer
 - Update
   - Changed the real-time feed to show only the most recent reposts of the same post
 - Fix
