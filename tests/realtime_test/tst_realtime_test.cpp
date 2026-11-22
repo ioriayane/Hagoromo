@@ -40,6 +40,7 @@ private slots:
     void test_RealtimeFeedListModel_recoverAfterError();
     void test_RealtimeFeedListModel_backfill();
     void test_RealtimeFeedListModel_retainedData();
+    void test_RealtimeFeedListModel_repostSamePost();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
     void test_EditSelectorListModel_save();
@@ -50,6 +51,10 @@ private:
                                     const QJsonObject &record, const QDateTime &time) const;
     QJsonObject makeLikeData(const QString &subject_uri, const QString &subject_cid,
                              const QDateTime &time) const;
+    QJsonObject makeBackfillPostData(const QJsonObject &base, int index) const;
+    QJsonObject makeRepostData(const QString &repo, const QString &rkey, const QString &cid,
+                               const QString &subject_uri, const QString &subject_cid,
+                               const QDateTime &time) const;
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
     QJsonDocument loadJson(const QString &path);
 
@@ -748,15 +753,21 @@ void realtime_test::test_RealtimeFeedListModel_backfill()
     QCOMPARE(model.running(), false);
 
     // 追いつくまでは取得せずに溜めておく
+    // (getPostsのレスポンスには受信する150件すべてのポストが含まれている)
     recv->testSetCatchingUp(true);
     QCOMPARE(model.running(), true);
     const QJsonDocument json_doc = loadJson(":/data/realtimemodel/recv_data_1.json");
     QVERIFY(json_doc.isObject());
     for (int i = 0; i < 150; i++) {
-        recv->testReceived(json_doc.object());
+        recv->testReceived(makeBackfillPostData(json_doc.object(), i));
     }
     QTest::qWait(500);
     QCOMPARE(model.rowCount(), 0);
+
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/5", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    model.setAccount(uuid);
 
     // 追いついたら新しいものから上限件数まで取得する
     recv->testSetCatchingUp(false);
@@ -764,6 +775,10 @@ void realtime_test::test_RealtimeFeedListModel_backfill()
     QTRY_COMPARE_WITH_TIMEOUT(model.rowCount(), 100, 10 * 1000);
     QTest::qWait(500);
     QCOMPARE(model.rowCount(), 100);
+    QCOMPARE(model.item(0, TimelineListModel::CidRole).toString(), "bafyreibackfill149");
+    QCOMPARE(model.item(0, TimelineListModel::RecordTextPlainRole).toString(), "backfill 149");
+    QCOMPARE(model.item(99, TimelineListModel::CidRole).toString(), "bafyreibackfill050");
+    QCOMPARE(model.item(99, TimelineListModel::RecordTextPlainRole).toString(), "backfill 50");
 
     recv->testResetCursorState();
 }
@@ -816,6 +831,102 @@ void realtime_test::test_RealtimeFeedListModel_retainedData()
     QCOMPARE(recv->getSelector(&model)->backfillPending(), false);
 
     recv->testClearRetainedEvents();
+}
+
+void realtime_test::test_RealtimeFeedListModel_repostSamePost()
+{
+    // 同じポストを複数のユーザーがリポストしたときはTimelineListModelと同様に
+    // 1行だけ表示し、後からリポストしたユーザーの情報で先頭へ移動する
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    recv->testResetCursorState();
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
+    RealtimeFeedListModel model;
+    model.setAccount(uuid);
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+        QCOMPARE(spy.count(), 2);
+    }
+    QCOMPARE(recv->selectorIsReady(&model), true);
+
+    const QString post_uri =
+            "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.feed.post/3kxfojryix22r";
+    const QString post_cid = "bafyreiadfsi4feaygror6ekk5j7mlhquau7zbf3jlxasmjjcsdjs75zbjq";
+    const QString uuid_1 = uuid;
+    const QString uuid_2 = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/2", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    const QDateTime now = QDateTime::currentDateTimeUtc();
+
+    // Bがリポスト
+    model.setAccount(uuid_2);
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(makeRepostData("did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "3kxqbv4cbm32k",
+                                          "bafyreirepostb", post_uri, post_cid, now));
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+    }
+    QCOMPARE(model.rowCount(), 1);
+    QCOMPARE(model.item(0, TimelineListModel::CidRole).toString(), post_cid);
+    QCOMPARE(model.item(0, TimelineListModel::IsRepostedByRole).toBool(), true);
+    const QString handle_b = model.item(0, TimelineListModel::RepostedByHandleRole).toString();
+    QVERIFY(!handle_b.isEmpty());
+
+    // 別のポストを受信
+    model.setAccount(uuid_1);
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(loadJson(":/data/realtimemodel/recv_data_1.json").object());
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+    }
+    QCOMPARE(model.rowCount(), 2);
+    QCOMPARE(model.item(1, TimelineListModel::CidRole).toString(), post_cid);
+
+    // Cがリポスト -> 行は増えずに先頭へ移動してCのリポストになる
+    model.setAccount(uuid_2);
+    {
+        QSignalSpy spy_insert(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        QSignalSpy spy_move(
+                &model, SIGNAL(rowsMoved(const QModelIndex &, int, int, const QModelIndex &, int)));
+        recv->testReceived(makeRepostData("did:plc:ipj5qejfoqu6eukvt72uhyit", "3kxqbv4cbm33k",
+                                          "bafyreirepostc", post_uri, post_cid, now.addSecs(1)));
+        spy_move.wait();
+        QCOMPARE(spy_move.count(), 1);
+        QCOMPARE(spy_insert.count(), 0);
+    }
+    QCOMPARE(model.rowCount(), 2);
+    QCOMPARE(model.item(0, TimelineListModel::CidRole).toString(), post_cid);
+    QCOMPARE(model.item(0, TimelineListModel::IsRepostedByRole).toBool(), true);
+    QCOMPARE(model.item(0, TimelineListModel::RepostedByHandleRole).toString(),
+             "ioriayane.relog.tech");
+    QCOMPARE(model.item(1, TimelineListModel::CidRole).toString(),
+             "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
+
+    // 表示対象外のリポスト(セルフリポスト)は表示中のCのリポストを維持する
+    model.setVisibleRepostOfOwn(false);
+    {
+        QSignalSpy spy(
+                &model,
+                SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QList<int> &)));
+        recv->testReceived(makeRepostData("did:plc:73l5atmh7p3fn3xigbp6ao5x", "3kxqbv4cbm34k",
+                                          "bafyreirepostself", post_uri, post_cid, now.addSecs(2)));
+        spy.wait();
+        QVERIFY(spy.count() >= 1);
+    }
+    QCOMPARE(model.rowCount(), 2);
+    QCOMPARE(model.item(0, TimelineListModel::CidRole).toString(), post_cid);
+    QCOMPARE(model.item(0, TimelineListModel::RepostedByHandleRole).toString(),
+             "ioriayane.relog.tech");
+
+    recv->removeSelector(&model);
 }
 
 void realtime_test::test_EditSelectorListModel()
@@ -1158,6 +1269,75 @@ QJsonObject realtime_test::makeLikeData(const QString &subject_uri, const QStrin
     subject.insert("cid", subject_cid);
     QJsonObject value;
     value.insert("$type", "app.bsky.feed.like");
+    value.insert("createdAt", time.toString(Qt::ISODateWithMs));
+    value.insert("subject", subject);
+    QJsonObject block;
+    block.insert("cid", cid);
+    block.insert("uri", QString("at://%1/%2").arg(repo, path));
+    block.insert("value", value);
+    QJsonArray blocks;
+    blocks.append(block);
+
+    QJsonObject op_cid;
+    op_cid.insert("$link", cid);
+    QJsonObject op;
+    op.insert("action", "create");
+    op.insert("cid", op_cid);
+    op.insert("path", path);
+    QJsonArray ops;
+    ops.append(op);
+
+    QJsonObject json;
+    json.insert("repo", repo);
+    json.insert("time", time.toString(Qt::ISODateWithMs));
+    json.insert("blocks", blocks);
+    json.insert("ops", ops);
+    return json;
+}
+
+QJsonObject realtime_test::makeBackfillPostData(const QJsonObject &base, int index) const
+{
+    // recv_data_1.jsonを元にリプライではない別々のポストを作る
+    const QString repo = base.value("repo").toString();
+    const QString rkey = QString("3kxbackfill%1").arg(index, 3, 10, QChar('0'));
+    const QString cid = QString("bafyreibackfill%1").arg(index, 3, 10, QChar('0'));
+    const QString path = "app.bsky.feed.post/" + rkey;
+
+    QJsonObject block = base.value("blocks").toArray().first().toObject();
+    QJsonObject value = block.value("value").toObject();
+    value.remove("reply");
+    value.insert("text", QString("backfill %1").arg(index));
+    block.insert("cid", cid);
+    block.insert("uri", QString("at://%1/%2").arg(repo, path));
+    block.insert("value", value);
+    QJsonArray blocks;
+    blocks.append(block);
+
+    QJsonObject op = base.value("ops").toArray().first().toObject();
+    QJsonObject op_cid;
+    op_cid.insert("$link", cid);
+    op.insert("cid", op_cid);
+    op.insert("path", path);
+    QJsonArray ops;
+    ops.append(op);
+
+    QJsonObject json = base;
+    json.insert("blocks", blocks);
+    json.insert("ops", ops);
+    return json;
+}
+
+QJsonObject realtime_test::makeRepostData(const QString &repo, const QString &rkey,
+                                          const QString &cid, const QString &subject_uri,
+                                          const QString &subject_cid, const QDateTime &time) const
+{
+    const QString path = "app.bsky.feed.repost/" + rkey;
+
+    QJsonObject subject;
+    subject.insert("uri", subject_uri);
+    subject.insert("cid", subject_cid);
+    QJsonObject value;
+    value.insert("$type", "app.bsky.feed.repost");
     value.insert("createdAt", time.toString(Qt::ISODateWithMs));
     value.insert("subject", subject);
     QJsonObject block;
