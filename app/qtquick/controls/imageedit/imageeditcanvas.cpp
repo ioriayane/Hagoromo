@@ -113,6 +113,16 @@ qreal ImageEditCanvas::paintedScale() const
     return m_paintedScale;
 }
 
+qreal ImageEditCanvas::regionX() const
+{
+    return m_regionOrigin.x();
+}
+
+qreal ImageEditCanvas::regionY() const
+{
+    return m_regionOrigin.y();
+}
+
 void ImageEditCanvas::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
     QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
@@ -150,9 +160,11 @@ void ImageEditCanvas::updatePaintedGeometry()
                 QRectF(area.x() + (area.width() - size.width()) / 2,
                        area.y() + (area.height() - size.height()) / 2, size.width(), size.height());
     }
-    if (painted == m_paintedRect && qFuzzyCompare(scale, m_paintedScale))
+    if (painted == m_paintedRect && qFuzzyCompare(scale, m_paintedScale)
+        && region.topLeft() == m_regionOrigin)
         return;
     m_paintedRect = painted;
     m_paintedScale = scale;
+    m_regionOrigin = region.topLeft();
     emit paintedGeometryChanged();
 }

@@ -9,6 +9,7 @@ import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
+import "../compat"
 
 Dialog {
     id: imageEditDialog
@@ -26,18 +27,43 @@ Dialog {
     property string embedAlt: ""
     // 編集して保存した画像のURL（編集していない場合は空）
     property string editedImage: ""
-    property bool cropMode: false
+    // 選択中のツール: "" / "crop" / "mosaic"
+    property string tool: ""
+    readonly property bool cropMode: tool === "crop"
+    // 新しく追加するモザイクの設定
+    property int mosaicShape: ImageEditModel.ShapeRectangle
+    property int mosaicStrength: 5
 
+    function toggleTool(name) {
+        imageEditDialog.tool = (imageEditDialog.tool === name) ? "" : name
+    }
+    function currentMosaicShape() {
+        return imageEditModel.selectedLayer >= 0 ? imageEditModel.selectedLayerShape : imageEditDialog.mosaicShape
+    }
+    function setMosaicShape(shape) {
+        imageEditDialog.mosaicShape = shape
+        if(imageEditModel.selectedLayer >= 0){
+            imageEditModel.setLayerShape(imageEditModel.selectedLayer, shape)
+        }
+    }
+    function setMosaicStrength(strength, transient) {
+        imageEditDialog.mosaicStrength = strength
+        if(imageEditModel.selectedLayer >= 0){
+            imageEditModel.setLayerStrength(imageEditModel.selectedLayer, strength, transient)
+        }
+    }
+
+    onToolChanged: imageEditModel.selectedLayer = -1
     onOpened: {
         imageEditDialog.editedImage = ""
-        imageEditDialog.cropMode = false
+        imageEditDialog.tool = ""
         errorLabel.visible = false
         imageEditModel.source = imageEditDialog.embedImage
         altTextArea.text = imageEditDialog.embedAlt
         altTextArea.forceActiveFocus()
     }
     onClosed: {
-        imageEditDialog.cropMode = false
+        imageEditDialog.tool = ""
         imageEditModel.clear()
     }
 
@@ -46,6 +72,11 @@ Dialog {
     }
     SystemTool {
         id: systemTool
+    }
+    SettingsC {
+        category: "ImageEditDialog"
+        property alias mosaicShape: imageEditDialog.mosaicShape
+        property alias mosaicStrength: imageEditDialog.mosaicStrength
     }
 
     Shortcut {
@@ -57,6 +88,11 @@ Dialog {
         enabled: imageEditDialog.visible && !altTextArea.activeFocus && imageEditModel.canRedo
         sequences: [StandardKey.Redo]
         onActivated: imageEditModel.redo()
+    }
+    Shortcut {
+        enabled: imageEditDialog.visible && !altTextArea.activeFocus && imageEditModel.selectedLayer >= 0
+        sequences: [StandardKey.Delete, "Backspace"]
+        onActivated: imageEditModel.removeLayer(imageEditModel.selectedLayer)
     }
 
     ColumnLayout {
@@ -72,10 +108,21 @@ Dialog {
                 iconSize: AdjustedValues.i18
                 flat: true
                 foreground: imageEditDialog.cropMode ? Material.accent : Material.foreground
-                onClicked: imageEditDialog.cropMode = !imageEditDialog.cropMode
+                onClicked: imageEditDialog.toggleTool("crop")
                 ToolTip.visible: hovered
                 ToolTip.delay: 500
                 ToolTip.text: qsTr("Crop")
+            }
+            IconButton {
+                enabled: imageEditModel.editable
+                iconSource: "../images/blur_on.png"
+                iconSize: AdjustedValues.i18
+                flat: true
+                foreground: imageEditDialog.tool === "mosaic" ? Material.accent : Material.foreground
+                onClicked: imageEditDialog.toggleTool("mosaic")
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                ToolTip.text: qsTr("Mosaic")
             }
             IconButton {
                 enabled: imageEditModel.editable
@@ -140,23 +187,119 @@ Dialog {
             }
         }
 
-        Item {
+        RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true
+            spacing: 10 * AdjustedValues.ratio
 
-            ImageEditCanvas {
-                id: imageEditCanvas
-                anchors.fill: parent
-                editModel: imageEditModel
-                showWholeImage: imageEditDialog.cropMode
-                margin: imageEditDialog.cropMode ? 12 * AdjustedValues.ratio : 0
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                ImageEditCanvas {
+                    id: imageEditCanvas
+                    anchors.fill: parent
+                    editModel: imageEditModel
+                    showWholeImage: imageEditDialog.cropMode
+                    margin: imageEditDialog.cropMode ? 12 * AdjustedValues.ratio : 0
+                }
+                ImageCropOverlay {
+                    anchors.fill: parent
+                    visible: imageEditDialog.cropMode
+                    canvas: imageEditCanvas
+                    editModel: imageEditModel
+                }
+                ImageLayerOverlay {
+                    anchors.fill: parent
+                    visible: imageEditDialog.tool === "mosaic"
+                    canvas: imageEditCanvas
+                    editModel: imageEditModel
+                    newLayerShape: imageEditDialog.mosaicShape
+                    newLayerStrength: imageEditDialog.mosaicStrength
+                }
             }
-            ImageCropOverlay {
-                anchors.fill: parent
-                visible: imageEditDialog.cropMode
-                canvas: imageEditCanvas
-                editModel: imageEditModel
+
+            // ツールの設定
+            ColumnLayout {
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.maximumWidth: 200 * AdjustedValues.ratio
+                Layout.fillHeight: true
+                visible: imageEditDialog.tool === "mosaic"
+                spacing: 5 * AdjustedValues.ratio
+
+                Label {
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Mosaic")
+                }
+                Label {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    font.pointSize: AdjustedValues.f8
+                    color: Material.color(Material.Grey)
+                    text: qsTr("Drag on the image to add an area. Click an area to select it.")
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Shape")
+                }
+                RowLayout {
+                    spacing: 0
+                    IconButton {
+                        iconSource: "../images/rectangle.png"
+                        iconSize: AdjustedValues.i18
+                        flat: true
+                        foreground: imageEditDialog.currentMosaicShape() === ImageEditModel.ShapeRectangle ? Material.accent : Material.foreground
+                        onClicked: imageEditDialog.setMosaicShape(ImageEditModel.ShapeRectangle)
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        ToolTip.text: qsTr("Rectangle")
+                    }
+                    IconButton {
+                        iconSource: "../images/circle.png"
+                        iconSize: AdjustedValues.i18
+                        flat: true
+                        foreground: imageEditDialog.currentMosaicShape() === ImageEditModel.ShapeEllipse ? Material.accent : Material.foreground
+                        onClicked: imageEditDialog.setMosaicShape(ImageEditModel.ShapeEllipse)
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        ToolTip.text: qsTr("Ellipse")
+                    }
+                }
+                Label {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Coarseness") + " : " + mosaicStrengthSlider.value
+                }
+                Slider {
+                    id: mosaicStrengthSlider
+                    Layout.fillWidth: true
+                    from: 1
+                    to: 10
+                    stepSize: 1
+                    snapMode: Slider.SnapAlways
+                    value: imageEditModel.selectedLayer >= 0 ? imageEditModel.selectedLayerStrength : imageEditDialog.mosaicStrength
+                    onMoved: imageEditDialog.setMosaicStrength(value, pressed)
+                    onPressedChanged: {
+                        if(!pressed){
+                            imageEditModel.commitTransient()
+                        }
+                    }
+                }
+                Button {
+                    Layout.topMargin: 5 * AdjustedValues.ratio
+                    enabled: imageEditModel.selectedLayer >= 0
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    icon.source: "../images/delete.png"
+                    text: qsTr("Delete area")
+                    onClicked: imageEditModel.removeLayer(imageEditModel.selectedLayer)
+                }
+                Item {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 1
+                }
             }
         }
 
@@ -216,7 +359,7 @@ Dialog {
                             return
                         }
                     }
-                    imageEditDialog.cropMode = false
+                    imageEditDialog.tool = ""
                     imageEditDialog.editedImage = edited
                     imageEditDialog.embedAlt = altTextArea.text
                     altTextArea.text = ""

@@ -170,6 +170,8 @@ qt_add_qml_module(Hagoromo
         qml/controls/ClickableFrame.qml
         qml/controls/ImageWithIndicator.qml
         qml/controls/ImageCropOverlay.qml
+        qml/controls/ImageLayerOverlay.qml
+        qml/controls/ImageRectEditor.qml
         qml/controls/DragAndDropArea.qml
         qml/controls/IconButton.qml
         qml/controls/MoreButton.qml

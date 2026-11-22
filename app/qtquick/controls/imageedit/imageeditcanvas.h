@@ -24,6 +24,9 @@ class ImageEditCanvas : public QQuickPaintedItem
     Q_PROPERTY(qreal paintedWidth READ paintedWidth NOTIFY paintedGeometryChanged FINAL)
     Q_PROPERTY(qreal paintedHeight READ paintedHeight NOTIFY paintedGeometryChanged FINAL)
     Q_PROPERTY(qreal paintedScale READ paintedScale NOTIFY paintedGeometryChanged FINAL)
+    // 表示している範囲の原点（回転後の原寸画像座標）
+    Q_PROPERTY(qreal regionX READ regionX NOTIFY paintedGeometryChanged FINAL)
+    Q_PROPERTY(qreal regionY READ regionY NOTIFY paintedGeometryChanged FINAL)
 
 public:
     explicit ImageEditCanvas(QQuickItem *parent = nullptr);
@@ -45,6 +48,8 @@ public:
     qreal paintedWidth() const;
     qreal paintedHeight() const;
     qreal paintedScale() const;
+    qreal regionX() const;
+    qreal regionY() const;
 
 signals:
     void editModelChanged();
@@ -67,6 +72,7 @@ private:
     qreal m_margin;
     QRectF m_paintedRect;
     qreal m_paintedScale;
+    QPointF m_regionOrigin;
 };
 
 #endif // IMAGEEDITCANVAS_H

@@ -117,5 +117,8 @@
         <file>qml/images/rotate_left.png</file>
         <file>qml/images/rotate_right.png</file>
         <file>qml/images/undo.png</file>
+        <file>qml/images/blur_on.png</file>
+        <file>qml/images/circle.png</file>
+        <file>qml/images/rectangle.png</file>
     </qresource>
 </RCC>

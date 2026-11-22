@@ -31,11 +31,17 @@ private slots:
     void test_ImageEditRenderer_rotateRect90();
     void test_ImageEditModel_rotateAndCrop();
     void test_ImageEditModel_export();
+    void test_ImageEditRenderer_mosaic();
+    void test_ImageEditModel_layers();
     void test_EmbedImageListModel_editedFiles();
 
 private:
     // 左半分が赤、右半分が青の画像
     QImage makeHalfImage(int width, int height, QImage::Format format) const;
+    // 画素ごとに色が異なる画像
+    QImage makeGradientImage(int width, int height) const;
+    // 範囲内がすべて同じ色か
+    bool isUniform(const QImage &image, const QRect &rect) const;
     QByteArray makeExifSegment() const;
     QString compressSync(const QString &path, bool keep_format, QSize *size = nullptr) const;
     bool isReddish(const QColor &color) const;
@@ -351,6 +357,178 @@ void imageedit_test::test_EmbedImageListModel_editedFiles()
     }
     QVERIFY(!exists(edited4));
     QVERIFY(exists(original_url));
+}
+
+void imageedit_test::test_ImageEditRenderer_mosaic()
+{
+    QCOMPARE(ImageEditRenderer::mosaicBlockSize(5, 3000), 50);
+    QCOMPARE(ImageEditRenderer::mosaicBlockSize(10, 3000), 100);
+    QCOMPARE(ImageEditRenderer::mosaicBlockSize(1, 100), 4);
+    QCOMPARE(ImageEditRenderer::mosaicBlockSize(0, 3000), 10);
+    QCOMPARE(ImageEditRenderer::mosaicBlockSize(20, 3000), 100);
+
+    // 矩形
+    {
+        const QImage original = makeGradientImage(40, 40);
+        QImage image = original;
+        ImageEditRenderer::applyMosaic(image, QRectF(8, 8, 16, 16), ImageEditLayer::Rectangle, 8);
+        QVERIFY(isUniform(image, QRect(8, 8, 8, 8)));
+        QVERIFY(isUniform(image, QRect(16, 16, 8, 8)));
+        QVERIFY(image.pixelColor(8, 8) != image.pixelColor(16, 16));
+        QVERIFY(image.pixelColor(8, 8) != original.pixelColor(8, 8));
+        // 範囲外は変わらない
+        QCOMPARE(image.copy(0, 0, 40, 8), original.copy(0, 0, 40, 8));
+        QCOMPARE(image.copy(0, 24, 40, 16), original.copy(0, 24, 40, 16));
+        QCOMPARE(image.copy(0, 8, 8, 16), original.copy(0, 8, 8, 16));
+        QCOMPARE(image.copy(24, 8, 16, 16), original.copy(24, 8, 16, 16));
+    }
+    // 楕円
+    {
+        const QImage original = makeGradientImage(40, 40);
+        QImage image = original;
+        ImageEditRenderer::applyMosaic(image, QRectF(0, 0, 40, 40), ImageEditLayer::Ellipse, 4);
+        // 角は楕円の外なので変わらない
+        QCOMPARE(image.pixelColor(0, 0), original.pixelColor(0, 0));
+        QCOMPARE(image.pixelColor(39, 39), original.pixelColor(39, 39));
+        // 中央はモザイク
+        QVERIFY(isUniform(image, QRect(16, 16, 4, 4)));
+        QVERIFY(image.pixelColor(17, 17) != original.pixelColor(17, 17));
+    }
+    // 画像外にはみ出す範囲
+    {
+        QImage image = makeGradientImage(20, 20);
+        ImageEditRenderer::applyMosaic(image, QRectF(-10, -10, 20, 20), ImageEditLayer::Rectangle,
+                                       10);
+        QVERIFY(isUniform(image, QRect(0, 0, 10, 10)));
+    }
+
+    ImageEditLayer layer;
+    layer.rect = QRect(10, 10, 20, 10);
+    QVERIFY(ImageEditRenderer::contains(layer, QPointF(10, 10)));
+    QVERIFY(!ImageEditRenderer::contains(layer, QPointF(31, 15)));
+    layer.shape = ImageEditLayer::Ellipse;
+    QVERIFY(ImageEditRenderer::contains(layer, QPointF(20, 15)));
+    QVERIFY(!ImageEditRenderer::contains(layer, QPointF(11, 11)));
+}
+
+void imageedit_test::test_ImageEditModel_layers()
+{
+    const QString path = m_tempDir.filePath("layers.png");
+    QVERIFY(makeGradientImage(60, 40).save(path, "PNG"));
+
+    ImageEditModel model;
+    model.setSource(QUrl::fromLocalFile(path).toString());
+    QCOMPARE(model.layerCount(), 0);
+    QCOMPARE(model.selectedLayer(), -1);
+    const QImage before = model.previewImage();
+
+    // 小さすぎる範囲は追加しない
+    QCOMPARE(model.addMosaic(0, 0, 2, 2, ImageEditModel::ShapeRectangle, 5), -1);
+    QCOMPARE(model.layerCount(), 0);
+
+    QCOMPARE(model.addMosaic(10, 10, 20, 10, ImageEditModel::ShapeRectangle, 5), 0);
+    QCOMPARE(model.layerCount(), 1);
+    QCOMPARE(model.selectedLayer(), 0);
+    QCOMPARE(model.selectedLayerRect(), QRectF(10, 10, 20, 10));
+    QCOMPARE(model.selectedLayerShape(), static_cast<int>(ImageEditModel::ShapeRectangle));
+    QCOMPARE(model.selectedLayerStrength(), 5);
+    QVERIFY(model.modified());
+    QVERIFY(model.previewImage() != before);
+    QCOMPARE(model.layerAt(15, 15), 0);
+    QCOMPARE(model.layerAt(5, 5), -1);
+
+    // 重なっているときは上のレイヤー
+    QCOMPARE(model.addMosaic(20, 12, 20, 10, ImageEditModel::ShapeEllipse, 99), 1);
+    QCOMPARE(model.selectedLayerStrength(), 10);
+    QCOMPARE(model.layerAt(25, 15), 1);
+    QCOMPARE(model.layerAt(12, 15), 0);
+    model.selectLayer(5);
+    QCOMPARE(model.selectedLayer(), -1);
+    model.selectLayer(0);
+    QCOMPARE(model.selectedLayer(), 0);
+
+    // ドラッグ中の変更は1回分の履歴になる
+    model.setLayerRect(0, 11, 10, 20, 10, true);
+    model.setLayerRect(0, 12, 10, 20, 10, true);
+    model.setLayerRect(0, 13, 10, 20, 10, true);
+    QVERIFY(model.canUndo());
+    model.commitTransient();
+    QCOMPARE(model.selectedLayerRect(), QRectF(13, 10, 20, 10));
+    model.undo();
+    QCOMPARE(model.selectedLayerRect(), QRectF(10, 10, 20, 10));
+    QCOMPARE(model.layerCount(), 2);
+    model.redo();
+    QCOMPARE(model.selectedLayerRect(), QRectF(13, 10, 20, 10));
+
+    // 確定の変更（transient=false）でもまとめられる
+    model.setLayerStrength(0, 7, true);
+    model.setLayerStrength(0, 8, false);
+    QCOMPARE(model.selectedLayerStrength(), 8);
+    model.undo();
+    QCOMPARE(model.selectedLayerStrength(), 5);
+    model.redo();
+
+    model.setLayerShape(0, ImageEditModel::ShapeEllipse);
+    QCOMPARE(model.selectedLayerShape(), static_cast<int>(ImageEditModel::ShapeEllipse));
+    model.undo();
+    QCOMPARE(model.selectedLayerShape(), static_cast<int>(ImageEditModel::ShapeRectangle));
+
+    // 回転でレイヤーも回転する
+    model.rotateRight();
+    QCOMPARE(model.selectedLayerRect(), QRectF(40 - 10 - 10, 13, 10, 20));
+    model.rotateLeft();
+    QCOMPARE(model.selectedLayerRect(), QRectF(13, 10, 20, 10));
+
+    // 削除
+    model.removeLayer(0);
+    QCOMPARE(model.layerCount(), 1);
+    QCOMPARE(model.selectedLayer(), -1);
+    model.selectLayer(0);
+    model.removeLayer(0);
+    QCOMPARE(model.layerCount(), 0);
+    model.undo();
+    QCOMPARE(model.layerCount(), 1);
+    QCOMPARE(model.selectedLayer(), -1);
+
+    // 書き出しにモザイクが反映される
+    model.resetAll();
+    QCOMPARE(model.layerCount(), 0);
+    QVERIFY(model.addMosaic(0, 0, 60, 40, ImageEditModel::ShapeRectangle, 1) >= 0);
+    // 長辺60で粗さ1 -> 4px
+    model.setCrop(8, 8, 16, 16);
+    const QString exported = QUrl(model.exportImage(m_tempDir.path())).toLocalFile();
+    QVERIFY(!exported.isEmpty());
+    const QImage result(exported);
+    QCOMPARE(result.size(), QSize(16, 16));
+    // JPEGなので色の誤差は許容してブロック内が近い色か確認
+    const QColor a = result.pixelColor(0, 0);
+    const QColor b = result.pixelColor(3, 3);
+    QVERIFY(qAbs(a.red() - b.red()) < 16 && qAbs(a.green() - b.green()) < 16
+            && qAbs(a.blue() - b.blue()) < 16);
+    QFile::remove(exported);
+}
+
+QImage imageedit_test::makeGradientImage(int width, int height) const
+{
+    QImage image(width, height, QImage::Format_RGB32);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            image.setPixelColor(x, y, QColor((x * 6) % 256, (y * 6) % 256, ((x + y) * 3) % 256));
+        }
+    }
+    return image;
+}
+
+bool imageedit_test::isUniform(const QImage &image, const QRect &rect) const
+{
+    const QColor color = image.pixelColor(rect.topLeft());
+    for (int y = rect.top(); y <= rect.bottom(); y++) {
+        for (int x = rect.left(); x <= rect.right(); x++) {
+            if (image.pixelColor(x, y) != color)
+                return false;
+        }
+    }
+    return true;
 }
 
 QImage imageedit_test::makeHalfImage(int width, int height, QImage::Format format) const

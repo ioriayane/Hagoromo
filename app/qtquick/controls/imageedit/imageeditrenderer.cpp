@@ -4,6 +4,8 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QPainter>
+#include <QPainterPath>
 #include <QStandardPaths>
 #include <QTransform>
 #include <QUuid>
@@ -62,6 +64,7 @@ QImage ImageEditRenderer::render(const QImage &image, const ImageEditState &stat
         return image;
 
     QImage result = rotate(image, state.rotation);
+    renderLayers(result, state.layers, 1.0, qMax(image.width(), image.height()));
     if (!state.crop.isNull()) {
         QRect crop = state.crop.intersected(result.rect());
         if (!crop.isEmpty() && crop != result.rect()) {
@@ -69,6 +72,79 @@ QImage ImageEditRenderer::render(const QImage &image, const ImageEditState &stat
         }
     }
     return result;
+}
+
+void ImageEditRenderer::renderLayers(QImage &image, const QList<ImageEditLayer> &layers,
+                                     qreal scale, int long_edge)
+{
+    if (layers.isEmpty() || image.isNull())
+        return;
+    if (image.format() != QImage::Format_RGB32 && image.format() != QImage::Format_ARGB32
+        && image.format() != QImage::Format_ARGB32_Premultiplied) {
+        image = image.convertToFormat(image.hasAlphaChannel() ? QImage::Format_ARGB32
+                                                              : QImage::Format_RGB32);
+    }
+    for (const auto &layer : layers) {
+        const QRectF rect(layer.rect.x() * scale, layer.rect.y() * scale,
+                          layer.rect.width() * scale, layer.rect.height() * scale);
+        if (layer.type == ImageEditLayer::Mosaic) {
+            const int block = qMax(1, qRound(mosaicBlockSize(layer.strength, long_edge) * scale));
+            applyMosaic(image, rect, layer.shape, block);
+        }
+    }
+}
+
+int ImageEditRenderer::mosaicBlockSize(int strength, int long_edge)
+{
+    strength = qBound(1, strength, 10);
+    return qMax(4, qRound(long_edge * strength / 300.0));
+}
+
+void ImageEditRenderer::applyMosaic(QImage &image, const QRectF &rect, int shape, int block_size)
+{
+    const QRect area = rect.toAlignedRect().intersected(image.rect());
+    if (area.isEmpty())
+        return;
+    block_size = qMax(1, block_size);
+
+    // 縮小（平均化）してから最近傍で拡大してブロックにする
+    const int w = (area.width() + block_size - 1) / block_size;
+    const int h = (area.height() + block_size - 1) / block_size;
+    const QImage small =
+            image.copy(area).scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    const QImage blocks = small.scaled(w * block_size, h * block_size, Qt::IgnoreAspectRatio,
+                                       Qt::FastTransformation);
+
+    QPainter painter(&image);
+    // 透過画像は元の画素が透けないように置き換える（境界のアンチエイリアスはしない）
+    const bool alpha = image.hasAlphaChannel();
+    if (shape == ImageEditLayer::Ellipse) {
+        QPainterPath path;
+        path.addEllipse(rect);
+        painter.setRenderHint(QPainter::Antialiasing, !alpha);
+        painter.setClipPath(path);
+    }
+    if (alpha) {
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+    }
+    painter.drawImage(area.topLeft(), blocks, QRect(0, 0, area.width(), area.height()));
+}
+
+bool ImageEditRenderer::contains(const ImageEditLayer &layer, const QPointF &point)
+{
+    const QRectF rect(layer.rect);
+    if (!rect.contains(point))
+        return false;
+    if (layer.shape == ImageEditLayer::Ellipse) {
+        const qreal rx = rect.width() / 2;
+        const qreal ry = rect.height() / 2;
+        if (rx <= 0 || ry <= 0)
+            return false;
+        const qreal dx = (point.x() - rect.center().x()) / rx;
+        const qreal dy = (point.y() - rect.center().y()) / ry;
+        return (dx * dx + dy * dy) <= 1.0;
+    }
+    return true;
 }
 
 QString ImageEditRenderer::editedFolder()

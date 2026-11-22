@@ -2,19 +2,48 @@
 #define IMAGEEDITRENDERER_H
 
 #include <QImage>
+#include <QList>
+#include <QPointF>
+#include <QRectF>
 #include <QRect>
 #include <QString>
 
+// 画像に重ねる編集（下から順に描画する）
+struct ImageEditLayer
+{
+    enum Type {
+        Mosaic = 0,
+    };
+    enum Shape {
+        Rectangle = 0,
+        Ellipse = 1,
+    };
+
+    int type = Mosaic;
+    int shape = Rectangle;
+    QRect rect;
+    int strength = 5; // モザイクの粗さ（1〜10）
+
+    bool operator==(const ImageEditLayer &other) const
+    {
+        return type == other.type && shape == other.shape && rect == other.rect
+                && strength == other.strength;
+    }
+    bool operator!=(const ImageEditLayer &other) const { return !(*this == other); }
+};
+
 // 編集内容
 // 座標はすべて「回転を適用した後の原寸画像」を基準にする
+// 適用順は 回転 -> レイヤー -> クロップ
 struct ImageEditState
 {
     int rotation = 0; // 時計回り 0, 90, 180, 270
     QRect crop; // 空のときは全体
+    QList<ImageEditLayer> layers;
 
     bool operator==(const ImageEditState &other) const
     {
-        return rotation == other.rotation && crop == other.crop;
+        return rotation == other.rotation && crop == other.crop && layers == other.layers;
     }
     bool operator!=(const ImageEditState &other) const { return !(*this == other); }
 };
@@ -34,6 +63,16 @@ public:
 
     // 編集内容を原寸画像に適用する
     static QImage render(const QImage &image, const ImageEditState &state);
+    // 回転済みの画像にレイヤーを描画する
+    // scale: 回転後の原寸座標からimageの座標への倍率（プレビュー用）
+    // long_edge: 原寸画像の長辺（モザイクの粗さの基準）
+    static void renderLayers(QImage &image, const QList<ImageEditLayer> &layers, qreal scale,
+                             int long_edge);
+    // モザイクのブロックの大きさ（原寸座標）
+    static int mosaicBlockSize(int strength, int long_edge);
+    static void applyMosaic(QImage &image, const QRectF &rect, int shape, int block_size);
+    // 点がレイヤーの範囲内か
+    static bool contains(const ImageEditLayer &layer, const QPointF &point);
 
     // 編集済み画像の保存先
     static QString editedFolder();
