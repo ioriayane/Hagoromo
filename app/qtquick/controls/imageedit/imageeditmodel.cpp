@@ -176,6 +176,38 @@ int ImageEditModel::addStamp(const QString &url, qreal center_x, qreal center_y,
     return addLayer(layer);
 }
 
+QPointF ImageEditModel::findStampPosition(qreal center_x, qreal center_y, qreal step,
+                                          const QRectF &area) const
+{
+    const QPointF start(center_x, center_y);
+    if (step <= 0)
+        return start;
+    QPointF candidate = start;
+    // 重なりの判定は中心同士がstepの半分より近いとき
+    const qreal threshold = step / 2;
+    for (int i = 0; i <= m_state.layers.count(); i++) {
+        bool overlapped = false;
+        for (const auto &layer : m_state.layers) {
+            if (layer.type != ImageEditLayer::Stamp)
+                continue;
+            const QPointF center = QRectF(layer.rect).center();
+            if (qAbs(center.x() - candidate.x()) < threshold
+                && qAbs(center.y() - candidate.y()) < threshold) {
+                overlapped = true;
+                break;
+            }
+        }
+        if (!overlapped)
+            return candidate;
+        candidate += QPointF(step, step);
+        if (!area.isEmpty() && (candidate.x() > area.right() || candidate.y() > area.bottom())) {
+            candidate = area.topLeft() + QPointF(step, step);
+        }
+    }
+    // 空きが見つからないときは元の位置
+    return start;
+}
+
 int ImageEditModel::layerAt(qreal x, qreal y, qreal tolerance, int category) const
 {
     const QPointF point(x, y);

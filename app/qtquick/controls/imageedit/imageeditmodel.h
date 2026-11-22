@@ -90,6 +90,10 @@ public:
     // 画像（スタンプ）を追加して選択する。追加できなかったときは-1
     // 中心と長辺の長さ（回転後の原寸座標）を指定し、縦横比は画像に合わせる
     Q_INVOKABLE int addStamp(const QString &url, qreal center_x, qreal center_y, qreal max_length);
+    // 既存のスタンプと中心が重ならない位置を返す
+    // 中心からstepずつ右下へずらし、areaの外に出るときはareaの左上へ折り返す
+    Q_INVOKABLE QPointF findStampPosition(qreal center_x, qreal center_y, qreal step,
+                                          const QRectF &area) const;
     // 指定位置（回転後の原寸座標）にある一番上のレイヤー。無ければ-1
     // tolerance: 線の判定の余裕（原寸座標）
     Q_INVOKABLE int layerAt(qreal x, qreal y, qreal tolerance = 0, int category = 0) const;

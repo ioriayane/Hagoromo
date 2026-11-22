@@ -767,6 +767,25 @@ void imageedit_test::test_ImageEditModel_stamp()
     model.rotateLeft();
     QCOMPARE(model.selectedLayerRect(), QRectF(60, 80, 80, 40));
 
+    // 連続で貼り付けるときの位置（中心が重ならないように右下へずらす）
+    {
+        const QRectF area(0, 0, 400, 200);
+        // 既存のスタンプの中心は(100, 100)
+        QCOMPARE(model.findStampPosition(200, 100, 10, area), QPointF(200, 100));
+        QCOMPARE(model.findStampPosition(100, 100, 10, area), QPointF(110, 110));
+        QCOMPARE(model.findStampPosition(100, 100, 0, area), QPointF(100, 100));
+        model.selectLayer(-1);
+        QCOMPARE(model.addStamp(logo_url, 110, 110, 80), 1);
+        QCOMPARE(model.findStampPosition(100, 100, 10, area), QPointF(120, 120));
+        // 範囲の外に出るときは左上へ折り返す（100 -> 110 -> 120は範囲外 -> 95）
+        QCOMPARE(model.findStampPosition(100, 100, 10, QRectF(85, 85, 30, 30)), QPointF(95, 95));
+        // 空きが無いときは元の位置
+        QCOMPARE(model.findStampPosition(100, 100, 10, QRectF(90, 90, 25, 25)), QPointF(100, 100));
+        model.undo();
+        QCOMPARE(model.layerCount(), 1);
+        model.selectLayer(0);
+    }
+
     // 元のファイルが消えても描画できる（読み込み済み）
     QVERIFY(QFile::remove(logo_path));
     model.setLayerOpacity(0, 100);

@@ -101,8 +101,11 @@ Dialog {
         var r = imageEditModel.cropRect
         var length = Math.min(r.width, r.height) * 0.3
         if(center_x === undefined || center_y === undefined){
-            center_x = r.x + r.width / 2
-            center_y = r.y + r.height / 2
+            // 連続で貼り付けたときに重ならないように少しずらす
+            var p = imageEditModel.findStampPosition(r.x + r.width / 2, r.y + r.height / 2,
+                                                     length * 0.15, r)
+            center_x = p.x
+            center_y = p.y
         }
         if(imageEditModel.addStamp(source, center_x, center_y, length) >= 0){
             stampHistoryModel.touch(stamp_id)
