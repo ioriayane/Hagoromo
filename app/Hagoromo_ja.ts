@@ -359,14 +359,12 @@
 <context>
     <name>AltEditDialog</name>
     <message>
-        <location filename="qml/dialogs/AltEditDialog.qml" line="54"/>
         <source>Cancel</source>
-        <translation>キャンセル</translation>
+        <translation type="vanished">キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/AltEditDialog.qml" line="76"/>
         <source>Add</source>
-        <translation>追加</translation>
+        <translation type="vanished">追加</translation>
     </message>
 </context>
 <context>
@@ -1198,6 +1196,64 @@ Please recreate AppPassword in the official application.</source>
     </message>
     <message>
         <location filename="qml/dialogs/ImageClipDialog.qml" line="86"/>
+        <source>Apply</source>
+        <translation>適用</translation>
+    </message>
+</context>
+<context>
+    <name>ImageEditDialog</name>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="78"/>
+        <source>Crop</source>
+        <translation>切り抜き</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="88"/>
+        <source>Rotate left</source>
+        <translation>左に回転</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="98"/>
+        <source>Rotate right</source>
+        <translation>右に回転</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="105"/>
+        <source>This image format cannot be edited.</source>
+        <translation>この形式の画像は編集できません。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="119"/>
+        <source>Undo</source>
+        <translation>元に戻す</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="129"/>
+        <source>Redo</source>
+        <translation>やり直す</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="139"/>
+        <source>Reset all edits</source>
+        <translation>すべての編集をリセット</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="172"/>
+        <source>Alt text</source>
+        <translation>代替テキスト</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="182"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="195"/>
+        <source>Failed to save the edited image.</source>
+        <translation>編集した画像を保存できませんでした。</translation>
+    </message>
+    <message>
+        <location filename="qml/dialogs/ImageEditDialog.qml" line="209"/>
         <source>Apply</source>
         <translation>適用</translation>
     </message>
@@ -2950,37 +3006,37 @@ Please recreate AppPassword in the official application.</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="923"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="924"/>
         <source>A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.</source>
         <translation>長文投稿は投票や11枚以上の画像と組み合わせられません。また、100,000バイト以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="925"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="926"/>
         <source>After linking your account with mochott in your browser, press Long post again.</source>
         <translation>ブラウザでmochottとの連携が済んだら、もう一度「長文ポスト」を押してください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="926"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="927"/>
         <source>Posts over 300 characters are posted as a long post with mochott. To post normally, shorten it to 300 characters or less.</source>
         <translation>300文字を超えるとmochottの長文ポストになります。通常のポストにするには300文字以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="935"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="936"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1032"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1033"/>
         <source>Long post</source>
         <translation>長文ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1032"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1033"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1072"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1073"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>

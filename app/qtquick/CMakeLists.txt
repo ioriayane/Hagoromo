@@ -49,6 +49,12 @@ add_library(HagoromoGuiLib STATIC
     controls/embedimagelistmodel.h
     controls/emojilistmodel.cpp
     controls/emojilistmodel.h
+    controls/imageedit/imageeditcanvas.cpp
+    controls/imageedit/imageeditcanvas.h
+    controls/imageedit/imageeditmodel.cpp
+    controls/imageedit/imageeditmodel.h
+    controls/imageedit/imageeditrenderer.cpp
+    controls/imageedit/imageeditrenderer.h
     controls/languagelistmodel.cpp
     controls/languagelistmodel.h
     draft/draftlistmodel.cpp

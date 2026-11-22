@@ -34,6 +34,8 @@
 #include "qtquick/feedgenerator/actorfeedgeneratorlistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/controls/embedimagelistmodel.h"
+#include "qtquick/controls/imageedit/imageeditcanvas.h"
+#include "qtquick/controls/imageedit/imageeditmodel.h"
 #include "qtquick/controls/emojilistmodel.h"
 #include "qtquick/controls/languagelistmodel.h"
 #include "qtquick/moderation/contentfiltersettinglistmodel.h"
@@ -199,6 +201,10 @@ int main(int argc, char *argv[])
                                         "CalendarTableModel");
     qmlRegisterType<EmbedImageListModel>("tech.relog.hagoromo.controls.embedimagelistmodel", 1, 0,
                                          "EmbedImageListModel");
+    qmlRegisterType<ImageEditModel>("tech.relog.hagoromo.controls.imageeditmodel", 1, 0,
+                                    "ImageEditModel");
+    qmlRegisterType<ImageEditCanvas>("tech.relog.hagoromo.controls.imageeditcanvas", 1, 0,
+                                     "ImageEditCanvas");
     qmlRegisterType<EmojiListModel>("tech.relog.hagoromo.controls.emojilistmodel", 1, 0,
                                     "EmojiListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.controls.languagelistmodel", 1, 0,
