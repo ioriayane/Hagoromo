@@ -400,7 +400,6 @@ QtQuick/Window/quickwindow.qmltypes
 QtQuick/Window/libquickwindowplugin.so
 QtQuick/Dialogs/qmldir
 QtQuick/Dialogs/quickimpl/qmldir
-QtQuick/Dialogs/quickimpl/qtquickdialogs2quickimplplugin.debug
 QtQuick/Dialogs/quickimpl/libqtquickdialogs2quickimplplugin.so
 QtQuick/Dialogs/quickimpl/qml/+Universal/FileDialog.qml
 QtQuick/Dialogs/quickimpl/qml/+Universal/FolderDialog.qml
