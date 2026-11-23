@@ -130,12 +130,13 @@ Dialog {
     }
 
     onToolChanged: imageEditModel.selectedLayer = -1
+    // 画像の読み込みはバックグラウンドなので、ダイアログの表示と並行して始める
+    onAboutToShow: imageEditModel.source = imageEditDialog.embedImage
     onOpened: {
         imageEditDialog.editedImage = ""
         imageEditDialog.tool = ""
         imageEditDialog.drawSelectMode = false
         errorLabel.visible = false
-        imageEditModel.source = imageEditDialog.embedImage
         // 他のダイアログで更新されている場合があるので読み込み直す
         stampHistoryModel.load()
         altTextArea.text = imageEditDialog.embedAlt
@@ -322,6 +323,19 @@ Dialog {
                     editModel: imageEditModel
                     showWholeImage: imageEditDialog.cropMode
                     margin: imageEditDialog.cropMode ? 12 * AdjustedValues.ratio : 0
+                }
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: imageEditModel.loading
+                    visible: running
+                }
+                Label {
+                    anchors.centerIn: parent
+                    visible: !imageEditModel.loading && !imageEditModel.ready &&
+                             imageEditModel.source.length > 0
+                    font.pointSize: AdjustedValues.f10
+                    color: Material.color(Material.Grey)
+                    text: qsTr("Failed to load the image.")
                 }
                 ImageCropOverlay {
                     anchors.fill: parent

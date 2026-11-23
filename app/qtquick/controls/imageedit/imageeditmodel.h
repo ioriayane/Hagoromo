@@ -10,6 +10,7 @@
 #include <QList>
 #include <QRectF>
 #include <QSize>
+#include <QThreadPool>
 
 // 投稿する画像の編集状態を管理する（非破壊編集）
 // 元画像は変更せず、exportImage()で編集結果を別ファイルとして書き出す
@@ -20,6 +21,8 @@ class ImageEditModel : public QObject
     Q_PROPERTY(QString source READ source WRITE setSource NOTIFY sourceChanged FINAL)
     Q_PROPERTY(bool ready READ ready NOTIFY sourceChanged FINAL)
     Q_PROPERTY(bool editable READ editable NOTIFY sourceChanged FINAL)
+    // 画像を読み込み中（読み込みはバックグラウンドで行う）
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged FINAL)
     Q_PROPERTY(int rotation READ rotation NOTIFY stateChanged FINAL)
     // 回転後の原寸サイズ
     Q_PROPERTY(int imageWidth READ imageWidth NOTIFY stateChanged FINAL)
@@ -44,6 +47,7 @@ class ImageEditModel : public QObject
 
 public:
     explicit ImageEditModel(QObject *parent = nullptr);
+    ~ImageEditModel();
 
     enum LayerShape {
         ShapeRectangle = ImageEditLayer::Rectangle,
@@ -124,6 +128,7 @@ public:
     QString source() const;
     void setSource(const QString &newSource);
     bool ready() const;
+    bool loading() const;
     bool editable() const;
     int rotation() const;
     int imageWidth() const;
@@ -156,6 +161,7 @@ signals:
     void sourceChanged();
     void stateChanged();
     void previewChanged();
+    void loadingChanged();
 
 private:
     void applyState(const ImageEditState &state, bool record_history);
@@ -168,6 +174,9 @@ private:
     const ImageEditLayer *selectedLayerData() const;
     static QList<QPointF> toPoints(const QVariantList &points);
     void updatePreview(bool rotation_changed);
+    void setLoading(bool loading);
+    void finishLoading(int load_id, const QImage &image, const QImage &preview, qreal scale,
+                       bool editable);
     QRect validLayerRect(qreal x, qreal y, qreal width, qreal height) const;
     int longEdge() const;
 
@@ -182,6 +191,9 @@ private:
     QList<ImageEditState> m_undoStack;
     QList<ImageEditState> m_redoStack;
     int m_selectedLayer;
+    bool m_loading;
+    int m_loadId; // 古い読み込み結果を捨てるための番号
+    QThreadPool m_loadPool;
     bool m_transient;
     ImageEditState m_transientBase; // 一時的な変更を始める前の状態
 };

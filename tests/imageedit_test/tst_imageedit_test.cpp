@@ -32,6 +32,7 @@ private slots:
     void test_ImageEditRenderer_rotateRect90();
     void test_ImageEditModel_rotateAndCrop();
     void test_ImageEditModel_export();
+    void test_ImageEditModel_loading();
     void test_ImageEditRenderer_mosaic();
     void test_ImageEditModel_layers();
     void test_ImageEditRenderer_drawing();
@@ -44,6 +45,8 @@ private slots:
 private:
     // 左半分が赤、右半分が青の画像
     QImage makeHalfImage(int width, int height, QImage::Format format) const;
+    // 画像を指定して読み込み（バックグラウンド）が終わるまで待つ
+    bool loadSource(ImageEditModel &model, const QString &url) const;
     // 画素ごとに色が異なる画像
     QImage makeGradientImage(int width, int height) const;
     // 範囲内がすべて同じ色か
@@ -193,7 +196,7 @@ void imageedit_test::test_ImageEditModel_rotateAndCrop()
 
     ImageEditModel model;
     QSignalSpy spy(&model, &ImageEditModel::stateChanged);
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     QVERIFY(model.ready());
     QVERIFY(model.editable());
     QVERIFY(!model.modified());
@@ -264,7 +267,7 @@ void imageedit_test::test_ImageEditModel_export()
     QVERIFY(makeHalfImage(40, 20, QImage::Format_RGB32).save(path, "PNG"));
 
     ImageEditModel model;
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     model.rotateRight();
     model.setCrop(0, 0, 20, 30);
 
@@ -284,7 +287,7 @@ void imageedit_test::test_ImageEditModel_export()
     alpha.fill(Qt::transparent);
     const QString alpha_path = m_tempDir.filePath("alpha.png");
     QVERIFY(alpha.save(alpha_path, "PNG"));
-    model.setSource(QUrl::fromLocalFile(alpha_path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(alpha_path).toString()));
     model.rotateRight();
     const QString alpha_exported = QUrl(model.exportImage()).toLocalFile();
     QVERIFY(alpha_exported.endsWith(".png"));
@@ -293,6 +296,55 @@ void imageedit_test::test_ImageEditModel_export()
 
     // 元ファイルは変更しない
     QCOMPARE(QImage(path).size(), QSize(40, 20));
+}
+
+void imageedit_test::test_ImageEditModel_loading()
+{
+    const QString path1 = m_tempDir.filePath("loading1.png");
+    const QString path2 = m_tempDir.filePath("loading2.png");
+    QVERIFY(makeHalfImage(40, 20, QImage::Format_RGB32).save(path1, "PNG"));
+    QVERIFY(makeHalfImage(30, 60, QImage::Format_RGB32).save(path2, "PNG"));
+
+    ImageEditModel model;
+    QSignalSpy loading_spy(&model, &ImageEditModel::loadingChanged);
+    model.setSource(QUrl::fromLocalFile(path1).toString());
+    // 読み込み中は空の状態
+    QVERIFY(model.loading());
+    QVERIFY(!model.ready());
+    QVERIFY(!model.editable());
+    QVERIFY(model.previewImage().isNull());
+    QTRY_VERIFY(!model.loading());
+    QVERIFY(model.ready());
+    QVERIFY(model.editable());
+    QCOMPARE(model.imageWidth(), 40);
+    QVERIFY(!model.previewImage().isNull());
+    QVERIFY(loading_spy.count() >= 2);
+
+    // 読み込み中に別の画像を指定したら後のものだけが反映される
+    model.setSource(QUrl::fromLocalFile(path1).toString() + "?dummy");
+    model.setSource(QUrl::fromLocalFile(path2).toString());
+    QTRY_VERIFY(!model.loading());
+    QTest::qWait(50);
+    QCOMPARE(model.imageWidth(), 30);
+    QCOMPARE(model.imageHeight(), 60);
+
+    // 読み込めない画像
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(m_tempDir.filePath("none.png")).toString()));
+    QVERIFY(!model.ready());
+    QVERIFY(!model.editable());
+
+    // 空にするとすぐに空の状態になる
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path1).toString()));
+    model.clear();
+    QVERIFY(!model.loading());
+    QVERIFY(!model.ready());
+
+    // 読み込み中に破棄しても問題ない
+    {
+        ImageEditModel temp;
+        temp.setSource(QUrl::fromLocalFile(path1).toString());
+    }
+    QTest::qWait(50);
 }
 
 void imageedit_test::test_EmbedImageListModel_editedFiles()
@@ -423,7 +475,7 @@ void imageedit_test::test_ImageEditModel_layers()
     QVERIFY(makeGradientImage(60, 40).save(path, "PNG"));
 
     ImageEditModel model;
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     QCOMPARE(model.layerCount(), 0);
     QCOMPARE(model.selectedLayer(), -1);
     const QImage before = model.previewImage();
@@ -608,7 +660,7 @@ void imageedit_test::test_ImageEditModel_drawing()
     QVERIFY(white.save(path, "PNG"));
 
     ImageEditModel model;
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     const QColor blue(0, 0, 255);
 
     // 追加
@@ -753,7 +805,7 @@ void imageedit_test::test_ImageEditRenderer_arrow()
     const QString path = m_tempDir.filePath("arrow.png");
     QVERIFY(image.save(path, "PNG"));
     ImageEditModel model;
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     QCOMPARE(model.addArrow(0, 0, 2, 2, QColor(0, 0, 255), 3), -1);
     QCOMPARE(model.addArrow(10, 20, 110, 20, QColor(0, 0, 255), 3), 0);
     QCOMPARE(model.selectedLayerType(), static_cast<int>(ImageEditModel::TypeArrow));
@@ -788,7 +840,7 @@ void imageedit_test::test_ImageEditModel_stamp()
     const QString logo_url = QUrl::fromLocalFile(logo_path).toString();
 
     ImageEditModel model;
-    model.setSource(QUrl::fromLocalFile(path).toString());
+    QVERIFY(loadSource(model, QUrl::fromLocalFile(path).toString()));
     QCOMPARE(model.addStamp(QUrl::fromLocalFile(m_tempDir.filePath("none.png")).toString(), 100,
                             100, 80),
              -1);
@@ -982,6 +1034,12 @@ bool imageedit_test::isUniform(const QImage &image, const QRect &rect) const
         }
     }
     return true;
+}
+
+bool imageedit_test::loadSource(ImageEditModel &model, const QString &url) const
+{
+    model.setSource(url);
+    return QTest::qWaitFor([&model]() { return !model.loading(); }, 5000);
 }
 
 QImage imageedit_test::makeHalfImage(int width, int height, QImage::Format format) const

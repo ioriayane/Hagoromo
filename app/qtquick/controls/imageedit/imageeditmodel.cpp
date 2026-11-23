@@ -12,8 +12,17 @@ ImageEditModel::ImageEditModel(QObject *parent)
       m_editable(false),
       m_previewScale(1.0),
       m_selectedLayer(-1),
+      m_loading(false),
+      m_loadId(0),
       m_transient(false)
 {
+    m_loadPool.setMaxThreadCount(1);
+}
+
+ImageEditModel::~ImageEditModel()
+{
+    // 読み込み中のスレッドがthisを参照しているので終わるまで待つ
+    m_loadPool.waitForDone();
 }
 
 void ImageEditModel::rotateLeft()
@@ -378,39 +387,44 @@ void ImageEditModel::setSource(const QString &newSource)
     if (m_source == newSource)
         return;
     m_source = newSource;
+    const int load_id = ++m_loadId;
 
-    QUrl url(m_source);
-    QString path = url.isLocalFile() ? url.toLocalFile() : m_source;
-    m_image = m_source.isEmpty() ? QImage() : ImageEditRenderer::load(path);
-    // gifはアニメーションを維持するため編集しない
-    m_editable = !m_image.isNull() && QFileInfo(path).suffix().toLower() != "gif";
+    // 読み込みが終わるまでは空の状態にする
+    finishLoading(load_id, QImage(), QImage(), 1.0, false);
+    if (m_source.isEmpty())
+        return;
 
-    if (m_image.isNull()) {
-        m_preview = QImage();
-        m_previewScale = 1.0;
-    } else if (qMax(m_image.width(), m_image.height()) > PREVIEW_MAX_LENGTH) {
-        m_preview = m_image.scaled(PREVIEW_MAX_LENGTH, PREVIEW_MAX_LENGTH, Qt::KeepAspectRatio,
+    setLoading(true);
+    const QUrl url(m_source);
+    const QString path = url.isLocalFile() ? url.toLocalFile() : m_source;
+    m_loadPool.start([this, path, load_id]() {
+        const QImage image = ImageEditRenderer::load(path);
+        // gifはアニメーションを維持するため編集しない
+        const bool editable = !image.isNull() && QFileInfo(path).suffix().toLower() != "gif";
+        QImage preview = image;
+        qreal scale = 1.0;
+        if (qMax(image.width(), image.height()) > PREVIEW_MAX_LENGTH) {
+            preview = image.scaled(PREVIEW_MAX_LENGTH, PREVIEW_MAX_LENGTH, Qt::KeepAspectRatio,
                                    Qt::SmoothTransformation);
-        m_previewScale = static_cast<qreal>(m_preview.width()) / m_image.width();
-    } else {
-        m_preview = m_image;
-        m_previewScale = 1.0;
-    }
-
-    m_state = ImageEditState();
-    m_undoStack.clear();
-    m_redoStack.clear();
-    m_selectedLayer = -1;
-    m_transient = false;
-    updatePreview(true);
-
-    emit sourceChanged();
-    emit stateChanged();
+            scale = static_cast<qreal>(preview.width()) / image.width();
+        }
+        QMetaObject::invokeMethod(
+                this,
+                [this, load_id, image, preview, scale, editable]() {
+                    finishLoading(load_id, image, preview, scale, editable);
+                },
+                Qt::QueuedConnection);
+    });
 }
 
 bool ImageEditModel::ready() const
 {
     return !m_image.isNull();
+}
+
+bool ImageEditModel::loading() const
+{
+    return m_loading;
 }
 
 bool ImageEditModel::editable() const
@@ -599,6 +613,38 @@ void ImageEditModel::pushHistory(const ImageEditState &state)
 {
     m_undoStack.append(state);
     m_redoStack.clear();
+}
+
+void ImageEditModel::setLoading(bool loading)
+{
+    if (m_loading == loading)
+        return;
+    m_loading = loading;
+    emit loadingChanged();
+}
+
+void ImageEditModel::finishLoading(int load_id, const QImage &image, const QImage &preview,
+                                   qreal scale, bool editable)
+{
+    if (load_id != m_loadId) {
+        // 読み込み中に別の画像が指定された
+        return;
+    }
+    m_image = image;
+    m_preview = preview;
+    m_previewScale = scale;
+    m_editable = editable;
+
+    m_state = ImageEditState();
+    m_undoStack.clear();
+    m_redoStack.clear();
+    m_selectedLayer = -1;
+    m_transient = false;
+    updatePreview(true);
+    setLoading(false);
+
+    emit sourceChanged();
+    emit stateChanged();
 }
 
 void ImageEditModel::updatePreview(bool rotation_changed)
