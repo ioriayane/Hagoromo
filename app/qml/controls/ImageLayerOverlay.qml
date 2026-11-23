@@ -4,8 +4,9 @@ import QtQuick.Controls.Material 2.15
 import tech.relog.hagoromo.controls.imageeditmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
-// ImageEditCanvasの上に重ねてレイヤー（モザイク・描画）を追加・選択・移動・リサイズする
+// ImageEditCanvasの上に重ねてレイヤー（モザイク・描画・スタンプ）を追加・選択・移動・リサイズする
 // 何もない場所をドラッグ: 追加 / レイヤーをクリック: 選択 / レイヤーをドラッグ: 移動
+// allowSelect=falseのときは既存のレイヤーをつかまずに常に追加する（折れ線を描くときなど）
 Item {
     id: overlay
 
@@ -13,6 +14,10 @@ Item {
     property var editModel: null
     // "mosaic" / "draw" / "stamp"
     property string mode: "mosaic"
+    // 既存のレイヤーを選択・移動・リサイズできる
+    property bool allowSelect: true
+    // ドラッグで新しいレイヤーを追加できる
+    property bool allowCreate: true
     // 新しく追加するモザイクの設定
     property int newLayerShape: 0
     property int newLayerStrength: 5
@@ -61,7 +66,7 @@ Item {
         id: mouseArea
         anchors.fill: parent
         preventStealing: true
-        cursorShape: overlay.mode === "stamp" ? Qt.ArrowCursor : Qt.CrossCursor
+        cursorShape: overlay.allowCreate && overlay.mode !== "stamp" ? Qt.CrossCursor : Qt.ArrowCursor
 
         property bool drawing: false
         property bool moving: false
@@ -76,6 +81,10 @@ Item {
         function finishDrawing() {
             if(drawing && overlay.mode === "draw"){
                 overlay.editModel.commitTransient()
+                if(!overlay.allowSelect){
+                    // 選択できないモードでは描き終えたら選択を外す（次も続けて描けるように）
+                    overlay.editModel.selectedLayer = -1
+                }
             }
             drawing = false
             drawingIndex = -1
@@ -95,7 +104,7 @@ Item {
             }else if(overlay.mode === "stamp"){
                 category = ImageEditModel.CategoryStamp
             }
-            var index = overlay.editModel.layerAt(p.x, p.y, overlay.tolerance, category)
+            var index = overlay.allowSelect ? overlay.editModel.layerAt(p.x, p.y, overlay.tolerance, category) : -1
             if(index >= 0){
                 overlay.editModel.selectedLayer = index
                 startRect = overlay.editModel.selectedLayerRect
@@ -103,7 +112,7 @@ Item {
                 return
             }
             overlay.editModel.selectedLayer = -1
-            if(overlay.mode === "stamp"){
+            if(!overlay.allowCreate || overlay.mode === "stamp"){
                 // スタンプはパネルから追加する
                 return
             }
@@ -221,7 +230,7 @@ Item {
     ImageRectEditor {
         id: rectEditor
         anchors.fill: parent
-        visible: overlay.editModel !== null && overlay.editModel.selectedLayer >= 0 &&
+        visible: overlay.allowSelect && overlay.editModel !== null && overlay.editModel.selectedLayer >= 0 &&
                  !overlay.selectedLine && !mouseArea.drawing
         canvas: overlay.canvas
         boundsWidth: overlay.imageWidth
@@ -238,7 +247,7 @@ Item {
     // 選択中の直線の端点
     Repeater {
         // ドラッグ中にデリゲートが作り直されないように個数で指定する
-        model: overlay.selectedLine && !mouseArea.drawing ? 2 : 0
+        model: overlay.allowSelect && overlay.selectedLine && !mouseArea.drawing ? 2 : 0
         Rectangle {
             id: endPoint
             required property int index

@@ -37,6 +37,8 @@ Dialog {
     property int mosaicStrength: 5
     // 新しく追加する描画の設定
     property int drawType: ImageEditModel.TypeLine
+    // 描画ツールで描いたものをつかむ（選択・移動・リサイズする）モード
+    property bool drawSelectMode: false
     property color drawColor: "#f44336"
     property int drawLineWidth: 3
     property bool drawFill: false
@@ -72,8 +74,12 @@ Dialog {
 
     function setDrawType(type) {
         imageEditDialog.drawType = type
+        imageEditDialog.drawSelectMode = false
         // 次のドラッグで新しく描けるように選択を解除する
         imageEditModel.selectedLayer = -1
+    }
+    function setDrawSelectMode() {
+        imageEditDialog.drawSelectMode = true
     }
     function setDrawColor(color) {
         imageEditDialog.drawColor = color
@@ -127,6 +133,7 @@ Dialog {
     onOpened: {
         imageEditDialog.editedImage = ""
         imageEditDialog.tool = ""
+        imageEditDialog.drawSelectMode = false
         errorLabel.visible = false
         imageEditModel.source = imageEditDialog.embedImage
         // 他のダイアログで更新されている場合があるので読み込み直す
@@ -329,6 +336,9 @@ Dialog {
                     canvas: imageEditCanvas
                     editModel: imageEditModel
                     mode: imageEditDialog.tool === "crop" ? "mosaic" : imageEditDialog.tool
+                    // 描画ツールは「つかむ」と「描く」を分ける（描いたものの上から続けて描けるように）
+                    allowSelect: imageEditDialog.tool !== "draw" || imageEditDialog.drawSelectMode
+                    allowCreate: imageEditDialog.tool !== "draw" || !imageEditDialog.drawSelectMode
                     newLayerShape: imageEditDialog.mosaicShape
                     newLayerStrength: imageEditDialog.mosaicStrength
                     drawType: imageEditDialog.drawType
@@ -452,15 +462,28 @@ Dialog {
                     wrapMode: Text.WordWrap
                     font.pointSize: AdjustedValues.f8
                     color: Material.color(Material.Grey)
-                    text: qsTr("Drag on the image to draw. Click a drawing to select it.")
+                    text: imageEditDialog.drawSelectMode ?
+                              qsTr("Click a drawing to select it. Drag to move it.") :
+                              qsTr("Drag on the image to draw. Use the hand tool to move what you drew.")
                 }
                 Label {
                     Layout.topMargin: 5 * AdjustedValues.ratio
                     font.pointSize: AdjustedValues.f8
                     text: qsTr("Tool")
                 }
-                RowLayout {
+                Flow {
+                    Layout.fillWidth: true
                     spacing: 0
+                    IconButton {
+                        iconSource: "../images/hand.png"
+                        iconSize: AdjustedValues.i18
+                        flat: true
+                        foreground: imageEditDialog.drawSelectMode ? Material.accent : Material.foreground
+                        onClicked: imageEditDialog.setDrawSelectMode()
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        ToolTip.text: qsTr("Select and move")
+                    }
                     Repeater {
                         model: [
                             { type: ImageEditModel.TypeLine, icon: "../images/pen_size_2.png", name: qsTr("Line") },
@@ -474,7 +497,7 @@ Dialog {
                             iconSource: modelData.icon
                             iconSize: AdjustedValues.i18
                             flat: true
-                            foreground: imageEditDialog.currentDrawType === modelData.type ? Material.accent : Material.foreground
+                            foreground: !imageEditDialog.drawSelectMode && imageEditDialog.drawType === modelData.type ? Material.accent : Material.foreground
                             onClicked: imageEditDialog.setDrawType(modelData.type)
                             ToolTip.visible: hovered
                             ToolTip.delay: 500
