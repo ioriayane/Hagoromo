@@ -3158,7 +3158,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="712"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="715"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -3186,42 +3186,42 @@ Please recreate AppPassword in the official application.</source>
         <translation>mochottと連携するページを取得できませんでした。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="711"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="714"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="924"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="927"/>
         <source>A long post cannot be combined with a poll or more than 10 images, and must be within 100,000 bytes.</source>
         <translation>長文投稿は投票や11枚以上の画像と組み合わせられません。また、100,000バイト以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="926"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="929"/>
         <source>After linking your account with mochott in your browser, press Long post again.</source>
         <translation>ブラウザでmochottとの連携が済んだら、もう一度「長文ポスト」を押してください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="927"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="930"/>
         <source>Posts over 300 characters are posted as a long post with mochott. To post normally, shorten it to 300 characters or less.</source>
         <translation>300文字を超えるとmochottの長文ポストになります。通常のポストにするには300文字以内にしてください。</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="936"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="939"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1033"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1036"/>
         <source>Long post</source>
         <translation>長文ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1033"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1036"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="qml/dialogs/PostDialog.qml" line="1073"/>
+        <location filename="qml/dialogs/PostDialog.qml" line="1076"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
