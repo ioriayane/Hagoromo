@@ -356,6 +356,9 @@ Item {
                 }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
+                        // 下書きから参照されるので編集済みの画像を残す
+                        // （下書きの作成に失敗したときは引き続き削除の対象にする）
+                        embedImageListModel.keepEditedFiles()
                         if (postDialogItem.dialog_no >= 0) {
                             postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                         }
@@ -834,6 +837,7 @@ Item {
                                         Layout.preferredHeight: 102 * AdjustedValues.ratio
                                         fillMode: Image.PreserveAspectCrop
                                         source: additionalImages.uri
+                                        autoTransform: true
                                         TagLabel {
                                             anchors.left: parent.left
                                             anchors.bottom: parent.bottom
@@ -855,10 +859,10 @@ Item {
                                         MouseArea {
                                             anchors.fill: parent
                                             onClicked: {
-                                                altEditDialog.editingIndex = additionalImages.index
-                                                altEditDialog.embedImage = additionalImages.uri
-                                                altEditDialog.embedAlt = additionalImages.alt
-                                                altEditDialog.open()
+                                                imageEditDialog.editingIndex = additionalImages.index
+                                                imageEditDialog.embedImage = additionalImages.uri
+                                                imageEditDialog.embedAlt = additionalImages.alt
+                                                imageEditDialog.open()
                                             }
                                         }
                                         IconButton {
@@ -1095,10 +1099,15 @@ Item {
                 }
             }
 
-            AltEditDialog {
-                id: altEditDialog
+            ImageEditDialog {
+                id: imageEditDialog
                 property int editingIndex: -1
-                onAccepted: embedImageListModel.updateAlt(editingIndex, altEditDialog.embedAlt)
+                onAccepted: {
+                    if(imageEditDialog.editedImage.length > 0){
+                        embedImageListModel.replaceImage(editingIndex, imageEditDialog.editedImage)
+                    }
+                    embedImageListModel.updateAlt(editingIndex, imageEditDialog.embedAlt)
+                }
             }
 
             SelectThreadGateDialog {

@@ -1,13 +1,26 @@
 #include "embedimagelistmodel.h"
+#include "imageedit/imageeditrenderer.h"
 
 #include <QTimer>
 #include <QDebug>
+#include <QFile>
 #include <QFileInfo>
 #include <QUrl>
 
 EmbedImageListModel::EmbedImageListModel(QObject *parent)
     : QAbstractListModel { parent }, m_count(0), m_running(false)
 {
+}
+
+EmbedImageListModel::~EmbedImageListModel()
+{
+    for (const auto &uri : m_editedFiles) {
+        QString path = QUrl(uri).toLocalFile();
+        if (ImageEditRenderer::isEditedFile(path)) {
+            QFile::remove(path);
+        }
+    }
+    m_editedFiles.clear();
 }
 
 int EmbedImageListModel::rowCount(const QModelIndex &parent) const
@@ -60,6 +73,9 @@ void EmbedImageListModel::clear()
         return;
 
     beginRemoveRows(QModelIndex(), 0, m_embedImageList.count() - 1);
+    for (const auto &item : m_embedImageList) {
+        removeEditedFile(item.uri);
+    }
     m_embedImageList.clear();
     endRemoveRows();
 
@@ -72,6 +88,7 @@ void EmbedImageListModel::remove(const int row)
         return;
 
     beginRemoveRows(QModelIndex(), row, row);
+    removeEditedFile(m_embedImageList.at(row).uri);
     m_embedImageList.removeAt(row);
     endRemoveRows();
 
@@ -110,6 +127,26 @@ bool EmbedImageListModel::append(const QStringList &uris)
 void EmbedImageListModel::updateAlt(const int row, const QString &alt)
 {
     update(row, EmbedImageListModelRoles::AltRole, alt);
+}
+
+void EmbedImageListModel::replaceImage(const int row, const QString &uri)
+{
+    if (row < 0 || row >= m_embedImageList.count() || uri.isEmpty())
+        return;
+    const QString old_uri = m_embedImageList.at(row).uri;
+    if (old_uri == uri)
+        return;
+
+    update(row, EmbedImageListModelRoles::UriRole, uri);
+    removeEditedFile(old_uri);
+    if (ImageEditRenderer::isEditedFile(QUrl(uri).toLocalFile()) && !m_editedFiles.contains(uri)) {
+        m_editedFiles.append(uri);
+    }
+}
+
+void EmbedImageListModel::keepEditedFiles()
+{
+    m_editedFiles.clear();
 }
 
 QStringList EmbedImageListModel::uris() const
@@ -176,6 +213,17 @@ void EmbedImageListModel::appendItem()
     emit dataChanged(index(0), index(count() - 2));
 
     QTimer::singleShot(10, this, &EmbedImageListModel::appendItem);
+}
+
+void EmbedImageListModel::removeEditedFile(const QString &uri)
+{
+    if (!m_editedFiles.contains(uri))
+        return;
+    m_editedFiles.removeAll(uri);
+    QString path = QUrl(uri).toLocalFile();
+    if (ImageEditRenderer::isEditedFile(path)) {
+        QFile::remove(path);
+    }
 }
 
 bool EmbedImageListModel::running() const

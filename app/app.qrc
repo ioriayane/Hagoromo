@@ -111,5 +111,20 @@
         <file>qml/images/community/Venmo.svg</file>
         <file>qml/images/community/Vgen.svg</file>
         <file>qml/images/community/Zeffy.svg</file>
+        <file>qml/images/crop.png</file>
+        <file>qml/images/redo.png</file>
+        <file>qml/images/restart_alt.png</file>
+        <file>qml/images/rotate_left.png</file>
+        <file>qml/images/rotate_right.png</file>
+        <file>qml/images/undo.png</file>
+        <file>qml/images/blur_on.png</file>
+        <file>qml/images/circle.png</file>
+        <file>qml/images/rectangle.png</file>
+        <file>qml/images/draw.png</file>
+        <file>qml/images/gesture.png</file>
+        <file>qml/images/palette.png</file>
+        <file>qml/images/pen_size_2.png</file>
+        <file>qml/images/approval.png</file>
+        <file>qml/images/north_east.png</file>
     </qresource>
 </RCC>
