@@ -42,6 +42,15 @@ public:
     bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder) override
     {
         const QString path = request.url().path();
+        if (path.endsWith("/oauth/par_invalid_scope")) {
+            // 要求したscopeを認可サーバーが受け付けないときのPARの応答
+            QHttpHeaders headers;
+            headers.append(QHttpHeaders::WellKnownHeader::ContentType, "application/json");
+            responder.write(QByteArray("{\"error\":\"invalid_scope\","
+                                       "\"error_description\":\"Scope not allowed\"}"),
+                            headers, QHttpServerResponder::StatusCode::BadRequest);
+            return true;
+        }
         if (path.endsWith("/oauth/token_invalid_grant")) {
             // refresh tokenが失効・使用済みのときのtokenエンドポイントの応答
             m_invalidGrantCount++;
@@ -156,6 +165,7 @@ private slots:
     void test_oauth_process();
     void test_oauth();
     void test_oauth_dpop_nonce_retry_limit();
+    void test_oauth_par_error();
     void test_oauth_token_validation();
     void test_oauth_token_request_lock();
     void test_identity_resolver();
@@ -477,11 +487,17 @@ void oauth_test::test_oauth()
 
     {
         // ブラウザで認証ができないのでタイムアウトしてくるのを確認
+        QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         spy.wait(20 * 1000);
         QCOMPARE(spy.count(), 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(!arguments.at(0).toBool());
+        // タイムアウトもエラーとして通知される
+        QCOMPARE(spy_error.count(), 1);
+        arguments = spy_error.takeFirst();
+        QCOMPARE(arguments.at(0).toString(), QString("AuthorizationTimeout"));
+        QVERIFY(!arguments.at(1).toString().isEmpty());
     }
 
     // stateはPKCEの値と独立していること
@@ -521,6 +537,31 @@ void oauth_test::test_oauth()
             QCOMPARE(spy_error.takeFirst().at(0).toString(),
                      QString("Invalid authorization response"));
         }
+    }
+
+    // 認可サーバーがerrorだけを返したリダイレクト(error_descriptionは任意)
+    {
+        QUrl error_url("http://127.0.0.1/tech/relog/hagoromo/oauth-callback");
+        QUrlQuery error_query;
+        error_query.addQueryItem("error", "invalid_scope");
+        error_query.addQueryItem("state", QString::fromUtf8(oauth.state()));
+        error_url.setQuery(error_query);
+
+        QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.startRedirectServer();
+        error_url.setPort(oauth.listenPort().toInt());
+        QNetworkAccessManager manager;
+        QNetworkReply *reply = manager.get(QNetworkRequest(error_url));
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+        read_reply(reply);
+        QCOMPARE(spy_error.count(), 1);
+        const QList<QVariant> arguments = spy_error.takeFirst();
+        QCOMPARE(arguments.at(0).toString(), QString("invalid_scope"));
+        // 説明が無くてもメッセージは空にならない
+        QVERIFY(!arguments.at(1).toString().isEmpty());
     }
 
     // ブラウザに認証しにいくURLからリダイレクトURLを取り出す
@@ -620,6 +661,30 @@ void oauth_test::test_oauth_dpop_nonce_retry_limit()
 
     m_server.m_nonce.clear();
     m_server.m_rotateAlways = false;
+}
+
+void oauth_test::test_oauth_par_error()
+{
+    // PARでOAuth形式のエラー(error/error_description)が返ったとき
+    m_server.m_nonce.clear();
+    m_server.m_rotateAlways = false;
+
+    Authorization oauth;
+    oauth.setPushedAuthorizationRequestEndpoint(
+            QString("http://127.0.0.1:%1/response/2/oauth/par_invalid_scope").arg(m_listenPort));
+    oauth.makeClientId();
+    {
+        QSignalSpy spy_error(&oauth, SIGNAL(errorOccurred(const QString &, const QString &)));
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.par();
+        spy.wait();
+        QCOMPARE(spy.count(), 1);
+        QVERIFY(!spy.takeFirst().at(0).toBool());
+        QCOMPARE(spy_error.count(), 1);
+        const QList<QVariant> arguments = spy_error.takeFirst();
+        QCOMPARE(arguments.at(0).toString(), QString("invalid_scope"));
+        QCOMPARE(arguments.at(1).toString(), QString("Scope not allowed"));
+    }
 }
 
 void oauth_test::test_oauth_token_validation()

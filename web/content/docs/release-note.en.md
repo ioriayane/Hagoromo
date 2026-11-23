@@ -8,6 +8,17 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.68.0 - 2026/11/23
+
+- Add
+  - Add view count to the post details viewer
+  - Add an image editor for attached images (crop, rotate, mosaic, shapes, arrows, freehand drawing, and pasting images)
+- Update
+  - Changed the real-time feed to show only the most recent reposts of the same post
+  - Always remove metadata such as location information from attached images
+- Fix
+  - Change to display errors that occur during OAuth authentication in the login dialog
+
 ### v0.67.0 - 2026/11/10
 
 - Add

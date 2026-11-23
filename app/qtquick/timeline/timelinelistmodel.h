@@ -58,6 +58,7 @@ public:
         QuoteCountRole,
         LikeCountRole,
         BookmarkCountRole,
+        ViewCountRole,
         ReplyDisabledRole,
         QuoteDisabledRole,
         IndexedAtRole,

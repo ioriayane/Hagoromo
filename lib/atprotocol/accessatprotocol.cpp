@@ -498,9 +498,13 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
 
     QJsonDocument json_doc = QJsonDocument::fromJson(m_replyJson.toUtf8());
     if (reply->error() != HttpReply::Success) {
-        if (json_doc.object().contains("error") && json_doc.object().contains("error")) {
+        if (json_doc.object().contains("error")) {
             m_errorCode = json_doc.object().value("error").toString();
             m_errorMessage = json_doc.object().value("message").toString();
+            if (m_errorMessage.isEmpty()) {
+                // OAuthのエンドポイント(RFC 6749 5.2)はerror_descriptionで説明を返す
+                m_errorMessage = json_doc.object().value("error_description").toString();
+            }
         } else if (!m_replyJson.isEmpty()) {
             m_errorCode = QStringLiteral("Other");
             m_errorMessage = m_replyJson;

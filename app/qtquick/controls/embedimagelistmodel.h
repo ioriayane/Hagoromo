@@ -17,6 +17,7 @@ class EmbedImageListModel : public QAbstractListModel
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged FINAL)
 public:
     explicit EmbedImageListModel(QObject *parent = nullptr);
+    ~EmbedImageListModel();
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum EmbedImageListModelRoles {
@@ -38,6 +39,10 @@ public:
     Q_INVOKABLE void remove(const int row);
     Q_INVOKABLE bool append(const QStringList &uris);
     Q_INVOKABLE void updateAlt(const int row, const QString &alt);
+    // 編集した画像に差し替える（このモデルが作った編集済みファイルは不要になったら削除する）
+    Q_INVOKABLE void replaceImage(const int row, const QString &uri);
+    // 編集済みファイルを削除対象から外す（下書きに保存した場合など）
+    Q_INVOKABLE void keepEditedFiles();
 
     Q_INVOKABLE QStringList uris() const;
     Q_INVOKABLE QStringList alts() const;
@@ -58,8 +63,10 @@ signals:
 
 private:
     void appendItem();
+    void removeEditedFile(const QString &uri);
 
     QStringList m_uriCue;
+    QStringList m_editedFiles; // このモデルが削除の責任を持つ編集済みファイル
     QList<EmbedImageItem> m_embedImageList;
     int m_count;
     bool m_running;

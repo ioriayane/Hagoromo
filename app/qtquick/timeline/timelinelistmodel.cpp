@@ -217,6 +217,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.likeCount;
     else if (role == BookmarkCountRole)
         return current.post.bookmarkCount;
+    else if (role == ViewCountRole)
+        return current.post.viewCount;
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
     else if (role == QuoteDisabledRole)
@@ -1033,6 +1035,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
     roles[BookmarkCountRole] = "bookmarkCount";
+    roles[ViewCountRole] = "viewCount";
     roles[ReplyDisabledRole] = "replyDisabled";
     roles[QuoteDisabledRole] = "quoteDisabled";
     roles[IndexedAtRole] = "indexedAt";

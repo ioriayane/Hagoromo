@@ -487,10 +487,18 @@ void Authorization::startRedirectServer()
                 } else {
                     // 拒否されたときなど
                     const QString error = query.queryItemValue("error", QUrl::FullyDecoded);
-                    emit errorOccurred(
-                            error.isEmpty() ? QStringLiteral("Invalid authorization response")
-                                            : error,
-                            query.queryItemValue("error_description", QUrl::FullyDecoded));
+                    QString description =
+                            query.queryItemValue("error_description", QUrl::FullyDecoded);
+                    if (description.isEmpty()) {
+                        // error_descriptionは任意なので、無いときもメッセージを空にしない
+                        description = error.isEmpty()
+                                ? QStringLiteral("The authorization response has no result.")
+                                : QString("The authorization server returned '%1'.").arg(error);
+                    }
+                    emit errorOccurred(error.isEmpty()
+                                               ? QStringLiteral("Invalid authorization response")
+                                               : error,
+                                       description);
                     m_code.clear();
                     emit finished(false);
                 }
@@ -521,6 +529,8 @@ void Authorization::startRedirectServer()
         // token取得に進んでたらfinishedは発火しない
         if (m_code.isEmpty()) {
             qDebug().noquote() << "Authorization timeout";
+            emit errorOccurred(QStringLiteral("AuthorizationTimeout"),
+                               QStringLiteral("Authorization in the web browser timed out."));
             emit finished(false);
         }
         server->deleteLater();

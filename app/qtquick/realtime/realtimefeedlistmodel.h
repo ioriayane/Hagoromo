@@ -44,6 +44,8 @@ private:
     void copyListMembers(const QString &list_uri,
                          const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
     void getQueuedPosts();
+    void updateReceivedPost(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post,
+                            const qint64 fetched_time);
     void updateReactionCount(const QString &cid, TimelineListModel::TimelineListModelRoles role,
                              bool increment);
     void flushReactionCounts();

@@ -490,19 +490,24 @@ void RealtimeFeedListModel::getQueuedPosts()
                             AtProtocolType::AppBskyFeedDefs::ReplyRefParentType::parent_PostView;
                     view_post.reply.parent_PostView = post_hash.value(ope_info.reply_parent_uri);
                 }
-                m_viewPostHash[view_post.post.cid] = view_post;
-                m_postFetchedTime[view_post.post.cid] = fetched_time;
-                bool visible = checkVisibility(view_post.post.cid);
+                const QString cid = view_post.post.cid;
+                if (m_originalCidList.contains(cid)) {
+                    // 既に受信済みのポスト(別のユーザーによるリポストなど)
+                    updateReceivedPost(view_post, fetched_time);
+                    continue;
+                }
+                m_viewPostHash[cid] = view_post;
+                m_postFetchedTime[cid] = fetched_time;
+                bool visible = checkVisibility(cid);
                 if (visible) {
                     beginInsertRows(QModelIndex(), 0, 0);
-                    m_cidList.insert(0, view_post.post.cid);
+                    m_cidList.insert(0, cid);
                     endInsertRows();
 
                     // Tokimekiの投票の取得のキューに入れる
-                    appendTokimekiPollToCue(view_post.post.cid,
-                                            view_post.post.embed_AppBskyEmbedExternal_View);
+                    appendTokimekiPollToCue(cid, view_post.post.embed_AppBskyEmbedExternal_View);
                 }
-                m_originalCidList.insert(0, view_post.post.cid);
+                m_originalCidList.insert(0, cid);
             }
         } else {
             emit errorOccurred(posts->errorCode(), posts->errorMessage());
@@ -514,6 +519,59 @@ void RealtimeFeedListModel::getQueuedPosts()
     posts->setAccount(account());
     posts->setLabelers(labelerDids());
     posts->getPosts(uris);
+}
+
+void RealtimeFeedListModel::updateReceivedPost(
+        const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post, const qint64 fetched_time)
+{
+    // TimelineListModelと同様に同じポストは1行だけ表示する
+    // 新しく受信した方が表示対象なら内容を入れ替えて先頭へ移動し、
+    // 対象外なら表示中の内容(リポストしたユーザーなど)を維持してポストの情報だけ更新する
+    const QString cid = view_post.post.cid;
+    const AtProtocolType::AppBskyFeedDefs::FeedViewPost prev = m_viewPostHash.value(cid);
+
+    m_viewPostHash[cid] = view_post;
+    m_postFetchedTime[cid] = fetched_time;
+    const bool visible = checkVisibility(cid);
+    if (!visible) {
+        AtProtocolType::AppBskyFeedDefs::FeedViewPost keep = prev;
+        keep.post = view_post.post;
+        m_viewPostHash[cid] = keep;
+        if (!checkVisibility(cid)) {
+            // 表示中のものが無い、もしくは更新したポストの情報で対象外になった
+            const int r = m_cidList.indexOf(cid);
+            if (r >= 0) {
+                beginRemoveRows(QModelIndex(), r, r);
+                m_cidList.removeAt(r);
+                endRemoveRows();
+            }
+            return;
+        }
+        const int r = m_cidList.indexOf(cid);
+        if (r >= 0) {
+            emit dataChanged(index(r), index(r));
+        }
+        return;
+    }
+
+    const int r = m_cidList.indexOf(cid);
+    if (r > 0) {
+        beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
+        m_cidList.move(r, 0);
+        endMoveRows();
+        emit dataChanged(index(0), index(0));
+    } else if (r == 0) {
+        emit dataChanged(index(0), index(0));
+    } else {
+        // 非表示だったものが表示対象になった
+        beginInsertRows(QModelIndex(), 0, 0);
+        m_cidList.insert(0, cid);
+        endInsertRows();
+    }
+    const int original_r = m_originalCidList.indexOf(cid);
+    if (original_r > 0) {
+        m_originalCidList.move(original_r, 0);
+    }
 }
 
 void RealtimeFeedListModel::updateReactionCount(const QString &cid,

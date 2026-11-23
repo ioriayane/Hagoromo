@@ -2,12 +2,18 @@
 #define IMAGECOMPRESSOR_H
 
 #include <QObject>
+#include <QImage>
 
 class ImageCompressor : public QObject
 {
     Q_OBJECT
 public:
     explicit ImageCompressor(QObject *parent = nullptr);
+
+    // EXIFの回転を適用して読み込み、メタデータ（EXIF/コメント/テキストチャンク）を持たない画像を返す
+    static QImage loadImage(const QString &path);
+    // 画素とカラースペース以外の情報（テキストなど）を持たない画像を返す
+    static QImage stripMetadata(const QImage &image);
 
 public slots:
     void compress(const QString &path, int image_size_limit, bool keep_format);

@@ -138,11 +138,11 @@ qt_add_qml_module(Hagoromo
         qml/dialogs/ColumnSettingDialog.qml
         qml/dialogs/AddMutedWordDialog.qml
         qml/dialogs/ImageClipDialog.qml
+        qml/dialogs/ImageEditDialog.qml
         qml/dialogs/BlockedListsDialog.qml
         qml/dialogs/PostDialog.qml
         qml/dialogs/PostDialogManager.qml
         qml/dialogs/MessageDialog.qml
-        qml/dialogs/AltEditDialog.qml
         qml/dialogs/LoginDialog.qml
         qml/dialogs/LanguageSelectionDialog.qml
         qml/dialogs/ContentFilterSettingDialog.qml
@@ -169,6 +169,9 @@ qt_add_qml_module(Hagoromo
         qml/controls/MenuEx.qml
         qml/controls/ClickableFrame.qml
         qml/controls/ImageWithIndicator.qml
+        qml/controls/ImageCropOverlay.qml
+        qml/controls/ImageLayerOverlay.qml
+        qml/controls/ImageRectEditor.qml
         qml/controls/DragAndDropArea.qml
         qml/controls/IconButton.qml
         qml/controls/MoreButton.qml

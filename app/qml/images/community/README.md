@@ -20,6 +20,7 @@
 | `Donorbox.svg` | [Donorbox](https://donorbox.org) |
 | `Etsy.svg` | [Etsy](https://www.etsy.com) |
 | `Fourthwall.svg` | [Fourthwall](https://fourthwall.com) |
+| `Github.svg` | [GitHub](https://github.com) |
 | `GiveSendGo.svg` | [GiveSendGo](https://www.givesendgo.com) |
 | `Givebutter.svg` | [Givebutter](https://givebutter.com) |
 | `GoFundMe.svg` | [GoFundMe](https://www.gofundme.com) |
