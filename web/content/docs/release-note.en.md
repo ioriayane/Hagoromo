@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+### v0.68.0 - 2026/11/23
+
 - Add
   - Add view count to the post details viewer
   - Add an image editor for attached images (crop, rotate, mosaic, shapes, arrows, freehand drawing, and pasting images)
