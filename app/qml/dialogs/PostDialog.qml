@@ -356,6 +356,9 @@ Item {
                 }
                 onFinishedCreateDraft: (success, id) => {
                     if(success){
+                        // 下書きから参照されるので編集済みの画像を残す
+                        // （下書きの作成に失敗したときは引き続き削除の対象にする）
+                        embedImageListModel.keepEditedFiles()
                         if (postDialogItem.dialog_no >= 0) {
                             postDialogItem.requestClearProgress("postDialog_" + postDialogItem.dialog_no, "draftOperator")
                         }
@@ -1240,8 +1243,6 @@ Item {
                     draftOperator.setExternalLink(addingExternalLinkUrlText.text)
                     if(embedImageListModel.count > 0){
                         draftOperator.setImages(embedImageListModel.uris(), embedImageListModel.alts())
-                        // 下書きから参照されるので編集済みの画像を残す
-                        embedImageListModel.keepEditedFiles()
                     }
                     draftOperator.createDraft()
                 }

@@ -361,8 +361,13 @@ void ImageEditModel::commitTransient()
     if (!m_transient)
         return;
     m_transient = false;
-    if (m_transientBase != m_state) {
+    const bool changed = (m_transientBase != m_state);
+    if (changed) {
         pushHistory(m_transientBase);
+    }
+    // スタンプの画像などを保持し続けないように解放する
+    m_transientBase = ImageEditState();
+    if (changed) {
         emit stateChanged();
     }
 }
@@ -640,6 +645,7 @@ void ImageEditModel::finishLoading(int load_id, const QImage &image, const QImag
     m_redoStack.clear();
     m_selectedLayer = -1;
     m_transient = false;
+    m_transientBase = ImageEditState();
     updatePreview(true);
     setLoading(false);
 

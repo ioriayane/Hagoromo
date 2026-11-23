@@ -272,7 +272,8 @@ Item {
                     }
                     var m = mapToItem(overlay, mouse.x, mouse.y)
                     var p = overlay.canvas.mapToImage(m.x, m.y)
-                    var points = overlay.editModel.selectedLayerPoints
+                    // プロパティの値は読み取り専用なのでコピーしてから変更する
+                    var points = overlay.editModel.selectedLayerPoints.slice()
                     points[endPoint.index] = Qt.point(overlay.clampX(p.x), overlay.clampY(p.y))
                     overlay.editModel.setLayerPoints(overlay.editModel.selectedLayer, points, true)
                 }
