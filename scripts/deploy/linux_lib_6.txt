@@ -38,6 +38,12 @@ libQt6QuickControls2Material.so.6
 libQt6QuickControls2Material.so.6.11.0
 libQt6QuickControls2MaterialStyleImpl.so.6
 libQt6QuickControls2MaterialStyleImpl.so.6.11.0
+libQt6QuickDialogs2.so.6
+libQt6QuickDialogs2.so.6.11.0
+libQt6QuickDialogs2QuickImpl.so.6
+libQt6QuickDialogs2QuickImpl.so.6.11.0
+libQt6QuickDialogs2Utils.so.6
+libQt6QuickDialogs2Utils.so.6.11.0
 libQt6QuickLayouts.so.6
 libQt6QuickLayouts.so.6.11.0
 libQt6QuickTemplates2.so.6
