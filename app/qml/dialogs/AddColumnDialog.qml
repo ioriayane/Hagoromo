@@ -109,6 +109,7 @@ Dialog {
                         Layout.preferredWidth: AdjustedValues.b30
                         Layout.preferredHeight: AdjustedValues.b24
                         iconSource: "../images/refresh.png"
+                        toolTipText: qsTr("Refresh")
                         iconSize: AdjustedValues.i16
                         onClicked: {
                             repeater.itemAt(accountList.currentIndex).model.clear()

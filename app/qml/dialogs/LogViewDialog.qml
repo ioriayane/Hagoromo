@@ -131,6 +131,7 @@ Dialog {
                 Layout.preferredWidth: AdjustedValues.b30
                 Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/refresh.png"
+                toolTipText: qsTr("Refresh")
                 iconSize: AdjustedValues.i16
                 enabled: !logOperator.running &&
                          !logStatisticsListModel.running &&
@@ -151,6 +152,7 @@ Dialog {
                 Layout.preferredWidth: AdjustedValues.b30
                 Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/minimize.png"
+                toolTipText: qsTr("Minimize")
                 iconSize: AdjustedValues.i16
                 visible: logOperator.running
                 onClicked: {

@@ -27,6 +27,7 @@ ColumnLayout {
         enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/edit.png"
+        toolTipText: qsTr("New post")
         //                    iconText: qsTr("New Post")
         onWidthChanged: console.log("post:" + width)
     }
@@ -39,6 +40,7 @@ ColumnLayout {
         enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/search.png"
+        toolTipText: qsTr("Search")
         onWidthChanged: console.log("search:" + width)
     }
 
@@ -55,6 +57,7 @@ ColumnLayout {
         enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/column.png"
+        toolTipText: qsTr("Add column")
         //                    iconText: qsTr("Add column")
     }
 
@@ -67,6 +70,7 @@ ColumnLayout {
         enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/hand.png"
+        toolTipText: qsTr("Moderation")
     }
 
     IconButton {
@@ -76,6 +80,7 @@ ColumnLayout {
         Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/account.png"
+        toolTipText: qsTr("Account")
         //                    iconText: qsTr("Account")
     }
 
@@ -86,6 +91,7 @@ ColumnLayout {
         Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/settings.png"
+        toolTipText: qsTr("Settings")
         //                    iconText: qsTr("Settings")
     }
 }

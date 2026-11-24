@@ -55,6 +55,7 @@ Frame {
                 Layout.preferredWidth: parent.buttonSize
                 Layout.preferredHeight: parent.buttonSize
                 iconSource: "../images/arrow_left_double.png"
+                toolTipText: qsTr("Previous year")
                 onClicked: calendarTableModel.addYears(-1)
             }
             IconButton {
@@ -62,6 +63,7 @@ Frame {
                 Layout.preferredHeight: parent.buttonSize
                 Layout.rightMargin: 5
                 iconSource: "../images/arrow_left_single.png"
+                toolTipText: qsTr("Previous month")
                 onClicked: calendarTableModel.addMonths(-1)
             }
             Label {
@@ -74,12 +76,14 @@ Frame {
                 Layout.preferredHeight: parent.buttonSize
                 Layout.leftMargin: 5
                 iconSource: "../images/arrow_right_single.png"
+                toolTipText: qsTr("Next month")
                 onClicked: calendarTableModel.addMonths(1)
             }
             IconButton {
                 Layout.preferredWidth: parent.buttonSize
                 Layout.preferredHeight: parent.buttonSize
                 iconSource: "../images/arrow_right_double.png"
+                toolTipText: qsTr("Next year")
                 onClicked: calendarTableModel.addYears(1)
             }
         }

@@ -783,6 +783,7 @@ ColumnLayout {
                 visible: columnStackView.depth > 1
                 flat: true
                 iconSource: "../images/arrow_left_double.png"
+                toolTipText: qsTr("Back to first")
                 onClicked: columnStackView.pop(null)
             }
 
@@ -858,6 +859,7 @@ ColumnLayout {
                 Layout.preferredWidth: AdjustedValues.b30
                 Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/settings.png"
+                toolTipText: qsTr("Column settings")
                 iconSize: AdjustedValues.i16
                 onClicked: popup.open()
                 MenuEx {
