@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2026
 
+- Update
+  - Add a tooltip to the icon button
+
 ### v0.68.0 - 2026/11/23
 
 - Add
