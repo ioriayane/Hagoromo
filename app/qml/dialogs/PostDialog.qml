@@ -720,7 +720,7 @@ Item {
                             IconButton {
                                 id: externalLinkButton
                                 iconSource: "../images/add.png"
-                                toolTipText: qsTr("Add link card")
+                                toolTipText: qsTr("Add attachment")
                                 enabled: addingExternalLinkUrlText.text.length > 0 &&
                                          !externalLink.running &&
                                          !feedGeneratorLink.running &&
@@ -761,6 +761,7 @@ Item {
                                         PropertyChanges {
                                             target: externalLinkButton
                                             iconSource: "../images/delete.png"
+                                            toolTipText: qsTr("Remove attachment")
                                             onClicked: {
                                                 externalLink.clear()
                                                 feedGeneratorLink.clear()
