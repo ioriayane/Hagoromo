@@ -66,6 +66,7 @@ ScrollView {
                     PropertyChanges {
                         target: saveButton
                         iconSource: "../images/bookmark_add.png"
+                        toolTipText: qsTr("Remove from saved feeds")
                         foreground: Material.color(Material.Pink)
                         onClicked: generatorScrollView.requestRemoveGenerator(model.uri)
                     }
@@ -75,6 +76,7 @@ ScrollView {
                     PropertyChanges {
                         target: saveButton
                         iconSource: "../images/bookmark_add.png"
+                        toolTipText: qsTr("Save feed")
                         foreground: Material.color(Material.Grey)
                         onClicked: generatorScrollView.requestSaveGenerator(model.uri)
                     }

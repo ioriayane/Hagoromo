@@ -67,6 +67,7 @@ Frame {
             flat: true
             Layout.alignment: Qt.AlignTop
             iconSource: "../images/close.png"
+            toolTipText: qsTr("Close")
             onClicked: errorNotificationFrame.closeClicked()
         }
     }

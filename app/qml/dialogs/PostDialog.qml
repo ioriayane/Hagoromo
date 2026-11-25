@@ -534,6 +534,7 @@ Item {
                                 id: threadGateButton
                                 enabled: !createRecord.running && (postDialogItem.postType !== "reply")
                                 iconSource: "../images/thread.png"
+                                toolTipText: qsTr("Who can reply")
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 foreground: (selectThreadGateDialog.selectedType !== "everybody" || !selectThreadGateDialog.selectedQuoteEnabled)
@@ -554,6 +555,7 @@ Item {
                                 id: postLanguagesButton
                                 enabled: !createRecord.running
                                 iconSource: "../images/language.png"
+                                toolTipText: qsTr("Post languages")
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 onClicked: {
@@ -718,6 +720,7 @@ Item {
                             IconButton {
                                 id: externalLinkButton
                                 iconSource: "../images/add.png"
+                                toolTipText: qsTr("Add attachment")
                                 enabled: addingExternalLinkUrlText.text.length > 0 &&
                                          !externalLink.running &&
                                          !feedGeneratorLink.running &&
@@ -758,6 +761,7 @@ Item {
                                         PropertyChanges {
                                             target: externalLinkButton
                                             iconSource: "../images/delete.png"
+                                            toolTipText: qsTr("Remove attachment")
                                             onClicked: {
                                                 externalLink.clear()
                                                 feedGeneratorLink.clear()
@@ -873,6 +877,7 @@ Item {
                                             anchors.right: parent.right
                                             anchors.margins: 5
                                             iconSource: "../images/delete.png"
+                                            toolTipText: qsTr("Remove image")
                                             onClicked: embedImageListModel.remove(additionalImages.index)
                                         }
                                     }
@@ -954,6 +959,7 @@ Item {
                                 id: selfLabelsButton
                                 enabled: !createRecord.running
                                 iconSource: "../images/labeling.png"
+                                toolTipText: qsTr("Self labels")
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 foreground: value.length > 0 ? Material.accent : Material.foreground
@@ -981,6 +987,7 @@ Item {
                                          !listLink.valid &&
                                          !embedImageListModel.running
                                 iconSource: "../images/add_image.png"
+                                toolTipText: qsTr("Add images")
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 onClicked: {
@@ -998,6 +1005,7 @@ Item {
                                          !embedImageListModel.count > 0 &&
                                          !embedImageListModel.running
                                 iconSource: "../images/chart.png"
+                                toolTipText: qsTr("Add poll")
                                 iconSize: AdjustedValues.i18
                                 foreground: addPollDialog.appliedOptions.length > 0 ? Material.accent : Material.foreground
                                 flat: true
@@ -1050,6 +1058,7 @@ Item {
                             IconButton {
                                 enabled: !postButton.enabled
                                 iconSource: "../images/draft.png"
+                                toolTipText: qsTr("Drafts")
                                 iconSize: AdjustedValues.i18
                                 flat: true
                                 onClicked: {

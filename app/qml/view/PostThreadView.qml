@@ -54,6 +54,7 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.b30
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
+                toolTipText: qsTr("Back")
                 onClicked: postThreadView.back()
             }
             Label {

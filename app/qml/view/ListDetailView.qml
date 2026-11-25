@@ -74,6 +74,7 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.b30
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
+                toolTipText: qsTr("Back")
                 onClicked: listDetailView.back()
             }
             Label {
@@ -168,6 +169,7 @@ ColumnLayout {
                     anchors.bottom: parent.bottom
                     height: AdjustedValues.b24
                     iconSource: "../images/more.png"
+                    toolTipText: qsTr("More")
                     iconSize: AdjustedValues.i16
                     foreground: Material.color(Material.Grey)
                     onClicked: morePopup.open()

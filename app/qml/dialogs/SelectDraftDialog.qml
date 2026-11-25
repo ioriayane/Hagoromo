@@ -116,6 +116,7 @@ Dialog {
                             IconButton {
                                 Layout.preferredHeight: AdjustedValues.b26
                                 iconSource: "../images/more.png"
+                                toolTipText: qsTr("More")
                                 onClicked: moreMenu.open()
                                 MenuEx {
                                     id: moreMenu

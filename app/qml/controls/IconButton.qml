@@ -17,6 +17,11 @@ Button {
     property alias iconText: iconLabel.text
     property int iconSize: button.height * 0.5
     property color foreground: Material.foreground
+    property string toolTipText: ""
+
+    ToolTip.visible: hovered && toolTipText.length > 0
+    ToolTip.delay: 500
+    ToolTip.text: toolTipText
 
 
     topInset: 2

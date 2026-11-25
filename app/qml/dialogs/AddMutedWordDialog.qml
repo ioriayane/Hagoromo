@@ -66,6 +66,7 @@ Dialog {
                 Layout.preferredWidth: AdjustedValues.b30
                 Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/refresh.png"
+                toolTipText: qsTr("Refresh")
                 iconSize: AdjustedValues.i16
                 onClicked: mutedWordListModel.load()
             }
@@ -176,6 +177,7 @@ Dialog {
                         IconButton {
                             Layout.preferredHeight: AdjustedValues.b26
                             iconSource: "../images/delete.png"
+                            toolTipText: qsTr("Delete")
                             onClicked: mutedWordListModel.remove(model.index)
                         }
                     }

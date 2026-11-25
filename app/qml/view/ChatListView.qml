@@ -107,6 +107,7 @@ Item {
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 5
                     iconSource: "../images/add.png"
+                    toolTipText: qsTr("New chat")
                     onClicked: startNewChatLayout.open()
                 }
             }
@@ -207,6 +208,7 @@ Item {
                         Layout.preferredHeight: AdjustedValues.b24
                         Layout.alignment: Qt.AlignVCenter
                         iconSource: "../images/more.png"
+                        toolTipText: qsTr("More")
                         iconSize: AdjustedValues.i16
                         foreground: Material.color(Material.Grey)
                         flat: true
@@ -276,6 +278,7 @@ Item {
                 IconButton {
                     flat: true
                     iconSource: "../images/close.png"
+                    toolTipText: qsTr("Close")
                     onClicked: startNewChatLayout.close()
                 }
             }

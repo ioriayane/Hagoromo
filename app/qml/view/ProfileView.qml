@@ -199,6 +199,7 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.b30
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
+                toolTipText: qsTr("Back")
                 onClicked: profileView.back()
             }
             Label {
@@ -288,6 +289,7 @@ ColumnLayout {
                                     "../images/expand_content_less.png" :
                                     "../images/expand_content_more.png"
                     iconText: ""
+                    toolTipText: serviceEndpointLayout.visible ? qsTr("Hide details") : qsTr("Show details")
                     visible: !profileView.autoHideDetailMode
                     onClicked: userProfileColumnLayout.viewChange(!serviceEndpointLayout.visible, true)
                 }
@@ -526,6 +528,7 @@ ColumnLayout {
                 anchors.bottom: parent.bottom
                 height: AdjustedValues.b24
                 iconSource: "../images/more.png"
+                toolTipText: qsTr("More")
                 iconSize: AdjustedValues.i16
                 foreground: Material.color(Material.Grey)
                 onClicked: morePopup.open()

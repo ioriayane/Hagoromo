@@ -84,6 +84,7 @@ Dialog {
             IconButton {
                 visible: optionsLayout.optionCount >= 3
                 iconSource: "../images/delete.png"
+                toolTipText: qsTr("Delete")
                 focusPolicy: Qt.NoTabFocus
                 onClicked: optionsLayout.decreaseOption(1)
             }
@@ -99,6 +100,7 @@ Dialog {
             IconButton {
                 visible: optionsLayout.optionCount >= 3
                 iconSource: "../images/delete.png"
+                toolTipText: qsTr("Delete")
                 focusPolicy: Qt.NoTabFocus
                 onClicked: optionsLayout.decreaseOption(2)
             }
@@ -115,6 +117,7 @@ Dialog {
             IconButton {
                 visible: optionsLayout.optionCount >= 3
                 iconSource: "../images/delete.png"
+                toolTipText: qsTr("Delete")
                 focusPolicy: Qt.NoTabFocus
                 onClicked: optionsLayout.decreaseOption(3)
             }
@@ -131,6 +134,7 @@ Dialog {
             IconButton {
                 visible: optionsLayout.optionCount >= 3
                 iconSource: "../images/delete.png"
+                toolTipText: qsTr("Delete")
                 focusPolicy: Qt.NoTabFocus
                 onClicked: optionsLayout.decreaseOption(4)
             }

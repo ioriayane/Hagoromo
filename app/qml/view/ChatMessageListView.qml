@@ -278,6 +278,7 @@ Item {
                                         hoverEnabled: true
                                         opacity: (hovered || model.running || moreButton.hovered) ? 1.0 : 0.0
                                         iconSource: "../images/smile.png"
+                                        toolTipText: qsTr("Add reaction")
                                         onClicked: {
                                             emojiPicker.messageIndex = model.index
                                             emojiPicker.openPicker(model.myReactionEmojis)
@@ -285,6 +286,7 @@ Item {
                                     }
                                     MoreButton {
                                         id: moreButton
+                                        toolTipText: qsTr("More")
                                         anchors.left: emojiButton.right
                                         anchors.leftMargin: 2
                                         anchors.rightMargin: 2
@@ -362,6 +364,7 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/close.png"
+                    toolTipText: qsTr("Remove post")
                     enabled: userPost.cid.length > 0
                     flat: true
                     onClicked: userPost.clear()
@@ -384,6 +387,7 @@ Item {
                     id: addPostButton
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/add.png"
+                    toolTipText: qsTr("Add post")
                     enabled: !rootListView.model.runSending &&
                              rootListView.model.ready &&
                              quoteUrlTextArea.text.length > 0 &&
@@ -400,6 +404,7 @@ Item {
                     id: addButton
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/add.png"
+                    toolTipText: qsTr("Attach post")
                     flat: true
                     enabled: !rootListView.model.runSending &&
                              rootListView.model.ready
@@ -420,6 +425,7 @@ Item {
                     id: sendButton
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/send.png"
+                    toolTipText: qsTr("Send")
                     enabled: (messageTextArea.text.length > 0 || userPost.cid.length > 0) &&
                              !rootListView.model.runSending &&
                              rootListView.model.ready &&

@@ -314,6 +314,7 @@ Dialog {
             visible: linkRow.linkVisible
             enabled: linkRow.linkIndex > 0
             iconSource: "../images/expand_less.png"
+            toolTipText: qsTr("Move up")
             iconSize: AdjustedValues.i16
             onClicked: editProfileDialog.moveLink(linkRow.linkIndex, linkRow.linkIndex - 1)
         }
@@ -323,6 +324,7 @@ Dialog {
             visible: linkRow.linkVisible
             enabled: linkRow.linkIndex < editProfileDialog.visibleLinks.length - 1
             iconSource: "../images/expand_more.png"
+            toolTipText: qsTr("Move down")
             iconSize: AdjustedValues.i16
             onClicked: editProfileDialog.moveLink(linkRow.linkIndex, linkRow.linkIndex + 1)
         }
